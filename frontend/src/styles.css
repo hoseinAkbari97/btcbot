@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap");
+
+:root { color-scheme: dark; font-family: Inter, sans-serif; background: #080b11; color: #dfe6ef; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #080b11; }
+button { font: inherit; }
+.app-shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+.sidebar { position: sticky; top: 0; height: 100vh; background: #0a0e15; border-right: 1px solid #1a2230; padding: 24px 14px 18px; display: flex; flex-direction: column; }
+.brand { display: flex; gap: 11px; align-items: center; padding: 0 8px 28px; }
+.brand-icon { width: 36px; height: 36px; display: grid; place-items: center; color: #080b11; background: #f5a623; font: 700 12px "IBM Plex Mono"; clip-path: polygon(25% 0,75% 0,100% 25%,100% 75%,75% 100%,25% 100%,0 75%,0 25%); }
+.brand strong { display: block; font-size: 13px; letter-spacing: .08em; }
+.brand span { color: #5e6b7b; font: 500 8px "IBM Plex Mono"; letter-spacing: .13em; }
+nav { flex: 1; }
+.nav-label { display: block; color: #465264; font: 600 9px "IBM Plex Mono"; letter-spacing: .15em; margin: 12px 12px 8px; }
+nav button { width: 100%; border: 0; background: transparent; color: #778397; display: flex; gap: 12px; align-items: center; padding: 10px 12px; margin: 2px 0; border-radius: 5px; text-align: left; font-size: 12px; cursor: default; }
+nav button i { width: 16px; color: #536174; font-style: normal; font-size: 15px; }
+nav button.selected { background: #151c27; color: #f0f3f7; box-shadow: inset 2px 0 #f5a623; }
+nav button.selected i { color: #f5a623; }
+nav button.locked { color: #3e4858; }
+nav button b { margin-left: auto; font: 500 7px "IBM Plex Mono"; color: #384454; }
+.sidebar-footer { color: #69768a; font: 500 9px "IBM Plex Mono"; border-top: 1px solid #18202c; padding: 17px 8px 0; letter-spacing: .05em; }
+.sidebar-footer small { display: block; color: #3f4a59; margin: 8px 0 0 14px; }
+.pulse { display: inline-block; width: 6px; height: 6px; background: #12b886; border-radius: 50%; box-shadow: 0 0 8px #12b886; margin-right: 7px; }
+.workspace { min-width: 0; padding: 27px 30px 35px; background: radial-gradient(circle at 85% 0%, #101a28 0, transparent 28%), #080b11; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.eyebrow { color: #5d6a7e; font: 600 9px "IBM Plex Mono"; letter-spacing: .15em; }
+h1 { font-size: 24px; margin: 5px 0 0; letter-spacing: -.03em; }
+.research-badge { color: #d99a36; border: 1px solid #5b4421; background: #1a150d; padding: 7px 10px; border-radius: 3px; font: 600 9px "IBM Plex Mono"; letter-spacing: .08em; }
+.panel { background: #0c111a; border: 1px solid #1c2634; border-radius: 6px; box-shadow: 0 12px 35px #00000020; }
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.status-card { padding: 14px 15px; }
+.status-heading { display: flex; justify-content: space-between; color: #677489; font: 500 9px "IBM Plex Mono"; letter-spacing: .08em; }
+.status-card > strong { display: block; font: 600 14px "IBM Plex Mono"; margin: 10px 0 5px; color: #d9e1eb; }
+.status-card small { color: #465366; font-size: 10px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #596579; }
+.status-dot.up { background: #12b886; box-shadow: 0 0 8px #12b88680; }
+.status-dot.down { background: #fa5252; box-shadow: 0 0 8px #fa525280; }
+.market-controls { min-height: 48px; padding: 7px 10px; display: flex; align-items: center; margin-bottom: 10px; }
+.symbol-select { padding: 0 18px 0 6px; border-right: 1px solid #222c3a; font: 600 12px "IBM Plex Mono"; }
+.btc-mark { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #f5a623; color: #111; margin-right: 9px; }
+.timeframes { display: flex; gap: 3px; padding-left: 12px; }
+.timeframes button { border: 0; color: #5e6c80; background: transparent; padding: 7px 10px; border-radius: 3px; font: 600 10px "IBM Plex Mono"; cursor: pointer; }
+.timeframes button:hover { color: #c6d0dd; }
+.timeframes button.active { background: #1c2736; color: #f5a623; }
+.utc-clock { margin-left: auto; color: #465366; font: 500 8px "IBM Plex Mono"; letter-spacing: .1em; padding-right: 7px; }
+.chart-panel { min-height: 640px; overflow: hidden; }
+.chart-toolbar { height: 72px; display: flex; justify-content: space-between; align-items: center; padding: 13px 18px 8px; border-bottom: 1px solid #182230; }
+.instrument-line { display: flex; gap: 17px; align-items: baseline; margin-top: 5px; }
+.instrument-line h2 { font: 600 15px "IBM Plex Mono"; margin: 0; }
+.instrument-line strong { font: 600 18px "IBM Plex Mono"; color: #edf2f7; }
+.stream-state { color: #7f8b9d; font: 600 9px "IBM Plex Mono"; letter-spacing: .1em; }
+.stream-state span { display: inline-block; width: 6px; height: 6px; background: #7f8b9d; border-radius: 50%; margin-right: 5px; }
+.stream-state.live { color: #12b886; }
+.stream-state.live span { background: #12b886; box-shadow: 0 0 8px #12b886; }
+.stream-state.offline { color: #fa5252; }
+.stream-state.offline span { background: #fa5252; }
+.ohlc-strip { height: 35px; display: flex; gap: 18px; align-items: center; padding: 0 18px; color: #4f5d70; font: 500 9px "IBM Plex Mono"; }
+.ohlc-strip b { color: #8996a8; font-weight: 500; }
+.chart-canvas { height: 530px; }
+@media (max-width: 900px) { .app-shell { grid-template-columns: 72px minmax(0,1fr); } .sidebar { padding: 20px 8px; } .brand > div:last-child, nav button:not(.selected) span, nav button { font-size: 0; } .brand { padding-left: 9px; } nav button { justify-content: center; } nav button i { font-size: 16px; } .nav-label, .sidebar-footer { display: none; } .workspace { padding: 22px 16px; } .status-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 620px) { .status-grid { grid-template-columns: 1fr 1fr; } .research-badge, .utc-clock { display: none; } .market-controls { overflow-x: auto; } .chart-panel { min-height: 520px; } .chart-canvas { height: 420px; } }
+
