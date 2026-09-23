@@ -1,0 +1,772 @@
+{
+  "info": {
+    "_postman_id": "c8b436d8-75d4-49c7-a807-cd77ef29cb4d",
+    "name": "BTCBot - Frontend, Backend, and Upstream URLs",
+    "description": "Tests the HTTP URLs documented in URL_CATALOG.md. Import BTCBot-WebSockets.asyncapi.yaml separately for WebSocket testing because Postman HTTP collections and multi-protocol WebSocket collections use different collection types. The historical-ingestion request writes data and calls the configured market-data provider; review its dates before sending it.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "backendBaseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "frontendBaseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "viteBaseUrl",
+      "value": "http://localhost:5173",
+      "type": "string"
+    },
+    {
+      "key": "krakenRestBaseUrl",
+      "value": "https://api.kraken.com",
+      "type": "string"
+    },
+    {
+      "key": "binanceRestBaseUrl",
+      "value": "https://api.binance.com",
+      "type": "string"
+    },
+    {
+      "key": "googleFontsBaseUrl",
+      "value": "https://fonts.googleapis.com",
+      "type": "string"
+    },
+    {
+      "key": "symbol",
+      "value": "BTCUSDT",
+      "type": "string"
+    },
+    {
+      "key": "timeframe",
+      "value": "5m",
+      "type": "string"
+    },
+    {
+      "key": "rangeStart",
+      "value": "2026-09-22T00:00:00Z",
+      "type": "string"
+    },
+    {
+      "key": "rangeEnd",
+      "value": "2026-09-23T00:00:00Z",
+      "type": "string"
+    },
+    {
+      "key": "ingestStart",
+      "value": "2026-09-22T00:00:00Z",
+      "type": "string"
+    },
+    {
+      "key": "ingestEnd",
+      "value": "2026-09-22T01:00:00Z",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Frontend",
+      "description": "Frontend page URLs. Use the Docker URL by default; the Vite URL requires the development server.",
+      "item": [
+        {
+          "name": "Docker frontend dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": "{{frontendBaseUrl}}/",
+            "description": "Loads the only declared React route, GET /."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns HTML', function () { pm.expect(pm.response.headers.get('Content-Type') || '').to.include('text/html'); });",
+                  "pm.test('Contains the application root or title', function () { pm.expect(pm.response.text()).to.match(/BTC Quant Research Terminal|id=[\"']root[\"']/); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Vite development dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": "{{viteBaseUrl}}/",
+            "description": "Loads the frontend from the Vite development server on port 5173. Start npm run dev before sending."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns HTML', function () { pm.expect(pm.response.headers.get('Content-Type') || '').to.include('text/html'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backend - Health and Status",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/health",
+            "description": "FastAPI process liveness check. It does not test PostgreSQL or Redis."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Health payload is ok', function () { pm.expect(pm.response.json()).to.deep.equal({ status: 'ok' }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "System status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/system/status",
+            "description": "Reports API, PostgreSQL, and Redis status. A dependency failure is returned as a 200 response with status=degraded."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Payload has all component statuses', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.be.oneOf(['healthy', 'degraded']);",
+                  "  pm.expect(body).to.have.all.keys('status', 'api', 'database', 'redis');",
+                  "  pm.expect(body.api.status).to.be.oneOf(['up', 'down']);",
+                  "  pm.expect(body.database.status).to.be.oneOf(['up', 'down']);",
+                  "  pm.expect(body.redis.status).to.be.oneOf(['up', 'down']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backend - Candles",
+      "item": [
+        {
+          "name": "Get candles with defaults",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/candles",
+            "description": "Uses backend defaults: BTCUSDT, 5m, and limit 1000."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Candle page shape is valid', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.symbol).to.eql('BTCUSDT');",
+                  "  pm.expect(body.timeframe).to.eql('5m');",
+                  "  pm.expect(body.count).to.eql(body.candles.length);",
+                  "  pm.expect(body.candles).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get filtered candles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/candles?symbol={{symbol}}&timeframe={{timeframe}}&start={{rangeStart}}&end={{rangeEnd}}&limit=100",
+            "description": "Reads a bounded candle range. Change collection variables to test another symbol, timeframe, or period."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response matches requested market', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.symbol).to.eql(pm.variables.get('symbol').replace('/', '').toUpperCase());",
+                  "  pm.expect(body.timeframe).to.eql(pm.variables.get('timeframe'));",
+                  "  pm.expect(body.count).to.eql(body.candles.length);",
+                  "});",
+                  "pm.test('Candles are chronological', function () {",
+                  "  const candles = pm.response.json().candles;",
+                  "  for (let index = 1; index < candles.length; index += 1) {",
+                  "    pm.expect(new Date(candles[index].open_time).getTime()).to.be.at.least(new Date(candles[index - 1].open_time).getTime());",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject invalid candle range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/candles?start=2026-09-23T00:00:00Z&end=2026-09-22T00:00:00Z",
+            "description": "Negative test: start is after end and must be rejected."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Explains the date error', function () { pm.expect(pm.response.json().detail).to.eql('start must be before end'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backend - Historical Ingestion",
+      "description": "Warning: this request calls the configured provider and writes raw files, Parquet files, candles, and a quality report. Kraken is the default. The request covers one hour of 5m candles.",
+      "item": [
+        {
+          "name": "Ingest historical candles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"{{symbol}}\",\n  \"timeframes\": [\"{{timeframe}}\"],\n  \"start\": \"{{ingestStart}}\",\n  \"end\": \"{{ingestEnd}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{backendBaseUrl}}/api/v1/market-data/ingest",
+            "description": "Synchronous historical ingestion. The range must be timezone-aware, start before end, and no longer than 31 days."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns one ingestion result', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.be.an('array').with.lengthOf(1);",
+                  "  pm.expect(body[0]).to.include.all.keys('symbol', 'timeframe', 'fetched', 'stored', 'duplicates', 'missing', 'invalid', 'anomalies', 'passed', 'quality_report_id', 'raw_file', 'parquet_files');",
+                  "  pm.expect(body[0].symbol).to.eql(pm.variables.get('symbol').replace('/', '').toUpperCase());",
+                  "  pm.expect(body[0].timeframe).to.eql(pm.variables.get('timeframe'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject ingestion over 31 days",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"BTCUSDT\",\n  \"timeframes\": [\"5m\"],\n  \"start\": \"2026-07-01T00:00:00Z\",\n  \"end\": \"2026-09-01T00:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{backendBaseUrl}}/api/v1/market-data/ingest",
+            "description": "Negative test: verifies the HTTP ingestion range limit before any provider request or storage write."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Explains the 31-day limit', function () { pm.expect(pm.response.json().detail).to.include('limited to 31 days'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backend - Generated Documentation",
+      "item": [
+        {
+          "name": "OpenAPI schema",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/openapi.json",
+            "description": "Machine-readable OpenAPI 3.1 schema for the HTTP API. WebSocket routes are not included in OpenAPI."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('OpenAPI schema includes project routes', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.openapi).to.match(/^3\\./);",
+                  "  pm.expect(body.paths).to.have.property('/health');",
+                  "  pm.expect(body.paths).to.have.property('/api/v1/system/status');",
+                  "  pm.expect(body.paths).to.have.property('/api/v1/candles');",
+                  "  pm.expect(body.paths).to.have.property('/api/v1/market-data/ingest');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/docs",
+            "description": "Interactive Swagger UI generated by FastAPI."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns Swagger HTML', function () { pm.expect(pm.response.text()).to.include('swagger-ui'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Swagger OAuth2 redirect helper",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/docs/oauth2-redirect",
+            "description": "FastAPI's generated Swagger OAuth2 callback helper. The project currently has no authentication scheme."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns OAuth redirect HTML', function () { pm.expect(pm.response.text().toLowerCase()).to.include('oauth2'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ReDoc",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/redoc",
+            "description": "Read-only ReDoc rendering of the OpenAPI schema."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns ReDoc HTML', function () { pm.expect(pm.response.text().toLowerCase()).to.include('redoc'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frontend Reverse-Proxy URLs",
+      "description": "These same-origin aliases require an active frontend reverse proxy. The repository contains proxy configuration, but the current frontend Dockerfile runs Vite preview rather than Nginx; failures here expose that deployment mismatch.",
+      "item": [
+        {
+          "name": "Proxied health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{frontendBaseUrl}}/health",
+            "description": "Expected to proxy to backend GET /health when the reverse proxy is active."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Proxy returns backend JSON', function () { pm.expect(pm.response.json()).to.deep.equal({ status: 'ok' }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Proxied system status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{frontendBaseUrl}}/api/v1/system/status",
+            "description": "Same-origin URL used by the frontend status hook."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Proxy returns status JSON', function () { const body = pm.response.json(); pm.expect(body).to.have.all.keys('status', 'api', 'database', 'redis'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Proxied candles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{frontendBaseUrl}}/api/v1/candles?symbol={{symbol}}&timeframe={{timeframe}}&limit=10",
+            "description": "Same-origin URL used by the frontend chart."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Proxy returns candle JSON', function () { const body = pm.response.json(); pm.expect(body.candles).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "External Dependencies",
+      "description": "Direct checks of URLs called by backend or frontend code. These require internet access and may be affected by provider availability, geolocation rules, or rate limits.",
+      "item": [
+        {
+          "name": "Kraken recent OHLC candles",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const since = Math.floor(Date.now() / 1000) - (60 * 60);",
+                  "pm.variables.set('krakenSince', String(since));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns Kraken OHLC data', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.error).to.deep.equal([]);",
+                  "  pm.expect(body.result).to.have.property('BTC/USDT');",
+                  "  pm.expect(body.result['BTC/USDT']).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{krakenRestBaseUrl}}/0/public/OHLC?pair=BTC%2FUSDT&interval=5&since={{krakenSince}}&assetVersion=1",
+            "description": "Current default historical candle source. Kraken returns at most 720 recent candles."
+          }
+        },
+        {
+          "name": "Kraken order book",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{krakenRestBaseUrl}}/0/public/Depth?pair=BTC%2FUSDT&count=100&assetVersion=1",
+            "description": "Default provider order-book endpoint implemented by KrakenMarketDataProvider.get_order_book()."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns a Kraken order book', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.error).to.deep.equal([]);",
+                  "  pm.expect(body.result).to.have.property('BTC/USDT');",
+                  "  pm.expect(body.result['BTC/USDT'].bids).to.be.an('array');",
+                  "  pm.expect(body.result['BTC/USDT'].asks).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Binance recent klines",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const endTime = Date.now();",
+                  "const startTime = endTime - (60 * 60 * 1000);",
+                  "pm.variables.set('binanceStartTime', String(startTime));",
+                  "pm.variables.set('binanceEndTime', String(endTime));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns Binance kline arrays', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.be.an('array');",
+                  "  if (body.length > 0) { pm.expect(body[0]).to.be.an('array'); pm.expect(body[0].length).to.be.at.least(11); }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{binanceRestBaseUrl}}/api/v3/klines?symbol={{symbol}}&interval={{timeframe}}&startTime={{binanceStartTime}}&endTime={{binanceEndTime}}&limit=1000",
+            "description": "The backend historical provider uses this Binance Spot endpoint and paginates it. Times are generated for the most recent hour before each request."
+          }
+        },
+        {
+          "name": "Binance order book",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{binanceRestBaseUrl}}/api/v3/depth?symbol={{symbol}}&limit=100",
+            "description": "Implemented by BinanceMarketDataProvider.get_order_book(), although no project HTTP route currently exposes it."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns an order book', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.lastUpdateId).to.be.a('number');",
+                  "  pm.expect(body.bids).to.be.an('array');",
+                  "  pm.expect(body.asks).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Google Fonts stylesheet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/css,*/*;q=0.1"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Mozilla/5.0 Postman BTCBot URL test"
+              }
+            ],
+            "url": "{{googleFontsBaseUrl}}/css2?family=IBM%20Plex%20Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap",
+            "description": "Stylesheet imported by frontend/src/styles.css. The response references browser-specific font files on fonts.gstatic.com."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Returns font CSS', function () { const text = pm.response.text(); pm.expect(text).to.include('@font-face'); pm.expect(text).to.match(/Inter|IBM Plex Mono/); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WebSocket Requests",
+      "description": "Import BTCBot-WebSockets.asyncapi.yaml into Postman to create WebSocket requests for the local normalized stream, the default Kraken OHLC stream, and the optional Binance kline stream. Postman keeps WebSocket requests in a multi-protocol collection rather than this HTTP collection.",
+      "item": []
+    }
+  ]
+}

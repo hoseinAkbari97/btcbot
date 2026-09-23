@@ -1,7 +1,7 @@
 # BTC Quant Research Platform
 
 A research-first BTC/USDT market-data platform implementing Phase 0 and Phase 1 of
-[`btc_quant_trading_project.md`](btc_quant_trading_project.md). It downloads public Binance Spot
+[`btc_quant_trading_project.md`](btc_quant_trading_project.md). It downloads public exchange
 candles, preserves the raw response, validates and normalizes UTC data, stores it in PostgreSQL
 and Parquet, exposes a REST/WebSocket API, and renders a professional candlestick dashboard.
 
@@ -47,7 +47,7 @@ The system follows Phase 0 + Phase 1 of the project specification:
 
 ### Market Data Infrastructure
 - Replaceable `MarketDataProvider` abstraction
-- Binance Spot public REST and kline WebSocket adapter
+- Kraken Spot REST and OHLC WebSocket adapter by default, with optional Binance support
 - Paginated historical ingestion for `5m`, `15m`, `1h`, `4h`, and `1d` candles
 - Immutable raw JSON captures and normalized Parquet files
 - UTC normalization with deterministic validation
@@ -68,7 +68,7 @@ The system follows Phase 0 + Phase 1 of the project specification:
 ## Key Features
 
 ### Backend
-- Historical data ingestion from public Binance endpoints
+- Historical data ingestion from configurable public exchange endpoints
 - RESTful API for querying candles across all timeframes
 - WebSocket bridge for real-time candle updates
 - Comprehensive data validation and quality reporting

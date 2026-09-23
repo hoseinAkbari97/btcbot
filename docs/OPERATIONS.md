@@ -329,7 +329,7 @@ The platform is ready for Phase 2 (professional market chart) after successful v
 - Docker Compose setup with PostgreSQL and Redis
 - FastAPI backend with health and status endpoints
 - PostgreSQL database schema with Alembic migrations
-- Binance market data provider
+- Kraken market data provider by default, with optional Binance selection
 - Professional trading terminal frontend
 - Data validation and quality reporting
 - Comprehensive test coverage

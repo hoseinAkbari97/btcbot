@@ -72,3 +72,25 @@ async def test_candle_api_rejects_invalid_date_range(db_session) -> None:
 
     assert response.status_code == 422
     assert response.json()["detail"] == "start must be before end"
+
+
+@pytest.mark.asyncio
+async def test_ingestion_api_accepts_flat_request_body() -> None:
+    app = create_app()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/market-data/ingest",
+            json={
+                "symbol": "BTCUSDT",
+                "timeframes": ["5m"],
+                "start": "2026-07-01T00:00:00Z",
+                "end": "2026-09-01T00:00:00Z",
+            },
+        )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == (
+        "API ingestion is limited to 31 days; use the CLI for larger backfills"
+    )

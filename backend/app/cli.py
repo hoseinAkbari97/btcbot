@@ -7,8 +7,8 @@ from typing import Any
 from app.core.config import get_settings
 from app.core.database import SessionFactory
 from app.schemas.market_data import Timeframe
-from app.services.market_data.binance import BinanceMarketDataProvider
 from app.services.market_data.ingestion import HistoricalIngestionService
+from app.services.market_data.provider import create_market_data_provider
 from app.services.market_data.storage import ParquetCandleStore, RawDataStore
 
 
@@ -36,7 +36,7 @@ async def run_ingestion(args: argparse.Namespace) -> list[dict[str, Any]]:
     end = args.end or datetime.now(UTC)
     start = args.start or end - timedelta(days=args.days)
     timeframes = [Timeframe(value.strip()) for value in args.timeframes.split(",")]
-    provider = BinanceMarketDataProvider()
+    provider = create_market_data_provider(settings)
     output: list[dict[str, Any]] = []
 
     async with SessionFactory() as session:

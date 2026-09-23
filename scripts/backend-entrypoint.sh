@@ -2,6 +2,9 @@
 set -eu
 
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
-  alembic upgrade head
+  (
+    cd "${BACKEND_DIR:-/app/backend}"
+    alembic upgrade head
+  )
 fi
 exec "$@"

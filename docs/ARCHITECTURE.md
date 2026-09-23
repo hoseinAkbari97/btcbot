@@ -9,10 +9,10 @@ news, account connectivity, and execution.
 ## Component flow
 
 ```text
-Binance public REST                  Binance public WebSocket
+Kraken public REST                   Kraken public WebSocket
         |                                      |
         v                                      v
-BinanceMarketDataProvider <---- MarketDataProvider interface
+KrakenMarketDataProvider  <---- MarketDataProvider interface
         |                                      |
         | raw pages + normalized DTOs           | candle updates
         v                                      v
@@ -36,17 +36,18 @@ REST candle API --> React terminal
 
 ### Provider isolation
 
-`MarketDataProvider` is the only contract ingestion and streaming depend on. Binance response
-shapes and interval conventions are contained in `BinanceMarketDataProvider`. A CSV, Parquet, or
-second exchange adapter can be added without changing validation, persistence, APIs, or the UI.
+`MarketDataProvider` is the only contract ingestion and streaming depend on. Exchange response
+shapes and interval conventions are contained in provider-specific adapters. Kraken is the default
+because Binance returns HTTP 451 from the current deployment region; Binance remains selectable with
+`MARKET_DATA_PROVIDER=binance`.
 
-The adapter uses public Binance Spot market-data interfaces only:
+The default adapter uses public Kraken Spot market-data interfaces only:
 
-- REST `GET /api/v3/klines` for historical klines
-- WebSocket `<symbol>@kline_<interval>` for current candle updates
-- REST `GET /api/v3/depth` as the order-book interface foundation
+- REST `GET /0/public/OHLC` for historical candles
+- WebSocket v2 `ohlc` subscriptions for current candle updates
+- REST `GET /0/public/Depth` as the order-book interface foundation
 
-The contracts were checked against the official Binance developer documentation on 2026-09-22.
+The Kraken contracts were checked against official developer documentation on 2026-09-23.
 Provider behavior should be rechecked before any material integration change.
 
 ### Raw-before-derived storage
@@ -120,4 +121,3 @@ avoiding provider details and credentials in browser code.
 - Add quality-report API/UI on the existing persisted schema.
 - Add dataset manifests/checksums before formal experiment tracking.
 - Add trades and order books using their existing catalog/provenance relationships.
-

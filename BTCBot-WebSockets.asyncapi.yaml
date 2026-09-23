@@ -1,0 +1,349 @@
+asyncapi: 2.6.0
+info:
+  title: BTCBot WebSocket Requests
+  version: 0.1.0
+  description: >-
+    Import this specification into Postman to create WebSocket requests for the
+    project's normalized candle stream and its Kraken and Binance upstream streams.
+
+servers:
+  localBackend:
+    url: localhost:8000
+    protocol: ws
+    description: Direct local FastAPI backend
+  frontendProxy:
+    url: localhost:3000
+    protocol: ws
+    description: Frontend same-origin proxy; requires an active WebSocket reverse proxy
+  kraken:
+    url: ws.kraken.com
+    protocol: wss
+    description: Kraken Spot WebSocket v2 API
+  binance:
+    url: stream.binance.com:9443/ws
+    protocol: wss
+    description: Binance Spot public WebSocket API
+
+channels:
+  /api/v1/ws/candles/{symbol}/{timeframe}:
+    description: Normalized live candle stream exposed by BTCBot
+    servers:
+      - localBackend
+      - frontendProxy
+    parameters:
+      symbol:
+        description: Market symbol, with BTCUSDT used by the frontend
+        schema:
+          type: string
+          default: BTCUSDT
+          example: BTCUSDT
+      timeframe:
+        description: Supported candle interval
+        schema:
+          type: string
+          enum:
+            - 5m
+            - 15m
+            - 1h
+            - 4h
+            - 1d
+          default: 5m
+          example: 5m
+    subscribe:
+      operationId: receiveNormalizedCandles
+      summary: Receive normalized candle updates
+      message:
+        $ref: '#/components/messages/NormalizedCandle'
+
+  /{stream}:
+    description: Binance public kline stream used by the backend provider
+    servers:
+      - binance
+    parameters:
+      stream:
+        description: Lowercase symbol and Binance kline interval
+        schema:
+          type: string
+          default: btcusdt@kline_5m
+          example: btcusdt@kline_5m
+    subscribe:
+      operationId: receiveBinanceKlines
+      summary: Receive raw Binance kline updates
+      message:
+        $ref: '#/components/messages/BinanceKline'
+
+  /v2:
+    description: Kraken WebSocket v2 endpoint used by the default backend provider
+    servers:
+      - kraken
+    publish:
+      operationId: subscribeKrakenOhlc
+      summary: Send an OHLC subscription request
+      message:
+        $ref: '#/components/messages/KrakenSubscribe'
+    subscribe:
+      operationId: receiveKrakenOhlc
+      summary: Receive raw Kraken OHLC updates
+      message:
+        $ref: '#/components/messages/KrakenOhlc'
+
+components:
+  messages:
+    NormalizedCandle:
+      name: NormalizedCandle
+      title: BTCBot normalized candle update
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/NormalizedCandlePayload'
+      examples:
+        - payload:
+            symbol: BTCUSDT
+            timeframe: 5m
+            open_time: '2026-09-23T12:00:00Z'
+            close_time: '2026-09-23T12:04:59.999000Z'
+            open: '113020.40'
+            high: '113105.00'
+            low: '112980.10'
+            close: '113080.75'
+            volume: '7.415'
+            quote_volume: '838401.82'
+            trade_count: 1734
+            taker_buy_base_volume: '4.021'
+            taker_buy_quote_volume: '454690.16'
+            is_closed: false
+
+    BinanceKline:
+      name: BinanceKline
+      title: Raw Binance kline update
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BinanceKlinePayload'
+      examples:
+        - payload:
+            e: kline
+            s: BTCUSDT
+            k:
+              t: 1790164800000
+              T: 1790165099999
+              s: BTCUSDT
+              i: 5m
+              o: '113020.40'
+              c: '113080.75'
+              h: '113105.00'
+              l: '112980.10'
+              v: '7.415'
+              n: 1734
+              x: false
+              q: '838401.82'
+              V: '4.021'
+              Q: '454690.16'
+
+    KrakenSubscribe:
+      name: KrakenSubscribe
+      title: Kraken OHLC subscription
+      contentType: application/json
+      payload:
+        type: object
+        additionalProperties: false
+        required:
+          - method
+          - params
+        properties:
+          method:
+            type: string
+            const: subscribe
+          params:
+            type: object
+            additionalProperties: false
+            required:
+              - channel
+              - symbol
+              - interval
+            properties:
+              channel:
+                type: string
+                const: ohlc
+              symbol:
+                type: array
+                items:
+                  type: string
+                default:
+                  - BTC/USDT
+              interval:
+                type: integer
+                default: 5
+              snapshot:
+                type: boolean
+                default: true
+
+    KrakenOhlc:
+      name: KrakenOhlc
+      title: Raw Kraken OHLC update
+      contentType: application/json
+      payload:
+        type: object
+        additionalProperties: true
+        required:
+          - channel
+          - type
+          - data
+        properties:
+          channel:
+            type: string
+            const: ohlc
+          type:
+            type: string
+            enum:
+              - snapshot
+              - update
+          data:
+            type: array
+            items:
+              type: object
+              additionalProperties: true
+              required:
+                - symbol
+                - open
+                - high
+                - low
+                - close
+                - volume
+                - trades
+                - interval_begin
+              properties:
+                symbol:
+                  type: string
+                open:
+                  type: number
+                high:
+                  type: number
+                low:
+                  type: number
+                close:
+                  type: number
+                volume:
+                  type: number
+                trades:
+                  type: integer
+                interval_begin:
+                  type: string
+                  format: date-time
+
+  schemas:
+    DecimalValue:
+      oneOf:
+        - type: string
+        - type: number
+
+    NormalizedCandlePayload:
+      type: object
+      additionalProperties: false
+      required:
+        - symbol
+        - timeframe
+        - open_time
+        - close_time
+        - open
+        - high
+        - low
+        - close
+        - volume
+        - is_closed
+      properties:
+        symbol:
+          type: string
+        timeframe:
+          type: string
+          enum:
+            - 5m
+            - 15m
+            - 1h
+            - 4h
+            - 1d
+        open_time:
+          type: string
+          format: date-time
+        close_time:
+          type: string
+          format: date-time
+        open:
+          $ref: '#/components/schemas/DecimalValue'
+        high:
+          $ref: '#/components/schemas/DecimalValue'
+        low:
+          $ref: '#/components/schemas/DecimalValue'
+        close:
+          $ref: '#/components/schemas/DecimalValue'
+        volume:
+          $ref: '#/components/schemas/DecimalValue'
+        quote_volume:
+          $ref: '#/components/schemas/DecimalValue'
+        trade_count:
+          type: integer
+        taker_buy_base_volume:
+          $ref: '#/components/schemas/DecimalValue'
+        taker_buy_quote_volume:
+          $ref: '#/components/schemas/DecimalValue'
+        is_closed:
+          type: boolean
+
+    BinanceKlinePayload:
+      type: object
+      additionalProperties: true
+      required:
+        - e
+        - s
+        - k
+      properties:
+        e:
+          type: string
+          const: kline
+        s:
+          type: string
+        k:
+          type: object
+          additionalProperties: true
+          required:
+            - t
+            - T
+            - s
+            - i
+            - o
+            - c
+            - h
+            - l
+            - v
+            - n
+            - x
+            - q
+            - V
+            - Q
+          properties:
+            t:
+              type: integer
+            T:
+              type: integer
+            s:
+              type: string
+            i:
+              type: string
+            o:
+              type: string
+            c:
+              type: string
+            h:
+              type: string
+            l:
+              type: string
+            v:
+              type: string
+            n:
+              type: integer
+            x:
+              type: boolean
+            q:
+              type: string
+            V:
+              type: string
+            Q:
+              type: string
