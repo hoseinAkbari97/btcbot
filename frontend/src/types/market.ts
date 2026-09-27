@@ -31,3 +31,53 @@ export interface SystemStatus {
   redis: { status: "up" | "down"; detail?: string };
 }
 
+// ── Market Structure Types (Phase 2) ────────────────────────────────────────
+
+export type SwingKind = "high" | "low";
+
+export interface SwingPoint {
+  index: number;
+  timestamp: string;
+  price: string;
+  kind: SwingKind;
+}
+
+export type StructureEventType = "HH" | "HL" | "LH" | "LL" | "BOS" | "structure_shift";
+
+export interface StructureEvent {
+  timestamp: string;
+  price: string;
+  event_type: StructureEventType;
+  source_swing_idx: number | null;
+  confidence: number;
+}
+
+export type LiquidityLevelType =
+  | "swing_high"
+  | "swing_low"
+  | "equal_highs"
+  | "equal_lows"
+  | "range_high"
+  | "range_low";
+
+export interface LiquidityLevel {
+  price: string;
+  level_type: LiquidityLevelType;
+  strength: number;
+  first_seen: string;
+  last_seen: string;
+  touch_count: number;
+}
+
+export type MarketRegime = "TREND_UP" | "TREND_DOWN" | "RANGE" | "UNKNOWN";
+
+export interface MarketStructure {
+  symbol: string;
+  timeframe: string;
+  swings: SwingPoint[];
+  events: StructureEvent[];
+  liquidity_levels: LiquidityLevel[];
+  recent_range_high: string | null;
+  recent_range_low: string | null;
+  current_regime: MarketRegime;
+}

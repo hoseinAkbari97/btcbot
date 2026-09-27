@@ -1,6 +1,6 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **September 23, 2026**
+Last reviewed: **September 27, 2026**
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
 Examples are illustrative; database contents, generated IDs, timestamps, and output file names vary at
@@ -714,12 +714,88 @@ response with `status: "degraded"`.
 - There are no trading, order execution, account, authentication, quality-report retrieval, or trade
   retrieval HTTP routes in the current application.
 
+### `GET /api/v1/structure/analyze`
+
+Direct URL: `http://localhost:8000/api/v1/structure/analyze`
+
+Frontend-proxy form: `http://localhost:3000/api/v1/structure/analyze`
+
+This endpoint returns a market-structure analysis for the most recent candles of the requested
+symbol and timeframe. It detects swing highs/lows, classifies them as HH/HL/LH/LL, identifies
+breaks of structure (BOS) and structure shifts, and derives objective liquidity levels.
+
+Query parameters:
+
+| Parameter | Required | Default | Rules and behavior |
+|---|---:|---|---|
+| `symbol` | No | `BTCUSDT` | 6–20 letters, digits, or `/`; slash form is normalized to uppercase with `/` removed. |
+| `timeframe` | No | `5m` | One of `5m`, `15m`, `1h`, `4h`, or `1d`. |
+| `limit` | No | `500` | Integer from 50 through 2000 candles used for analysis. |
+
+Example request:
+
+```bash
+curl "http://localhost:8000/api/v1/structure/analyze?symbol=BTCUSDT&timeframe=15m&limit=500"
+```
+
+Example response — `200 OK`:
+
+```json
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "15m",
+  "swings": [
+    {
+      "index": 42,
+      "timestamp": "2026-09-26T08:00:00Z",
+      "price": "112450.50",
+      "kind": "low"
+    }
+  ],
+  "events": [
+    {
+      "timestamp": "2026-09-26T08:15:00Z",
+      "price": "112680.00",
+      "event_type": "HH",
+      "source_swing_idx": 42,
+      "confidence": 0.9
+    }
+  ],
+  "liquidity_levels": [
+    {
+      "price": "112000",
+      "level_type": "swing_low",
+      "strength": 0.72,
+      "first_seen": "2026-09-20T00:00:00Z",
+      "last_seen": "2026-09-26T08:00:00Z",
+      "touch_count": 5
+    }
+  ],
+  "recent_range_high": "113200.00",
+  "recent_range_low": "111800.00",
+  "current_regime": "TREND_UP"
+}
+```
+
+An empty result is valid and returns empty arrays with `current_regime: "UNKNOWN"`.
+
 ## Source Locations
 
 - Frontend page route: `frontend/src/App.tsx`
 - Frontend API URL construction: `frontend/src/services/api.ts`
 - Backend health routes: `backend/app/api/routes/health.py`
 - Backend market-data routes: `backend/app/api/routes/market_data.py`
+- Backend market-structure routes: `backend/app/api/routes/market_structure.py`
+- Backend market-structure service: `backend/app/services/market_structure/analysis.py`
+- Market structure schemas: `backend/app/schemas/market_structure.py`
+- Frontend chart overlay components:
+  - `frontend/src/components/SwingHighLowMarkers.tsx`
+  - `frontend/src/components/StructureShifts.tsx`
+  - `frontend/src/components/LiquidityZones.tsx`
+  - `frontend/src/components/SetupMarkers.tsx`
+- Chart feature utilities: `frontend/src/services/chart-features.ts`
+- Main chart component: `frontend/src/charts/MarketChart.tsx`
+- Frontend market-structure types: `frontend/src/types/market.ts`
 - Request and response schemas: `backend/app/schemas/market_data.py`
 - Default Kraken outbound URLs: `backend/app/services/market_data/kraken.py`
 - Optional Binance outbound URLs: `backend/app/services/market_data/binance.py`

@@ -25,4 +25,5 @@ def test_parquet_store_is_partitioned_and_readable(tmp_path) -> None:
     assert "symbol=BTCUSDT/timeframe=5m/year=2024/month=01" in str(paths[0])
     table = pq.read_table(paths[0])
     assert table.num_rows == 2
-    assert table.column("symbol").to_pylist() == ["BTCUSDT", "BTCUSDT"]
+    # symbol is encoded in the Hive partition path, not in the parquet file columns
+    assert table.column("open_time").to_pylist()[0].year == 2024

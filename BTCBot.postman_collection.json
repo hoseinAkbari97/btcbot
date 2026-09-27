@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "c8b436d8-75d4-49c7-a807-cd77ef29cb4d",
     "name": "BTCBot - Frontend, Backend, and Upstream URLs",
-    "description": "Tests the HTTP URLs documented in URL_CATALOG.md. Import BTCBot-WebSockets.asyncapi.yaml separately for WebSocket testing because Postman HTTP collections and multi-protocol WebSocket collections use different collection types. The historical-ingestion request writes data and calls the configured market-data provider; review its dates before sending it.",
+    "description": "Tests the HTTP URLs documented in URL_CATALOG.md. Import BTCBot-WebSockets.asyncapi.yaml separately for WebSocket testing because Postman HTTP collections and multi-protocol WebSocket collections use different collection types. Phase 2 added market-structure analysis (swings, BOS, liquidity levels) via GET /api/v1/structure/analyze. The historical-ingestion request writes data and calls the configured market-data provider; review its dates before sending it.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -382,6 +382,88 @@
       ]
     },
     {
+      "name": "Backend - Market Structure (Phase 2)",
+      "description": "Market-structure analysis: swing detection, HH/HL/LH/LL classification, BOS, structure shifts, liquidity levels, and regime.",
+      "item": [
+        {
+          "name": "Analyze market structure",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/structure/analyze?symbol={{symbol}}&timeframe={{timeframe}}&limit=500",
+            "description": "Returns swings, events (HH/HL/LH/LL/BOS/structure_shift), liquidity levels, range bounds, and current regime for the most recent candles."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has required top-level keys', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.all.keys('symbol', 'timeframe', 'swings', 'events', 'liquidity_levels', 'recent_range_high', 'recent_range_low', 'current_regime');",
+                  "  pm.expect(body.symbol).to.eql(pm.variables.get('symbol').replace('/', '').toUpperCase());",
+                  "  pm.expect(body.timeframe).to.eql(pm.variables.get('timeframe'));",
+                  "  pm.expect(body.swings).to.be.an('array');",
+                  "  pm.expect(body.events).to.be.an('array');",
+                  "  pm.expect(body.liquidity_levels).to.be.an('array');",
+                  "  pm.expect(body.current_regime).to.be.oneOf(['TREND_UP', 'TREND_DOWN', 'RANGE', 'UNKNOWN']);",
+                  "});",
+                  "pm.test('Swing points have expected shape', function () {",
+                  "  const body = pm.response.json();",
+                  "  if (body.swings.length > 0) {",
+                  "    const s = body.swings[0];",
+                  "    pm.expect(s).to.include.all.keys('index', 'timestamp', 'price', 'kind');",
+                  "    pm.expect(s.kind).to.be.oneOf(['high', 'low']);",
+                  "  }",
+                  "});",
+                  "pm.test('Events have expected shape', function () {",
+                  "  const body = pm.response.json();",
+                  "  if (body.events.length > 0) {",
+                  "    const e = body.events[0];",
+                  "    pm.expect(e).to.include.all.keys('timestamp', 'price', 'event_type', 'confidence');",
+                  "    pm.expect(e.event_type).to.be.oneOf(['HH', 'HL', 'LH', 'LL', 'BOS', 'structure_shift']);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject structure analyze with limit too low",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{backendBaseUrl}}/api/v1/structure/analyze?limit=10",
+            "description": "Negative test: limit below the minimum of 50 must be rejected."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Backend - Generated Documentation",
       "item": [
         {
@@ -411,6 +493,7 @@
                   "  pm.expect(body.paths).to.have.property('/api/v1/system/status');",
                   "  pm.expect(body.paths).to.have.property('/api/v1/candles');",
                   "  pm.expect(body.paths).to.have.property('/api/v1/market-data/ingest');",
+                  "  pm.expect(body.paths).to.have.property('/api/v1/structure/analyze');",
                   "});"
                 ]
               }

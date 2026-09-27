@@ -1,10 +1,31 @@
 asyncapi: 2.6.0
+x-structured-http-endpoints:
+  - method: GET
+    path: /api/v1/structure/analyze
+    description: Market-structure analysis — swings, BOS, liquidity levels, regime. HTTP-only, not a WebSocket channel.
+    queryParameters:
+      symbol:
+        type: string
+        default: BTCUSDT
+        pattern: "^[A-Za-z0-9/]{6,20}$"
+      timeframe:
+        type: string
+        default: 5m
+        enum: [5m, 15m, 1h, 4h, 1d]
+      limit:
+        type: integer
+        default: 500
+        minimum: 50
+        maximum: 2000
 info:
   title: BTCBot WebSocket Requests
   version: 0.1.0
   description: >-
     Import this specification into Postman to create WebSocket requests for the
     project's normalized candle stream and its Kraken and Binance upstream streams.
+    Note: GET /api/v1/structure/analyze (Phase 2 market-structure analysis) is an
+    HTTP-only endpoint and is not represented here. Test it via the HTTP Postman
+    collection or directly with curl.
 
 servers:
   localBackend:

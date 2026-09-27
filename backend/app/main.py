@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.health import router as health_router
 from app.api.routes.market_data import router as market_data_router
+from app.api.routes.market_structure import router as market_structure_router
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 
@@ -36,6 +37,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.include_router(health_router)
     application.include_router(market_data_router)
+    application.include_router(market_structure_router)
     return application
 
 

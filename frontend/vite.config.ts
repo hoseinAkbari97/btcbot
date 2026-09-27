@@ -5,6 +5,14 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Proxy target: uses VITE_PROXY_TARGET when set (e.g. in docker-compose),
+// otherwise falls back to localhost since the backend container publishes
+// port 8000 to 0.0.0.0:8000 and is reachable from the WSL2 host.
+const proxyTarget =
+  typeof process.env.VITE_PROXY_TARGET !== "undefined"
+    ? process.env.VITE_PROXY_TARGET
+    : "http://127.0.0.1:8000";
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -16,11 +24,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://backend:8000", // Use service name 'backend' in Docker Compose
+        target: proxyTarget,
         changeOrigin: true,
         ws: true,
       },
-      "/health": "http://backend:8000",
+      "/health": proxyTarget,
     },
   },
 });

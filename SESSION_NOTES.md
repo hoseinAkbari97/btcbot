@@ -18,11 +18,27 @@
 - Comprehensive testing
 - Documentation
 
-✅ **Phase 2 Ready for Review**
-- Professional market chart implementation
-- Setup detection and market structure analysis
-- Risk engine integration
-- ML trade filter preparation
+✅ **Phase 2 Implementation Complete**
+- Professional market chart with zoom/pan, crosshair, OHLC tooltip, volume
+- Timeframe switching (5m, 15m, 1H, 4H, 1D)
+- Backend market-structure analysis service (`backend/app/services/market_structure/`)
+  - Swing high/low detection (configurable lookback window)
+  - HH/HL/LH/LL classification
+  - Break-of-Structure (BOS) detection
+  - Structure shift detection
+  - Objective liquidity level derivation from swing extrema
+  - Market regime classification (TREND_UP / TREND_DOWN / RANGE / UNKNOWN)
+- Backend API endpoint: `GET /api/v1/structure/analyze`
+- Frontend chart overlay components:
+  - `SwingHighLowMarkers` — arrow markers on swing highs/lows
+  - `StructureShifts` — shape-coded markers for HH/HL/LH/LL/BOS/shift
+  - `LiquidityZones` — dashed horizontal price lines for liquidity levels
+  - `SetupMarkers` — placeholder for future Phase 3+ setup engine
+- Overlay toggle controls in chart toolbar (Swings / Structure / Liquidity)
+- Regime badge displayed in OHLC strip
+- TypeScript types for all structure data
+- All 17 backend tests passing
+- Frontend builds cleanly
 
 ## System Architecture
 
@@ -166,14 +182,14 @@ Each ingestion creates a persistent record with:
 - 1-hour data: ~24 candles/day
 - Daily data: ~1 candle/day
 
-## Next Steps (Phase 2)
+## Next Steps (Phase 3+)
 
 ### Immediate Priorities
-1. **Professional Market Chart** - Advanced chart with overlays
-2. **Setup Detection** - Liquidity sweep, structure shift identification
-3. **Market Structure** - HH/HL/LH/LL pattern recognition
-4. **Risk Engine** - Position sizing and risk management
-5. **Baseline Strategies** - Buy & hold, random, trend, breakout
+1. **Baseline Strategies** - Buy & hold, random, simple trend, simple breakout (Phase 3)
+2. **Event-Driven Backtesting Engine** - Simulate entries, exits, SL, TP, fees, slippage (Phase 4)
+3. **Setup Statistics Research** - MFE, MAE, R-distribution for detected setups (Phase 11)
+4. **ML Trade Filter** - Logistic regression / XGBoost to filter setups (Phase 13)
+5. **Walk-Forward Validation** - Chronological train/validate/test splits (Phase 14)
 
 ### Architecture Considerations
 - Extension points for new providers
