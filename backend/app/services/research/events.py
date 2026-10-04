@@ -111,6 +111,50 @@ class ResearchEvent:
             **{key: str(value) for key, value in self.features.items()},
         }
 
+    def to_payload(self) -> dict:
+        """A JSON-safe dict that :meth:`from_payload` turns back into an event.
+
+        Distinct from :meth:`as_row` on purpose: a row is flattened for a table
+        and is lossy about types, while this is what a checkpoint stores and must
+        round-trip *exactly*. ``Decimal`` is kept as a string rather than a float
+        because a sweep's price is compared against later bars -- at float
+        precision a level and the price that swept it can stop being equal, and
+        the level then looks perpetually unswept.
+        """
+        return {
+            "kind": self.kind,
+            "detector": self.detector,
+            "event_index": self.event_index,
+            "event_time": self.event_time.isoformat(),
+            "confirmation_index": self.confirmation_index,
+            "confirmation_time": (
+                self.confirmation_time.isoformat() if self.confirmation_time else None
+            ),
+            "price": str(self.price),
+            "features": {key: str(value) for key, value in self.features.items()},
+            "context": self.context,
+        }
+
+    @classmethod
+    def from_payload(cls, payload: dict) -> ResearchEvent:
+        return cls(
+            kind=payload["kind"],
+            detector=payload["detector"],
+            event_index=int(payload["event_index"]),
+            event_time=datetime.fromisoformat(payload["event_time"]),
+            confirmation_index=int(payload["confirmation_index"]),
+            confirmation_time=(
+                datetime.fromisoformat(payload["confirmation_time"])
+                if payload.get("confirmation_time")
+                else None
+            ),
+            price=Decimal(payload["price"]),
+            features={
+                key: Decimal(value) for key, value in payload.get("features", {}).items()
+            },
+            context=dict(payload.get("context", {})),
+        )
+
 
 # ---------------------------------------------------------------------------
 # Detectors
@@ -222,12 +266,36 @@ class SweepCarried:
     #: found beyond after having been back inside.
     swept: dict[tuple[int, str, str], int] = field(default_factory=dict)
 
+    #: Sweeps found on a window's last bar, whose confirmation bar has not
+    #: printed yet. A sweep is confirmed by the *next* bar's open, so a sweep on
+    #: the last bar of a window cannot be reported until the next window supplies
+    #: that bar. Emitting it immediately pins ``confirmation_index`` to the
+    #: window's own last bar, and every boundary in a segmented run then reports
+    #: its last sweep one bar early -- which is exactly the kind of difference
+    #: that makes a segmented event log disagree with a continuous one while
+    #: every individual event still looks right.
+    pending: list[dict] = field(default_factory=list)
+
+    #: The window's own first bar needs the bar *before* it to build its
+    #: candidate band, and at ``candles[0]`` there is none in hand -- indexing
+    #: ``candles[-1]`` would silently read the window's *last* bar instead and
+    #: band every bar between the two. Only ``high`` and ``low`` are kept,
+    #: because those are all the band needs; carrying the whole bar would mean
+    #: carrying a slice of history across every boundary.
+    previous_bar: tuple[str, str] | None = None
+
     @staticmethod
     def key(level: LiquidityLevel) -> tuple[int, str, str]:
         return (level.creation_index, level.level_type, str(level.price))
 
     def to_payload(self) -> dict:
-        return {"swept": [[list(key), bar] for key, bar in sorted(self.swept.items())]}
+        return {
+            "swept": [[list(key), bar] for key, bar in sorted(self.swept.items())],
+            "pending": list(self.pending),
+            "previous_bar": (
+                list(self.previous_bar) if self.previous_bar is not None else None
+            ),
+        }
 
     @classmethod
     def from_payload(cls, payload: dict | None) -> SweepCarried:
@@ -237,7 +305,13 @@ class SweepCarried:
             swept={
                 (int(key[0]), str(key[1]), str(key[2])): int(bar)
                 for key, bar in payload["swept"]
-            }
+            },
+            pending=[dict(item) for item in payload.get("pending", [])],
+            previous_bar=(
+                tuple(payload["previous_bar"])  # type: ignore[arg-type]
+                if payload.get("previous_bar") is not None
+                else None
+            ),
         )
 
 
@@ -275,7 +349,12 @@ def detect_liquidity_sweeps(
     :param carried: sweep state from the previous window, mutated in place. The
         "already swept" set spans arbitrary bar distances -- a level crossed in
         January and revisited in June is the same level -- so it cannot be
-        rebuilt from a window and must be handed over explicitly.
+        rebuilt from a window and must be handed over explicitly. It also carries
+        the previous window's *unconfirmed* last-bar sweeps, which this window
+        resolves against its own first bar.
+    :param final: whether this window ends the series. Only the final window may
+        report a sweep on its own last bar, whose confirmation bar the dataset no
+        longer contains; every other window defers it. See :attr:`SweepCarried.pending`.
     """
     if levels is None:
         if result is None:
@@ -294,6 +373,30 @@ def detect_liquidity_sweeps(
         return []
 
     events: list[ResearchEvent] = []
+    state = carried if carried is not None else SweepCarried()
+
+    # Resolve what the previous window left pending. Its last bar is this
+    # window's bar ``offset``, so the confirmation price and time are available
+    # now and were not available then.
+    if state.pending:
+        first = candles[0]
+        for payload in state.pending:
+            events.append(
+                ResearchEvent.from_payload(
+                    {
+                        **payload,
+                        "confirmation_index": offset,
+                        # Close of the confirmation bar, matching what
+                        # ``_sweep_event`` reads on the batch path. Using the open
+                        # here would make every deferred event differ from its
+                        # whole-series counterpart by the bar's own range -- a
+                        # small number that silently breaks equality.
+                        "confirmation_time": first.close_time.isoformat(),
+                        "price": str(first.close),
+                    }
+                )
+            )
+        state.pending.clear()
     # Levels are walked in creation order and a bar can only be swept by levels
     # that already existed when it opened — otherwise the "sweep" is the level
     # being created, which is a different phenomenon and is recorded as such by
@@ -313,7 +416,6 @@ def detect_liquidity_sweeps(
     #: once generates an event on every subsequent bar -- which on six thousand
     #: 1h bars produced over a million events instead of a few hundred, and made
     #: the detector both useless as a measurement and impossible to run.
-    state = carried if carried is not None else SweepCarried()
     swept = state.swept
     cursor = 0
     # The sweep on the final bar has no bar after it to be confirmed on, so it
@@ -321,13 +423,40 @@ def detect_liquidity_sweeps(
     # as though it could confirm something its own data ends before.
     #
     # Only the *final* window stops short. An intermediate window runs to its own
-    # last bar, whose sweep the next window confirms -- which is why an
-    # intermediate window is required to contain the series' final bar instead.
-    # Deferring the confirmation across the boundary rather than emitting it here
-    # would need the carried state to also hold unconfirmed events, and an event
-    # confirmed inside its own window is the simpler and less error-prone rule.
+    # last bar and stashes that bar's sweeps in ``state.pending`` for the next
+    # window to confirm -- the alternative, reporting them now against this
+    # window's last bar, is the bug that made a segmented run disagree with a
+    # continuous one by exactly one bar at every boundary.
     stop = len(candles) - 1 if final else len(candles)
-    for index in range(1, stop):
+    last_index = len(candles) - 1
+    # A window's first bar is a real bar and must be swept. The batch path
+    # cannot reach it either (``index`` starts at 1, because it has no previous
+    # bar), so both paths agree to leave it to whatever precedes the series --
+    # except in a segmented run, where the previous window supplies that bar and
+    # this one must evaluate it, or a whole segment's leading sweeps vanish
+    # silently at every boundary.
+    start_index = 0 if state.previous_bar is not None else 1
+    if offset == 0:
+        # The dataset's own first bar is skipped by the batch path, so a windowed
+        # run must skip it too or it would report events the batch path cannot.
+        start_index = 1
+    previous_high = Decimal(state.previous_bar[0]) if state.previous_bar else None
+    previous_low = Decimal(state.previous_bar[1]) if state.previous_bar else None
+
+    def emit(event: ResearchEvent) -> None:
+        """Report a sweep, or park it if its confirmation bar is not here yet.
+
+        A sweep on the window's own last bar is real -- the pierce and the close
+        back through the level are both on that bar -- but its confirmation is
+        the *next* bar's open, which this window does not contain. Parking it
+        keeps the event in the log with the right bar and lets the next window
+        fill in the price a decision could actually have acted on.
+        """
+        if not final and event.event_index == offset + last_index:
+            state.pending.append(event.to_payload())
+        else:
+            events.append(event)
+    for index in range(start_index, stop):
         absolute = offset + index
         while cursor < len(by_index) and by_index[cursor].creation_index < absolute:
             level = by_index[cursor]
@@ -348,12 +477,20 @@ def detect_liquidity_sweeps(
         previous_cut_high = (
             None
             if absolute == 0
-            else _previous_cut_from(candles[index - 1], level_tolerance, high=True)
+            else (
+                previous_high / (Decimal(1) + level_tolerance)
+                if index == 0
+                else _previous_cut_from(candles[index - 1], level_tolerance, high=True)
+            )
         )
         previous_cut_low = (
             None
             if absolute == 0
-            else _previous_cut_from(candles[index - 1], level_tolerance, high=False)
+            else (
+                previous_low / (Decimal(1) - level_tolerance)
+                if index == 0
+                else _previous_cut_from(candles[index - 1], level_tolerance, high=False)
+            )
         )
 
         # Re-arm first, and over *every* active level rather than the
@@ -406,7 +543,7 @@ def detect_liquidity_sweeps(
             if penetration < min_penetration:
                 continue
             close_back = candle.close < level.price
-            events.append(
+            emit(
                 _sweep_event(
                     candles,
                     index,
@@ -433,7 +570,7 @@ def detect_liquidity_sweeps(
             if penetration < min_penetration:
                 continue
             close_back = candle.close > level.price
-            events.append(
+            emit(
                 _sweep_event(
                     candles,
                     index,
@@ -446,6 +583,10 @@ def detect_liquidity_sweeps(
                     offset=offset,
                 )
             )
+    # Hand the next window the bar it cannot see. Recorded unconditionally,
+    # including for the final window: a checkpoint taken at the end of the run
+    # should still describe the data it consumed, and the cost is two Decimals.
+    state.previous_bar = (str(candles[last_index].high), str(candles[last_index].low))
     return events
 
 
