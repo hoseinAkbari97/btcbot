@@ -197,6 +197,50 @@ HIGH_LEVEL_TYPES = ("swing_high", "equal_highs", "range_high")
 LOW_LEVEL_TYPES = ("swing_low", "equal_lows", "range_low")
 
 
+@dataclass
+class SweepCarried:
+    """Sweep-detector state that must survive a window boundary.
+
+    The swept set is the one piece of this detector that is not a function of
+    the current window, and it is what makes a sweep a *crossing* rather than a
+    condition. Without it, every level price has already left is re-armed at
+    each boundary and swept again, so a segmented run reports the same level
+    once per segment the price spent beyond it.
+
+    Keys are ``(creation_index, level_type, price)`` rather than ``id(level)``,
+    because ``id`` is not stable across a checkpoint -- a resumed process
+    allocates its level objects at different addresses, and a state keyed by
+    address would silently match nothing. A structural key survives the round
+    trip, and a price collision is harmless: two levels at the same price are
+    swept under the same rule anyway.
+    """
+
+    #: level key -> absolute bar index the sweep was recorded on. The bar index
+    #: is kept because it is the useful fact when auditing -- "how long ago was
+    #: this level swept" -- but nothing in the detector branches on its value.
+    #: What matters is membership: a level is swept once, on the first bar it is
+    #: found beyond after having been back inside.
+    swept: dict[tuple[int, str, str], int] = field(default_factory=dict)
+
+    @staticmethod
+    def key(level: LiquidityLevel) -> tuple[int, str, str]:
+        return (level.creation_index, level.level_type, str(level.price))
+
+    def to_payload(self) -> dict:
+        return {"swept": [[list(key), bar] for key, bar in sorted(self.swept.items())]}
+
+    @classmethod
+    def from_payload(cls, payload: dict | None) -> SweepCarried:
+        if not payload:
+            return cls()
+        return cls(
+            swept={
+                (int(key[0]), str(key[1]), str(key[2])): int(bar)
+                for key, bar in payload["swept"]
+            }
+        )
+
+
 def detect_liquidity_sweeps(
     candles: Sequence[CandleData],
     *,
@@ -204,6 +248,9 @@ def detect_liquidity_sweeps(
     result: MarketStructureResult | None = None,
     min_penetration: Decimal = Decimal("0"),
     level_tolerance: Decimal = Decimal("0.001"),
+    offset: int = 0,
+    carried: SweepCarried | None = None,
+    final: bool = True,
 ) -> list[ResearchEvent]:
     """A level was pierced intrabar but the bar closed back through it.
 
@@ -222,14 +269,25 @@ def detect_liquidity_sweeps(
         for the swing to be treated as *that* level, as a fraction. Real markets
         produce clusters of near-equal highs; without a tolerance, equal highs
         are missed and every level is trivially unique.
+    :param offset: the absolute bar index of ``candles[0]``, when the caller is
+        passing a *window* of a longer series rather than the whole thing. Every
+        event's indices are absolute. Zero for the batch path.
+    :param carried: sweep state from the previous window, mutated in place. The
+        "already swept" set spans arbitrary bar distances -- a level crossed in
+        January and revisited in June is the same level -- so it cannot be
+        rebuilt from a window and must be handed over explicitly.
     """
     if levels is None:
         if result is None:
             raise ValueError("detect_liquidity_sweeps needs either levels or a result")
         levels = result.liquidity_levels
 
+    if offset < 0:
+        raise ValueError(f"offset must be >= 0, got {offset}")
     by_index = sorted(
-        (level for level in levels if level.creation_index < len(candles)),
+        # ``< offset + len(candles)``: a bar can only be swept by a level that
+        # existed when it opened. With a window, that bound is absolute.
+        (level for level in levels if level.creation_index < offset + len(candles)),
         key=lambda level: (level.creation_index, level.price),
     )
     if not by_index:
@@ -255,13 +313,23 @@ def detect_liquidity_sweeps(
     #: once generates an event on every subsequent bar -- which on six thousand
     #: 1h bars produced over a million events instead of a few hundred, and made
     #: the detector both useless as a measurement and impossible to run.
-    beyond_since: dict[int, int] = {}
+    state = carried if carried is not None else SweepCarried()
+    swept = state.swept
     cursor = 0
     # The sweep on the final bar has no bar after it to be confirmed on, so it
     # is not an event this detector can report. A truncated series must not look
     # as though it could confirm something its own data ends before.
-    for index in range(1, len(candles) - 1):
-        while cursor < len(by_index) and by_index[cursor].creation_index < index:
+    #
+    # Only the *final* window stops short. An intermediate window runs to its own
+    # last bar, whose sweep the next window confirms -- which is why an
+    # intermediate window is required to contain the series' final bar instead.
+    # Deferring the confirmation across the boundary rather than emitting it here
+    # would need the carried state to also hold unconfirmed events, and an event
+    # confirmed inside its own window is the simpler and less error-prone rule.
+    stop = len(candles) - 1 if final else len(candles)
+    for index in range(1, stop):
+        absolute = offset + index
+        while cursor < len(by_index) and by_index[cursor].creation_index < absolute:
             level = by_index[cursor]
             active.append(level)
             if level.level_type in HIGH_LEVEL_TYPES:
@@ -272,25 +340,68 @@ def detect_liquidity_sweeps(
         if not active:
             continue
         candle = candles[index]
+        # ``_previous_cut_from`` looks one bar back, which is unavailable on the very
+        # first bar and *is* available at a window's first bar -- the previous
+        # window supplied it. Handing it ``None`` there would widen the band to
+        # "exclude nothing", evaluating every level and re-sweeping ones the
+        # previous window had already priced.
+        previous_cut_high = (
+            None
+            if absolute == 0
+            else _previous_cut_from(candles[index - 1], level_tolerance, high=True)
+        )
+        previous_cut_low = (
+            None
+            if absolute == 0
+            else _previous_cut_from(candles[index - 1], level_tolerance, high=False)
+        )
+
+        # Re-arm first, and over *every* active level rather than the
+        # candidate band. A level is swept once per excursion: it becomes
+        # sweepable again only once price has traded back through it. That test
+        # is about the level's own price against the bar's range, which is
+        # exactly as expensive to evaluate as before -- so it is kept correct and
+        # cheap by ordering the levels by price and cutting at the price the bar
+        # actually reached.
+        #
+        # It cannot be folded into the candidate band below. The band selects
+        # levels that are *beyond* the level, and a level that price has left
+        # far behind is inside the range of neither the previous nor the current
+        # cut -- so it never appears as a candidate, and the reset branch that
+        # used to live there was unreachable for exactly those levels. A level
+        # swept once and then abandoned stayed armed off forever: it was
+        # suppressed for the rest of the run, and every later sweep of it was
+        # silently lost.
+        rearm_high = candle.high / (Decimal(1) + level_tolerance)
+        rearm_low = candle.low / (Decimal(1) - level_tolerance)
+        # Re-arming and sweeping are the *negations* of one another: a high level
+        # is beyond the bar when ``high > price * (1 + tol)`` and armed again
+        # when it is not. So the re-arm band is the complement of the sweep band
+        # and the two are disjoint by construction. Selecting the complement
+        # explicitly -- ``> rearm_high`` for highs, ``< rearm_low`` for lows --
+        # is what keeps a level from re-arming and being swept on the same bar,
+        # which would invent an excursion that never happened.
+        inside: set[tuple[int, str, str]] = set()
+        for level in highs[_cut(highs, rearm_high) :]:
+            key = SweepCarried.key(level[2])
+            swept.pop(key, None)
+            inside.add(key)
+        for level in lows[: _cut(lows, rearm_low)]:
+            key = SweepCarried.key(level[2])
+            swept.pop(key, None)
+            inside.add(key)
 
         # A sweep of highs is a wick above; of lows, a wick below.
         for level in _sweep_candidates(
             highs,
-            _previous_cut(candles, index, level_tolerance, high=True),
+            previous_cut_high,
             candle.high / (Decimal(1) + level_tolerance),
         ):
-            if candle.high <= level.price * (Decimal(1) + level_tolerance):
-                # Price is back inside the level: any prior excursion is over,
-                # so this level is eligible to be swept again next time.
-                beyond_since.pop(id(level), None)
+            key = SweepCarried.key(level)
+            if key in swept or key in inside:
                 continue
-            # The level must be swept on the *first* bar it is found beyond.
-            # Recording it as beyond and continuing is what stops the rest of
-            # the excursion from being counted as further sweeps of the same level.
-            if id(level) in beyond_since:
-                continue
-            beyond_since[id(level)] = index
-            swing_count = level.swing_count_at(index)
+            swept[key] = absolute
+            swing_count = level.swing_count_at(absolute)
             penetration = (candle.high - level.price) / level.price
             if penetration < min_penetration:
                 continue
@@ -305,20 +416,19 @@ def detect_liquidity_sweeps(
                     close_back,
                     "swing_high",
                     swing_count,
+                    offset=offset,
                 )
             )
         for level in _sweep_candidates(
             lows,
-            _previous_cut(candles, index, level_tolerance, high=False),
+            previous_cut_low,
             candle.low / (Decimal(1) - level_tolerance),
         ):
-            if candle.low >= level.price * (Decimal(1) - level_tolerance):
-                beyond_since.pop(id(level), None)
+            key = SweepCarried.key(level)
+            if key in swept or key in inside:
                 continue
-            if id(level) in beyond_since:
-                continue
-            beyond_since[id(level)] = index
-            swing_count = level.swing_count_at(index)
+            swept[key] = absolute
+            swing_count = level.swing_count_at(absolute)
             penetration = (level.price - candle.low) / level.price
             if penetration < min_penetration:
                 continue
@@ -333,22 +443,29 @@ def detect_liquidity_sweeps(
                     close_back,
                     "swing_low",
                     swing_count,
+                    offset=offset,
                 )
             )
     return events
 
 
-def _previous_cut(
-    candles: Sequence[CandleData], index: int, tolerance: Decimal, *, high: bool
+def _previous_cut_from(
+    candle: CandleData, tolerance: Decimal, *, high: bool
 ) -> Decimal | None:
-    """The previous bar\'s boundary, or ``None`` on the first processed bar.
+    """The previous bar's boundary for the candidate band.
 
-    ``None`` means "exclude nothing": on the very first bar there is no previous
-    bar to have been inside every level, so every level is a candidate.
+    Takes the *bar*, not the series and an index, because in windowed mode the
+    previous bar is not in the window at all: at ``candles[0]`` of the second
+    window the previous bar is the last bar of the first. Passing the previous
+    bar explicitly is what lets the same code serve both, and it is why the
+    detector's band is identical across a boundary instead of widening to
+    "exclude nothing" there.
+
+    ``None`` means "exclude nothing", and is only correct on the very first bar
+    of the *dataset* -- where there genuinely is no previous bar to have been
+    inside every level, so every level is a candidate.
     """
-    if index < 1:
-        return None
-    field = candles[index - 1].high if high else candles[index - 1].low
+    field = candle.high if high else candle.low
     return field / (Decimal(1) + tolerance if high else Decimal(1) - tolerance)
 
 
@@ -390,11 +507,17 @@ def _sweep_candidates(
         # level, so the band runs from the bottom of the price range upward.
         band = levels[: _cut(levels, upper)]
     else:
-        start = _cut(levels, lower)
-        stop = _cut(levels, upper)
-        if stop < start:
-            start, stop = stop, start
-        band = levels[start:stop]
+        # The band is the half-open price range ``[min, max)``. The bounds must
+        # be ordered by *price* before they are cut, not afterwards by
+        # position: `bisect` returns two positions whose order depends on the
+        # bounds, and swapping positions when the prices were inverted keeps a
+        # cut at a bound that is no longer in range. On the low side the
+        # inverted case is the ordinary one -- price moving up puts the current
+        # bar's low above the previous bar's -- and it silently dropped the
+        # level between the two bounds, which is precisely the level the bar
+        # swept.
+        low, high = (lower, upper) if lower <= upper else (upper, lower)
+        band = levels[_cut(levels, low) : _cut(levels, high)]
     # Re-sorted into creation order before returning. The band is found by
     # price, but the original detector emitted the levels of one bar in
     # creation order, and the event list's order is part of its output -- a
@@ -428,29 +551,44 @@ def _sweep_event(
     close_back: bool,
     level_kind: str,
     swing_count: int = 1,
+    offset: int = 0,
 ) -> ResearchEvent:
-    """One sweep, with the event bar and the confirmation bar kept distinct."""
+    """One sweep, with the event bar and the confirmation bar kept distinct.
+
+    ``index`` and ``confirmation_index`` inside the event are *absolute*, so the
+    windowed caller passes its own offset and every event lands on the same bar
+    index it would have if the whole series had been passed at once. An index
+    that resets at each segment would make a segmented event log and a
+    continuous one describe different markets.
+    """
     candle = candles[index]
     # The pierce happened on this bar. Whether it turned out to be a sweep
     # rather than a breakout is only settled by the close of this same bar, so
     # the confirmation is this bar's close and the confirmation index is the
     # next one: at the close of bar `index` a trader knows the sweep happened,
     # and can act at the open of bar `index + 1`.
-    confirmation_index = min(index + 1, len(candles) - 1)
+    # The confirmation bar is the next one. When the window ends before it
+    # arrives the confirmation falls back to the last bar present -- the sweep is
+    # real, only its confirmation has not printed yet, and the caller resolves it
+    # on the next window. An index past the end of the data would be a claim
+    # about a bar nobody has seen.
+    local_confirmation = min(index + 1, len(candles) - 1)
+    absolute = offset + index
+    confirmation_index = min(absolute + 1, offset + len(candles) - 1)
     swept_side = "high" if side == "above" else "low"
     return ResearchEvent(
         kind="liquidity_sweep",
         detector=f"sweep:{level_kind}",
-        event_index=index,
+        event_index=absolute,
         event_time=candle.open_time,
         confirmation_index=confirmation_index,
-        confirmation_time=candles[confirmation_index].close_time,
-        price=candles[confirmation_index].close,
+        confirmation_time=candles[local_confirmation].close_time,
+        price=candles[local_confirmation].close,
         features={
             "level_price": level.price,
             "penetration": penetration,
             "swept_side": Decimal(0 if swept_side == "low" else 1),
-            "level_age_bars": Decimal(index - level.creation_index),
+            "level_age_bars": Decimal(absolute - level.creation_index),
             "level_touch_count": Decimal(level.touch_count),
             "level_strength": Decimal(str(level.strength)),
             # How many swings had confirmed on this price *by this bar*. A level

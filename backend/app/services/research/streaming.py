@@ -135,23 +135,6 @@ def stream_json_records(
             buffer = stripped[end:]
 
 
-def _trim(buffer: str, index: int) -> tuple[str, int]:
-    """Discard the consumed prefix, returning the buffer and the new index.
-
-    This is what keeps memory flat. Without it the buffer would grow by every
-    record ever read, and a "streaming" reader would be the one thing in the
-    pipeline that accumulates the whole dataset.
-    """
-    if index == 0:
-        return buffer, 0
-    return buffer[index:], 0
-
-
-def _at_end_of_array(buffer: str, index: int) -> bool:
-    """Whether what follows the last record is the array's closing bracket."""
-    return buffer[index:].strip().startswith("]")
-
-
 def _skip_to_first_record(handle, buffer_bytes: int) -> bool:
     """Advance past the opening bracket. False if there is no array."""
     chunk = handle.read(buffer_bytes)
@@ -161,18 +144,6 @@ def _skip_to_first_record(handle, buffer_bytes: int) -> bool:
     # Keep the remainder; the caller re-reads from here.
     handle.seek(handle.tell() - len(chunk) + index + 1)
     return True
-
-
-def _trim(buffer: str, index: int) -> tuple[str, int]:
-    """Discard the consumed prefix, returning the buffer and the new index.
-
-    This is what keeps memory flat. Without it the buffer would grow by every
-    record ever read, and a "streaming" reader would be the one thing in the
-    pipeline that accumulates the whole dataset.
-    """
-    if index == 0:
-        return buffer, 0
-    return buffer[index:], 0
 
 
 def to_candle(record: dict) -> CandleData:
