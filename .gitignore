@@ -19,3 +19,27 @@ data/parquet/*
 .DS_Store
 /*.venv*/
 
+
+# --- Research datasets and derived artifacts (Phase 1-5 hardening) ---
+# Canonical OHLCV datasets are hundreds of MB of JSON and are reproduced by
+# `python -m app.cli data ingest`, not carried in version control. The manifest
+# is kept: it is ~1 KB and records the sha256 of every file, so a clone can
+# verify a freshly ingested dataset matches the one the research was run on.
+backend/data/datasets/*.json
+!backend/data/datasets/manifest.json
+
+# Research output. The JSON report is a machine dump of every bootstrap run;
+# the Markdown report is the human-readable summary and stays small enough to
+# diff usefully.
+data/research/*.json
+
+# Checkpoints are per-run scratch state. Resuming is opt-in via --resume; a
+# stale checkpoint from someone else's machine would silently resume into the
+# wrong aggregate state, so they are never shared.
+backend/data/checkpoints/
+data/research/checkpoints/
+*.checkpoint.json
+
+# Monte Carlo handoff exports are regenerated from the ledger.
+backend/data/exports/
+data/exports/

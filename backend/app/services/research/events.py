@@ -43,6 +43,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+from bisect import bisect_left, insort
 from decimal import Decimal
 from typing import Literal
 
@@ -189,6 +190,13 @@ def detect_structure_events(result: MarketStructureResult) -> list[ResearchEvent
     return events
 
 
+#: Level kinds a bar can sweep from above. A sweep of a high is a wick above
+#: it; a sweep of a low is a wick below. Kept as module constants rather than
+#: inline literals so the two candidate-selection sides cannot drift apart.
+HIGH_LEVEL_TYPES = ("swing_high", "equal_highs", "range_high")
+LOW_LEVEL_TYPES = ("swing_low", "equal_lows", "range_low")
+
+
 def detect_liquidity_sweeps(
     candles: Sequence[CandleData],
     *,
@@ -233,12 +241,18 @@ def detect_liquidity_sweeps(
     # being created, which is a different phenomenon and is recorded as such by
     # the structure module.
     active: list[LiquidityLevel] = []
+    #: Active levels in ascending price order, per side. This structure is why
+    #: the detector is usable on 5m data at all -- see :func:`_sweep_candidates`
+    #: for why selecting by price band yields *exactly* the same events as
+    #: scanning every level. ``active`` is retained only for the emptiness test.
+    highs: list[tuple[Decimal, int, LiquidityLevel]] = []
+    lows: list[tuple[Decimal, int, LiquidityLevel]] = []
     #: The last bar on which each level was found to be trading *beyond* it.
     #: A sweep is a **crossing**, not a persistent condition: once price has
     #: closed back through a level, that level has already been swept, and
     #: trading above it again on some bar fifty candles later is not a new
     #: sweep of the same level. Without this, a single level that price crossed
-    #: once generates an event on every subsequent bar — which on six thousand
+    #: once generates an event on every subsequent bar -- which on six thousand
     #: 1h bars produced over a million events instead of a few hundred, and made
     #: the detector both useless as a measurement and impossible to run.
     beyond_since: dict[int, int] = {}
@@ -248,23 +262,31 @@ def detect_liquidity_sweeps(
     # as though it could confirm something its own data ends before.
     for index in range(1, len(candles) - 1):
         while cursor < len(by_index) and by_index[cursor].creation_index < index:
-            active.append(by_index[cursor])
+            level = by_index[cursor]
+            active.append(level)
+            if level.level_type in HIGH_LEVEL_TYPES:
+                insort(highs, (level.price, cursor, level))
+            elif level.level_type in LOW_LEVEL_TYPES:
+                insort(lows, (level.price, cursor, level))
             cursor += 1
         if not active:
             continue
         candle = candles[index]
+
         # A sweep of highs is a wick above; of lows, a wick below.
-        for level in active:
-            if level.level_type not in ("swing_high", "equal_highs", "range_high"):
-                continue
+        for level in _sweep_candidates(
+            highs,
+            _previous_cut(candles, index, level_tolerance, high=True),
+            candle.high / (Decimal(1) + level_tolerance),
+        ):
             if candle.high <= level.price * (Decimal(1) + level_tolerance):
                 # Price is back inside the level: any prior excursion is over,
                 # so this level is eligible to be swept again next time.
                 beyond_since.pop(id(level), None)
                 continue
             # The level must be swept on the *first* bar it is found beyond.
-            # Recording it as beyond and returning is what stops the rest of the
-            # excursion from being counted as further sweeps of the same level.
+            # Recording it as beyond and continuing is what stops the rest of
+            # the excursion from being counted as further sweeps of the same level.
             if id(level) in beyond_since:
                 continue
             beyond_since[id(level)] = index
@@ -285,9 +307,11 @@ def detect_liquidity_sweeps(
                     swing_count,
                 )
             )
-        for level in active:
-            if level.level_type not in ("swing_low", "equal_lows", "range_low"):
-                continue
+        for level in _sweep_candidates(
+            lows,
+            _previous_cut(candles, index, level_tolerance, high=False),
+            candle.low / (Decimal(1) - level_tolerance),
+        ):
             if candle.low >= level.price * (Decimal(1) - level_tolerance):
                 beyond_since.pop(id(level), None)
                 continue
@@ -312,6 +336,87 @@ def detect_liquidity_sweeps(
                 )
             )
     return events
+
+
+def _previous_cut(
+    candles: Sequence[CandleData], index: int, tolerance: Decimal, *, high: bool
+) -> Decimal | None:
+    """The previous bar\'s boundary, or ``None`` on the first processed bar.
+
+    ``None`` means "exclude nothing": on the very first bar there is no previous
+    bar to have been inside every level, so every level is a candidate.
+    """
+    if index < 1:
+        return None
+    field = candles[index - 1].high if high else candles[index - 1].low
+    return field / (Decimal(1) + tolerance if high else Decimal(1) - tolerance)
+
+
+def _sweep_candidates(
+    levels: list[tuple[Decimal, int, LiquidityLevel]],
+    lower: Decimal | None,
+    upper: Decimal,
+) -> list[LiquidityLevel]:
+    """Levels a bar could have changed its beyond/inside state against.
+
+    This is the correctness argument for the entire optimisation, so it is
+    stated exactly. For the high side a level becomes *newly* beyond at bar
+    ``i`` only if
+
+    * it was not beyond at bar ``i - 1``, which means
+      ``high[i-1] <= level.price * (1 + tol)``, hence
+      ``level.price >= high[i-1] / (1 + tol)``; and
+    * it is beyond at bar ``i``, which means
+      ``level.price < high[i] / (1 + tol)``.
+
+    Together those put the price in ``[previous_cut, current_cut)`` -- a band
+    delimited by *the previous and current bar\'s own highs*, and by nothing
+    about the level. A level outside the band cannot have changed state on this
+    bar, so skipping it cannot change the output. The scan therefore costs the
+    number of levels inside one bar\'s price range rather than the number of
+    levels in existence: on 5m data that is a handful instead of 25,000.
+
+    This selects *candidates for evaluation*, not events. A candidate can still
+    be inside the level (and hit the reset branch), already swept, or under
+    ``min_penetration``. Every original branch is preserved; only the set of
+    levels offered to it has shrunk to the set that could possibly reach it.
+
+    On the low side the caller passes the previous bar\'s low as ``upper`` and
+    the current bar\'s as ``lower``, so the band is built from whichever of the
+    two is smaller -- hence the swap when the series moved against us.
+    """
+    if lower is None:
+        # First processed bar: no previous bar exists to have been inside every
+        # level, so the band runs from the bottom of the price range upward.
+        band = levels[: _cut(levels, upper)]
+    else:
+        start = _cut(levels, lower)
+        stop = _cut(levels, upper)
+        if stop < start:
+            start, stop = stop, start
+        band = levels[start:stop]
+    # Re-sorted into creation order before returning. The band is found by
+    # price, but the original detector emitted the levels of one bar in
+    # creation order, and the event list's order is part of its output -- a
+    # report that lists two sweeps of one bar the other way round is a
+    # different report. Sorting the band (a handful of entries) rather than
+    # iterating `active` (tens of thousands) is where the speedup survives.
+    return [level for _, _, level in sorted(band, key=lambda entry: entry[1])]
+
+
+def _cut(levels: list[tuple[Decimal, int, LiquidityLevel]], price: Decimal) -> int:
+    """Index of the first level at or above ``price``.
+
+    The middle element is the level's creation order, and it is what makes this
+    a total order. Two levels can share a price exactly -- equal highs are
+    clustered onto one price on purpose -- so a comparator that fell through to
+    the level object would raise on exactly the case equal highs create. Two
+    levels at the same price in creation order is a tie the caller's branch
+    logic already handles identically either way, so the choice here only has
+    to be *stable*, not meaningful.
+    """
+    return bisect_left(levels, (price, -1, None))  # type: ignore[list-item]
+
 
 
 def _sweep_event(
