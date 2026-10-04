@@ -1,3 +1,4 @@
+from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
 from app.models.market_data import (
     Candle,
     DataQualityReport,
@@ -9,6 +10,8 @@ from app.models.market_data import (
 )
 
 __all__ = [
+    "BacktestRunRecord",
+    "BacktestTradeRecord",
     "Candle",
     "DataQualityReport",
     "DataSource",

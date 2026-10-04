@@ -48,16 +48,25 @@ async def analyze(
                 timestamp=s.timestamp,
                 price=str(s.price),
                 kind=SwingKind.HIGH if s.kind == "high" else SwingKind.LOW,
+                confirmation_index=s.confirmation_index,
+                confirmation_time=s.confirmation_time,
             )
             for s in result.swings
         ],
         events=[
             StructureEventResponse(
+                index=e.index,
                 timestamp=e.timestamp,
                 price=str(e.price),
                 event_type=StructureEventType(e.event_type),
                 source_swing_idx=e.source_swing_idx,
-                confidence=e.confidence,
+                confirmation_index=e.confirmation_index,
+                confirmation_time=e.confirmation_time,
+                direction=e.direction,
+                broken_level=str(e.broken_level) if e.broken_level is not None else None,
+                penetration=str(e.penetration) if e.penetration is not None else None,
+                previous_state=e.previous_state,
+                new_state=e.new_state,
             )
             for e in result.events
         ],
@@ -69,10 +78,14 @@ async def analyze(
                 first_seen=l.first_seen,
                 last_seen=l.last_seen,
                 touch_count=l.touch_count,
+                creation_index=l.creation_index,
+                creation_time=l.creation_time,
+                origin=l.origin,
             )
             for l in result.liquidity_levels
         ],
         recent_range_high=str(result.recent_range[1]) if result.recent_range else None,
         recent_range_low=str(result.recent_range[0]) if result.recent_range else None,
         current_regime=MarketRegime(result.current_regime),
+        as_of_index=result.as_of_index,
     )

@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "timeframe": "15m",
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2026-08-31T23:59:59.999000+00:00",
+    "bars": 198554,
+    "expected_bars": 198624,
+    "gap_count": 7,
+    "gap_bars_total": 70,
+    "file": "BTCUSDT-15m-20210101-20260901.json",
+    "sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780"
+  },
+  {
+    "symbol": "BTCUSDT",
+    "timeframe": "1h",
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2026-08-31T23:59:59.999000+00:00",
+    "bars": 49642,
+    "expected_bars": 49656,
+    "gap_count": 7,
+    "gap_bars_total": 14,
+    "file": "BTCUSDT-1h-20210101-20260901.json",
+    "sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69"
+  },
+  {
+    "symbol": "BTCUSDT",
+    "timeframe": "4h",
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2026-08-31T23:59:59.999000+00:00",
+    "bars": 12414,
+    "expected_bars": 12414,
+    "gap_count": 0,
+    "gap_bars_total": 0,
+    "file": "BTCUSDT-4h-20210101-20260901.json",
+    "sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa"
+  }
+]

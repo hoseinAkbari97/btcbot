@@ -17,4 +17,5 @@ data/parquet/*
 !data/parquet/.gitkeep
 *.log
 .DS_Store
+/*.venv*/
 

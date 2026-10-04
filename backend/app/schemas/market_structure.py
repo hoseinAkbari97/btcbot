@@ -43,14 +43,25 @@ class SwingPointResponse(BaseModel):
     timestamp: datetime
     price: str
     kind: SwingKind
+    # The bar at which the swing became knowable. Consumers must not use a swing
+    # before this bar; `timestamp` alone is not sufficient for that.
+    confirmation_index: int
+    confirmation_time: datetime | None = None
 
 
 class StructureEventResponse(BaseModel):
+    index: int
     timestamp: datetime
     price: str
     event_type: StructureEventType
     source_swing_idx: int | None = None
-    confidence: float
+    confirmation_index: int
+    confirmation_time: datetime | None = None
+    direction: str = "neutral"
+    broken_level: str | None = None
+    penetration: str | None = None
+    previous_state: str | None = None
+    new_state: str | None = None
 
 
 class LiquidityLevelResponse(BaseModel):
@@ -60,6 +71,9 @@ class LiquidityLevelResponse(BaseModel):
     first_seen: datetime
     last_seen: datetime
     touch_count: int
+    creation_index: int
+    creation_time: datetime | None = None
+    origin: str = "swing"
 
 
 class MarketStructureResponse(BaseModel):
@@ -71,3 +85,5 @@ class MarketStructureResponse(BaseModel):
     recent_range_high: str | None = None
     recent_range_low: str | None = None
     current_regime: MarketRegime = MarketRegime.UNKNOWN
+    # The last bar this analysis is allowed to depend on.
+    as_of_index: int | None = None
