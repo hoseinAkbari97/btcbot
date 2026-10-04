@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from bisect import bisect_left, bisect_right, insort
 from decimal import Decimal
+from typing import Sequence
 
 from app.schemas.market_data import CandleData, Timeframe
 
@@ -608,8 +609,23 @@ def classify_candles_as_regime(
     series = _truncate(candles, as_of_index)
     if len(series) < 5:
         return "UNKNOWN"
+    return regime_from_closes([float(c.close) for c in series[-window:]])
 
-    closes = [float(c.close) for c in series[-window:]]
+
+def regime_from_closes(closes: Sequence[float]) -> str:
+    """The regime rule, over an already-truncated list of closes.
+
+    Split out so the segmented state can reproduce the label from carried closes
+    without re-deriving the thresholds. Two copies of a threshold rule is one
+    more than this codebase should have, and a divergence between them would be
+    invisible until a regime label differed by one bucket in a report nobody was
+    reading closely.
+
+    The thresholds are fixed constants, not fitted values -- a regime label is a
+    descriptive bucket here, not a validated classifier.
+    """
+    if len(closes) < 2:
+        return "UNKNOWN"
     returns = [(closes[i] - closes[i - 1]) / closes[i - 1] for i in range(1, len(closes))]
     if not returns:
         return "UNKNOWN"
