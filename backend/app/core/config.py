@@ -5,6 +5,8 @@ from typing import Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.core.resources import ResourceLimits
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=False)
@@ -25,6 +27,15 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(
         default_factory=lambda: ["http://localhost:3000", "http://localhost:5173"]
     )
+
+    #: Memory, disk and segmentation budgets for heavy research jobs. Nested
+    #: rather than flattened so the whole budget is one environment variable
+    #: (``RESOURCE_LIMITS__SEGMENT_DAYS=90``) and no research module has to grow
+    #: its own copy of a limit. The defaults are the project's measured ceiling,
+    #: not the machine's: this project gets 6 GB of RAM and 256 GB of SSD, and a
+    #: job is stopped at the *warning* threshold rather than at the point where
+    #: the machine starts swapping.
+    resources: ResourceLimits = Field(default_factory=ResourceLimits)
 
 
 @lru_cache

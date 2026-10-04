@@ -90,6 +90,27 @@ class Moment:
             "stderr": self.stderr,
         }
 
+    @classmethod
+    def from_dict(cls, payload: dict) -> "Moment":
+        """Rebuild from :meth:`as_dict`.
+
+        Needed because ``as_dict`` reports *absence* as ``None`` -- an empty
+        accumulator has no mean, and printing ``0.0`` would claim a measurement
+        that was never taken. Reading it back has to accept that ``None`` rather
+        than ``float()``-ing it, so a checkpoint written by a run whose first
+        segment produced no outcomes can still be resumed.
+
+        ``m2`` is recovered from the sample variance, which is exact for ``n>=2``
+        and zero for ``n<2`` -- the two cases where a variance is undefined are
+        also the two where the accumulated ``m2`` is zero.
+        """
+        n = int(payload["n"])
+        return cls(
+            n=n,
+            mean=float(payload["mean"] or 0.0),
+            m2=float(payload["variance"] or 0.0) * max(0, n - 1),
+        )
+
 
 @dataclass
 class OutcomeKey:
@@ -237,6 +258,18 @@ class OutcomeAccumulator:
                     "kind": key.kind,
                     "side": key.side,
                     "stop_model": key.stop_model,
+                    "barriers": self.barrier_counts(
+                        key.detector, key.kind, key.side, key.stop_model
+                    ),
+                    "excursions": {
+                        label: self.excursion(
+                            label, key.detector, key.kind, key.side, key.stop_model
+                        ).as_dict()
+                        for label in ("mae", "mfe")
+                        if self.excursion(
+                            label, key.detector, key.kind, key.side, key.stop_model
+                        ).n
+                    },
                     "horizons": {
                         str(horizon): moment.as_dict()
                         for horizon in self.horizons
@@ -337,12 +370,18 @@ class EventSpill:
     accumulated. Written in batches because a per-event ``write`` on a few tens
     of thousands of events is dominated by syscall overhead, and because an
     unflushed buffer held across a memory abort is a buffer lost.
+
+    ``mode`` defaults to truncating, which is right for a fresh run. A *resumed*
+    run must pass ``"a"``: the spill already holds every event from the segments
+    before the checkpoint, and reopening it with ``"w"`` would delete the run's
+    output while leaving its statistics intact -- a file that is silently
+    empty next to a report claiming 19,000 events.
     """
 
-    def __init__(self, path: Path | str, *, batch: int = 1_000) -> None:
+    def __init__(self, path: Path | str, *, batch: int = 1_000, mode: str = "w") -> None:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = self.path.open("w", encoding="utf-8")
+        self._handle = self.path.open(mode, encoding="utf-8")
         self._buffer: list[str] = []
         self._batch = max(1, batch)
         self.count = 0

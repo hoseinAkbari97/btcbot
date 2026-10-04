@@ -198,7 +198,7 @@ def _structural_stop(
     a stop placed somewhere arbitrary would produce an R that looks measured but
     is not.
     """
-    reference = min(event.confirmation_index, len(candles) - 1)
+    reference = min(event.confirmation_index, _data_end(candles) - 1)
     if reference < 0:
         return None
     candle = candles[reference]
@@ -266,7 +266,7 @@ def label_event(
     # placed the instant that close prints, with no latency. Adding a bar is a
     # cost, not a refinement; the honest default is the optimistic one and the
     # assumption is stated here.
-    entry_index = min(event.confirmation_index + ENTRY_OFFSET, len(candles) - 1)
+    entry_index = min(event.confirmation_index + ENTRY_OFFSET, _data_end(candles) - 1)
     entry_price = _close(candles, entry_index)
 
     stop = _stop_for(candles, event, side, entry_price, stop_model)
@@ -277,7 +277,7 @@ def label_event(
     forward_r: dict[int, Decimal] = {}
     for horizon in horizons:
         target = entry_index + horizon
-        if target < len(candles):
+        if target < _data_end(candles):
             move = (_close(candles, target) - entry_price) * direction
             forward[horizon] = move
             if stop_distance is not None:
@@ -286,7 +286,7 @@ def label_event(
         # rather than filled with zero: the difference between "the move was
         # zero" and "we do not know" is the whole reason this dict is sparse.
 
-    last = min(entry_index + max(horizons), len(candles) - 1)
+    last = min(entry_index + max(horizons), _data_end(candles) - 1)
     horizon_bars = last - entry_index
     mfe = mae = mfe_r = mae_r = None
     if horizon_bars > 0:
@@ -311,7 +311,7 @@ def label_event(
     bars_to_barrier: int | None = None
     if stop_distance is not None:
         barrier_price = entry_price + direction * barrier_r * stop_distance
-        last_barrier = min(entry_index + barrier_horizon, len(candles) - 1)
+        last_barrier = min(entry_index + barrier_horizon, _data_end(candles) - 1)
         for index in range(entry_index + 1, last_barrier + 1):
             candle = candles[index]
             if side == "long":
@@ -351,7 +351,7 @@ def label_event(
         r_barrier_hit=barrier_hit,
         bars_to_barrier=bars_to_barrier,
         stop_model=stop_model.name,
-        truncated=entry_index + max(horizons) >= len(candles),
+        truncated=entry_index + max(horizons) >= _data_end(candles),
     )
 
 
@@ -380,3 +380,86 @@ def label_events(
 
 def _close(candles: Sequence[CandleData], index: int) -> Decimal:
     return candles[index].close
+
+
+def _data_end(candles: Sequence[CandleData]) -> int:
+    """Index one past the last bar of the *dataset*, not of the window.
+
+    ``len(candles)`` is the right answer on the batch path and the wrong one
+    inside a segmented run, where it would make every segment boundary look like
+    the end of the history -- marking every outcome truncated and leaving the
+    forward returns empty. :class:`OffsetCandles` carries the real total.
+    """
+    return getattr(candles, "total", len(candles))
+
+
+class OffsetCandles(Sequence):
+    """A window of candles that still answers to *absolute* bar indices.
+
+    Events carry absolute ``confirmation_index`` values so that a segmented run
+    and a continuous one describe the same market. The labelling functions index
+    ``candles`` by that absolute number, so a window handed to them directly
+    would read the wrong bar -- or run off the end, since absolute indices are
+    larger than the window.
+
+    This view is the adapter: ``candles[absolute_index]`` returns the right bar
+    and every existing labelling function works unchanged, which is what keeps
+    the segmented and continuous paths from drifting apart.
+
+    Two things make it more than an offset. It refuses indices outside the window
+    rather than clamping -- clamping would turn "this event's forward window runs
+    past the segment" into "a flat forward return", a fabricated measurement rather
+    than an absent one. And ``total`` reports the length of the **whole
+    dataset**, not the window, because ``label_event`` decides whether an outcome
+    is ``truncated`` by comparing a target index against ``len(candles)``. Without
+    that, every event in a segment would be marked truncated -- the segment
+    boundary would masquerade as the end of the data.
+    """
+
+    __slots__ = ("_candles", "_offset", "_total")
+
+    def __init__(self, candles: Sequence[CandleData], offset: int, total: int) -> None:
+        self._candles = candles
+        self._offset = offset
+        # Taken as given, never widened to cover the window. ``total`` is the
+        # length of the whole dataset, and a window that claims more bars than
+        # the dataset holds is exactly how a short final segment turns its own
+        # boundary into a non-truncated outcome -- the last 30 bars would be
+        # labelled as if a forward return had printed for them.
+        self._total = total
+
+    @property
+    def offset(self) -> int:
+        """The absolute bar index of ``candles[0]``."""
+        return self._offset
+
+    @property
+    def total(self) -> int:
+        """Length of the whole dataset, in bars."""
+        return self._total
+
+    def __getitem__(self, index):  # noqa: ANN001 - slice returns a list, not a view
+        if isinstance(index, slice):
+            start, stop, step = index.indices(len(self))
+            return [
+                self[i]
+                for i in range(
+                    self._offset + start, self._offset + stop, step
+                )
+            ]
+        # ``index`` is an *absolute* bar index -- the labelling functions index by
+        # ``event.confirmation_index``, which is absolute by construction. So it
+        # is translated into the window's own coordinates exactly once, here.
+        # Doing the translation in one direction for the bound and the other for
+        # the lookup is the subtle version of this bug: the bounds would be
+        # checked against absolute positions while the lookup used a relative
+        # one, so a window could accept a bar and then return the wrong one.
+        end = self._offset + len(self._candles)
+        if index < self._offset or index >= end:
+            raise IndexError(
+                f"bar {index} is outside the window [{self._offset}, {end})"
+            )
+        return self._candles[index - self._offset]
+
+    def __len__(self) -> int:
+        return len(self._candles)

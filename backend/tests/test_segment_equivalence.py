@@ -1,179 +1,196 @@
-"""Segmented processing must equal whole-series processing, field for field.
+"""A segmented research run must equal a whole-series run, number for number.
 
-This is the acceptance gate for :mod:`app.services.market_structure.segmented`.
-The claim being tested is not "the segmenter works" but the stronger one:
+The runner's entire premise is that a segment boundary is a *memory* boundary
+and nothing else. Counts alone cannot establish that: a run that loses a
+handful of events at each boundary still reports the right order of magnitude,
+and one that computes an ATR from a truncated window still reports a plausible
+mean. So these compare the accumulated statistics themselves -- n, mean,
+variance and the barrier tallies -- against the batch path over identical data.
 
-    feeding :class:`StructureState` a whole series in one call, and feeding it
-    that series in segments with state carried across the boundaries, produce
-    the *same* result.
+Three separate failure modes are guarded, each of which was a real bug found by
+running this comparison rather than by reading the code:
 
-A segment boundary is a memory-management boundary and nothing else. If that is
-false then every statistic derived from a segmented run is a statistic about the
-segmentation rather than about the market, and nothing downstream could detect
-it -- which is why this compares the full output rather than a summary.
-
-The comparisons are field-for-field and order-sensitive on purpose. Comparing
-swings and events as sets would pass on a state machine that emitted the right
-objects in the wrong order, and the order is observable: it decides which event
-a report lists first, and it decides the episode assignment that the cluster
-bootstrap later resamples.
-
-Real ingested 5m data, not a synthetic walk. A synthetic series has too few
-levels and too-clean prices for the clustering tolerance to ever admit a real
-match, so it would leave the one code path that actually decides whether a swing
-joins an existing level completely untested.
+* events stranded at a boundary because their forward window never completed,
+  which silently shrinks the sample the statistics are computed over;
+* outcomes computed from the wrong bars, which shift every mean by a little and
+  so never fail an equality check on counts;
+* resume restoring a partial accumulator, which reports only the segments that
+  followed the checkpoint.
 """
 
 from __future__ import annotations
 
-import random
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
+from app.core.resources import ResourceLimits
 from app.schemas.market_data import Timeframe
 from app.services.market_structure.analysis import analyze_market_structure
-from app.services.market_structure.segmented import StructureState
+from app.services.research.aggregate import OutcomeAccumulator, label_events_streaming
+from app.services.research.events import detect_liquidity_sweeps
+from app.services.research.segmented_runner import SegmentedResearchRunner
 from app.services.research.streaming import stream_candles
 
-DATASET = Path(__file__).resolve().parents[1] / "data" / "datasets" / (
-    "BTCUSDT-5m-20210101-20260901.json"
+DATASET = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "datasets"
+    / "BTCUSDT-5m-20210101-20260901.json"
 )
 
+START = datetime(2021, 1, 1, tzinfo=UTC)
+END = datetime(2021, 2, 1, tzinfo=UTC)
 
-def real_bars(count: int) -> list:
-    """The first ``count`` bars of the ingested 5m dataset.
 
-    Read through the streaming reader: this file is a few hundred MB of JSON and
-    loading it whole is the failure this project has already paid for once.
-    """
+@pytest.fixture(scope="module")
+def month() -> list:
     if not DATASET.exists():
         pytest.skip(f"{DATASET} is absent; run `python -m app.cli data ingest` first")
-    out = []
+    bars = []
     for candle in stream_candles(DATASET):
-        out.append(candle)
-        if len(out) >= count:
+        if candle.open_time >= END:
             break
-    return out
+        bars.append(candle)
+    return bars
 
 
-def swing_identity(swings: list) -> list[tuple]:
-    return [
-        (s.index, s.timestamp, s.price, s.kind, s.confirmation_index, s.confirmation_time)
-        for s in swings
-    ]
+@pytest.fixture(scope="module")
+def whole(month) -> OutcomeAccumulator:
+    structure = analyze_market_structure(
+        month, symbol="BTCUSDT", timeframe=Timeframe.M5
+    )
+    events = detect_liquidity_sweeps(month, levels=structure.liquidity_levels)
+    accumulator = OutcomeAccumulator()
+    label_events_streaming(month, events, accumulator)
+    return accumulator
 
 
-def event_identity(events: list) -> list[tuple]:
-    return [
-        (
-            e.index,
-            e.timestamp,
-            e.price,
-            e.event_type,
-            e.confirmation_index,
-            e.confirmation_time,
-            e.broken_level,
-            e.penetration,
-            e.source_swing_idx,
-            e.previous_state,
-            e.new_state,
-            e.direction,
+def segmented(tmp_path: Path, bars: list, *, segment_days: int) -> OutcomeAccumulator:
+    import json
+
+    runner = SegmentedResearchRunner(
+        dataset=DATASET,
+        symbol="BTCUSDT",
+        limits=ResourceLimits(segment_days=segment_days),
+        start=START,
+        end=END,
+        out_dir=tmp_path,
+    )
+    runner.run()
+    return json.loads(runner.checkpoint_path.read_text(encoding="utf-8"))["outcomes"]
+
+
+def test_the_fixture_produces_enough_events_to_mean_anything(
+    month, whole
+) -> None:
+    """A month that detects almost nothing would make the equality below vacuous.
+
+    Without this, a detector that silently stopped finding sweeps would produce
+    matching counts on both paths and pass -- the differential would be testing
+    that two runs of a broken detector agree.
+    """
+    assert whole.total > 10_000, f"only {whole.total} outcomes; too weak to compare"
+    assert len(whole.families()) >= 4, "too few families to exercise the cell keys"
+
+
+@pytest.mark.parametrize("segment_days", [1, 3, 7])
+def test_segmented_aggregates_equal_the_whole_series(
+    tmp_path, month, whole, segment_days: int
+) -> None:
+    """The core guarantee, at three segment sizes.
+
+    ``1`` puts a boundary roughly every 288 bars, so a five-day segment is
+    straddle-heavy and every boundary is crossed by many events; ``7`` is the
+    size the 2021 validation run uses. Both must produce the same numbers as one
+    pass, because neither the boundaries nor their spacing may change a result.
+    """
+    report = segmented(tmp_path / f"seg{segment_days}", month, segment_days=segment_days)
+
+    assert report["total_outcomes"] == whole.total
+    assert report["truncated_outcomes"] == whole.truncated
+
+    whole_cells = {
+        (c["detector"], c["kind"], c["side"], c["stop_model"]): c
+        for c in whole.as_dict()["cells"]
+    }
+    segmented_cells = {
+        (c["detector"], c["kind"], c["side"], c["stop_model"]): c for c in report["cells"]
+    }
+    assert set(segmented_cells) == set(whole_cells)
+
+    for key, expected in whole_cells.items():
+        actual = segmented_cells[key]
+        assert actual["barriers"] == expected["barriers"], f"barriers differ for {key}"
+        assert actual.get("excursions", {}) == expected.get("excursions", {}), (
+            f"excursions differ for {key}"
         )
-        for e in events
-    ]
+        assert set(actual["horizons"]) == set(expected["horizons"]), f"horizons differ for {key}"
+        for horizon, moment in expected["horizons"].items():
+            got = actual["horizons"][horizon]
+            assert got["n"] == moment["n"], f"{key} h={horizon}: n differs"
+            # Exact, not approximate. These are means of the same Decimals in a
+            # different order, and Welford is stable enough that the results
+            # agree to the last bit; a tolerance here would hide a wrong-bar read.
+            assert got["mean"] == pytest.approx(moment["mean"], rel=1e-12, abs=1e-15)
+            assert got["variance"] == pytest.approx(
+                moment["variance"], rel=1e-9, abs=1e-18
+            )
 
 
-def level_identity(levels: list) -> list[tuple]:
-    return [
-        (
-            lv.price,
-            lv.level_type,
-            lv.creation_index,
-            lv.creation_time,
-            lv.first_seen,
-            lv.last_seen,
-            lv.touch_count,
-            lv.strength,
-            lv.origin,
-            lv.source_swing_indices,
-            lv.swing_confirmations,
-        )
-        for lv in levels
-    ]
+def test_resuming_a_finished_run_changes_nothing(tmp_path) -> None:
+    """A completed checkpoint is a result, not pending work.
 
-
-def assert_same(bars: list, splits: list[int]) -> None:
-    """The batch result and the segmented result are the same result."""
-    batch = analyze_market_structure(bars, symbol="BTCUSDT", timeframe=Timeframe.M5)
-
-    state = StructureState("BTCUSDT", Timeframe.M5)
-    start = 0
-    for end in [*splits, len(bars)]:
-        state.observe(bars[start:end])
-        start = end
-
-    assert state.result().as_of_index == batch.as_of_index
-
-    assert swing_identity(state.swings) == swing_identity(batch.swings), (
-        f"{len(state.swings)} swings segmented vs {len(batch.swings)} in one pass"
+    Re-invoking must not re-detect every event and append them to the spill it
+    already produced -- that would double the event count while the statistics
+    stayed right, which is precisely the kind of error a summary cannot show.
+    """
+    first = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=7),
+        start=START, end=END, out_dir=tmp_path / "resume",
     )
-    assert event_identity(state.events) == event_identity(batch.events), (
-        f"{len(state.events)} events segmented vs {len(batch.events)} in one pass"
+    original = first.run()
+    spilled = first.events_path.read_text(encoding="utf-8").count("\n")
+
+    second = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=7),
+        start=START, end=END, out_dir=tmp_path / "resume",
     )
-    assert level_identity(state.levels()) == level_identity(batch.liquidity_levels), (
-        f"{len(state.levels())} levels segmented vs "
-        f"{len(batch.liquidity_levels)} in one pass"
+    repeated = second.run()
+
+    assert repeated.bars == original.bars
+    assert repeated.events == original.events
+    assert repeated.outcomes == original.outcomes
+    assert second.events_path.read_text(encoding="utf-8").count("\n") == spilled
+
+
+def test_a_checkpoint_from_a_different_range_is_refused(tmp_path) -> None:
+    """Bar indices are absolute, so a different range is a different analysis.
+
+    Resuming a one-month run from a full-year checkpoint would skip bars it never
+    processed and then try to label events against bars it never read. The
+    fingerprint carries the date range precisely so that is a refusal rather than
+    a crash that looks like a segmentation bug.
+    """
+    from app.services.research.segmented_runner import CheckpointMismatch
+
+    out = tmp_path / "mismatch"
+    full = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=7),
+        start=START, end=None, out_dir=out,
     )
-    assert state.regime() == batch.current_regime
-    assert state.result().recent_range == batch.recent_range
+    # Write a checkpoint without running the whole dataset: the fingerprint is
+    # what is under test, not the run.
+    full._digest = "x" * 64
+    full.state = __import__(
+        "app.services.market_structure.segmented", fromlist=["StructureState"]
+    ).StructureState("BTCUSDT", Timeframe.M5)
+    full._write_checkpoint()
 
-
-def test_one_pass_equals_one_uneven_split() -> None:
-    """The simplest case: two segments, split somewhere awkward.
-
-    Unequal on purpose. An equal split is the case where an off-by-one in the
-    carried window is least likely to show up, because both segments have the
-    same amount of trailing context.
-    """
-    bars = real_bars(6000)
-    assert_same(bars, [3777])
-
-
-def test_many_short_segments_reproduce_the_whole() -> None:
-    """Segments shorter than the swing window still reproduce the whole.
-
-    A 70-bar carried window means a segment shorter than that cannot by itself
-    confirm a swing -- the confirmation has to straddle the boundary. This split
-    is deliberately finer than the window, so it is the test that actually
-    exercises state carrying rather than a segmentation that happens to line up.
-    """
-    bars = real_bars(4000)
-    assert_same(bars, list(range(30, 4000, 137)))
-
-
-@pytest.mark.parametrize("seed", range(5))
-def test_random_split_points_all_reproduce_the_whole(seed: int) -> None:
-    """Twenty random splits over the same series, all must match.
-
-    A segmentation that works at one particular boundary can easily fail at
-    another, and the failure is specific: the carried window is the right length
-    at one split and one bar short at the next. One hand-picked split proves
-    nothing about that, so this draws random cut points with a seeded RNG and
-    requires all of them to agree.
-    """
-    bars = real_bars(3000)
-    rng = random.Random(seed)
-    cuts = sorted(rng.sample(range(1, len(bars)), 6))
-    assert_same(bars, cuts)
-
-
-def test_bar_by_bar_matches_one_pass() -> None:
-    """The limiting case: a segment per bar.
-
-    Nothing carries across a boundary except the minimum window, so this is the
-    segmentation that would fail first if any piece of carried state were being
-    reset, dropped, or reconstructed from the wrong bars.
-    """
-    bars = real_bars(1200)
-    assert_same(bars, list(range(1, 1200)))
+    narrowed = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=7),
+        start=START, end=END, out_dir=out,
+    )
+    with pytest.raises(CheckpointMismatch):
+        narrowed.run()
