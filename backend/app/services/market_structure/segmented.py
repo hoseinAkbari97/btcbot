@@ -112,7 +112,7 @@ class TouchIndex:
     a single bar.
     """
 
-    __slots__ = ("_above", "_values", "_counts", "_tree", "_total")
+    __slots__ = ("_above", "_values", "_counts", "_tree", "_total", "_pending")
 
     def __init__(self, *, above: bool) -> None:
         self._above = above
@@ -120,11 +120,22 @@ class TouchIndex:
         self._counts: list[int] = []
         self._tree: list[int] = []
         self._total = 0
+        #: Prices of the segment in progress, not yet folded into the tree.
+        self._pending: dict[Decimal, int] = {}
 
     # -- queries ------------------------------------------------------------
 
     def reached(self, price: Decimal) -> int:
-        """Bars added so far that reached ``price`` in this index's direction."""
+        """Bars added so far that reached ``price`` in this index's direction.
+
+        The segment's pending prices are folded in first. A level's touch count
+        is read the moment the level is created, which is *inside* the segment
+        that created it, so the answer has to include bars this segment has
+        already seen -- deferring the fold to the end of the segment would count
+        the creating swing's own prefix short and produce a level whose touch
+        count no one else can reproduce.
+        """
+        self.flush()
         if not self._values:
             return 0
         at = bisect_left(self._values, price)
@@ -149,13 +160,21 @@ class TouchIndex:
         adjusted. Rebuilding once per segment is linear in the number of
         *distinct* prices -- bounded by the cent grid, not by the bar count.
         """
-        incoming: dict[Decimal, int] = {}
-        total = self._total
+        pending = self._pending
         for price in prices:
-            incoming[price] = incoming.get(price, 0) + 1
-            total += 1
+            pending[price] = pending.get(price, 0) + 1
+
+    def flush(self) -> None:
+        """Fold the pending segment's prices into the tree. Cheap when empty."""
+        incoming = self._pending
         if not incoming:
             return
+        self._pending = {}
+        self._merge(incoming)
+
+    def _merge(self, incoming: dict[Decimal, int]) -> None:
+        """Merge new counts into the sorted price set, then rebuild the tree."""
+        total = self._total + sum(incoming.values())
 
         additions = sorted(incoming.items())
         old_values = self._values
@@ -233,6 +252,11 @@ class TouchIndex:
     # -- persistence --------------------------------------------------------
 
     def to_payload(self) -> dict:
+        # Flush first. Pending prices have not been folded into the tree, and a
+        # checkpoint that dropped them would resume with a touch index that never
+        # saw the end of its own segment -- levels created there would come back
+        # with the wrong touch counts, and nothing downstream would notice.
+        self.flush()
         return {
             "above": self._above,
             "values": [str(value) for value in self._values],
@@ -247,17 +271,30 @@ class TouchIndex:
         index._counts = [int(value) for value in payload["counts"]]
         index._total = int(payload["total"])
         index._rebuild_tree()
+        # No pending buffer to restore: ``to_payload`` flushed it.
+        index._pending = {}
         return index
 
     # -- diagnostics --------------------------------------------------------
 
     @property
     def distinct_prices(self) -> int:
-        return len(self._values)
+        # Counts pending prices not already merged. A pending price that is also
+        # in ``_values`` is not a new distinct value, so it must be subtracted
+        # rather than simply added.
+        values = self._values
+        fresh = 0
+        for price in self._pending:
+            position = bisect_left(values, price)
+            if position == len(values) or values[position] != price:
+                fresh += 1
+        return len(values) + fresh
 
     @property
     def total_bars(self) -> int:
-        return self._total
+        # Includes the pending buffer: a diagnostic that reported the merged total
+        # alone would understate coverage by exactly the segment in flight.
+        return self._total + sum(self._pending.values())
 
 
 # ---------------------------------------------------------------------------
@@ -766,3 +803,232 @@ class StructureState:
             current_regime=self.regime(),
             as_of_index=self._next_index - 1 if self._next_index else None,
         )
+
+    # -- persistence --------------------------------------------------------
+
+    def to_payload(self) -> dict:
+        """Serialise the carried state.
+
+        Deliberately *not* the materialised result. ``levels()`` is a pure
+        function of the buckets, so serialising it would store a derived value
+        that has to be kept consistent with its source across every future
+        format change. Only state is stored, and the levels are rebuilt on
+        resume -- which also means a bug in the rebuild cannot hide behind a
+        checkpoint that was written by the buggy version.
+        """
+        return {
+            "schema_version": STATE_SCHEMA_VERSION,
+            "symbol": self.symbol,
+            "timeframe": self.timeframe.value,
+            "lookback": self.lookback,
+            "search_window": self.search_window,
+            "shift_window": self.shift_window,
+            "next_index": self._next_index,
+            "base": self._base.isoformat() if self._base else None,
+            "last_open_time": (
+                self._last_open_time.isoformat() if self._last_open_time else None
+            ),
+            "swings": [
+                {
+                    "index": swing.index,
+                    "timestamp": swing.timestamp.isoformat(),
+                    "price": str(swing.price),
+                    "kind": swing.kind,
+                    "confirmation_index": swing.confirmation_index,
+                    "confirmation_time": (
+                        swing.confirmation_time.isoformat()
+                        if swing.confirmation_time
+                        else None
+                    ),
+                }
+                for swing in self.swings
+            ],
+            "events": [
+                {
+                    "index": event.index,
+                    "timestamp": event.timestamp.isoformat(),
+                    "price": str(event.price),
+                    "event_type": event.event_type,
+                    "confirmation_index": event.confirmation_index,
+                    "broken_level": (
+                        str(event.broken_level) if event.broken_level else None
+                    ),
+                    "penetration": (
+                        str(event.penetration) if event.penetration is not None else None
+                    ),
+                    "source_swing_idx": event.source_swing_idx,
+                    "previous_state": event.previous_state,
+                    "new_state": event.new_state,
+                    "direction": event.direction,
+                }
+                for event in self.events
+            ],
+            "buckets": [
+                {
+                    "kind": bucket.kind,
+                    "price": str(bucket.price),
+                    "touches": bucket.touches,
+                    "strength": bucket.strength,
+                    "swings": [
+                        (swing.index, swing.confirmation_index) for swing in bucket.swings
+                    ],
+                }
+                for bucket in self._buckets
+            ],
+            "highs": self._highs.to_payload(),
+            "lows": self._lows.to_payload(),
+            "range_low": str(self._range_low) if self._range_low else None,
+            "range_high": str(self._range_high) if self._range_high else None,
+            "closes": list(self._closes),
+            # The trailing bars are what confirm the next swing. Dropping them
+            # and resuming would shift every swing near the boundary, and nothing
+            # downstream could tell -- the runs would just differ slightly. They
+            # are bounded by ``2 * lookback + 1`` bars, so storing them costs
+            # nothing.
+            "window": [
+                {
+                    "open_time": candle.open_time.isoformat(),
+                    "close_time": candle.close_time.isoformat(),
+                    "open": str(candle.open),
+                    "high": str(candle.high),
+                    "low": str(candle.low),
+                    "close": str(candle.close),
+                }
+                for candle in self._window
+            ],
+        }
+
+    @classmethod
+    def from_payload(cls, payload: dict) -> StructureState:
+        """Rebuild a state from :meth:`to_payload` output.
+
+        Checkpoints are written by one process and read by another, possibly
+        after the code has changed, so the schema version is checked rather than
+        assumed. Resuming against an incompatible checkpoint by guessing is the
+        kind of failure that produces a clean-looking report of the wrong run.
+        """
+        version = payload.get("schema_version")
+        if version != STATE_SCHEMA_VERSION:
+            raise ValueError(
+                f"checkpoint schema version {version!r} cannot be read by this "
+                f"build (expects {STATE_SCHEMA_VERSION})"
+            )
+        state = cls(
+            payload["symbol"],
+            Timeframe(payload["timeframe"]),
+            int(payload["lookback"]),
+            search_window=int(payload["search_window"]),
+            shift_window=int(payload["shift_window"]),
+        )
+        state._next_index = int(payload["next_index"])
+        state._base = (
+            datetime.fromisoformat(payload["base"]) if payload["base"] else None
+        )
+        state._last_open_time = (
+            datetime.fromisoformat(payload["last_open_time"])
+            if payload["last_open_time"]
+            else None
+        )
+        state.swings = [
+            SwingPoint(
+                index=int(item["index"]),
+                timestamp=datetime.fromisoformat(item["timestamp"]),
+                price=Decimal(item["price"]),
+                kind=item["kind"],
+                confirmation_index=int(item["confirmation_index"]),
+                confirmation_time=(
+                    datetime.fromisoformat(item["confirmation_time"])
+                    if item["confirmation_time"]
+                    else None
+                ),
+            )
+            for item in payload["swings"]
+        ]
+        state.events = [
+            StructureEvent(
+                index=int(item["index"]),
+                timestamp=datetime.fromisoformat(item["timestamp"]),
+                price=Decimal(item["price"]),
+                event_type=item["event_type"],
+                confirmation_index=int(item["confirmation_index"]),
+                broken_level=(
+                    Decimal(item["broken_level"]) if item["broken_level"] else None
+                ),
+                penetration=(
+                    Decimal(item["penetration"])
+                    if item["penetration"] is not None
+                    else None
+                ),
+                source_swing_idx=item["source_swing_idx"],
+                previous_state=item["previous_state"],
+                new_state=item["new_state"],
+                direction=item["direction"],
+            )
+            for item in payload["events"]
+        ]
+        # Bucket membership is stored as (swing index, confirmation index) rather
+        # than as full swing objects: a bucket only ever refers to swings that are
+        # already in `state.swings`, and duplicating them would double the
+        # checkpoint's size for no gain. The creation swing's timestamp is the
+        # only thing not recoverable from the swing list, so it is looked up.
+        by_index = {swing.index: swing for swing in state.swings}
+        state._buckets = []
+        for item in payload["buckets"]:
+            members = []
+            for swing_index, confirmation_index in item["swings"]:
+                original = by_index.get(swing_index)
+                if original is None:
+                    raise ValueError(
+                        f"checkpoint bucket at {item['price']} refers to swing "
+                        f"{swing_index}, which is not in the swing list; the "
+                        f"checkpoint is inconsistent"
+                    )
+                members.append(
+                    SwingPoint(
+                        index=original.index,
+                        timestamp=original.timestamp,
+                        price=original.price,
+                        kind=original.kind,
+                        confirmation_index=int(confirmation_index),
+                        confirmation_time=original.confirmation_time,
+                    )
+                )
+            state._buckets.append(
+                _Bucket(
+                    kind=item["kind"],
+                    price=Decimal(item["price"]),
+                    swings=members,
+                    touches=int(item["touches"]),
+                    strength=float(item["strength"]),
+                )
+            )
+        state._bucket_by_key = {}
+        state._bucket_prices = {"high": [], "low": []}
+        for position, bucket in enumerate(state._buckets):
+            state._bucket_by_key[(bucket.kind, bucket.price)] = position
+            insort(state._bucket_prices[bucket.kind], bucket.price)
+
+        state._highs = TouchIndex.from_payload(payload["highs"])
+        state._lows = TouchIndex.from_payload(payload["lows"])
+        state._range_low = (
+            Decimal(payload["range_low"]) if payload["range_low"] else None
+        )
+        state._range_high = (
+            Decimal(payload["range_high"]) if payload["range_high"] else None
+        )
+        state._closes = [float(value) for value in payload["closes"]]
+        state._window = [
+            CandleData(
+                symbol=state.symbol,
+                timeframe=state.timeframe,
+                open_time=datetime.fromisoformat(item["open_time"]),
+                close_time=datetime.fromisoformat(item["close_time"]),
+                open=Decimal(item["open"]),
+                high=Decimal(item["high"]),
+                low=Decimal(item["low"]),
+                close=Decimal(item["close"]),
+                volume=Decimal(0),
+            )
+            for item in payload["window"]
+        ]
+        return state
