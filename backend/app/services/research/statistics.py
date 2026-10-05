@@ -65,6 +65,12 @@ class BootstrapResult:
     #: difference from a baseline is the question that matters, and passing this
     #: while failing the baseline test is the common case worth catching.
     excludes_zero: bool
+    #: Number of independent clusters the interval rests on. Equal to ``n``
+    #: when observations are independent; much smaller when they are not, and
+    #: ``None`` for an interval computed without clustering. Reporting it is the
+    #: difference between "this effect is measured on 700,000 events" and
+    #: "this effect is measured on 700,000 events drawn from 7,720 episodes".
+    n_episodes: int | None = None
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -76,6 +82,7 @@ class BootstrapResult:
             "confidence": self.confidence,
             "resamples": self.resamples,
             "excludes_zero": self.excludes_zero,
+            "n_episodes": self.n_episodes,
         }
 
 
@@ -251,6 +258,121 @@ def paired_difference(
         confidence=confidence,
         resamples=resamples,
         excludes_zero=lower > 0 or upper < 0,
+    )
+
+
+def clustered_bootstrap_mean(
+    samples: Sequence[float],
+    episode_of: Sequence[int],
+    *,
+    name: str = "mean",
+    confidence: float = 0.95,
+    resamples: int | None = None,
+    precision: str = "research",
+    seed: int = DEFAULT_SEED,
+) -> BootstrapResult:
+    """A bootstrap interval that resamples *episodes*, not events.
+
+    Why this exists
+    ---------------
+    :func:`bootstrap_mean` resamples individual values with replacement, which
+    asserts that the observations are exchangeable. Detected events are not: a
+    sweep, the structure shift it confirms, and a retest of the same level are
+    three measurements of one move, and a market that trends produces all three
+    from the same bar cluster. Resampling them individually treats one volatile
+    minute as ``n`` independent observations and reports an interval that is
+    narrower than the truth by roughly the square root of the events per
+    episode. The error is not a wrong point estimate -- the mean is unchanged --
+    it is a confidence interval that claims more than the data supports, which
+    is precisely the failure that turns a research log into a false positive.
+
+    What this does instead
+    ----------------------
+    Events are grouped by :func:`~app.services.research.aggregate.assign_episodes`
+    into episodes whose outcome windows overlap, each episode is reduced to its
+    mean, and the bootstrap resamples those means. The number that governs the
+    interval's width is the *episode* count, so ``result.n`` stays the event
+    count (what was measured) while a new ``n_episodes`` field reports what the
+    interval actually rests on.
+
+    The reduction to episode means is a deliberate approximation: a cluster
+    bootstrap that re-draws whole clusters preserving their internal size is
+    exact, whereas averaging within a cluster first is the cheap version. It is
+    the version that keeps peak memory bounded by the episode count rather than
+    the event count, which is the property that makes it usable at 700k events
+    inside this project's budget. The bias it introduces is downward on the
+    interval width, not upward on the point estimate.
+
+    ``episode_of`` must be aligned with ``samples`` and in episode-id order, i.e.
+    exactly what ``assign_episodes`` returns for the events in bar order.
+    """
+    from app.services.research.aggregate import ClusteredBootstrapper, adaptive_resamples
+
+    n_events = len(samples)
+    n_episodes = len({int(e) for e in episode_of})
+    if resamples is None:
+        # Fewer draws than episodes would sample the cluster pool without
+        # replacement often enough to understate its spread, and more draws
+        # than episodes cannot narrow the interval -- it only re-describes the
+        # same few clusters. ``adaptive_resamples`` draws that line.
+        resamples = adaptive_resamples(n_episodes, precision=precision)
+
+    bootstrapper = ClusteredBootstrapper(seed=seed)
+    if n_events == 0 or n_episodes == 0:
+        return BootstrapResult(
+            name=name,
+            n=0,
+            mean=None,
+            lower=None,
+            upper=None,
+            confidence=confidence,
+            resamples=resamples,
+            excludes_zero=False,
+            n_episodes=n_episodes,
+        )
+
+    values = np.asarray(samples, dtype=float)
+    ids = [int(e) for e in episode_of]
+    # Remap to 0..n_episodes-1 in case the caller's ids are sparse or start at
+    # an offset; ``bincount`` with ``minlength`` would otherwise allocate to
+    # the largest id seen rather than to the number of episodes.
+    remap = {old: new for new, old in enumerate(sorted(set(ids)))}
+    compact = [remap[i] for i in ids]
+    if max(compact) != n_episodes - 1:
+        raise ValueError("episode ids are not contiguous after remapping")
+
+    point = float(values.mean())
+    means = bootstrapper.resample_means(
+        bootstrapper.episode_means(values, compact, n_episodes),
+        n_resamples=resamples,
+    )
+    if not means:
+        return BootstrapResult(
+            name=name,
+            n=n_events,
+            mean=point,
+            lower=None,
+            upper=None,
+            confidence=confidence,
+            resamples=resamples,
+            excludes_zero=False,
+            n_episodes=n_episodes,
+        )
+
+    means.sort()
+    tail = (1.0 - confidence) / 2.0
+    lower = _percentile(means, tail)
+    upper = _percentile(means, 1.0 - tail)
+    return BootstrapResult(
+        name=name,
+        n=n_events,
+        mean=point,
+        lower=lower,
+        upper=upper,
+        confidence=confidence,
+        resamples=resamples,
+        excludes_zero=lower > 0 or upper < 0,
+        n_episodes=n_episodes,
     )
 
 

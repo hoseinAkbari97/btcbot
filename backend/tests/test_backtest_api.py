@@ -527,3 +527,127 @@ def test_a_run_carries_its_r_distribution_with_the_sample_guard_intact() -> None
     else:
         assert distribution.mean_r is None
         assert distribution.percentiles == {}
+
+
+# ---------------------------------------------------------------------------
+# Explicit run mode (§22)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_a_run_reports_the_mode_it_was_executed_in(seeded_db) -> None:
+    """The mode is explicit in the response, not inferred from the risk config.
+
+    "Risk limits were absent" and "the caller asked for a research control" are
+    different facts, and only one of them is written down anywhere. A stored
+    research run's equity curve is not a tradeable result, and the record has to
+    say so.
+    """
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app_for(seeded_db)), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/backtests/run",
+            json={"symbol": "BTCUSDT", "timeframe": "5m", "strategy": "buy_and_hold"},
+        )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["mode"] == "research"
+
+
+@pytest.mark.asyncio
+async def test_research_mode_may_run_without_risk_limits(seeded_db) -> None:
+    """Unconstrained controls are legitimate in exactly one mode.
+
+    A fair comparison needs a buy-and-hold that is not being supervised. That
+    is why ``research`` exists, and it is the only mode where the absence of a
+    risk engine is a choice rather than a mistake.
+    """
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app_for(seeded_db)), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/backtests/run",
+            json={
+                "symbol": "BTCUSDT",
+                "timeframe": "5m",
+                "strategy": "buy_and_hold",
+                "mode": "research",
+            },
+        )
+
+    assert response.status_code == 200, response.text
+
+
+@pytest.mark.parametrize("mode", ["simulation", "paper", "live"])
+@pytest.mark.asyncio
+async def test_an_ordered_mode_without_risk_limits_is_refused(seeded_db, mode) -> None:
+    """A simulation, paper or live run must never execute with limits disabled.
+
+    Each of those three could place an order. Refusing at the API rather than
+    deep in the engine means the caller gets a 422 naming the mode and telling
+    them what to do, instead of a ValueError about a missing risk engine that
+    reads like an internal error.
+    """
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app_for(seeded_db)), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/backtests/run",
+            json={
+                "symbol": "BTCUSDT",
+                "timeframe": "5m",
+                "strategy": "sma_trend",
+                "mode": mode,
+            },
+        )
+
+    assert response.status_code == 422, response.text
+    detail = response.json()["detail"]
+    assert mode in detail
+    assert "risk_limits" in detail
+
+
+@pytest.mark.asyncio
+async def test_an_ordered_mode_with_risk_limits_runs(seeded_db) -> None:
+    """The refusal is about the missing engine, not about the mode itself."""
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app_for(seeded_db)), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/backtests/run",
+            json={
+                "symbol": "BTCUSDT",
+                "timeframe": "5m",
+                "strategy": "sma_trend",
+                "mode": "simulation",
+                "risk_limits": {"max_risk_per_trade": "0.01"},
+            },
+        )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["mode"] == "simulation"
+
+
+@pytest.mark.asyncio
+async def test_an_unknown_mode_is_rejected_by_the_schema(seeded_db) -> None:
+    """An unrecognised mode is a 422, never a silent fall back to research.
+
+    Falling back would be the worst outcome available: the caller asked for
+    something the system did not understand, and the system quietly gave them
+    the one mode where the risk engine is optional.
+    """
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app_for(seeded_db)), base_url="http://test"
+    ) as client:
+        response = await client.post(
+            "/api/v1/backtests/run",
+            json={
+                "symbol": "BTCUSDT",
+                "timeframe": "5m",
+                "strategy": "buy_and_hold",
+                "mode": "production",
+            },
+        )
+
+    assert response.status_code == 422

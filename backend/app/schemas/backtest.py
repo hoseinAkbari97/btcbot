@@ -9,6 +9,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.services.backtest.baselines import STRATEGY_NAMES
+from app.services.backtest.engine import RunMode
 from app.services.backtest.risk import RiskLimits
 
 
@@ -56,6 +57,14 @@ class BacktestRequest(BaseModel):
     cost_scale: Decimal = Field(default=Decimal("1"), ge=Decimal("0.1"), le=Decimal("10"))
 
     allow_short: bool = False
+    #: What the run is for. Explicit in the request *and* the response, because
+    #: "the risk engine was optional" is only a defensible thing to have done if
+    #: the caller said which mode they were in: research runs need unconstrained
+    #: controls for a fair comparison, and simulation/paper/live runs must never
+    #: execute with limits disabled. ``enforce_run_mode`` already refuses those
+    #: three without a risk engine; exposing the field is what makes that refusal
+    #: reachable instead of unreachable-but-correct.
+    mode: RunMode = RunMode.RESEARCH
     risk_limits: RiskLimitsRequest | None = None
     parameters: dict[str, Any] = Field(default_factory=dict)
     notes: str | None = Field(default=None, max_length=2000)

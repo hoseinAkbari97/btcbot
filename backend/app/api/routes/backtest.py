@@ -26,6 +26,7 @@ from app.services.backtest.baselines import STRATEGY_NAMES
 from app.services.backtest.costs import BacktestCosts
 from app.services.backtest.engine import BacktestRun
 from app.services.backtest.risk import RiskEngine
+from app.services.backtest.engine import RISK_REQUIRED_MODES
 from app.services.backtest.runner import LIBRARY_VERSION, load_candles, run_backtest
 
 logger = logging.getLogger(__name__)
@@ -186,6 +187,20 @@ async def run_backtest_endpoint(
         else None
     )
 
+    # Refuse here, with a 422 that names the mode, rather than letting
+    # ``run_backtest`` raise a ValueError about a missing engine. The distinction
+    # matters to the caller: "you asked for live without risk limits" is a
+    # correctable request error, and it is not the same as an unknown strategy.
+    if risk is None and request.mode in RISK_REQUIRED_MODES:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                f"mode {request.mode.value!r} requires risk_limits; only "
+                "research mode may run without them. Send risk_limits, or set "
+                'mode="research" if an unconstrained control is what you meant.'
+            ),
+        )
+
     try:
         result = run_backtest(
             candles,
@@ -197,6 +212,7 @@ async def run_backtest_endpoint(
             parameters=request.parameters,
             allow_short=request.allow_short,
             risk=risk,
+            mode=request.mode,
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
