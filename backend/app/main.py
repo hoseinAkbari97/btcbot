@@ -10,7 +10,9 @@ from app.api.routes.health import router as health_router
 from app.api.routes.market_data import router as market_data_router
 from app.api.routes.market_structure import router as market_structure_router
 from app.core.config import Settings, get_settings
+from app.core.database import SessionFactory
 from app.core.logging import configure_logging
+from app.services.market_data.scheduler import CandleScheduler
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -21,7 +23,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         Path(config.raw_data_path).mkdir(parents=True, exist_ok=True)
         Path(config.parquet_data_path).mkdir(parents=True, exist_ok=True)
-        yield
+        scheduler = CandleScheduler(config, SessionFactory)
+        await scheduler.start()
+        try:
+            yield
+        finally:
+            # Cancelled rather than awaited to completion: the scheduler sleeps
+            # for a minute between ticks, and shutdown should not wait it out.
+            await scheduler.stop()
 
     application = FastAPI(
         title=config.app_name,

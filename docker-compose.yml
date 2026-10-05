@@ -44,6 +44,9 @@ services:
       BINANCE_WS_BASE_URL: ${BINANCE_WS_BASE_URL:-wss://stream.binance.com:9443/ws}
       RAW_DATA_PATH: /app/data/raw
       PARQUET_DATA_PATH: /app/data/parquet
+      SCHEDULER_ENABLED: ${SCHEDULER_ENABLED:-true}
+      SCHEDULER_INTERVAL_SECONDS: ${SCHEDULER_INTERVAL_SECONDS:-60}
+      SCHEDULER_SYMBOL: ${SCHEDULER_SYMBOL:-BTCUSDT}
     volumes:
       - ./data:/app/data
     depends_on:

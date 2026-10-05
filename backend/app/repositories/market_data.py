@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.dialects.postgresql import insert as postgres_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -88,6 +88,25 @@ class MarketDataRepository:
         )
         await self.session.execute(statement)
         return len(rows)
+
+    async def latest_open_time(
+        self, instrument_id: str, timeframe: Timeframe
+    ) -> datetime | None:
+        """Newest stored bar for this instrument and timeframe, or None if empty.
+
+        The scheduled ingestion path reads its resume point from here rather
+        than remembering it in memory, which is what makes the job restartable:
+        a fresh process re-reads the same answer and carries on. Filtering on
+        ``instrument_id`` rather than the denormalized ``symbol`` column matters
+        once more than one instrument exists, since ``symbol`` alone cannot
+        distinguish the same ticker across venues.
+        """
+        return await self.session.scalar(
+            select(func.max(Candle.open_time)).where(
+                Candle.instrument_id == instrument_id,
+                Candle.timeframe == timeframe.value,
+            )
+        )
 
     async def list_candles(
         self,
