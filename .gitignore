@@ -33,6 +33,16 @@ backend/data/datasets/*.json
 # diff usefully.
 data/research/*.json
 
+# Segmented research run directories. These are *not* covered by the rule above
+# because their contents live one level down and include the raw event spill:
+# `events.jsonl` is ~320 MB for a single 2021 5m year, and `checkpoint.json` is
+# ~11 MB of accumulator state. Both are rebuilt by re-running
+# `scripts/run_segmented_research.py`, which resumes from the checkpoint rather
+# than restarting, so committing them buys nothing and costs a clone 330 MB.
+# Without this, `git add -A` sweeps the whole run into the next commit.
+backend/data/research/run-*/
+!backend/data/research/.gitkeep
+
 # Checkpoints are per-run scratch state. Resuming is opt-in via --resume; a
 # stale checkpoint from someone else's machine would silently resume into the
 # wrong aggregate state, so they are never shared.

@@ -165,6 +165,131 @@ def test_resuming_a_finished_run_changes_nothing(tmp_path) -> None:
     assert second.events_path.read_text(encoding="utf-8").count("\n") == spilled
 
 
+def test_episode_partition_matches_the_batch_sweep(tmp_path) -> None:
+    """The incremental episode sweep must equal ``assign_episodes``, bar for bar.
+
+    ``_note_episode`` is a transcription of the batch sweep's rule rather than a
+    call to it, so the two can drift. If they do, episode counts and any cluster
+    bootstrap built on them are wrong while every other number in the report is
+    right -- which is the worst kind of wrong, because a report that is mostly
+    correct reads as trustworthy.
+    """
+    from app.services.research.aggregate import assign_episodes
+
+    runner = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=3),
+        start=START, end=END, out_dir=tmp_path / "episodes",
+    )
+    report = runner.run()
+
+    # Recover the bar list the runner actually used, in bar order, and the
+    # episode boundaries the batch sweep puts on it. ``assign_episodes`` returns
+    # one id per event; the bar each episode *starts* on is the first event of
+    # each run of ids, which is the form the runner carries.
+    import json
+
+    indices = sorted(
+        json.loads(line)["confirmation_index"]
+        for line in runner.events_path.read_text(encoding="utf-8").splitlines()
+    )
+    assert indices, "no events spilled; the comparison would be vacuous"
+    ids = assign_episodes(indices)
+    expected = [
+        index for position, index in enumerate(indices)
+        if position == 0 or ids[position] != ids[position - 1]
+    ]
+
+    assert runner._episode_starts == expected, "incremental sweep diverged"
+    assert report.episodes == len(expected) > 0
+
+
+def test_episodes_survive_an_interrupted_run(tmp_path) -> None:
+    """The one figure a resumed run gets wrong on its own.
+
+    Bars, events, outcomes, swings and levels are counters or cumulative state,
+    so they all resume correctly without help. Episodes are a *partition*, and a
+    resumed run that re-derives it from only the events it sees reports fewer
+    clusters -- looking like a quieter market rather than like a bug. This
+    asserts a checkpoint round-trip preserves the count exactly.
+    """
+    out = tmp_path / "interrupt"
+    limits = ResourceLimits(segment_days=3)
+
+    reference = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "clean",
+    ).run()
+
+    interrupted = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "resumed",
+    )
+    # Process one segment's worth, checkpoint, then resume to completion.
+    interrupted._max_segments = 1
+    partial = interrupted.run()
+    assert partial.episodes > 0
+    assert not partial.complete, "the partial run should report itself unfinished"
+
+    resumed = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "resumed",
+    ).run()
+
+    assert len(resumed.segments) > len(partial.segments)
+    assert resumed.episodes == reference.episodes, (
+        f"resumed {resumed.episodes} episodes vs {reference.episodes} uninterrupted"
+    )
+    assert resumed.events == reference.events
+    assert resumed.outcomes == reference.outcomes
+
+
+def test_a_hard_kill_leaves_no_claim_the_spill_cannot_back(tmp_path) -> None:
+    """The checkpoint must never over-count what the spill actually holds.
+
+    ``EventSpill`` buffers a batch, and the checkpoint is written at the segment
+    boundary. A process killed between those two points -- which is exactly what
+    the memory guard's abort looks like to the OS -- leaves a checkpoint claiming
+    events the spill never received. The report then claims a count the event log
+    cannot produce, and the discrepancy is invisible until someone reads both
+    files. The fix is ordering: flush the spill, *then* checkpoint, and record the
+    count from the spill itself rather than from a running tally.
+
+    Simulated by raising from inside ``close``, so the events are buffered and
+    counted but never written -- the worst case, and the one a memory abort
+    produces.
+    """
+    import json
+
+    out = tmp_path / "killed"
+    runner = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=ResourceLimits(segment_days=3),
+        start=START, end=END, out_dir=out,
+    )
+    runner._max_segments = 1
+
+    from app.services.research import aggregate as A
+
+    real_close = A.EventSpill.close
+
+    def die_without_flushing(self) -> None:
+        raise KeyboardInterrupt("simulated OOM kill")
+
+    A.EventSpill.close = die_without_flushing
+    try:
+        with pytest.raises(KeyboardInterrupt):
+            runner.run()
+    finally:
+        A.EventSpill.close = real_close
+
+    checkpoint = json.loads(runner.checkpoint_path.read_text(encoding="utf-8"))
+    lines = runner.events_path.read_text(encoding="utf-8").count("\n")
+    assert lines == checkpoint["events_written"], (
+        f"checkpoint claims {checkpoint['events_written']} events but the spill "
+        f"holds {lines}"
+    )
+    assert checkpoint["bar_index"] > 0, "nothing was processed; test is vacuous"
+
+
 def test_a_checkpoint_from_a_different_range_is_refused(tmp_path) -> None:
     """Bar indices are absolute, so a different range is a different analysis.
 

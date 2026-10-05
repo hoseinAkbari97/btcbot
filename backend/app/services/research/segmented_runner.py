@@ -88,7 +88,6 @@ from app.services.research.aggregate import (
     EventSpill,
     OutcomeAccumulator,
     adaptive_resamples,
-    assign_episodes,
     label_events_streaming,
 )
 from app.services.research.events import ResearchEvent, SweepCarried, detect_liquidity_sweeps
@@ -213,6 +212,13 @@ class Checkpoint:
     baseline: dict
     events_written: int
     segments_done: int
+    #: Confirmation bar of each episode's *first* event, in order. Bounded by the
+    #: episode count rather than the event count, so it stays small on a busy
+    #: series where events vastly outnumber clusters. Carried because an episode
+    #: spans events from two segments: an episode whose first event fell just
+    #: before a boundary would be counted twice on a resumed run, which is
+    #: invisible in every other figure the report prints.
+    episode_starts: list[int] = field(default_factory=list)
     #: True once the last segment has been processed and the tail flushed.
     #: A finished checkpoint is not resumable work -- resuming from one would
     #: skip every remaining bar while still holding pending events whose forward
@@ -238,6 +244,7 @@ class Checkpoint:
             "baseline": self.baseline,
             "events_written": self.events_written,
             "segments_done": self.segments_done,
+            "episode_starts": list(self.episode_starts),
             "complete": self.complete,
         }
 
@@ -309,6 +316,11 @@ class RunReport:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     stopped_on_memory: bool = False
+    #: True when the last segment was processed and the tail flushed. Distinct
+    #: from ``stopped_on_memory``: a run can end complete, end interrupted, or
+    #: begin already complete on a re-invocation, and those are different
+    #: results even when the counts agree.
+    complete: bool = False
     seconds: float = 0.0
     resources: dict = field(default_factory=dict)
     #: Peak RSS sampled by an external observer, which is the only number that
@@ -348,6 +360,7 @@ class RunReport:
             "errors": list(self.errors),
             "warnings": list(self.warnings),
             "stopped_on_memory": self.stopped_on_memory,
+            "complete": self.complete,
             "seconds": round(self.seconds, 2),
             "resources": self.resources,
             "peak_process_gb": self.peak_process_gb,
@@ -397,7 +410,14 @@ class SegmentedResearchRunner:
         self._events_written = 0
         self._segments_done = 0
         self._bar_index = 0
-        self._episode_indices: list[int] = []
+        self._episode_starts: list[int] = []
+        #: Confirmation bar of the last event folded into ``_episode_starts``,
+        #: and how far its forward window reaches. Two scalars rather than a
+        #: rescan: deciding whether an event starts a new episode needs only the
+        #: previous event's position, so episodes are assigned as events arrive
+        #: instead of re-deriving the whole partition from every bar at the end.
+        self._episode_last_index = -1
+        self._episode_reach = -1
         #: Events detected but not yet labellable, because their forward window
         #: runs past the last bar seen. At most ``OUTCOME_LAG_BARS`` worth of
         #: events, so this is bounded by the horizon rather than by the run --
@@ -411,6 +431,11 @@ class SegmentedResearchRunner:
         #: Set when a checkpoint was found already complete, so the run reports
         #: the finished result instead of reprocessing the dataset.
         self._resume_complete = False
+        #: Test-only: stop after this many segments in :meth:`run`, producing a
+        #: genuinely interrupted run to resume from. ``None`` in production --
+        #: the resource guard decides when to stop, not a caller-supplied count,
+        #: because a limit set by hand is a limit someone will forget to remove.
+        self._max_segments: int | None = None
         #: Set by the segment generator when the segment it yielded turned out to
         #: be the last one. Reading ahead to discover this would mean holding two
         #: segments' bars at once.
@@ -459,15 +484,27 @@ class SegmentedResearchRunner:
 
     # -- checkpointing ----------------------------------------------------
 
-    def _write_checkpoint(self, *, complete: bool = False) -> None:
+    def _write_checkpoint(self, spill: EventSpill | None = None, *, complete: bool = False) -> None:
         """Save the carried state so the next invocation can continue.
 
         Written atomically via a temporary file and a rename. A checkpoint that
         is half-written is worse than none: it looks resumable, and resuming
         from it puts a hole in the state that no later test can see.
+
+        The spill is flushed *first*, and ``events_written`` is then taken from
+        the spill's own count rather than from a running tally. The two order
+        the durability of the two files: a checkpoint that records 731,839
+        events next to a spill holding 731,670 is a claim the run cannot back up,
+        and it is produced whenever the process dies between a segment's
+        detection and the next batch flush -- which is precisely the moment a
+        memory abort kills it. Flushing first makes the spill the authority, so
+        the invariant is "the spill holds at least what the checkpoint claims"
+        rather than "usually".
         """
         if self.state is None:
             return
+        if spill is not None:
+            spill.flush()
         checkpoint = Checkpoint(
             dataset_sha256=self._digest,
             dataset_path=str(self.dataset),
@@ -486,8 +523,11 @@ class SegmentedResearchRunner:
             tail=[c.model_dump(mode="json") for c in self._tail],
             outcomes=self.accumulators.as_dict(),
             baseline=self.baseline.as_dict(),
-            events_written=self._events_written,
+            events_written=(
+                spill.count if spill is not None else self._events_written
+            ),
             segments_done=self._segments_done,
+            episode_starts=self._episode_starts,
             complete=complete,
         )
         temporary = self.checkpoint_path.with_suffix(".json.tmp")
@@ -543,6 +583,7 @@ class SegmentedResearchRunner:
         self._events_written = checkpoint.events_written
         self._segments_done = checkpoint.segments_done
         self._restore_accumulators(checkpoint)
+        self._restore_episodes(checkpoint)
         if checkpoint.complete:
             # The work is done. Say so rather than reprocessing from bar zero:
             # a caller that re-invokes a finished run would otherwise re-detect
@@ -551,6 +592,43 @@ class SegmentedResearchRunner:
             self._resume_complete = True
             return False
         return True
+
+    def _restore_episodes(self, checkpoint: Checkpoint) -> None:
+        """Reinstate the episode partition a checkpointed run had reached.
+
+        Episodes are the one figure a resumed run gets *wrong* without this,
+        and wrong in a way nothing else in the report would reveal: bars, events,
+        outcomes, swings and levels all resume correctly, because they are
+        counters or cumulative state. Episodes are a partition of the event
+        stream, so a run that resumes from bar 40,000 and re-derives them from
+        the events it sees will count the episodes from bar 40,000 onward and
+        silently report fewer of them -- the resumed run looks like it found a
+        quieter market.
+
+        The carry is the whole start list, not a tail: an episode spans events up
+        to ``OUTCOME_LAG_BARS`` apart, so the last episode may still be open
+        across the boundary and dropping it would merge or split one cluster.
+        """
+        self._episode_starts = list(checkpoint.episode_starts)
+        last = self._episode_starts[-1] if self._episode_starts else -1
+        self._episode_last_index = last
+        self._episode_reach = last + max(FORWARD_HORIZONS) if last >= 0 else -1
+
+    def _note_episode(self, confirmation_index: int) -> None:
+        """Fold one event into the running episode partition.
+
+        Incremental for the same reason ``assign_episodes`` is a single sweep:
+        a new event joins the open episode when it falls inside the previous
+        event's forward window, and opens its own when it does not. Keeping the
+        partition rather than the raw bar list is what makes it small enough to
+        checkpoint -- ~73k ints rather than ~732k for the 2021 run.
+        """
+        if confirmation_index <= self._episode_reach:
+            self._episode_last_index = confirmation_index
+            return
+        self._episode_starts.append(confirmation_index)
+        self._episode_last_index = confirmation_index
+        self._episode_reach = confirmation_index + max(FORWARD_HORIZONS)
 
     def _restore_accumulators(self, checkpoint: Checkpoint) -> None:
         """Rebuild the outcome and baseline accumulators from a checkpoint.
@@ -607,8 +685,13 @@ class SegmentedResearchRunner:
         resume.
         """
         started = time.monotonic()
-        report = RunReport(dataset_path=str(self.dataset), symbol=self.symbol,
-                           timeframe=str(self.timeframe))
+        report = RunReport(
+            dataset_path=str(self.dataset),
+            symbol=self.symbol,
+            timeframe=str(self.timeframe),
+            start=self.start,
+            end=self.end,
+        )
 
         self._digest = dataset_digest(self.dataset)
         # Refuse to start if the output cannot fit. Discovering a full disk
@@ -620,6 +703,8 @@ class SegmentedResearchRunner:
         resumed = self._load_checkpoint()
         if resumed:
             report.resumed_from_bar = self._bar_index
+        elif self._resume_complete:
+            report.complete = True
         else:
             self.state = StructureState(self.symbol, self.timeframe)
 
@@ -645,6 +730,17 @@ class SegmentedResearchRunner:
             if not self._resume_complete:
                 for segment in self._segments(source):
                     memory_state = self.guard.check()
+                    if self._max_segments is not None and (
+                        report.checkpoints_written >= self._max_segments
+                    ):
+                        # Test-only stop. A deliberately unfinished run must not
+                        # flush the tail: the tail is labelled against the end of
+                        # the *dataset*, so flushing it after two of twelve
+                        # segments would mark every pending event truncated and
+                        # make the resumed run's totals disagree for a reason
+                        # that has nothing to do with resume.
+                        report.stopped_on_memory = True
+                        break
                     # Only the last segment can report a sweep on its own last
                     # bar. Every other one defers it, because its confirmation
                     # bar is the next segment's first -- a boundary is a memory
@@ -654,7 +750,7 @@ class SegmentedResearchRunner:
                         segment, spill, report, final=self._segment_was_final
                     )
 
-                    self._write_checkpoint()
+                    self._write_checkpoint(spill)
                     report.checkpoints_written += 1
 
                     if memory_state == "critical":
@@ -677,7 +773,7 @@ class SegmentedResearchRunner:
         # is the only place a legitimately truncated outcome is produced, and it
         # is deliberately the same code path as every other label -- a separate
         # "final" branch would be a second thing to get wrong.
-        if self._pending_events and self.state is not None:
+        if self._pending_events and self.state is not None and not report.stopped_on_memory:
             tail_start = max(0, self._bar_index - len(self._tail))
             final_window = OffsetCandles(self._tail, tail_start, self._bar_index)
             label_events_streaming(
@@ -689,14 +785,15 @@ class SegmentedResearchRunner:
         # of the data. A run that stopped on memory has not, and marking it would
         # tell the next invocation there is nothing left to do.
         if not report.stopped_on_memory:
-            self._write_checkpoint(complete=True)
+            self._write_checkpoint(spill, complete=True)
+            report.complete = True
 
         report.bars = self._bar_index
         report.events = self._events_written
         report.swings = len(self.state.swings) if self.state else 0
         report.levels = len(self.state.levels()) if self.state else 0
         report.outcomes = self.accumulators.total
-        report.episodes = len(set(self._episode_indices))
+        report.episodes = self.episode_count()
         report.warnings.extend(self.guard.warnings)
         report.resources = self.guard.report()
         report.peak_process_gb = self.guard.peak_process_gb
@@ -800,7 +897,7 @@ class SegmentedResearchRunner:
         )
         for event in events:
             spill.append(event)
-            self._episode_indices.append(event.confirmation_index)
+            self._note_episode(event.confirmation_index)
         self._events_written += len(events)
 
         # 3. Labelling. Done *after* detection, on this segment's own events as
@@ -854,8 +951,22 @@ class SegmentedResearchRunner:
     # -- statistics -------------------------------------------------------
 
     def episode_count(self) -> int:
-        """How many independent outcome clusters this run produced."""
-        return len(set(assign_episodes(sorted(self._episode_indices))))
+        """How many independent outcome clusters this run produced.
+
+        The cluster count, not the event count, is what decides a bootstrap's
+        resolution: resampling 40 episodes 50,000 times estimates those same 40
+        clusters more precisely without narrowing the interval, so the honest
+        figure to report is the number of episodes.
+
+        ``_note_episode`` computes this incrementally rather than calling
+        :func:`assign_episodes` over every event at the end. The rule is the
+        same -- the sweep in ``_note_episode`` is a transcription of it -- and
+        ``test_episode_partition_matches_the_batch_sweep`` asserts the two agree
+        bar for bar. What the incremental form buys is that the partition is
+        checkpoint-sized (~73k ints for 2021) instead of being a 732k-entry
+        list that has to survive a resume intact.
+        """
+        return len(self._episode_starts)
 
     def suggested_resamples(self, *, precision: str = "research") -> int:
         """Bootstrap draws appropriate to this run's episode count.
