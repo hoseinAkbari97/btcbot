@@ -1,7 +1,7 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **October 3, 2026** (updated for the Phase 1–5 research-hardening pass: expanded trade
-ledger, gross/net R, R-distribution metrics, run modes)
+Last reviewed: **October 5, 2026** (updated for the Phase 1–5 final hardening pass: run modes on
+`POST /backtests/run`)
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
 Examples are illustrative; database contents, generated IDs, timestamps, and output file names vary at
@@ -836,8 +836,27 @@ Request body fields (all optional except as noted):
 | `cost_scale` | decimal string | `1` | `0.1` through `10`; multiplies every cost for sensitivity tests. |
 | `allow_short` | boolean | `false` | Long-only by default. |
 | `parameters` | object | `{}` | Per-strategy overrides merged over the defaults. |
+| `mode` | string | `research` | One of `research`, `simulation`, `paper`, `live`. Anything else returns `422`. See below. |
 | `risk_limits` | object or null | `null` | Risk engine configuration (Phase 5). Omit for an unsupervised run. See below. |
 | `notes` | string or null | `null` | Free-text annotation stored with the run, max 2000 characters. |
+
+`mode` declares what the run is for, and is recorded verbatim in the response's `mode` field.
+
+| Mode | `risk_limits` | Meaning |
+|---|---|---|
+| `research` | optional | A control measurement. May run unconstrained, because comparing strategies fairly requires it. |
+| `simulation` | **required** | Intended to be tradeable. |
+| `paper` | **required** | Same. |
+| `live` | **required** | Same. |
+
+Requesting `simulation`, `paper` or `live` without `risk_limits` returns `422`, and the detail
+names the mode and the missing field. The refusal is deliberate rather than a default: a mode that
+means "this is a result you could act on" and a configuration that disables every control are
+contradictory, and which one the caller meant is not something the server can infer. Send
+`risk_limits`, or set `mode: "research"` if an unconstrained control is what you wanted.
+
+An unconstrained `research` run is not a tradeable result. Read its `mode` field before quoting
+its equity curve.
 
 `risk_limits` fields — all optional, each defaulting to the `RiskLimits` default. Fractions are
 decimal strings between `0` and `1`; counters are integers. Any value outside its range returns
@@ -879,6 +898,7 @@ curl -X POST "http://localhost:8000/api/v1/backtests/run" \
         "strategy": "sma_trend",
         "initial_capital": "10000",
         "cost_scale": "2",
+        "mode": "research",
         "risk_limits": {
           "max_risk_per_trade": "0.005",
           "max_drawdown": "0.15"

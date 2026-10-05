@@ -399,9 +399,10 @@ particular events carry no measurable information on this sample.
 
 This is a **5,000-bar slice, not the full 49,642-bar history.** See limitations below.
 
-- **252 tests collected** across the suite, all passing except `test_storage.py`, which aborts inside
-  pyarrow under the memory caps available in this environment and is therefore **unverified** rather
-  than known-failing.
+- **252 tests collected** across the suite at the time of that pass, all passing except
+  `test_storage.py`, which aborted inside pyarrow under the memory caps available then and was
+  therefore **unverified** rather than known-failing. *It has since been verified as passing; see
+  the 2026-10-05 session below.*
 
 ### Design decisions worth recording
 
@@ -434,6 +435,139 @@ This is a **5,000-bar slice, not the full 49,642-bar history.** See limitations 
 2. **A stale-data force-exit left no trace in the record.** Every other bound records a violation;
    a stale exit bounded a limit silently, so a run's `risk_violations` could not show which control
    had acted. It now records the reason, matching the reasoning already applied to entry refusals.
+
+### Phase 1–5 Final Hardening: segmented runner, episodes, streaming handoff (session of 2026-10-05)
+
+The remaining structural problem was that the research pipeline was single-shot: `detect_all()` and
+`run_research()` each took one full `list[CandleData]`. That is fine at 1h/49k bars and impossible at
+5m/198k. The correctness problem underneath mattered more than the speed one — liquidity levels and
+the swept-level set are **global**, so chunks cannot be independent and a year boundary genuinely
+determines what the next year detects.
+
+The acceptance criterion chosen: **processing the whole history in segments must produce the same
+events and statistics as processing it continuously, with bounded memory and no strategy reset at a
+boundary.** The boundary is a memory boundary only.
+
+**Delivered**
+
+- `research/streaming.py` — JSON array → `CandleData` iterator via `raw_decode` over a bounded
+  buffer, plus segment planning and chunking. Peak memory is a function of buffer size, not of file
+  size. The existing dataset file stays the single canonical copy; nothing was duplicated or
+  reformatted to Parquet.
+- `research/segmented_runner.py` + `scripts/run_segmented_research.py` — incremental structure state
+  (level buckets, swings, swept set, regime, 70 bars of trailing close), a pending-outcome buffer for
+  events whose forward window crosses the boundary, and atomic checkpoints.
+- `research/aggregate.py` — `assign_episodes`, `Episode`, `ClusteredBootstrapper`, `adaptive_resamples`.
+- `statistics.py` — `clustered_bootstrap_mean`, and `BootstrapResult.n_episodes`.
+- `backtest/monte_carlo_export.py` — batched CSV/JSONL writers, `net_r` canonical with `net_R` as a
+  documented compatibility alias.
+- `schemas/backtest.py` + `api/routes/backtest.py` — `mode` on the request, refused with a 422
+  naming the mode when an ordered mode arrives without risk limits.
+- `core/resources.py` — `ResourceLimits`, `/proc` memory reader (no `psutil` dependency), and a
+  pre-flight `ensure_disk_space`.
+
+**The episode rule.** Two events are the same experiment iff their forward outcome windows overlap:
+`|a - b| <= H`, where `H` is the analysis's own max horizon (12 bars). A single left-to-right sweep
+over events in bar order — no clustering library, no tuned constant. **The boundary is `H`, not
+`H - 1`:** events `H` bars apart still overlap, because an event confirmed on bar 100 reads
+101..113 and one confirmed on 112 reads 113..125. This is pinned by
+`test_an_episode_boundary_is_exactly_the_horizon_plus_one_away`.
+
+**Why clustering matters.** A sweep, the structure shift it confirms, and a retest of the same level
+are three readings of one move. Resampling them individually reports an interval narrower than the
+truth by roughly √(events per episode) — and the point estimate is unchanged, so the error shows up
+only in the width. In 2021 that is 731,839 events resting on **7,720 episodes**. `n_episodes` is now
+reported alongside `n` on every result, because "measured on 700,000 events" and "measured on 700,000
+events drawn from 7,720 episodes" are different claims.
+
+### 2021 5m validation run (measured)
+
+One year, 5m, run to completion and then stopped. Treated as resource + correctness validation, not
+as a strategy conclusion.
+
+| Measure | Value |
+|---|---|
+| Bars | 104,923 |
+| Events | 731,839 |
+| Episodes (independent clusters) | 7,720 |
+| Swings / liquidity levels | 13,382 / 12,596 |
+| Outcomes labelled | 2,927,356 |
+| Segments / checkpoints | 14 / 14 |
+| Wall clock | 665.2 s |
+| Peak process RSS | 0.32 GB |
+| Lowest system-available memory | 6.30 GB |
+| Stopped on memory | false |
+| Warnings / errors | 0 / 0 |
+| Swap activity | none |
+
+Fully self-consistent on re-check: spill count == checkpoint count == 731,839, event log sorted, and
+the runner's episode partition identical to a batch `assign_episodes` sweep over the same file
+(7,720 clusters, same start indices).
+
+**Verdict on running more years:** safe. Peak process memory is 0.32 GB against a 4 GB project
+ceiling, the lowest system availability never dropped below 6.30 GB, and memory did not grow with
+bars processed — the segmented path holds a bounded carry state regardless of how many segments come
+after. **2022–2026 was not launched**, per the agreed stop condition. Disk cost is ~322 MB of run
+output per year of 5m, against a 256 GB budget.
+
+### Bugs found by the segmented runner
+
+Both surfaced only at 5m scale, and both were silent wrong answers.
+
+3. **Episodes were never checkpointed.** Resuming Q1 2021 gave 9,621 clusters against 14,618 for the
+   uninterrupted run, with every other figure matching. `_episode_indices` was rebuilt from the
+   *resumed* segment alone, so each restart re-drew the partition boundary. The failure reads as
+   "a quieter market", not as a bug, which is what made it worth a regression test. Fixed by folding
+   episodes incrementally — the carry state is ~7,720 ints rather than 732k — and checkpointing the
+   partition itself. `report.episodes` was also counting distinct bars rather than clusters.
+4. **A checkpoint claimed more events than the spill could back.** `_write_checkpoint` recorded a
+   running tally while `EventSpill` was still buffering in 1,000-event batches, so a hard kill between
+   a segment's detection and the next flush left a checkpoint asserting 731,839 events next to a
+   spill holding 731,670. A checkpoint is a promise the run is resumable from; a promise the spill
+   cannot back is worse than no checkpoint, because it is believed. Now the spill is flushed *first*
+   and `events_written` is read from the spill's own count.
+   Regression test: `test_a_hard_kill_leaves_no_claim_the_spill_cannot_back`, which patches
+   `EventSpill.close` to raise `KeyboardInterrupt`.
+
+### Bug previously recorded as unverified, now verified
+
+`tests/test_storage.py` is reported above as aborting inside pyarrow. It now **passes** — the earlier
+failure was memory pressure from concurrent work, not a defect in the storage layer, and no
+memory-allocated workaround was needed.
+
+### Test suite
+
+**371 passing**, up from 252. New this session:
+
+| File | Covers |
+|---|---|
+| `test_segment_equivalence.py` (9) | Continuous == segmented across unequal splits; the episode partition matches a batch sweep; episodes survive an interrupted run; a hard kill leaves no unbacked checkpoint claim |
+| `test_episodes.py` (19) | The `H + 1` boundary; `bincount` cluster reduction; peak bootstrap memory bounded by episodes not events; the three precision tiers (1k / 10k / 50k); clustered intervals widen where the naive one does not |
+| `test_monte_carlo_export.py` (18) | `net_r` canonical, `net_R` an identical alias; writers stream; header built from the field list; trades with no defined R counted rather than silently dropped; no OHLCV carried |
+| `test_streaming.py` (21) | Reader equals a full parse at three buffer sizes including one smaller than a single record; brackets inside strings; truncation and malformed input refused rather than silently short |
+| `test_resource_limits.py` (18) | Guard states and their order; system availability checked before process RSS; batch halving with a floor; disk refusal before any work, including against the project budget rather than the filesystem's |
+
+### Design decisions worth recording (this session)
+
+- **Flush, then checkpoint.** Durability ordering is not a detail. A checkpoint written before the
+  spill is durable is a claim about a state that does not exist yet.
+- **Canonical name plus compatibility alias, not a rename.** `net_r` is canonical because that is
+  what the Monte Carlo project is specified against; `net_R` ships alongside it because a consumer
+  written against the current schema would otherwise return an empty column, and that failure is
+  invisible until a downstream report comes back wrong. The mapping is explicit rather than
+  case-insensitive, so renaming either side surfaces as a `None` column instead of a silent
+  mismatch.
+- **A missing memory reading is `ok`, not `critical`.** Refusing to start because `/proc` could not
+  be read would stop the run for a condition that was never observed.
+- **The system check has no warning band, deliberately.** `critical_ram_gb` sits above
+  `warning_ram_gb` because they threshold two different quantities — the machine and this process.
+  So any system reading below the warning line is also below the critical one, and the guard stops
+  rather than warning. Warning there would mean telling a job to shrink its batches when the machine
+  has under 3 GB left for everything, and shrinking takes several chunks to take effect.
+- **Reducing a cluster to its mean is a documented approximation.** Exact cluster resampling
+  preserves internal cluster size; the cheap version keeps cost proportional to the *episode* count,
+  which is what makes it usable at 700k events inside this budget. The bias is downward on interval
+  width, not upward on the point estimate. Stated in the docstring rather than left implicit.
 
 ## Current Limitations (Phases 3–5)
 

@@ -464,6 +464,96 @@
       ]
     },
     {
+      "name": "Backend - Backtests (Phase 5)",
+      "description": "Runs one baseline strategy over stored candles and appends the run and its trades to the database. Runs are append-only. Every request carries a `mode`: `research` may run without risk limits (it is a control measurement, not a tradeable result), while `simulation`, `paper` and `live` are refused with 422 unless `risk_limits` is supplied.",
+      "item": [
+        {
+          "name": "Run a research backtest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"{{symbol}}\",\n  \"timeframe\": \"{{timeframe}}\",\n  \"strategy\": \"buy_and_hold\",\n  \"initial_capital\": \"10000\",\n  \"mode\": \"research\",\n  \"notes\": \"unconstrained control\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{backendBaseUrl}}/api/v1/backtests/run",
+            "description": "A research run. `mode` is optional and defaults to `research`; it is set explicitly here so the recorded run says what it was."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Reports the mode it ran in', function () {",
+                  "  pm.expect(pm.response.json().mode).to.eql('research');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject an ordered mode without risk limits",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"{{symbol}}\",\n  \"timeframe\": \"{{timeframe}}\",\n  \"strategy\": \"buy_and_hold\",\n  \"mode\": \"simulation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{backendBaseUrl}}/api/v1/backtests/run",
+            "description": "`simulation` without `risk_limits` is contradictory: the mode says the result is intended to be tradeable and the configuration disables every control. The server cannot infer which one the caller meant, so it refuses rather than guessing."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('Detail names the mode and the missing field', function () {",
+                  "  const detail = String(pm.response.json().detail);",
+                  "  pm.expect(detail).to.include('simulation');",
+                  "  pm.expect(detail).to.include('risk_limits');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Backend - Generated Documentation",
       "item": [
         {

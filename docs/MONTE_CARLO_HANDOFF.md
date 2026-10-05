@@ -41,8 +41,24 @@ A backtest that cannot be reproduced from these fields is not a valid input.
 
 ## 3. The row schema
 
-`net_R` is the primary field. `gross_R` is retained so cost sensitivity can be
+`net_r` is the field to resample. `gross_r` is retained so cost sensitivity can be
 re-derived without a re-run.
+
+**On the capital `R`.** `Trade.as_monte_carlo_row()` — the projection above — spells these
+`net_R` and `gross_R`, and that is still what it emits. The streaming writers in
+`app/services/backtest/monte_carlo_export.py` emit **`net_r` and `gross_r` as canonical**
+and, unless `include_legacy_alias=False`, add `net_R` alongside as a **compatibility
+alias carrying the identical value**.
+
+New consumers should read `net_r`. The alias exists so that a consumer written against
+the current schema sees no change; renaming the key outright would return an empty column
+from every existing reader, and that failure is invisible until a downstream report
+comes back wrong. Use `include_legacy_alias=False` for a clean handoff.
+
+Both writers stream in bounded batches (`batch_rows`, default 1,000) and return
+`{"written", "skipped"}`. Trades with a null R are **counted in `skipped`, not silently
+dropped** — the gap between the run's trade count and the exported row count is the size
+of the sample the Monte Carlo project will not see, and it belongs in the report.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -54,8 +70,8 @@ re-derived without a re-run.
 | `exit_time` | datetime | Fill time of the closing fill |
 | `entry_price`, `exit_price` | Decimal | Actual fills, **after** spread and slippage |
 | `size` | Decimal | Position size in base units |
-| `net_R` | Decimal\|None | `net_pnl / risk_amount`. **The field to resample** |
-| `gross_R` | Decimal\|None | `gross_pnl / risk_amount`, before costs |
+| `net_r` (`net_R`) | Decimal\|None | `net_pnl / risk_amount`. **The field to resample** |
+| `gross_r` (`gross_R`) | Decimal\|None | `gross_pnl / risk_amount`, before costs |
 | `net_pnl` | Decimal | Price move minus all costs |
 | `gross_pnl` | Decimal | Price movement only |
 | `fees` | Decimal | Commission, entry + exit |
