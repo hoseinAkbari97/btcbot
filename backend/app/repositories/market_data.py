@@ -9,6 +9,19 @@ from app.models.market_data import Candle, DataSource, Instrument, Market
 from app.schemas.market_data import CandleData, Timeframe
 
 
+#: PostgreSQL caps a single statement at 32767 bind parameters (protocol limit,
+#: not a configuration choice). A multi-week backfill is a few thousand rows and
+#: exceeds it, and asyncpg reports only "the number of query arguments cannot
+#: exceed 32767" with no hint that the batch size is the cause.
+#:
+#: The cost per row is *measured*, not derived from the column count: compiling
+#: one 16-column candle insert binds 17 parameters, so dividing the limit by the
+#: column count overshoots by a row and lands just over the cap. One spare is
+#: carried as headroom on top of the measured figure.
+_MAX_BIND_PARAMS = 32_767
+_PARAMS_PER_ROW = 18
+
+
 class MarketDataRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
@@ -66,27 +79,42 @@ class MarketDataRepository:
             }
             for candle in candles
         ]
+        # Chunked rather than one statement: a single INSERT this large exceeds
+        # the protocol's 32767 bind-parameter ceiling, and the driver reports
+        # that as an InterfaceError with no mention of batch size. Each chunk is
+        # an independent upsert, so a partial failure leaves a prefix written --
+        # and re-running is safe, since re-upserting is a no-op.
+        chunk_size = max(1, _MAX_BIND_PARAMS // _PARAMS_PER_ROW)
         dialect = self.session.bind.dialect.name if self.session.bind else "postgresql"
         insert = sqlite_insert(Candle) if dialect == "sqlite" else postgres_insert(Candle)
-        statement = insert.values(rows)
-        excluded = statement.excluded
-        statement = statement.on_conflict_do_update(
-            index_elements=["instrument_id", "source_id", "timeframe", "open_time"],
-            set_={
-                "close_time": excluded.close_time,
-                "open": excluded.open,
-                "high": excluded.high,
-                "low": excluded.low,
-                "close": excluded.close,
-                "volume": excluded.volume,
-                "quote_volume": excluded.quote_volume,
-                "trade_count": excluded.trade_count,
-                "taker_buy_base_volume": excluded.taker_buy_base_volume,
-                "taker_buy_quote_volume": excluded.taker_buy_quote_volume,
-                "is_closed": excluded.is_closed,
-            },
-        )
-        await self.session.execute(statement)
+
+        # A fresh statement per chunk, not one statement built up with repeated
+        # .values() calls: SQLAlchemy's .values() is additive, so accumulating
+        # chunks onto a single statement re-binds every earlier row each time
+        # and the final execute still carries the whole set -- which is the
+        # original limit, unchanged, just spread over more statements.
+        conflict = {
+            column: insert.excluded[column]
+            for column in (
+                "close_time",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "quote_volume",
+                "trade_count",
+                "taker_buy_base_volume",
+                "taker_buy_quote_volume",
+                "is_closed",
+            )
+        }
+        for start in range(0, len(rows), chunk_size):
+            statement = insert.values(rows[start : start + chunk_size]).on_conflict_do_update(
+                index_elements=["instrument_id", "source_id", "timeframe", "open_time"],
+                set_=conflict,
+            )
+            await self.session.execute(statement)
         return len(rows)
 
     async def latest_open_time(
