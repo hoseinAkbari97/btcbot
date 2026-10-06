@@ -310,8 +310,9 @@ Each ingestion creates a persistent record with:
   the run unsupervised.
   - **Superseded by the hardening pass.** `risk=None` is now only permitted in `RunMode.RESEARCH`.
     `simulation`, `paper` and `live` raise rather than proceed unsupervised, so the risk engine
-    cannot be bypassed by omission outside research experiments. See the limitations section for the
-    one gap that remains: the HTTP route cannot yet select a mode.
+    cannot be bypassed by omission outside research experiments. `BacktestRequest.mode` also makes
+    those modes reachable over HTTP, and the route returns a 422 naming the mode when an ordered
+    mode arrives without `risk_limits`, so the enforcement is exercisable end to end.
 - Recorded with the run rather than in a new table: the limits are execution assumptions, already
   captured in the `parameters` JSON alongside `allow_short` and the cost model, so a stored run
   reproduces without a migration.
@@ -457,8 +458,10 @@ boundary.** The boundary is a memory boundary only.
 - `research/segmented_runner.py` + `scripts/run_segmented_research.py` — incremental structure state
   (level buckets, swings, swept set, regime, 70 bars of trailing close), a pending-outcome buffer for
   events whose forward window crosses the boundary, and atomic checkpoints.
-- `research/aggregate.py` — `assign_episodes`, `Episode`, `ClusteredBootstrapper`, `adaptive_resamples`.
-- `statistics.py` — `clustered_bootstrap_mean`, and `BootstrapResult.n_episodes`.
+- `research/aggregate.py` — `assign_episodes`, `Episode`, `ClusteredBootstrapper` (both the exact and
+  the episode-mean resampling paths), `adaptive_resamples`.
+- `statistics.py` — `clustered_bootstrap_mean(..., method="exact"|"approx")`, and
+  `BootstrapResult.{bootstrap_method, n_episodes, statistic_definition, random_seed}`.
 - `backtest/monte_carlo_export.py` — batched CSV/JSONL writers, `net_r` canonical with `net_R` as a
   documented compatibility alias.
 - `schemas/backtest.py` + `api/routes/backtest.py` — `mode` on the request, refused with a 422
@@ -479,6 +482,38 @@ truth by roughly √(events per episode) — and the point estimate is unchanged
 only in the width. In 2021 that is 731,839 events resting on **7,720 episodes**. `n_episodes` is now
 reported alongside `n` on every result, because "measured on 700,000 events" and "measured on 700,000
 events drawn from 7,720 episodes" are different claims.
+
+**Three resampling schemes, not one.** The distinction matters because they weight observations
+differently, and a reader cannot recover which one produced an interval from the numbers alone:
+
+| `bootstrap_method` | What is drawn | Estimand | Exact? |
+|---|---|---|---|
+| `event` | individual observations | event-weighted mean | exact for the estimand, **wrong about the uncertainty** when observations cluster |
+| `episode_exact` | whole episodes, each drawn episode contributing all of its events | event-weighted mean | yes |
+| `episode_mean_approx` | one mean per episode | **episode-equal-weight** mean | no |
+
+The approximation reduces each episode to its mean before resampling, so every episode counts once
+regardless of size. That is O(n_episodes) per replicate instead of O(n_events), which is what makes
+it usable at 700k events inside this project's budget — but it is a different statistic. An episode of
+100 observations and one of 2 get equal weight, so on a sample like "100 events at 1.0, 2 at 0.0" the
+approximation's interval is centred near 0.5 while the event-weighted mean is 100/102 ≈ 0.98. The
+point estimate is unaffected either way (resampling never moves a mean); it is the interval's subject
+that differs.
+
+`method="exact"` is the default. It reduces the events once to per-episode sums and counts, then
+builds every replicate as `(d multiplicities @ sums) / (d multiplicities @ counts)` over a bounded
+batch — so the resampled sample matches the observed cluster-size distribution and the estimand
+stays the event-weighted mean. Measured at 100,000 events over 5,000 episodes with 10,000
+resamples: **peak RSS 96 MB**, no `(resamples, events)` array anywhere. The approximation is kept and
+reported, but only ever under `episode_mean_approx`, with a `statistic_definition` that begins
+`APPROXIMATION:` and names the episode-equal-weight mean. Pinned by
+`tests/test_bootstrap_weighting.py`, including a hand-enumerable two-episode case where every
+replicate must land on `100k / (100k + 2(n - k))` — a size-dropping implementation could not produce
+those values.
+
+Every `BootstrapResult` records `bootstrap_method`, `n_events` (as `n`), `n_episodes`,
+`statistic_definition`, `resamples` (as the iteration count) and `random_seed`, so an interval
+carries its own provenance rather than relying on the reader to know which code path ran.
 
 ### 2021 5m validation run (measured)
 
@@ -564,10 +599,19 @@ memory-allocated workaround was needed.
   So any system reading below the warning line is also below the critical one, and the guard stops
   rather than warning. Warning there would mean telling a job to shrink its batches when the machine
   has under 3 GB left for everything, and shrinking takes several chunks to take effect.
-- **Reducing a cluster to its mean is a documented approximation.** Exact cluster resampling
-  preserves internal cluster size; the cheap version keeps cost proportional to the *episode* count,
-  which is what makes it usable at 700k events inside this budget. The bias is downward on interval
-  width, not upward on the point estimate. Stated in the docstring rather than left implicit.
+- **The episode-mean approximation is retained, but is no longer the default.** *Previously:* exact
+  cluster resampling did not exist, and reducing each cluster to its mean was the only path — cheap,
+  and the reason it was usable at 700k events inside this budget, but it silently changed the
+  estimand from the event-weighted mean to the episode-equal-weight mean. *Fix:* `method="exact"`
+  now defaults to resampling whole episodes with each drawn episode contributing all of its events,
+  so only the uncertainty accounts for clustering and the estimand is unchanged. The approximation
+  remains available as `method="approx"`, reported under `bootstrap_method="episode_mean_approx"`
+  with a `statistic_definition` that begins `APPROXIMATION:` and names the episode-equal-weight
+  mean. *Current status:* both paths are batched identically (peak RSS 96 MB at 100k events /
+  10k resamples), every result records its own provenance, and
+  `tests/test_bootstrap_weighting.py` pins the distinction. What remains true is narrower: the
+  approximation is still **an approximation** and must never be reported as the exact statistic.
+  The per-mode weighting table is above.
 
 ## Current Limitations (Phases 3–5)
 
@@ -581,16 +625,23 @@ These are honest boundaries of what exists today, not a roadmap.
   execution guard and cannot be one while §1.5 forbids a live connection. A control that only exists
   inside a simulation has not been tested against a real feed, real latency, or a real exchange
   rejecting an order.
-- **The risk engine is mandatory outside research mode, but the HTTP route cannot select a mode.**
-  `enforce_run_mode()` makes `risk=None` an error under `simulation` / `paper` / `live`, so the
-  bypass the spec forbids is closed at the engine level. However `BacktestRequest` has no `mode`
-  field and `POST /api/v1/backtests/run` never passes one, so every run created over the API is
-  recorded as `research`. The enforcement cannot be exercised through the API surface until that
-  field is added. **Treat any API-created run as a research control, not a tradeable result.**
-- **The full-history event analysis has not been run end to end.** The 5,000-bar result above
-  completes, but the complete 49,642-bar 1h pass was not run to completion under the memory limits
-  this session was held to. The sweep fix and the batched bootstrap both exist specifically to make
-  it feasible; the run itself should be repeated before any conclusion is drawn from these events.
+- **API mode selection was previously unavailable; it is implemented now.** *Previous issue:*
+  `BacktestRequest` had no `mode` field and `POST /api/v1/backtests/run` never passed one, so every
+  API-created run was recorded as `research` and the ordered-mode enforcement could not be exercised
+  over HTTP at all. *Fix:* `BacktestRequest.mode` exists and defaults to `research`; the route passes
+  it through and returns `mode` on the response; an ordered mode arriving without `risk_limits` is
+  refused with a 422 that names the mode. `enforce_run_mode()` additionally makes `risk=None` an
+  error under `simulation` / `paper` / `live` at the engine level. *Current status:* the plumbing is
+  complete and the distinction is reachable end to end — **the gap is closed.** What remains
+  unproven is not the plumbing but the *content* of those modes: `simulation` is a backtest that
+  happens to carry a risk engine, not a feed-driven simulation, so **treat any API-created run as a
+  research control, not a tradeable result.**
+- **The full-history event analysis has not been run end to end.** 5m segmented processing *is*
+  validated — one year ran to completion under the resource caps and is reported above. The open item
+  is narrower: the complete 49,642-bar **1h** pass was not run to completion under the memory limits
+  that session was held to. The sweep fix and the batched bootstrap both exist specifically to make
+  it feasible; that 1h run should be repeated before any conclusion is drawn from those events.
+  This is a missing *measurement*, not a missing capability.
 - **Event samples are only as independent as the detectors make them.** The crossing fix removed the
   grossest violation, but a level that price retests repeatedly still yields correlated observations,
   and neither Benjamini–Hochberg nor the paired bootstrap corrects for serial dependence within a
@@ -604,9 +655,12 @@ These are honest boundaries of what exists today, not a roadmap.
 - **Risk defaults remain unvalidated examples.** `1%` per trade, `5%` daily, `10%` weekly, `20%`
   drawdown are configuration illustrations carried over from the spec, not empirically derived
   values. They are deliberately not optimised yet.
-- **`backend/tests/test_storage.py` is currently unverified.** It aborts inside pyarrow under every
-  memory cap this session was permitted to use. It is unrelated to the changes above, but it is not
-  currently confirmed green.
+- ~~**`backend/tests/test_storage.py` is currently unverified.**~~ — **RESOLVED; it passes.**
+  Previously it aborted inside pyarrow under every memory cap that session was permitted to use.
+  The abort was memory pressure from concurrent work, not a defect in the storage layer, and no
+  memory-allocated workaround was needed. It now passes (2/2) as part of the 401-test suite. See
+  "Bug previously recorded as unverified, now verified" below. This limitation is **closed**; nothing
+  about storage is outstanding.
 - **The sweep and bootstrap fixes changed measured output.** Any event-research result produced before
   this session used a detector with non-independent samples; such results should be discarded and
   regenerated, not compared against new ones.
@@ -666,7 +720,8 @@ These are honest boundaries of what exists today, not a roadmap.
 - ~~Dataset manifests for research~~ — done (see priority 1)
 - Nobitex-specific cost parameters behind the existing `CostConfig` interface, so the research/execution
   venue split is explicit rather than assumed away. Not yet implemented.
-- A `mode` field on `BacktestRequest`, so `simulation` / `paper` / `live` are reachable over HTTP
+- ~~A `mode` field on `BacktestRequest`~~ — done; `simulation` / `paper` / `live` are reachable over
+  HTTP and the route 422s an ordered mode sent without `risk_limits`
 - Trades and order books (future)
 
 ## Code Quality
@@ -742,6 +797,43 @@ Run linting and formatting:
 make lint
 make format
 ```
+
+## Current Phase Status
+
+Each line below is confirmed by the implementation and by the current test run, not asserted.
+
+**Implementation status:** COMPLETE for this phase — infrastructure, research pipeline, statistical
+machinery, and risk enforcement. **401 tests passing, 0 failing** across 29 test files.
+
+**Research foundation:** READY FOR STRATEGY RESEARCH. The detectors, episode rule, outcome labelling,
+null baselines, and interval machinery are in place and measured. No strategy research has been
+performed yet, and no profitability is claimed.
+
+**Current bootstrap default:** `episode_exact` — whole episodes resampled with replacement, each
+drawn episode contributing all of its events. The estimand is the event-weighted mean.
+
+**Approximate bootstrap:** `episode_mean_approx`, available as `method="approx"`, documented
+separately and never reported as the exact statistic. Its interval describes the
+episode-equal-weight mean, which is a different quantity whenever episodes are unevenly sized.
+
+**API mode:** IMPLEMENTED. `BacktestRequest.mode` (default `research`) is accepted and echoed;
+`simulation` / `paper` / `live` are reachable over HTTP and are refused with a 422 when they arrive
+without `risk_limits`.
+
+**Storage tests:** PASSING (2/2). The earlier pyarrow abort was memory pressure from concurrent work,
+not a storage defect; no workaround was needed and the limitation is closed.
+
+**5m segmented processing:** VALIDATED — one year ran to completion under the resource caps. The
+open measurement gap is the full-history **1h** pass.
+
+**Resource safety:** VALIDATED. Both bootstrap resampling paths are batched; measured peak RSS is
+96 MB at 100,000 events / 5,000 episodes / 10,000 resamples, against a 6 GB hard limit and a
+comfortably-under-4 GB target. No `(n_resamples, n_events)` array is built by either path.
+
+**Remaining work:** actual strategy research and validation — choosing candidate strategies,
+measuring them against the null baselines, and applying Benjamini–Hochberg across whatever that
+produces. Everything in the "Current Limitations" section above is still true unless explicitly
+marked resolved; this section is a summary, not a replacement for it.
 
 Apply migrations:
 ```bash

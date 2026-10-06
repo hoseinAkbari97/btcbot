@@ -42,7 +42,8 @@ Three things grow with the dataset and each is handled:
   5m over six years that is tens of thousands of small objects, which is
   affordable; what is *not* affordable is the ``(n_resamples, n_events)``
   bootstrap matrix, and that is bounded separately by
-  :class:`~app.services.research.aggregate.ClusteredBootstrapper`.
+  :class:`~app.services.research.aggregate.ClusteredBootstrapper` -- whose exact and
+  episode-mean-approximation paths are both batched the same way.
 * **Outcomes** -- never retained. Each is folded into a fixed-size accumulator and
   discarded, so the outcome population is O(families x models x horizons) = 96
   numbers regardless of event count.

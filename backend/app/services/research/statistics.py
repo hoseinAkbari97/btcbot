@@ -47,6 +47,27 @@ import numpy as np
 DEFAULT_RESAMPLES = 2000
 DEFAULT_SEED = 20240101
 
+#: The three resampling schemes in this module, as reported in
+#: :attr:`BootstrapResult.bootstrap_method`. The distinction is not cosmetic --
+#: the three weight observations differently -- so every result carries which
+#: one produced it rather than leaving a reader to infer it from the width.
+#:
+#: ``event``
+#:     Resample individual observations with replacement. Exact for the
+#:     event-weighted mean, and *wrong* about the uncertainty when observations
+#:     cluster: it treats correlated measurements of one move as independent.
+#: ``episode_exact``
+#:     Resample whole episodes with replacement, each drawn episode
+#:     contributing all of its events. Exact: the resampled sample matches the
+#:     observed size distribution, so the estimand is the event-weighted mean
+#:     and only the *uncertainty* accounts for clustering.
+#: ``episode_mean_approx``
+#:     Reduce each episode to its mean first, then resample those. Cheap, and an
+#:     **approximation**: it resamples the episode-equal-weight mean, which is a
+#:     different estimand from the event-weighted mean whenever episodes are
+#:     unevenly sized. Reported under its own name for exactly that reason.
+BOOTSTRAP_METHODS = ("event", "episode_exact", "episode_mean_approx")
+
 
 @dataclass(frozen=True)
 class BootstrapResult:
@@ -71,6 +92,18 @@ class BootstrapResult:
     #: difference between "this effect is measured on 700,000 events" and
     #: "this effect is measured on 700,000 events drawn from 7,720 episodes".
     n_episodes: int | None = None
+    #: Which resampling scheme produced this interval -- one of
+    #: :data:`BOOTSTRAP_METHODS`. A reader cannot tell an exact cluster
+    #: bootstrap from its episode-mean approximation by looking at the numbers,
+    #: so the scheme is part of the result rather than of the docstring.
+    bootstrap_method: str = "event"
+    #: A one-line description of *what quantity* the interval is about. For the
+    #: clustered methods this differs from ``mean`` in a way that matters: the
+    #: exact one is about the event-weighted mean, the approximation about the
+    #: episode-equal-weight mean. Those are not the same number.
+    statistic_definition: str = "event-weighted mean of observed values"
+    #: The seed the resampling used, so a reported interval can be reproduced.
+    random_seed: int = DEFAULT_SEED
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -83,6 +116,9 @@ class BootstrapResult:
             "resamples": self.resamples,
             "excludes_zero": self.excludes_zero,
             "n_episodes": self.n_episodes,
+            "bootstrap_method": self.bootstrap_method,
+            "statistic_definition": self.statistic_definition,
+            "random_seed": self.random_seed,
         }
 
 
@@ -261,6 +297,19 @@ def paired_difference(
     )
 
 
+#: The statistic each clustered mode is actually about. Recorded on every
+#: result so a reader is never left guessing which estimand an interval
+#: describes -- the whole reason the exact mode exists is that the two differ.
+_STATISTIC_EXACT = (
+    "event-weighted mean; whole episodes resampled with replacement, "
+    "each drawn episode contributing all of its events"
+)
+_STATISTIC_APPROX = (
+    "APPROXIMATION: episode-equal-weight mean (each episode reduced to its "
+    "mean first); episodes are weighted equally regardless of size"
+)
+
+
 def clustered_bootstrap_mean(
     samples: Sequence[float],
     episode_of: Sequence[int],
@@ -269,6 +318,7 @@ def clustered_bootstrap_mean(
     confidence: float = 0.95,
     resamples: int | None = None,
     precision: str = "research",
+    method: str = "exact",
     seed: int = DEFAULT_SEED,
 ) -> BootstrapResult:
     """A bootstrap interval that resamples *episodes*, not events.
@@ -286,27 +336,47 @@ def clustered_bootstrap_mean(
     it is a confidence interval that claims more than the data supports, which
     is precisely the failure that turns a research log into a false positive.
 
-    What this does instead
-    ----------------------
-    Events are grouped by :func:`~app.services.research.aggregate.assign_episodes`
-    into episodes whose outcome windows overlap, each episode is reduced to its
-    mean, and the bootstrap resamples those means. The number that governs the
-    interval's width is the *episode* count, so ``result.n`` stays the event
-    count (what was measured) while a new ``n_episodes`` field reports what the
-    interval actually rests on.
+    The two modes
+    -------------
+    ``method="exact"`` (default)
+        Resample ``n_episodes`` episodes with replacement; each drawn episode
+        contributes *all* of its events. The resampled sample therefore has the
+        same cluster-size distribution as the observed one, and the estimand is
+        the plain event-weighted mean -- the same quantity ``result.mean``
+        reports. Only the uncertainty accounts for clustering, which is the only
+        thing clustering should change.
 
-    The reduction to episode means is a deliberate approximation: a cluster
-    bootstrap that re-draws whole clusters preserving their internal size is
-    exact, whereas averaging within a cluster first is the cheap version. It is
-    the version that keeps peak memory bounded by the episode count rather than
-    the event count, which is the property that makes it usable at 700k events
-    inside this project's budget. The bias it introduces is downward on the
-    interval width, not upward on the point estimate.
+    ``method="approx"``
+        Reduce each episode to its mean first, then resample those means. This
+        is **an approximation, and it changes the estimand**: each episode gets
+        weight 1 rather than its event count, so an episode of 100 observations
+        counts the same as one of 2. The point estimate stays the event-weighted
+        mean, but the interval describes a different statistic. It is kept
+        because it is cheaper (cost is O(n_episodes) per replicate rather than
+        O(n_events)), and it is reported as ``episode_mean_approx`` with a
+        ``statistic_definition`` that says so in words.
+
+    Either way ``result.n`` stays the event count -- what was measured -- while
+    ``result.n_episodes`` reports what the interval actually rests on, and
+    ``result.bootstrap_method`` reports which of the two produced it.
+
+    Memory
+    ------
+    Neither mode builds an ``(n_resamples, n_events)`` array. The exact mode
+    reduces the events once to per-episode sums and counts, then every replicate
+    is ``(d multiplicities @ sums) / (d multiplicities @ counts)`` over a
+    bounded batch. Both are usable at 700k events inside this project's budget.
 
     ``episode_of`` must be aligned with ``samples`` and in episode-id order, i.e.
     exactly what ``assign_episodes`` returns for the events in bar order.
     """
     from app.services.research.aggregate import ClusteredBootstrapper, adaptive_resamples
+
+    if method not in ("exact", "approx"):
+        raise ValueError(
+            f"unknown clustered bootstrap method {method!r}; "
+            "expected 'exact' or 'approx'"
+        )
 
     n_events = len(samples)
     n_episodes = len({int(e) for e in episode_of})
@@ -317,6 +387,8 @@ def clustered_bootstrap_mean(
         # same few clusters. ``adaptive_resamples`` draws that line.
         resamples = adaptive_resamples(n_episodes, precision=precision)
 
+    method_name = "episode_exact" if method == "exact" else "episode_mean_approx"
+    definition = _STATISTIC_EXACT if method == "exact" else _STATISTIC_APPROX
     bootstrapper = ClusteredBootstrapper(seed=seed)
     if n_events == 0 or n_episodes == 0:
         return BootstrapResult(
@@ -329,6 +401,9 @@ def clustered_bootstrap_mean(
             resamples=resamples,
             excludes_zero=False,
             n_episodes=n_episodes,
+            bootstrap_method=method_name,
+            statistic_definition=definition,
+            random_seed=seed,
         )
 
     values = np.asarray(samples, dtype=float)
@@ -342,10 +417,16 @@ def clustered_bootstrap_mean(
         raise ValueError("episode ids are not contiguous after remapping")
 
     point = float(values.mean())
-    means = bootstrapper.resample_means(
-        bootstrapper.episode_means(values, compact, n_episodes),
-        n_resamples=resamples,
-    )
+    if method == "exact":
+        sums, counts = bootstrapper.episode_sums_and_counts(values, compact, n_episodes)
+        means = bootstrapper.resample_cluster_means(
+            sums, counts, n_resamples=resamples
+        )
+    else:
+        means = bootstrapper.resample_means(
+            bootstrapper.episode_means(values, compact, n_episodes),
+            n_resamples=resamples,
+        )
     if not means:
         return BootstrapResult(
             name=name,
@@ -357,6 +438,9 @@ def clustered_bootstrap_mean(
             resamples=resamples,
             excludes_zero=False,
             n_episodes=n_episodes,
+            bootstrap_method=method_name,
+            statistic_definition=definition,
+            random_seed=seed,
         )
 
     means.sort()
@@ -373,6 +457,9 @@ def clustered_bootstrap_mean(
         resamples=resamples,
         excludes_zero=lower > 0 or upper < 0,
         n_episodes=n_episodes,
+        bootstrap_method=method_name,
+        statistic_definition=definition,
+        random_seed=seed,
     )
 
 

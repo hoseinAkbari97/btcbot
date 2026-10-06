@@ -505,6 +505,93 @@ class ClusteredBootstrapper:
         present = counts > 0
         return (totals[present] / counts[present]).tolist()
 
+    def episode_sums_and_counts(
+        self,
+        values: "np.ndarray",
+        episode_of: list[int],
+        n_episodes: int,
+    ) -> tuple["np.ndarray", "np.ndarray"]:
+        """Per-episode ``(sum, count)`` pairs, the input to the exact bootstrap.
+
+        :meth:`episode_means` throws the counts away; the exact cluster bootstrap
+        needs them, because an episode drawn ``k`` times contributes ``k``
+        copies of itself and the replicate's denominator is the resampled event
+        count rather than the episode count. Summing once and keeping both
+        halves is what lets a 700k-event run build every replicate from two
+        ``(n_episodes,)`` vectors instead of from the events.
+        """
+        import numpy as np
+
+        sums = np.bincount(episode_of, weights=values, minlength=n_episodes)
+        counts = np.bincount(episode_of, minlength=n_episodes)
+        present = counts > 0
+        return sums[present], counts[present]
+
+    def resample_cluster_means(
+        self,
+        episode_sums: "np.ndarray",
+        episode_counts: "np.ndarray",
+        *,
+        n_resamples: int,
+    ) -> list[float]:
+        """``n_resamples`` exact cluster-bootstrap means, batched.
+
+        The *exact* cluster bootstrap: draw ``n_episodes`` episodes with
+        replacement, and let a drawn episode contribute all of its events every
+        time it is drawn. A replicate is therefore
+
+            mean = sum_c k_c * S_c  /  sum_c k_c * n_c
+
+        over the per-episode sums ``S_c`` and sizes ``n_c``, where ``k_c`` is
+        how many times episode ``c`` came up in the draw. That is what makes it
+        exact: the resampled sample has the same size-and-all distribution as
+        the observed one, so the estimand is the plain event-weighted mean
+        rather than the episode-equal-weight mean.
+
+        This is the same thing
+        :meth:`resample_means` over :meth:`episode_means` approximates, and the
+        two differ whenever episodes are unevenly sized. With 100 observations
+        in one episode and 2 in another, this method keeps the 100-event episode
+        weighted 50x more; the approximation gives both episodes weight 1.
+
+        Memory is bounded the same way. Within a batch the draw is
+        ``(size, n_episodes)`` and the per-replicate draw counts are derived
+        from it by a single offset bincount, so the largest live arrays are all
+        ``size x n_episodes`` with ``size`` chosen from ``batch_cells``. No
+        ``(n_resamples, n_events)`` array is ever built.
+        """
+        import numpy as np
+
+        n_episodes = int(episode_sums.shape[0])
+        if n_episodes == 0 or n_resamples <= 0:
+            return []
+        sums = np.asarray(episode_sums, dtype=float)
+        counts = np.asarray(episode_counts, dtype=float)
+        rng = np.random.default_rng(self.seed)
+        per_batch = max(1, self.batch_cells // n_episodes)
+
+        means: list[float] = []
+        remaining = n_resamples
+        while remaining > 0:
+            size = min(per_batch, remaining)
+            indices = rng.integers(0, n_episodes, size=(size, n_episodes))
+            # Per-replicate multiplicities: one bincount over row-offset keys
+            # gives every replicate's draw counts at once. The alternative,
+            # comparing `indices` against `arange(n_episodes)` to build a
+            # (size, n_episodes, n_episodes) indicator, is exactly the giant
+            # array this project cannot afford.
+            offsets = (np.arange(size, dtype=np.int64) * n_episodes)[:, None]
+            drawn = np.bincount(
+                (offsets + indices).ravel(), minlength=size * n_episodes
+            ).reshape(size, n_episodes).astype(float)
+            # Numerator via matmul rather than (drawn * sums): no (size,
+            # n_episodes) float temporary for the product.
+            numerator = drawn @ sums
+            denominator = drawn @ counts
+            means.extend((numerator / denominator).tolist())
+            remaining -= size
+        return means
+
     def resample_means(
         self, episode_means: list[float], *, n_resamples: int
     ) -> list[float]:
