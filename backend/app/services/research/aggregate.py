@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 import math
+from bisect import insort
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Iterable, Iterator
@@ -125,6 +126,32 @@ class OutcomeKey:
         return f"{self.detector}|{self.kind}|{self.side}|{self.stop_model}"
 
 
+#: Most resolved R values kept per (family, target) so a median can be reported.
+#: A family is one detector x kind x side x stop model, and Phase 11's question
+#: is answered on families of thousands of events, so the cap is not reached in
+#: practice. It exists because "bounded" has to mean bounded: a family of a
+#: million events must not store a million floats to produce one median.
+TARGET_R_SAMPLE_CAP = 20_000
+
+
+def _resolved_r(outcome, target) -> float | None:
+    """The realised R multiple for a target, or ``None`` if unresolved.
+
+    A win is worth exactly the target multiple, and a loss exactly -1: both are
+    known the moment the barrier prints, and neither depends on where price went
+    afterwards. Reading it off the *final* forward return instead would measure
+    something else entirely -- how far the trade wandered past its target, which
+    a target-and-stop exit would never have captured.
+    """
+    if outcome.stop_distance is None or outcome.entry_price is None:
+        return None
+    if target.target_before_stop is True:
+        return float(target.target_r)
+    if target.target_before_stop is False:
+        return -1.0
+    return None
+
+
 class OutcomeAccumulator:
     """Fold outcomes into moments; keep nothing else.
 
@@ -142,6 +169,11 @@ class OutcomeAccumulator:
         #: itself. These are counts, so streaming them is exact.
         self._barriers: dict[str, dict[str, int]] = {}
         self._excursions: dict[tuple[str, str], Moment] = {}
+        #: Per target multiple: win/loss/ambiguous/unresolved tallies and the
+        #: two time-to-resolution moments. Bounded by (families x targets), which
+        #: is the point -- Phase 11 asks for a target grid per setup, and doing
+        #: it per event would turn four numbers into four times the event count.
+        self._targets: dict[str, dict[str, dict]] = {}
         self._truncated = 0
         self.total = 0
 
@@ -197,6 +229,69 @@ class OutcomeAccumulator:
                 moment = self._excursions[slot] = Moment()
             moment.add(float(value))
 
+        for target_key, target in outcome.targets.items():
+            grid = self._targets.get(name)
+            if grid is None:
+                grid = self._targets[name] = {}
+            bucket = grid.get(target_key)
+            if bucket is None:
+                # ``as_dict`` shape from the start, so serialising a partially
+                # populated bucket needs no special case and a resumed run
+                # reads back the same structure it wrote.
+                bucket = grid[target_key] = {
+                    "wins": 0,
+                    "losses": 0,
+                    "ambiguous": 0,
+                    "unresolved": 0,
+                    "r_multiple": Moment(),
+                    "time_to_win": Moment(),
+                    "time_to_loss": Moment(),
+                    "r_sum": 0.0,
+                    "r_n": 0,
+                    "_sorted_r": [],
+                }
+            if target.target_before_stop is True:
+                bucket["wins"] += 1
+            elif target.target_before_stop is False:
+                bucket["losses"] += 1
+            elif target.unresolved:
+                bucket["unresolved"] += 1
+            else:
+                bucket["ambiguous"] += 1
+            if target.bars_to_target is not None:
+                bucket["time_to_win"].add(float(target.bars_to_target))
+            if target.bars_to_stop is not None and target.target_before_stop is not True:
+                bucket["time_to_loss"].add(float(target.bars_to_stop))
+            # Average and median R both need the distribution, and a median over
+            # a streaming stream is not computable from a moment. So the
+            # resolved R values are kept -- capped, because an unbounded list
+            # would reintroduce exactly the per-event storage this accumulator
+            # exists to avoid.
+            resolved_r = _resolved_r(outcome, target)
+            if resolved_r is not None:
+                bucket["r_sum"] += resolved_r
+                bucket["r_n"] += 1
+                values = bucket["_sorted_r"]
+                # Kept sorted at all times, because the median below reads
+                # ``values[mid]`` directly. Appending unsorted and sorting only
+                # on replacement would make the median an order statistic of the
+                # *stream* rather than of the sample -- which returns whatever
+                # happened to arrive near the middle, not the middle of the
+                # distribution. That is not a rounding error: with wins at +1.5R
+                # and losses at -1R it reported medians of both.
+                if len(values) < TARGET_R_SAMPLE_CAP:
+                    insort(values, resolved_r)
+                elif resolved_r < values[-1]:
+                    # Reservoir-by-threshold: keep the smallest N, which is a
+                    # biased sample of the median. The cap is set far above any
+                    # realistic family size (see ``TARGET_R_SAMPLE_CAP``), so
+                    # in practice this branch does not run; where it does, the
+                    # report says so rather than presenting a truncated median
+                    # as the median.
+                    values.pop()
+                    insort(values, resolved_r)
+                    bucket["truncated_sample"] = True
+
     @property
     def truncated(self) -> int:
         """Outcomes whose forward window ran off the end of the dataset.
@@ -238,6 +333,75 @@ class OutcomeAccumulator:
             {"hit": 0, "missed": 0, "ambiguous": 0},
         )
 
+    def target_stats(
+        self, detector: str, kind: str, side: str, model: str, target_r: str
+    ) -> dict[str, object]:
+        """Phase 11's per-target summary for one family.
+
+        Returns an explicit zero-filled dictionary for a cell nothing reached,
+        so a report prints ``n=0`` instead of omitting the row: "measured and
+        found nothing" and "never measured" are different claims and the
+        difference is the whole reason the target grid is explicit.
+        """
+        name = OutcomeKey(detector, kind, side, model).as_str()
+        bucket = self._targets.get(name, {}).get(target_r)
+        if bucket is None:
+            return {
+                "target_r": target_r,
+                "n": 0,
+                "wins": 0,
+                "losses": 0,
+                "ambiguous": 0,
+                "unresolved": 0,
+                "win_rate": None,
+                "loss_rate": None,
+                "average_r": None,
+                "median_r": None,
+                "time_to_target": None,
+                "time_to_stop": None,
+                "median_truncated": False,
+            }
+        wins: int = bucket["wins"]
+        losses: int = bucket["losses"]
+        resolved = wins + losses
+        values: list[float] = bucket["_sorted_r"]
+        # ``median_unrecoverable`` is set only by a checkpoint restore, where the
+        # pre-crash R sample was never serialised. The median of whatever arrived
+        # after the resume would describe only the tail of the run, so it is
+        # withheld -- a missing number beats one that silently means something
+        # narrower than the column heading says.
+        truncated = bool(bucket.get("truncated_sample"))
+        if bucket.get("median_unrecoverable"):
+            median = None
+            truncated = True
+        elif values:
+            mid = len(values) // 2
+            median = (
+                values[mid]
+                if len(values) % 2
+                else (values[mid - 1] + values[mid]) / 2.0
+            )
+        else:
+            median = None
+        return {
+            "target_r": target_r,
+            "n": resolved,
+            "wins": wins,
+            "losses": losses,
+            "ambiguous": bucket["ambiguous"],
+            "unresolved": bucket["unresolved"],
+            # Rates are over *resolved* outcomes only. Folding the ambiguous and
+            # unresolved cells into the denominator would report an inability
+            # to tell which barrier printed as a directional loss.
+            "win_rate": wins / resolved if resolved else None,
+            "loss_rate": losses / resolved if resolved else None,
+            "average_r": bucket["r_sum"] / bucket["r_n"] if bucket["r_n"] else None,
+            "median_r": median,
+            "time_to_target": bucket["time_to_win"].as_dict(),
+            "time_to_stop": bucket["time_to_loss"].as_dict(),
+            "median_truncated": truncated,
+        }
+
     def excursion(self, label: str, detector: str, kind: str, side: str, model: str) -> Moment:
         """Running mean of MFE or MAE for one cell.
 
@@ -269,6 +433,12 @@ class OutcomeAccumulator:
                         if self.excursion(
                             label, key.detector, key.kind, key.side, key.stop_model
                         ).n
+                    },
+                    "targets": {
+                        target_r: self.target_stats(
+                            key.detector, key.kind, key.side, key.stop_model, target_r
+                        )
+                        for target_r in sorted(self._targets.get(key.as_str(), {}))
                     },
                     "horizons": {
                         str(horizon): moment.as_dict()

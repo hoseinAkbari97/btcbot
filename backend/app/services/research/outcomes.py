@@ -53,6 +53,59 @@ from app.services.research.events import ResearchEvent
 #: they are fixed so that two event kinds are compared on the same ones.
 FORWARD_HORIZONS = (1, 3, 6, 12)
 
+#: The target multiples Phase 11 asks every setup to be measured against.
+#: Fixed rather than tuned: a target grid chosen after seeing the results is a
+#: grid that will always contain a winner. +1R is first because it is the
+#: symmetric case — the same distance in both directions — so it is also the
+#: cell where "did it work at all" is asked before any asymmetric claim.
+TARGET_R_GRID: tuple[Decimal, ...] = (
+    Decimal("0.5"),
+    Decimal("1"),
+    Decimal("1.5"),
+    Decimal("2"),
+)
+
+
+def _grid_key(r: Decimal) -> str:
+    """Stable name for a target multiple: ``"1.5"``, not ``"1.5000"``."""
+    return str(r.normalize())
+
+
+@dataclass(frozen=True)
+class TargetOutcome:
+    """Did ``+XR`` print before the stop, and how long did each take?
+
+    Three-valued ``target_before_stop``, not a bool, for the same reason
+    ``r_barrier_hit`` is: ``None`` means the two barriers landed inside the same
+    bar and OHLC cannot say which printed first. Collapsing that into ``False``
+    would quietly inflate every loss rate in the report by the size of the
+    ambiguity, which is exactly the population a real trader would have had to
+    guess about.
+    """
+
+    #: The target multiple this describes, e.g. ``Decimal("1.5")``.
+    target_r: Decimal
+    #: True if +XR printed first, False if the stop printed first, None if both
+    #: landed in the same bar or neither was reached within the horizon.
+    target_before_stop: bool | None
+    #: Bars from entry to whichever barrier printed, or ``None`` when neither did.
+    bars_to_resolve: int | None
+    bars_to_target: int | None = None
+    bars_to_stop: int | None = None
+    #: True when the scan ran out of data before either barrier printed, which
+    #: is different from "neither printed within the horizon".
+    unresolved: bool = False
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "target_r": str(self.target_r),
+            "target_before_stop": self.target_before_stop,
+            "bars_to_resolve": self.bars_to_resolve,
+            "bars_to_target": self.bars_to_target,
+            "bars_to_stop": self.bars_to_stop,
+            "unresolved": self.unresolved,
+        }
+
 #: The bar an outcome is measured from: the bar *after* confirmation, since the
 #: confirming bar's close is the first price that could be acted upon.
 ENTRY_OFFSET = 1
@@ -133,6 +186,11 @@ class EventOutcome:
     #: True when the forward window ran off the end of the data, so the longest
     #: horizons are genuinely unknown rather than merely small.
     truncated: bool = False
+    #: Target multiple -> whether that target printed before the stop. Empty
+    #: when the R unit is undefined, since "did +1R print" is unanswerable
+    #: without one. Populated by a single scan of the bar path, so every entry
+    #: is measured over the same bars.
+    targets: dict[str, TargetOutcome] = field(default_factory=dict)
 
     def as_row(self) -> dict[str, object]:
         row: dict[str, object] = {
@@ -153,6 +211,7 @@ class EventOutcome:
             "mae_r": None if self.mae_r is None else str(self.mae_r),
             "r_barrier_hit": self.r_barrier_hit,
             "bars_to_barrier": self.bars_to_barrier,
+            "targets": {key: value.as_dict() for key, value in self.targets.items()},
         }
         for horizon in FORWARD_HORIZONS:
             value = self.forward_return.get(horizon)
@@ -205,6 +264,90 @@ def _structural_stop(
     if side == "long":
         return candle.low
     return candle.high
+
+
+def _scan_barriers(
+    candles: Sequence[CandleData],
+    *,
+    entry_index: int,
+    entry_price: Decimal,
+    direction: Decimal,
+    stop_price: Decimal,
+    stop_distance: Decimal,
+    last_barrier: int,
+    barrier_r: Decimal,
+    target_rs: Sequence[Decimal],
+) -> dict[str, TargetOutcome]:
+    """Resolve every target multiple against the stop in a single pass.
+
+    One pass, not one pass per target: at 12 bars of horizon the difference is
+    immaterial, but the invariant that matters is structural -- every target in
+    the grid is read off the *same* bar path, so "+2R hit before −1R" cannot
+    disagree with "+1R hit before −1R" through a difference in how the bars were
+    scanned. A per-target implementation would have four chances to get that
+    wrong and only one set of tests pointing at it.
+
+    Targets are resolved independently, which is what makes a grid possible:
+    +1R can print before the stop and +2R can fail to print at all, and the
+    second fact is not an error, it is the whole question the grid asks.
+    """
+    if stop_distance <= 0 or not target_rs:
+        return {}
+
+    prices = {_grid_key(r): r for r in target_rs}
+    resolved: dict[str, TargetOutcome] = {}
+    # Still-open targets as (key, target_price). Resolved ones leave the list,
+    # so the per-bar work shrinks as the grid drains.
+    pending: list[tuple[str, Decimal]] = [
+        (key, entry_price + direction * multiple * stop_distance)
+        for key, multiple in prices.items()
+    ]
+    is_long = direction > 0
+    stop_seen_at: int | None = None
+
+    for index in range(entry_index + 1, last_barrier + 1):
+        candle = candles[index]
+        stop_now = candle.low <= stop_price if is_long else candle.high >= stop_price
+        if stop_now and stop_seen_at is None:
+            stop_seen_at = index - entry_index
+        if not pending:
+            break
+        still: list[tuple[str, Decimal]] = []
+        for key, price in pending:
+            reached = candle.high >= price if is_long else candle.low <= price
+            if reached:
+                # Both barriers in one bar: unresolvable, and recorded as such
+                # rather than resolved in either direction.
+                resolved[key] = TargetOutcome(
+                    target_r=prices[key],
+                    target_before_stop=None if stop_now else True,
+                    bars_to_resolve=index - entry_index,
+                    bars_to_target=index - entry_index,
+                    bars_to_stop=stop_seen_at if stop_now else None,
+                )
+            elif stop_now:
+                resolved[key] = TargetOutcome(
+                    target_r=prices[key],
+                    target_before_stop=False,
+                    bars_to_resolve=stop_seen_at,
+                    bars_to_stop=stop_seen_at,
+                )
+            else:
+                # Only still-open while the stop has not printed. Once it has,
+                # this target can no longer win, and leaving it open would turn
+                # a settled loss into a permanently-unresolved row.
+                still.append((key, price))
+        pending = still
+
+    for key, _price in pending:
+        resolved[key] = TargetOutcome(
+            target_r=prices[key],
+            target_before_stop=None,
+            bars_to_resolve=None,
+            bars_to_stop=stop_seen_at,
+            unresolved=True,
+        )
+    return resolved
 
 
 def _stop_for(
@@ -309,27 +452,30 @@ def label_event(
 
     barrier_hit: bool | None = None
     bars_to_barrier: int | None = None
+    targets: dict[str, TargetOutcome] = {}
     if stop_distance is not None:
-        barrier_price = entry_price + direction * barrier_r * stop_distance
         last_barrier = min(entry_index + barrier_horizon, _data_end(candles) - 1)
-        for index in range(entry_index + 1, last_barrier + 1):
-            candle = candles[index]
-            if side == "long":
-                hit_high, hit_low = candle.high >= barrier_price, candle.low <= stop_price
-            else:
-                hit_high, hit_low = candle.low <= barrier_price, candle.high >= stop_price
-            if hit_high and hit_low:
-                # Both barriers inside one bar: which printed first is not
-                # knowable from OHLC data. Recording "hit" would assume the
-                # favourable one, and recording "miss" would assume the
-                # adverse one, so neither is claimed.
-                barrier_hit = None
+        targets = _scan_barriers(
+            candles,
+            entry_index=entry_index,
+            entry_price=entry_price,
+            direction=direction,
+            stop_price=stop_price,
+            stop_distance=stop_distance,
+            last_barrier=last_barrier,
+            barrier_r=barrier_r,
+            target_rs=TARGET_R_GRID,
+        )
+        legacy = targets.get(_grid_key(barrier_r))
+        if legacy is not None:
+            barrier_hit = legacy.target_before_stop
+            bars_to_barrier = (
+                legacy.bars_to_target
+                if legacy.target_before_stop
+                else legacy.bars_to_stop
+            )
+            if legacy.target_before_stop is None:
                 bars_to_barrier = None
-                break
-            if hit_high or hit_low:
-                barrier_hit = hit_high
-                bars_to_barrier = index - entry_index
-                break
 
     return EventOutcome(
         event_index=event.event_index,
@@ -352,6 +498,7 @@ def label_event(
         bars_to_barrier=bars_to_barrier,
         stop_model=stop_model.name,
         truncated=entry_index + max(horizons) >= _data_end(candles),
+        targets=targets,
     )
 
 

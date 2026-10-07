@@ -663,6 +663,28 @@ class SegmentedResearchRunner:
                 self.accumulators._excursions[(label, name)] = Moment.from_dict(moment)
             if cell.get("barriers"):
                 self.accumulators._barriers[name] = dict(cell["barriers"])
+            for target_r, stats in cell.get("targets", {}).items():
+                # Rebuild the bucket from the *reported* summary rather than a
+                # private dump, so the spill stays a summary and not a second
+                # copy of the accumulator.
+                resolved = int(stats.get("wins", 0)) + int(stats.get("losses", 0))
+                self.accumulators._targets.setdefault(name, {})[target_r] = {
+                    "wins": int(stats.get("wins", 0)),
+                    "losses": int(stats.get("losses", 0)),
+                    "ambiguous": int(stats.get("ambiguous", 0)),
+                    "unresolved": int(stats.get("unresolved", 0)),
+                    "time_to_win": Moment.from_dict(stats.get("time_to_target", {})),
+                    "time_to_loss": Moment.from_dict(stats.get("time_to_stop", {})),
+                    "r_sum": float(stats.get("average_r") or 0.0) * resolved,
+                    "r_n": resolved,
+                    "_sorted_r": [],
+                    # The R sample itself is not in the spill -- it is a capped
+                    # per-cell list, not a moment -- so a resumed run cannot
+                    # report a median over the whole run. Record that it is
+                    # unavailable rather than reporting the post-checkpoint
+                    # sample as if it were the whole.
+                    "median_unrecoverable": True,
+                }
         self.accumulators.total = int(
             checkpoint.outcomes.get("total_outcomes", 0)
         )

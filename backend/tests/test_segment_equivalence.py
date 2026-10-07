@@ -62,6 +62,7 @@ def whole(month) -> OutcomeAccumulator:
         month, symbol="BTCUSDT", timeframe=Timeframe.M5
     )
     events = detect_liquidity_sweeps(month, levels=structure.liquidity_levels)
+
     accumulator = OutcomeAccumulator()
     label_events_streaming(month, events, accumulator)
     return accumulator
@@ -125,6 +126,13 @@ def test_segmented_aggregates_equal_the_whole_series(
         assert actual["barriers"] == expected["barriers"], f"barriers differ for {key}"
         assert actual.get("excursions", {}) == expected.get("excursions", {}), (
             f"excursions differ for {key}"
+        )
+        # The target grid carries its own per-target state through the
+        # checkpoint, so it is compared with the same rigour as the rest. A
+        # silent divergence here would mean the resumed run's Phase 11 numbers
+        # described only the segments after the last checkpoint.
+        assert actual.get("targets", {}) == expected.get("targets", {}), (
+            f"target grid differs for {key}"
         )
         assert set(actual["horizons"]) == set(expected["horizons"]), f"horizons differ for {key}"
         for horizon, moment in expected["horizons"].items():
@@ -241,6 +249,87 @@ def test_episodes_survive_an_interrupted_run(tmp_path) -> None:
     )
     assert resumed.events == reference.events
     assert resumed.outcomes == reference.outcomes
+
+
+def test_the_target_grid_survives_an_interrupted_run(tmp_path) -> None:
+    """Phase 11's per-target tallies are cumulative counters, and must resume.
+
+    The grid is stored per family per target. A resumed run that dropped it
+    would report the win rate of the segments *after* the checkpoint -- a
+    smaller sample, with a different rate, and nothing in the output to say the
+    window was narrower. The counts, the resolved R mean and the two
+    time-to-resolution moments are all recoverable from the spill.
+
+    The median is the exception, and is checked as such: the R sample itself is
+    a capped per-cell list rather than a moment, so it is not serialised, and a
+    resumed run reports no median rather than the median of its own tail.
+    """
+    out = tmp_path / "targets"
+    limits = ResourceLimits(segment_days=3)
+
+    import json
+
+    clean = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "clean",
+    )
+    clean.run()
+    reference = json.loads(clean.checkpoint_path.read_text(encoding="utf-8"))["outcomes"]
+
+    interrupted = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "resumed",
+    )
+    interrupted._max_segments = 1
+    interrupted.run()
+
+    finished = SegmentedResearchRunner(
+        dataset=DATASET, symbol="BTCUSDT", limits=limits,
+        start=START, end=END, out_dir=out / "resumed",
+    )
+    finished.run()
+    resumed = json.loads(
+        finished.checkpoint_path.read_text(encoding="utf-8")
+    )["outcomes"]
+
+    clean_cells = {
+        (c["detector"], c["kind"], c["side"], c["stop_model"]): c["targets"]
+        for c in reference["cells"]
+    }
+    resumed_cells = {
+        (c["detector"], c["kind"], c["side"], c["stop_model"]): c["targets"]
+        for c in resumed["cells"]
+    }
+    assert clean_cells, "no target cells; the comparison would be vacuous"
+    assert set(resumed_cells) == set(clean_cells)
+
+    for key, expected in clean_cells.items():
+        actual = resumed_cells[key]
+        assert set(actual) == set(expected), f"grid keys differ for {key}"
+        assert any(t["n"] > 0 for t in expected.values()), (
+            f"every target cell is empty for {key}; nothing was measured"
+        )
+        for target_r, want in expected.items():
+            got = actual[target_r]
+            assert got["wins"] == want["wins"], f"{key} {target_r}: wins differ"
+            assert got["losses"] == want["losses"], f"{key} {target_r}: losses differ"
+            assert got["n"] == want["n"], f"{key} {target_r}: n differs"
+            assert got["win_rate"] == pytest.approx(want["win_rate"]), (
+                f"{key} {target_r}: win rate differs"
+            )
+            # The R sum is restored as mean x n, so it is exact only because
+            # that is how it was stored. Asserted, not assumed.
+            assert got["average_r"] == pytest.approx(want["average_r"], rel=1e-12)
+            assert got["time_to_target"]["n"] == want["time_to_target"]["n"]
+            assert got["time_to_target"]["mean"] == pytest.approx(
+                want["time_to_target"]["mean"], rel=1e-12, abs=1e-12
+            )
+            assert got["median_r"] is None, (
+                f"{key} {target_r}: a resumed run cannot report a whole-run median"
+            )
+            assert got["median_truncated"] is True, (
+                f"{key} {target_r}: the missing median must be flagged"
+            )
 
 
 def test_a_hard_kill_leaves_no_claim_the_spill_cannot_back(tmp_path) -> None:

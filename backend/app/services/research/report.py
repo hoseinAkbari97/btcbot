@@ -43,9 +43,11 @@ from app.services.research.baselines import (
     buy_and_hold,
     random_events,
 )
+from app.services.research.aggregate import OutcomeAccumulator
 from app.services.research.events import ResearchEvent
 from app.services.research.outcomes import (
     FORWARD_HORIZONS,
+    TARGET_R_GRID,
     EventOutcome,
     label_events,
 )
@@ -74,6 +76,11 @@ class FamilyReport:
     #: the stop model is the analyst's choice and a finding that survives only
     #: one of them is a finding about the choice.
     results: dict[str, dict[str, dict[int, dict]]] = field(default_factory=dict)
+    #: Phase 11's per-target summary, keyed the same way as ``results``:
+    #: side -> stop model -> target multiple -> stats. Separate rather than
+    #: folded into ``results`` because it answers a different question: not
+    #: "does the event carry information" but "where should the exit go".
+    targets: dict[str, dict[str, dict[str, dict]]] = field(default_factory=dict)
     event_count: int = 0
     note: str = ""
 
@@ -92,6 +99,13 @@ class FamilyReport:
                     for model, horizons in models.items()
                 }
                 for side, models in self.results.items()
+            },
+            "targets": {
+                side: {
+                    model: {target_r: dict(stats) for target_r, stats in targets.items()}
+                    for model, targets in models.items()
+                }
+                for side, models in self.targets.items()
             },
         }
 
@@ -179,10 +193,93 @@ class ResearchReport:
                     for horizon in sorted(horizons):
                         lines.append("| " + _row(horizon, horizons[horizon]) + " |")
                     lines.append("")
+                    targets = family.targets.get(side, {}).get(model)
+                    if targets:
+                        lines.append("Target grid — each target resolved against the "
+                                     "same stop, over its own resolved sample:")
+                        lines.append("")
+                        lines.append(_target_header())
+                        lines.append(_target_rule())
+                        for target_r, stats in targets.items():
+                            lines.append(_target_row(stats))
+                        lines.append("")
+                        notes = _target_notes(targets)
+                        if notes:
+                            lines.extend(notes)
+                            lines.append("")
 
         if self.multiple_testing:
             lines.extend(["## Multiple testing", "", str(self.multiple_testing), ""])
         return "\n".join(lines)
+
+
+#: The target table's columns. ``n`` is the *resolved* count, and the
+#: ambiguous/unresolved columns are printed next to it for the same reason the
+#: denominator excludes them: a reader comparing +0.5R's win rate to +2R's has
+#: to see that they were measured on different populations.
+_TARGET_COLUMNS = (
+    "target", "n", "win", "loss", "unclear", "not reached", "avg R",
+    "median R", "bars to target", "bars to stop",
+)
+
+
+def _target_header() -> str:
+    return "| " + " | ".join(_TARGET_COLUMNS) + " |"
+
+
+def _target_rule() -> str:
+    return "| " + " | ".join("---:" for _ in _TARGET_COLUMNS) + " |"
+
+
+def _target_row(stats: dict) -> str:
+    target = stats.get("time_to_target") or {}
+    stop = stats.get("time_to_stop") or {}
+    median = stats.get("median_r")
+    if median is None and stats.get("median_truncated"):
+        # A missing median means one of two different things, and the reader
+        # cannot tell them apart from a dash, so it is spelled out.
+        median = "— (see note)"
+    return "| " + " | ".join(
+        [
+            str(stats.get("target_r", "")),
+            str(stats.get("n", 0)),
+            _cell(stats.get("win_rate"), ".3f"),
+            _cell(stats.get("loss_rate"), ".3f"),
+            str(stats.get("ambiguous", 0)),
+            str(stats.get("unresolved", 0)),
+            _cell(stats.get("average_r"), "+.3f"),
+            _cell(median, "+.3f"),
+            _cell(target.get("mean"), ".2f"),
+            _cell(stop.get("mean"), ".2f"),
+        ]
+    ) + " |"
+
+
+def _target_notes(targets: dict[str, dict]) -> list[str]:
+    """Footnotes for anything in this grid a reader could otherwise misread."""
+    notes: list[str] = []
+    ambiguous = sum(int(t.get("ambiguous", 0)) for t in targets.values())
+    unresolved = sum(int(t.get("unresolved", 0)) for t in targets.values())
+    if ambiguous:
+        notes.append(
+            f"- 'unclear' bars held both the target and the stop: OHLC cannot say "
+            f"which printed first, so they are counted in neither the win nor the "
+            f"loss rate ({ambiguous} rows here). Treating them as losses would "
+            f"understate the setup by exactly this many events."
+        )
+    if unresolved:
+        notes.append(
+            f"- 'not reached' rows ran out of horizon before either barrier printed "
+            f"({unresolved} rows here). They are not losses: price simply did not "
+            f"go far enough, which is a different claim."
+        )
+    if any(t.get("median_truncated") for t in targets.values()):
+        notes.append(
+            "- One or more median R values are marked truncated: the sample "
+            "exceeded the per-cell cap, or the run was resumed and the pre-checkpoint "
+            "sample is not recoverable. The average R is unaffected."
+        )
+    return notes
 
 
 def _cell(value: object, spec: str = "+.5f") -> str:
@@ -301,6 +398,22 @@ def analyze_family(
                     "verdict": _verdict(result, delta, result.n),
                 }
             report.results.setdefault(side, {})[model] = per_horizon
+
+    accumulator = OutcomeAccumulator()
+    for outcome in outcomes:
+        accumulator.add(outcome)
+    for side in ("long", "short"):
+        for model in models:
+            if not any(
+                o.side == side and o.stop_model == model for o in outcomes
+            ):
+                continue
+            report.targets.setdefault(side, {})[model] = {
+                str(target_r): accumulator.target_stats(
+                    detector, report.kind, side, model, str(target_r)
+                )
+                for target_r in TARGET_R_GRID
+            }
     return report
 
 
