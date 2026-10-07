@@ -20,6 +20,7 @@ running this comparison rather than by reading the code:
 
 from __future__ import annotations
 
+import itertools
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -29,8 +30,11 @@ from app.core.resources import ResourceLimits
 from app.schemas.market_data import Timeframe
 from app.services.market_structure.analysis import analyze_market_structure
 from app.services.research.aggregate import OutcomeAccumulator, label_events_streaming
-from app.services.research.events import detect_liquidity_sweeps
-from app.services.research.segmented_runner import SegmentedResearchRunner
+from app.services.research.events import detect_compression, detect_liquidity_sweeps
+from app.services.research.segmented_runner import (
+    COMPRESSION_VOL_WINDOW,
+    SegmentedResearchRunner,
+)
 from app.services.research.streaming import stream_candles
 
 DATASET = (
@@ -61,8 +65,21 @@ def whole(month) -> OutcomeAccumulator:
     structure = analyze_market_structure(
         month, symbol="BTCUSDT", timeframe=Timeframe.M5
     )
-    events = detect_liquidity_sweeps(month, levels=structure.liquidity_levels)
-
+    # Both detectors the runner now calls, in the same bar order the runner
+    # emits them. The baseline has to mirror the runner exactly: a sweeps-only
+    # baseline would still agree on the sweep cells while silently ignoring the
+    # compression ones, and the test would keep passing on a runner that had
+    # lost every compression event -- which is the failure this file exists for.
+    sweeps = detect_liquidity_sweeps(month, levels=structure.liquidity_levels)
+    events = sorted(
+        itertools.chain(
+            sweeps,
+            # The first segment starts at bar 0, so there is no prefix and the
+            # baseline's window is the whole month.
+            detect_compression(month, vol_window=COMPRESSION_VOL_WINDOW),
+        ),
+        key=lambda event: (event.confirmation_index, event.kind, event.detector),
+    )
     accumulator = OutcomeAccumulator()
     label_events_streaming(month, events, accumulator)
     return accumulator

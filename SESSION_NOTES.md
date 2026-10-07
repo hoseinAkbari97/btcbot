@@ -337,6 +337,8 @@ defects the original gap report had not anticipated.
 | Reusable lookahead audit (prefix-invariance + no-future-timestamps) | `research/lookahead.py` |
 | Event detection separated from strategy decision | `research/events.py` — events carry `event_index` / `confirmation_index` / `is_known_at()` |
 | Event → outcome labelling (forward returns, MFE/MAE, R barriers) | `research/outcomes.py` |
+| Target grid +0.5R/+1R/+1.5R/+2R resolved in one pass, three-valued outcomes | `research/outcomes.py` (`TARGET_R_GRID`, `TargetOutcome`, `_scan_barriers`) |
+| Phase 11 per-setup stats (win/loss rate over resolved only, avg + median R, time to target/stop) | `research/aggregate.py` (`OutcomeAccumulator.target_stats`) |
 | Null hypotheses and baselines | `research/baselines.py` |
 | Bootstrap + Benjamini–Hochberg FDR | `research/statistics.py` |
 | Research report generator | `research/report.py`, `backend/scripts/run_event_research.py` |
@@ -459,7 +461,8 @@ boundary.** The boundary is a memory boundary only.
   (level buckets, swings, swept set, regime, 70 bars of trailing close), a pending-outcome buffer for
   events whose forward window crosses the boundary, and atomic checkpoints.
 - `research/aggregate.py` — `assign_episodes`, `Episode`, `ClusteredBootstrapper` (both the exact and
-  the episode-mean resampling paths), `adaptive_resamples`.
+  the episode-mean resampling paths), `adaptive_resamples`, and the Phase 11 target grid
+  (`OutcomeAccumulator.target_stats`, `TARGET_R_SAMPLE_CAP`).
 - `statistics.py` — `clustered_bootstrap_mean(..., method="exact"|"approx")`, and
   `BootstrapResult.{bootstrap_method, n_episodes, statistic_definition, random_seed}`.
 - `backtest/monte_carlo_export.py` — batched CSV/JSONL writers, `net_r` canonical with `net_R` as a
@@ -803,7 +806,7 @@ make format
 Each line below is confirmed by the implementation and by the current test run, not asserted.
 
 **Implementation status:** COMPLETE for this phase — infrastructure, research pipeline, statistical
-machinery, and risk enforcement. **401 tests passing, 0 failing** across 29 test files.
+machinery, and risk enforcement. **444 tests passing, 0 failing** across 32 test files.
 
 **Research foundation:** READY FOR STRATEGY RESEARCH. The detectors, episode rule, outcome labelling,
 null baselines, and interval machinery are in place and measured. No strategy research has been
@@ -829,6 +832,117 @@ open measurement gap is the full-history **1h** pass.
 **Resource safety:** VALIDATED. Both bootstrap resampling paths are batched; measured peak RSS is
 96 MB at 100,000 events / 5,000 episodes / 10,000 resamples, against a 6 GB hard limit and a
 comfortably-under-4 GB target. No `(n_resamples, n_events)` array is built by either path.
+
+**Milestone 7 — Setup Statistical Research (Phase 11):** IMPLEMENTED. Every setup is now measured
+against a fixed target grid of **+0.5R / +1R / +1.5R / +2R**, all four resolved in a single pass
+over the same bars, and reported per family (detector × kind × side × stop model) as: sample size,
+win rate, loss rate, ambiguous count, unresolved count, average R, median R, mean bars-to-target and
+mean bars-to-stop. The grid is in both the batch report (`analyze_family` / `FamilyReport.targets`,
+rendered as a Markdown table with its denominators and footnotes) and the segmented checkpoint.
+
+Three properties this measurement deliberately does not smooth over:
+- **Win and loss rates are over *resolved* outcomes only.** A bar containing both the target and the
+  stop is unorderable from OHLC; it is counted as `ambiguous`, not as a loss. A target the price never
+  reached inside the horizon is `unresolved`, not a loss — that is a different claim.
+- **The four targets are four different populations.** `n` rises and falls across the grid, so the
+  win rates are not comparable without it, and are never averaged together.
+- **Median R is the one number a resumed run cannot restore.** The R sample is a capped per-cell list
+  (20,000 values, reservoir-by-threshold), not a moment, so it is not serialised. A resumed run
+  reports `median_r: null` with `median_truncated: true` rather than the median of its own tail.
+  Win/loss counts, `average_r` and both time moments resume exactly — verified against an
+  uninterrupted run.
+
+**Measured on real 5m data** (2021-01-01 → 2021-04-01, 25,887 bars, 67,017 events, 268,068 outcomes,
+1,808 episodes, 7-day segments): no family at any target shows a positive average R that survives its
+own denominator. The strongest cell is `sweep:swing_low / liquidity_sweep / short / atr_1.5` at +1R —
+51.4% win rate, **+0.028R average**, which is indistinguishable from the null and two orders of
+magnitude below any tradeable edge. This is a measurement of what these detectors do, **not** a
+finding that they work.
+
+**Resource safety of the grid:** the target buckets are bounded by (families × targets). A full
+3-month segmented run measured **96 MB peak RSS** and **32 MB of spill**, against a 6 GB / 256 GB
+budget.
+
+**Milestone 6 — Price Action, Part 1 (Phase 8: Compression):** IMPLEMENTED and VALIDATED. A gap audit
+against the main specification was done before any code, reading the repository rather than these
+notes. It found Milestone 6's remaining bullets: **compression was entirely absent**, displacement
+was under-measured, and Phases 9 (zones/retests) and 10 (setup engine) had no code at all. This
+entry covers only the first genuinely incomplete dependency — compression and the displacement
+measurements it needs — and stops there.
+
+`detect_compression` emits a coil-and-release event with an objective definition, not a chart
+judgement:
+- `compression_ratio` = trailing `volatility_5 / volatility_20`, both on the *same*
+  `_realized_volatility` that `detect_displacement` uses. Sharing the definition is the point: a
+  compression and the displacement that ends it are only comparable if they measure "quiet" the
+  same way, and two private definitions would make them incomparable by construction. Pinned by
+  `test_compression_and_displacement_agree_on_what_volatility_is`.
+- Volume must also dry up (`volume_ratio <= 0.8`). A contraction on rising volume is distribution,
+  not coiling.
+- Features recorded: `compression_ratio, range_5, range_10, range_20, volatility_5, volatility_20,
+  range_zscore, volume_zscore, volume_ratio, release_range, release_expansion, atr_normalized_move`.
+- `confirmation_index == event_index`. The release bar's range is final at its close and every window
+  is trailing, so there is no bar to wait for — inventing a lag would misdescribe when the
+  information exists.
+
+`detect_displacement` gained the four measurements Phase 8 names and it lacked:
+`range_zscore, return_zscore, volume_zscore, atr_normalized_move`. The existing
+`magnitude_in_volatility` stays — it is the gate, a ratio to a volatility estimate; the z-scores are
+distances from the market's own recent *distribution*, which is a different question. All reference
+windows **exclude the bar being scored**: a population containing the bar shrinks toward the mean by
+an amount that grows with the window, so a 50-bar window would systematically report weaker
+displacement than a 20-bar one on identical price action, and the report would be comparing them.
+Pinned by `test_the_zscore_window_excludes_the_bar_being_scored`.
+
+Three properties deliberately not smoothed over:
+- **No z-score over a zero-spread population.** Twenty identical bars have a standard deviation of
+  exactly zero; returning 0 would file a dead-flat stretch as "average" and a large number would file
+  it as "extreme". `_zscore` returns `None`.
+- **A release is compression's *end*, not a displacement of its own.** The detector stops at the
+  release and does not carry `magnitude_in_volatility` or `body_ratio`; claiming the move as well
+  would count one bar in two families with nothing to distinguish them.
+- **A state is not an event.** A contraction that never ends emits nothing, and a coil that runs
+  longer than the trailing window reports a `start_index` truncated to the prefix — which affects
+  `duration_bars` only, never which bar the event lands on.
+
+**Two latent bugs found by the audit and fixed**, both in code this work builds on:
+- `events.py` marked a level `swept` *before* testing penetration against `min_penetration`, so a
+  level rejected for insufficient penetration was suppressed for the whole excursion and could never
+  be swept by a deeper bar either — silently, since the resulting non-event is indistinguishable from
+  a level that was never near.
+- `_sweep_event` was called with a hardcoded `"swing_high"` / `"swing_low"` instead of
+  `level.level_type`. Latent only because every derived level so far happens to be a swing; it would
+  have become wrong the moment an equal-highs or session level was derived.
+
+**Validated:** 26 new tests in `test_research_compression.py` plus additions to
+`test_research_events.py`, `test_sweep_windowing.py` and `test_segment_equivalence.py`. Causality is
+asserted by the prefix-invariance audit both through the package's `DETECTORS` table and on a
+fixture where a mutated 50-bar future is required to leave every earlier event byte-identical. The
+segment-equivalence baseline was **extended to include compression** — it was sweeps-only, so it
+would have kept passing on a runner that had lost every compression event while the sweep cells
+agreed.
+
+**Measured on real 5m data** (2021-01-01 → 2021-04-01, 25,887 bars, 7-day segments, 13 segments):
+68,129 events (67,017 sweeps + **1,112 compressions**), 1,847 episodes, 272,516 outcomes,
+**55.6 s wall, 92.8 MB peak RSS, 32 MB spill**, 0 warnings, 0 errors. Segmented and whole-series runs
+were compared over the same data and produced **identical totals and byte-identical cells**. Every
+`median_r` across all 48 target cells is a value the population can actually take.
+
+**What this is not:** no claim that compression is predictive. The strongest compression cell
+(`long / atr_1.5`) is −0.012R at +0.5R and −0.32R at +2R over 713–1,084 resolved events. Those are
+measurements of what a compression release does after the fact, on one instrument over three months,
+with no multiple-testing correction applied to the choice of stopping at that cell.
+
+**Resource safety:** the compression detector holds no state across segments and no per-event
+structures beyond the segment's own list; it re-derives from `self._tail + bars`, so a run's memory
+is unchanged by its presence (92.8 MB before and after, against a 6 GB limit).
+
+**Remaining in Milestone 6:** Phase 7 is still partial (2 of 10 level types derived; 2 of 9 sweep
+fields recorded — `penetration_percent`, `time_above/below`, `recovery_ratio`, `wick_ratio`, `volume`,
+`volatility`, `structure_context` are absent, and `equal_highs/lows`, `range_high/low`,
+`session_high/low`, `previous_day_high/low` are declared in the enums but never derived). Phase 9
+(zones, retests) and Phase 10 (setup engine) have no code. Those are the next dependencies, in that
+order, and the setup engine depends on zones and retests existing first.
 
 **Remaining work:** actual strategy research and validation — choosing candidate strategies,
 measuring them against the null baselines, and applying Benjamini–Hochberg across whatever that

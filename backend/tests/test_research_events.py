@@ -35,6 +35,7 @@ from app.services.research.baselines import (
 from app.services.research.events import (
     ResearchEvent,
     detect_all,
+    detect_compression,
     detect_displacement,
     detect_liquidity_sweeps,
     detect_structure_events,
@@ -111,6 +112,7 @@ DETECTORS = {
     "structure": lambda c: detect_structure_events(structure(c)),
     "sweeps": lambda c: detect_liquidity_sweeps(c, result=structure(c)),
     "displacement": detect_displacement,
+    "compression": detect_compression,
     "volatility_expansion": detect_volatility_expansions,
     "detect_all": lambda c: detect_all(c, lookback=3, vol_window=20),
 }
@@ -139,6 +141,11 @@ def test_the_detectors_actually_fire_on_real_shaped_data() -> None:
     assert detect_liquidity_sweeps(candles, result=structure(candles))
     assert detect_displacement(candles)
     assert detect_structure_events(structure(candles))
+    # Compression is deliberately *not* asserted here. ``noisy`` is an
+    # alternating-drift walk: it has no contraction to find, so requiring a hit
+    # would mean loosening the detector's definition to suit the fixture rather
+    # than the fixture to suit the definition. Its own fixture-strength check
+    # lives in ``test_research_compression.py``, on data built to contain a coil.
 
 
 # ===========================================================================
@@ -567,6 +574,50 @@ def test_the_report_serialises_and_renders() -> None:
     markdown = report.to_markdown()
     assert "# Event research" in markdown
     assert "insufficient sample" in markdown or "interesting" in markdown
+
+
+def test_the_report_carries_the_target_grid_for_every_family() -> None:
+    """Phase 11's output must reach the batch report, not only the segmented one.
+
+    The batch path is what a researcher runs interactively, so a grid that only
+    existed in the checkpoint format would mean the number Phase 11 exists to
+    produce is unavailable in the place it is looked at.
+    """
+    candles = noisy(400)
+    report = run_research(candles, detect_all(candles, lookback=3))
+    assert report.families
+    for family in report.families:
+        assert family.targets, f"{family.detector} has no target grid"
+        for side, models in family.targets.items():
+            # Same sides as the rest of the report: the grid is not measured on
+            # one direction only.
+            assert set(models) == set(family.results[side]), family.detector
+            for model, targets in models.items():
+                assert set(targets) == {"0.5", "1", "1.5", "2"}, family.detector
+                for target_r, stats in targets.items():
+                    assert stats["target_r"] == target_r
+                    # Rates are over resolved outcomes, so they sum to one or
+                    # are absent -- never something in between.
+                    if stats["n"]:
+                        assert stats["win_rate"] + stats["loss_rate"] == pytest.approx(1.0)
+                    else:
+                        assert stats["win_rate"] is None
+
+
+def test_the_markdown_report_prints_the_grid_with_its_denominators() -> None:
+    """The unreadable-column cases must be explained, not just tabulated.
+
+    A reader comparing +0.5R's win rate to +2R's needs to see that the two were
+    measured on different populations; otherwise the drop between them reads as
+    a decay in the setup rather than in the reach.
+    """
+    candles = noisy(400)
+    markdown = run_research(candles, detect_all(candles, lookback=3)).to_markdown()
+
+    assert "Target grid" in markdown
+    assert "bars to target" in markdown
+    assert "unclear" in markdown and "not reached" in markdown
+    assert "Target grid" in markdown and "median R" in markdown
 
 
 def test_multiple_testing_is_adjusted_across_the_whole_run() -> None:

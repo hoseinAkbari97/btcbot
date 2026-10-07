@@ -40,10 +40,10 @@ cooperation from the detector itself.
 
 from __future__ import annotations
 
+from bisect import bisect_left, insort
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from bisect import bisect_left, insort
 from decimal import Decimal
 from typing import Literal
 
@@ -58,6 +58,7 @@ EventKind = Literal[
     "liquidity_sweep",  # a level was pierced then closed back through
     "displacement",  # an unusually large, directional candle
     "volatility",  # realised volatility crosses a threshold
+    "compression",  # the market coiled and then released
     "regime",  # the market state label changed
 ]
 
@@ -537,11 +538,16 @@ def detect_liquidity_sweeps(
             key = SweepCarried.key(level)
             if key in swept or key in inside:
                 continue
-            swept[key] = absolute
             swing_count = level.swing_count_at(absolute)
             penetration = (candle.high - level.price) / level.price
             if penetration < min_penetration:
+                # Deliberately *not* recorded as swept. Marking it before this
+                # check meant a level rejected for insufficient penetration was
+                # suppressed for the whole excursion and could never be swept by
+                # a deeper bar either -- silently, because the resulting
+                # non-event is indistinguishable from a level never near price.
                 continue
+            swept[key] = absolute
             close_back = candle.close < level.price
             emit(
                 _sweep_event(
@@ -551,7 +557,11 @@ def detect_liquidity_sweeps(
                     "above",
                     penetration,
                     close_back,
-                    "swing_high",
+                    # The level's own type, not a hardcoded swing label. Every
+                    # level derived so far happens to be a swing, so the two
+                    # agreed; that is a coincidence that would have ended the
+                    # moment an equal-highs or session level was derived.
+                    level.level_type,
                     swing_count,
                     offset=offset,
                 )
@@ -564,11 +574,11 @@ def detect_liquidity_sweeps(
             key = SweepCarried.key(level)
             if key in swept or key in inside:
                 continue
-            swept[key] = absolute
             swing_count = level.swing_count_at(absolute)
             penetration = (level.price - candle.low) / level.price
             if penetration < min_penetration:
                 continue
+            swept[key] = absolute
             close_back = candle.close > level.price
             emit(
                 _sweep_event(
@@ -578,7 +588,7 @@ def detect_liquidity_sweeps(
                     "below",
                     penetration,
                     close_back,
-                    "swing_low",
+                    level.level_type,
                     swing_count,
                     offset=offset,
                 )
@@ -793,6 +803,19 @@ def detect_displacement(
         if magnitude < threshold:
             continue
         confirmation_index = min(index + 1, len(candles) - 1)
+        # The z-scores and the ATR-normalised move are what make a displacement
+        # comparable across instruments and regimes. ``magnitude_in_volatility``
+        # is a ratio to a volatility estimate; these are distances from the
+        # market's own recent *distribution*, which is a different question --
+        # a bar can be 3x the recent volatility in a market whose bars have
+        # recently all been 3x, and only the z-score says so.
+        prior_ranges = [c.high - c.low for c in candles[max(0, index - vol_window):index]]
+        prior_returns = [
+            _close(candles, i) - _close(candles, i - 1)
+            for i in range(max(1, index - vol_window), index)
+        ]
+        prior_volumes = [c.volume for c in candles[max(0, index - vol_window):index]]
+        atr = _average_true_range(candles, index, vol_window)
         events.append(
             ResearchEvent(
                 kind="displacement",
@@ -810,11 +833,298 @@ def detect_displacement(
                     "body_ratio": body_ratio,
                     "close_location": _close_location(candle),
                     "bar_range": bar_range,
+                    "range_zscore": _zscore(prior_ranges, bar_range),
+                    "return_zscore": _zscore(prior_returns, candle.close - candle.open),
+                    "volume_zscore": _zscore(prior_volumes, candle.volume),
+                    "atr_normalized_move": (
+                        body / atr if atr is not None and atr > 0 else None
+                    ),
                 },
                 context={
                     "direction_of_move": "up" if candle.close > candle.open else "down",
                     "vol_window": vol_window,
                     "threshold": threshold,
+                },
+            )
+        )
+    return events
+
+
+def _average_true_range(
+    candles: Sequence[CandleData], index: int, window: int
+) -> Decimal | None:
+    """Trailing ATR over bars *strictly before* ``index``.
+
+    Defined here rather than imported from :mod:`outcomes` because that module
+    imports this one, and an ATR that included the bar being measured would be
+    partly a function of that bar -- the same self-inclusion the z-score avoids.
+    """
+    if index < window:
+        return None
+    ranges = []
+    for i in range(index - window, index):
+        candle = candles[i]
+        previous_close = _close(candles, i - 1)
+        ranges.append(
+            max(
+                candle.high - candle.low,
+                abs(candle.high - previous_close),
+                abs(candle.low - previous_close),
+            )
+        )
+    if not ranges:
+        return None
+    return sum(ranges) / Decimal(len(ranges))
+
+
+def _zscore(values: Sequence[Decimal], current: Decimal) -> Decimal | None:
+    """How many standard deviations ``current`` sits above the mean of ``values``.
+
+    ``None`` when the reference population has no spread, because a z-score of
+    anything divided by zero is not a large number, it is a statement that the
+    quantity has no scale on this window -- a market that has not moved in
+    twenty bars has no meaningful "unusually large bar". Returning 0 there
+    would make a flat stretch look like an average one, and returning a large
+    number would make it look extreme.
+
+    ``values`` must exclude ``current`` and anything after it; the caller
+    supplies a trailing window, which is what keeps the ratio causal.
+    """
+    usable = [v for v in values if v is not None]
+    if len(usable) < 2:
+        return None
+    mean = sum(usable) / Decimal(len(usable))
+    variance = sum((v - mean) ** 2 for v in usable) / Decimal(len(usable) - 1)
+    sigma = variance.sqrt()
+    if sigma == 0:
+        return None
+    return (current - mean) / sigma
+
+
+def _trailing(values: Sequence[Decimal], index: int, window: int) -> list[Decimal]:
+    """The ``window`` values immediately before ``index``, never including it.
+
+    Exclusive of the current bar on purpose. A z-score that measured a bar
+    against a population containing itself would shrink toward the mean by
+    construction, and the shrinkage would grow with the window -- so a 50-bar
+    window would systematically report weaker displacement than a 20-bar one
+    on identical price action. The two would not be comparable, and the report
+    would be comparing them.
+    """
+    start = max(0, index - window)
+    return list(values[start:index])
+
+
+def detect_compression(
+    candles: Sequence[CandleData],
+    *,
+    vol_window: int = 20,
+    volume_window: int = 20,
+    min_bars: int = 20,
+    max_ratio: Decimal = Decimal("0.6"),
+    max_volume_ratio: Decimal = Decimal("0.8"),
+    #: Absolute index of ``candles[0]``. Present for the same reason the sweep
+    #: detector has one: a windowed caller must produce the same event index it
+    #: would have produced on the whole series, or a segmented run and a
+    #: continuous one describe different markets. With ``offset`` supplied, the
+    #: read-only prefix bars before ``offset`` still participate in the trailing
+    #: windows but never emit.
+    offset: int = 0,
+) -> list[ResearchEvent]:
+    """A range contraction that ends in an expansion -- a coil and its release.
+
+    Compression is the setup to a displacement, and the two are only
+    distinguishable if they are measured the same way. So this detector
+    deliberately shares ``_realized_volatility`` with :func:`detect_displacement`
+    rather than inventing a second notion of "quiet": a ``compression_ratio``
+    computed from one volatility definition is directly comparable to the
+    ``magnitude_in_volatility`` that a later displacement is measured with.
+
+    The objective definition, so it is reproducible and not a chart judgement:
+
+    - ``range_5`` / ``range_10`` / ``range_20`` are the mean true range over the
+      trailing 5, 10 and 20 bars.
+    - ``volatility_5`` / ``volatility_20`` are the trailing realised volatility
+      over the same spans, on the same definition displacement uses.
+    - ``compression_ratio`` is ``volatility_5 / volatility_20``. It is below
+      ``max_ratio`` when the recent half-window is materially quieter than the
+      longer one. Comparing 5 to 20 rather than to the whole series keeps the
+      measure local: a market that has been dead for a month is not "compressing
+      now", and a ratio against a global mean would say it was.
+    - Volume has to dry up too (``max_volume_ratio``). A contraction on rising
+      volume is distribution, not coiling -- somebody is filling the other side.
+    - ``release`` is the bar where the range expands back above the 20-bar
+      mean, which is what makes this an event with an outcome rather than a
+      state that is true for a hundred bars. A label that holds for 100 bars is
+      one observation, and emitting it 100 times would inflate every downstream
+      sample size.
+
+    ``confirmation_index == event_index`` on the *release* bar, because the
+    release bar's own range is final at its close and there is no later bar to
+    wait for. The compression window itself is entirely trailing, so nothing
+    leaks; the audit asserts this rather than trusting it.
+
+    ``min_bars`` is a floor on history, not a tuning knob: below it the
+    ``volatility_20`` denominator is computed from a shorter window than its
+    name says, and the ratio would silently mean something different at the start
+    of every run than in the middle.
+    """
+    events: list[ResearchEvent] = []
+    if len(candles) <= vol_window:
+        return events
+
+    # ``_realized_volatility`` needs ``index >= window``, so the short window --
+    # vol_window // 4 -- sets the real floor on history. Reporting the ratio from
+    # bar ``min_bars`` when the short window cannot be computed yet would mean
+    # the first bars of every run were measured on a window shorter than the
+    # one their number is named after.
+    short_window = max(2, vol_window // 4)
+    first_bar = max(min_bars, vol_window, short_window)
+
+    true_ranges = [c.high - c.low for c in candles]
+    volumes = [c.volume for c in candles]
+
+    def mean(values: Sequence[Decimal]) -> Decimal:
+        return sum(values) / Decimal(len(values)) if values else Decimal(0)
+
+    compressing = False
+    # The *deepest* point of the contraction, not the first bar of it. A
+    # contraction is rarely uniformly tight: as the short volatility window
+    # walks forward, older busy bars leave it and `ratio` often rises back above
+    # the cut mid-contraction. Re-arming the candidate there made a single 30-bar
+    # coil emit several events, one per bar where the ratio happened to dip back
+    # under the threshold -- the same bar counted repeatedly.
+    candidate: dict[str, Decimal] | None = None
+    candidate_index = 0
+
+    for local in range(first_bar, len(candles)):
+        index = local + offset
+        # A prefix bar from the previous segment: it feeds the trailing windows
+        # but its own event was already written there, so emitting it again would
+        # count one bar twice in the report.
+        if index < offset:
+            continue
+        long_vol = _realized_volatility(candles, local, vol_window)
+        short_vol = _realized_volatility(candles, local, short_window)
+        if long_vol is None or short_vol is None or long_vol == 0:
+            continue
+
+        ratio = short_vol / long_vol
+        volume_mean = mean(_trailing(volumes, local, volume_window))
+        volume_ratio = (
+            candles[local].volume / volume_mean if volume_mean > 0 else None
+        )
+        tight = ratio <= max_ratio and (
+            volume_ratio is None or volume_ratio <= max_volume_ratio
+        )
+
+        if tight:
+            if not compressing or ratio < candidate["compression_ratio"]:
+                compressing = True
+                candidate_index = index
+                candidate = {
+                    "compression_ratio": ratio,
+                    "range_zscore": _zscore(
+                        _trailing(true_ranges, local, vol_window),
+                        true_ranges[local],
+                    )
+                    or Decimal(0),
+                    "volume_zscore": _zscore(
+                        _trailing(volumes, local, volume_window),
+                        volumes[local],
+                    )
+                    or Decimal(0),
+                    "volatility_5": short_vol,
+                    "volume_ratio": volume_ratio
+                    if volume_ratio is not None
+                    else Decimal(0),
+                }
+            continue
+
+        if not compressing or candidate is None:
+            continue
+
+        # "Not compressing" is necessary but not sufficient to call it a release.
+        # As busy bars age out of the short volatility window, the ratio can climb
+        # back above the cut while the market is still coiled -- on a flat fixture
+        # that fired a phantom release twelve bars into the contraction, labelling
+        # a bar at which nothing happened. The release has to be an actual
+        # expansion of the bar's own range past the recent mean, which is what
+        # "release" means and what `detect_displacement` will then describe.
+        current_range = true_ranges[local]
+        range_mean = mean(_trailing(true_ranges, local, vol_window))
+        if current_range <= range_mean:
+            continue
+
+        # The contraction ended. Only *that* is the event; the release itself is
+        # the displacement detector's job, and emitting it here as well would
+        # double-count one bar in two families.
+        #
+        # The long-window volatility is recomputed at the release bar rather than
+        # carried from the coil: the window has moved on since, and carrying it
+        # would report the contraction's denominator as though it were still
+        # current. `volatility_20` is that current value, which is the one
+        # `detect_displacement` divides by, so the two families stay comparable.
+        long_vol = _realized_volatility(candles, local, vol_window)
+        if long_vol is None or long_vol == 0:
+            compressing = False
+            candidate = None
+            continue
+
+        range_mean = mean(_trailing(true_ranges, local, vol_window))
+        compressing = False
+        pending, candidate = candidate, None
+        start = candidate_index
+
+        events.append(
+            ResearchEvent(
+                kind="compression",
+                detector="compression:coil_release",
+                event_index=index,
+                event_time=candles[local].open_time,
+                confirmation_index=index,
+                confirmation_time=candles[local].close_time,
+                price=candles[local].close,
+                features={
+                    "compression_ratio": pending["compression_ratio"],
+                    "range_5": mean(_trailing(true_ranges, local, 5)),
+                    "range_10": mean(_trailing(true_ranges, local, 10)),
+                    "range_20": range_mean,
+                    "volatility_5": pending["volatility_5"],
+                    "volatility_20": long_vol,
+                    "range_zscore": pending["range_zscore"],
+                    "volume_zscore": pending["volume_zscore"],
+                    "volume_ratio": pending["volume_ratio"],
+                    "release_range": current_range,
+                    "release_expansion": (
+                        current_range / range_mean if range_mean > 0 else Decimal(0)
+                    ),
+                    "atr_normalized_move": (
+                        abs(candles[local].close - candles[local].open) / long_vol
+                    ),
+                },
+                context={
+                    "start_index": start,
+                    "duration_bars": index - start,
+                    "direction": (
+                        # ``start`` is absolute (it names a bar on the timeline
+                        # and travels in the payload across a checkpoint);
+                        # ``candles`` is the caller's window. Subtract the offset
+                        # to go back. Reading it without would be an IndexError
+                        # at best and, given a window longer than the offset, a
+                        # direction taken from an entirely different bar.
+                        "up"
+                        if candles[local].close > candles[start - offset].close
+                        else "down"
+                    ),
+                    "vol_window": vol_window,
+                    "short_window": short_window,
+                    # A string, not a Decimal: ``context`` is stored raw in the
+                    # payload and written straight to the spill as JSON, so a
+                    # Decimal here fails at the first checkpoint write with a
+                    # TypeError that names the *threshold* rather than the fact
+                    # that the dict has two different serialization rules.
+                    "max_ratio": str(max_ratio),
                 },
             )
         )
@@ -1018,6 +1328,7 @@ def detect_all(
     events.extend(detect_structure_events(result))
     events.extend(detect_liquidity_sweeps(candles, result=result))
     events.extend(detect_displacement(candles, vol_window=vol_window))
+    events.extend(detect_compression(candles, vol_window=vol_window))
     events.extend(detect_volatility_expansions(candles, vol_window=vol_window))
     events.extend(
         detect_regime_changes(

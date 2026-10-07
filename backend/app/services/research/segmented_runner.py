@@ -91,7 +91,12 @@ from app.services.research.aggregate import (
     adaptive_resamples,
     label_events_streaming,
 )
-from app.services.research.events import ResearchEvent, SweepCarried, detect_liquidity_sweeps
+from app.services.research.events import (
+    ResearchEvent,
+    SweepCarried,
+    detect_compression,
+    detect_liquidity_sweeps,
+)
 from app.services.research.outcomes import (
     ENTRY_OFFSET,
     FORWARD_HORIZONS,
@@ -110,6 +115,13 @@ OUTCOME_LAG_BARS = ENTRY_OFFSET + max(FORWARD_HORIZONS)
 #: level, so labelling an event near a segment's start needs bars from before it.
 #: Carried rather than re-read: they are a fixed count, not a slice of history.
 OUTCOME_LOOKBACK_BARS = 64
+
+#: Trailing volatility window the compression detector uses in the segmented
+#: path. It matches the detector's own default and is named here so the
+#: config fingerprint can record it: a run at 20 and a run at 50 are different
+#: analyses, and concatenating their results would be a segmentation bug that
+#: looks like a finding.
+COMPRESSION_VOL_WINDOW = 20
 
 #: Sentinel for "the dataset has more bars than this run has seen". Larger than
 #: any reachable bar index, so every target bar reads as present; the last flush
@@ -167,7 +179,7 @@ EXIT_RESUMABLE = 75
 #: Bumped when the meaning of a research event or outcome changes. A checkpoint
 #: written by a different engine version describes a different analysis, and
 #: merging the two produces a report that is confidently wrong.
-ENGINE_VERSION = 1
+ENGINE_VERSION = 2
 
 
 class CheckpointMismatch(RuntimeError):
@@ -478,6 +490,7 @@ class SegmentedResearchRunner:
             end=self.end.isoformat() if self.end else None,
             segment_days=self.limits.segment_days,
             level_tolerance="0.001",
+            compression_vol_window=COMPRESSION_VOL_WINDOW,
             min_penetration="0",
             stop_models=["atr_mult_1.5", "atr_mult_2.5"],
             horizons=[1, 3, 6, 12],
@@ -918,10 +931,45 @@ class SegmentedResearchRunner:
             carried=self.sweep,
             final=final,
         )
-        for event in events:
+        # 2b. Compression. Unlike the sweep detector this one carries no state
+        #     of its own, and deliberately so: its whole measurement is a
+        #     trailing window of at most ``vol_window`` bars, and that window
+        #     lives inside ``self._tail``, which is already carried. Re-running
+        #     it on tail + new bars therefore re-derives rather than re-records,
+        #     and the only guard needed is not writing the prefix's own events a
+        #     second time.
+        #
+        #     A coil that began more than ``len(self._tail)`` bars ago reports a
+        #     ``start_index`` truncated to the prefix. That is a real limitation
+        #     of statelessness and is recorded rather than hidden; it affects
+        #     ``duration_bars`` only, never which bar the event lands on.
+        compression_events = [
+            event
+            for event in detect_compression(
+                self._tail + bars,
+                vol_window=COMPRESSION_VOL_WINDOW,
+                offset=tail_start,
+            )
+            # The prefix is there to give the trailing windows their history; a
+            # release the previous segment already wrote must not reappear.
+            if event.event_index >= offset
+        ]
+
+        # Folded together and sorted by bar before anything sees them. Folding
+        # them in one at a time would interleave two detectors' events out of
+        # confirmation order, and ``_note_episode`` is a single-pass sweep: it
+        # compares each bar against the *previous* one it saw, so an out-of-order
+        # arrival silently starts a new episode in the middle of a run. That is
+        # the divergence ``test_episode_partition_matches_the_batch_sweep``
+        # exists to catch -- and it catches it, which is the point.
+        detected = sorted(
+            itertools.chain(events, compression_events),
+            key=lambda event: (event.confirmation_index, event.kind, event.detector),
+        )
+        for event in detected:
             spill.append(event)
             self._note_episode(event.confirmation_index)
-        self._events_written += len(events)
+        self._events_written += len(detected)
 
         # 3. Labelling. Done *after* detection, on this segment's own events as
         #    well as the last segment's leftovers, so that only the 13 bars still
@@ -937,7 +985,7 @@ class SegmentedResearchRunner:
         #    labelable event behind it -- a backlog that grows by a whole segment
         #    each time and is never drained.
         backlog = sorted(
-            itertools.chain(self._pending_events, events),
+            itertools.chain(self._pending_events, detected),
             key=lambda event: event.confirmation_index,
         )
         ready, self._pending_events = _split_by_window(
