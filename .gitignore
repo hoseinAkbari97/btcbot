@@ -53,3 +53,4 @@ data/research/checkpoints/
 # Monte Carlo handoff exports are regenerated from the ledger.
 backend/data/exports/
 data/exports/
+backend/data/research/liquidity-q1-2021
