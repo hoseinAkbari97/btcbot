@@ -80,6 +80,11 @@ from app.core.resources import (
     ensure_disk_space,
 )
 from app.schemas.market_data import CandleData, Timeframe
+from app.services.market_structure import LiquidityLevel
+from app.services.market_structure.derived_levels import (
+    DEFAULT_RANGE_WINDOW,
+    DerivedLevelState,
+)
 from app.services.market_structure.segmented import (
     STATE_SCHEMA_VERSION,
     StructureState,
@@ -93,6 +98,7 @@ from app.services.research.aggregate import (
 )
 from app.services.research.events import (
     ResearchEvent,
+    SWEEP_MEASURE_WINDOW,
     SweepCarried,
     detect_compression,
     detect_liquidity_sweeps,
@@ -122,6 +128,13 @@ OUTCOME_LOOKBACK_BARS = 64
 #: analyses, and concatenating their results would be a segmentation bug that
 #: looks like a finding.
 COMPRESSION_VOL_WINDOW = 20
+
+#: Bars after a sweep's pierce over which its excursion is measured. It is a
+#: *definition* -- how far a "rejection" is allowed to run before it stops being
+#: one -- and not a value chosen for how the resulting numbers separate. It has
+#: to be carried in the fingerprint for the same reason the horizons are: a run
+#: at 6 and a run at 12 are different analyses of the same sweeps.
+SWEEP_EXCURSION_BARS = 6
 
 #: Sentinel for "the dataset has more bars than this run has seen". Larger than
 #: any reachable bar index, so every target bar reads as present; the last flush
@@ -179,7 +192,7 @@ EXIT_RESUMABLE = 75
 #: Bumped when the meaning of a research event or outcome changes. A checkpoint
 #: written by a different engine version describes a different analysis, and
 #: merging the two produces a report that is confidently wrong.
-ENGINE_VERSION = 2
+ENGINE_VERSION = 3
 
 
 class CheckpointMismatch(RuntimeError):
@@ -210,6 +223,13 @@ class Checkpoint:
     #: data, and their events must not be concatenated.
     config_hash: str
     structure: dict
+    #: Range/session/previous-day level state. Separate from ``structure``
+    #: because it is a separate state machine with a separate persistence
+    #: contract, and because a run that carried only the swing state would
+    #: resume producing six of the ten level types and seven of the nine sweep
+    #: fields never appearing in its second half -- a divergence no counter in
+    #: the report would flag as a resume artifact.
+    derived_levels: dict
     sweep: dict
     #: Events detected but not yet labellable. Small -- bounded by the forward
     #: horizon -- but dropping them would leave a run whose later segments are
@@ -250,6 +270,7 @@ class Checkpoint:
             "state_schema_version": self.state_schema_version,
             "config_hash": self.config_hash,
             "structure": self.structure,
+            "derived_levels": self.derived_levels,
             "sweep": self.sweep,
             "pending_events": list(self.pending_events),
             "tail": list(self.tail),
@@ -413,6 +434,10 @@ class SegmentedResearchRunner:
 
         self.guard = ResourceGuard(self.limits)
         self.state: StructureState | None = None
+        #: Range/session/previous-day levels. See the ``derived_levels``
+        #: checkpoint field for why this is carried rather than recomputed.
+        self.derived = DerivedLevelState()
+        self._range_window = DEFAULT_RANGE_WINDOW
         self.sweep = SweepCarried()
         self.accumulators = OutcomeAccumulator()
         self.baseline = BaselineAccumulator()
@@ -490,6 +515,10 @@ class SegmentedResearchRunner:
             end=self.end.isoformat() if self.end else None,
             segment_days=self.limits.segment_days,
             level_tolerance="0.001",
+            range_window=self._range_window,
+            session_hours="6",
+            sweep_excursion_bars=SWEEP_EXCURSION_BARS,
+            sweep_measure_window=SWEEP_MEASURE_WINDOW,
             compression_vol_window=COMPRESSION_VOL_WINDOW,
             min_penetration="0",
             stop_models=["atr_mult_1.5", "atr_mult_2.5"],
@@ -532,6 +561,7 @@ class SegmentedResearchRunner:
             state_schema_version=STATE_SCHEMA_VERSION,
             config_hash=self.config_fingerprint(),
             structure=self.state.to_payload(),
+            derived_levels=self.derived.to_payload(),
             sweep=self.sweep.to_payload(),
             pending_events=[e.to_payload() for e in self._pending_events],
             tail=[c.model_dump(mode="json") for c in self._tail],
@@ -586,6 +616,8 @@ class SegmentedResearchRunner:
             )
 
         self.state = StructureState.from_payload(checkpoint.structure)
+        self.derived = DerivedLevelState.from_payload(checkpoint.derived_levels)
+        self._range_window = self.derived.range_window
         self.sweep = SweepCarried.from_payload(checkpoint.sweep)
         self._pending_events = [
             ResearchEvent.from_payload(p) for p in checkpoint.pending_events
@@ -704,6 +736,12 @@ class SegmentedResearchRunner:
         self.accumulators._truncated = int(
             checkpoint.outcomes.get("truncated_outcomes", 0)
         )
+        # From here on this accumulator is partial by construction: the R
+        # sample behind every median stopped at the checkpoint. Families the
+        # interrupted run had not yet reached are created fresh by ``add``, so
+        # they have to be told this too, or they report a median of their own
+        # short tail as though it covered the whole run.
+        self.accumulators.restored = True
 
         for horizon, moment in checkpoint.baseline.get("horizons", {}).items():
             self.baseline._moments[int(horizon)] = Moment.from_dict(moment)
@@ -827,7 +865,7 @@ class SegmentedResearchRunner:
         report.bars = self._bar_index
         report.events = self._events_written
         report.swings = len(self.state.swings) if self.state else 0
-        report.levels = len(self.state.levels()) if self.state else 0
+        report.levels = len(self._all_levels()) if self.state else 0
         report.outcomes = self.accumulators.total
         report.episodes = self.episode_count()
         report.warnings.extend(self.guard.warnings)
@@ -885,6 +923,21 @@ class SegmentedResearchRunner:
             self._segment_was_final = True
             yield index, current_start, current_start + span, current
 
+    def _all_levels(self) -> list[LiquidityLevel]:
+        """Every liquidity level the run has derived so far, in creation order.
+
+        The single place the swing-derived families and the time-anchored ones
+        combine, mirroring :func:`analyze_market_structure`. A caller that
+        reached for ``state.levels()`` directly would silently drop eight of the
+        ten level types -- and the report would still total up, because a report
+        counts what it was given.
+        """
+        combined = self.state.all_liquidity_levels() + self.derived.as_liquidity_levels()
+        combined.sort(
+            key=lambda level: (level.creation_index, level.price, level.level_type)
+        )
+        return combined
+
     def _process_segment(
         self, segment, spill: EventSpill, report: RunReport, *, final: bool
     ) -> None:
@@ -919,6 +972,10 @@ class SegmentedResearchRunner:
         # 1. Structure. This is the genuinely global state, and it is carried
         #    rather than recomputed.
         self.state.observe(bars)
+        # The time-anchored families are fed the same bars in the same order.
+        # Both states reject a non-contiguous segment, so a mis-ordered resume
+        # fails here rather than quietly producing levels at the wrong dates.
+        self.derived.observe(bars)
 
         # 2. Detection. Levels accumulate across the run -- they are the
         #    analysis, not a per-segment artifact -- and the swept set is
@@ -926,10 +983,12 @@ class SegmentedResearchRunner:
         #    recognised as the same level.
         events = detect_liquidity_sweeps(
             bars,
-            levels=self.state.levels(),
+            levels=self._all_levels(),
             offset=offset,
             carried=self.sweep,
             final=final,
+            excursion_bars=SWEEP_EXCURSION_BARS,
+            before=self._tail,
         )
         # 2b. Compression. Unlike the sweep detector this one carries no state
         #     of its own, and deliberately so: its whole measurement is a
@@ -1013,7 +1072,7 @@ class SegmentedResearchRunner:
                 bars=len(bars),
                 events=len(events),
                 swings=len(self.state.swings),
-                levels=len(self.state.levels()),
+                levels=len(self._all_levels()),
                 seconds=time.monotonic() - began,
                 memory_state=self.guard.check(),
             )

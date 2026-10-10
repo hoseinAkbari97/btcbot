@@ -833,7 +833,8 @@ open measurement gap is the full-history **1h** pass.
 96 MB at 100,000 events / 5,000 episodes / 10,000 resamples, against a 6 GB hard limit and a
 comfortably-under-4 GB target. No `(n_resamples, n_events)` array is built by either path.
 
-**Milestone 7 — Setup Statistical Research (Phase 11):** IMPLEMENTED. Every setup is now measured
+**Milestone 7 — Setup Statistical Research (Phase 11):** **SETUP-STATISTICS INFRASTRUCTURE
+IMPLEMENTED AHEAD OF DEPENDENCIES.** Every setup is now measured
 against a fixed target grid of **+0.5R / +1R / +1.5R / +2R**, all four resolved in a single pass
 over the same bars, and reported per family (detector × kind × side × stop model) as: sample size,
 win rate, loss rate, ambiguous count, unresolved count, average R, median R, mean bars-to-target and
@@ -851,6 +852,12 @@ Three properties this measurement deliberately does not smooth over:
   reports `median_r: null` with `median_truncated: true` rather than the median of its own tail.
   Win/loss counts, `average_r` and both time moments resume exactly — verified against an
   uninterrupted run.
+
+**Scope of the claim:** this measures *setups that the setup engine emits*. That engine does not
+exist yet (Phase 10, no code). So this is a measurement of the machinery, not of setups — the
+correct wording is **setup-statistics infrastructure implemented ahead of dependencies**, and
+**actual setup statistical research is NOT STARTED**. What follows describes the machinery's
+behaviour on the only inputs available today, which are the liquidity and compression families.
 
 **Measured on real 5m data** (2021-01-01 → 2021-04-01, 25,887 bars, 67,017 events, 268,068 outcomes,
 1,808 episodes, 7-day segments): no family at any target shows a positive average R that survives its
@@ -937,12 +944,135 @@ with no multiple-testing correction applied to the choice of stopping at that ce
 structures beyond the segment's own list; it re-derives from `self._tail + bars`, so a run's memory
 is unchanged by its presence (92.8 MB before and after, against a 6 GB limit).
 
-**Remaining in Milestone 6:** Phase 7 is still partial (2 of 10 level types derived; 2 of 9 sweep
-fields recorded — `penetration_percent`, `time_above/below`, `recovery_ratio`, `wick_ratio`, `volume`,
-`volatility`, `structure_context` are absent, and `equal_highs/lows`, `range_high/low`,
-`session_high/low`, `previous_day_high/low` are declared in the enums but never derived). Phase 9
-(zones, retests) and Phase 10 (setup engine) have no code. Those are the next dependencies, in that
-order, and the setup engine depends on zones and retests existing first.
+**Remaining in Milestone 6:** **Phase 7 (liquidity model) is now COMPLETE** — all 10 level types are
+derived and all 9 sweep measurements are recorded; see the Phase 7 entry below. Phase 9 (zones,
+retests) and Phase 10 (setup engine) have no code. Those are the next dependencies, in that order,
+and the setup engine depends on zones and retests existing first.
+
+### Phase 7 — Liquidity Model: IMPLEMENTED and VALIDATED
+
+**IMPLEMENTED.** All **10** level types are derived (the two swing types were the only ones before
+this work) and all **9** sweep-record measurements are computed. The specification named the ten
+types and the nine fields without defining either, so what follows is the *definition chosen* for
+each — deterministic, parameterised, causal, and deliberately not fitted to BTC. These are
+definitions, not strategy parameters: `SESSION_HOURS = 6`, `DEFAULT_RANGE_WINDOW = 20`,
+`EQUAL_MIN_SWINGS = 2` and the equal-cluster tolerance are fixed by the meaning of the words, and no
+test here asserts that changing one improves anything.
+
+**Ambiguous concepts, decided explicitly** (each has a synthetic test in `test_derived_levels.py`):
+
+- **Sessions** are six-hour blocks aligned to midnight UTC — `session_00/06/12/18` — so a day tiles
+  exactly into four with no gap and no overlap, and every boundary is at a fixed bar index.
+  Asserted by `test_a_day_has_exactly_four_sessions_and_no_gap_or_overlap`.
+- **A session/previous-day level is the extreme of the *same* slot on a previous occurrence**, never
+  of the period in progress. A period's extreme is not complete until its last bar closes, so the
+  level published at a boundary holds the *previous* occurrence. This is the headline distinction
+  from the rolling family and is asserted by
+  `test_a_session_level_never_carries_its_own_sessions_extreme`.
+- **Range high/low** is the extreme of a trailing 20-bar window **excluding** the bar being consumed;
+  the level is published on the following bar. `creation_index` is the window's last bar and
+  `creation_time` that bar's close. A level containing the bar it is compared against would have its
+  own price depend on that bar.
+- **Equal highs/lows** require `EQUAL_MIN_SWINGS = 2` swing confirmations inside one cluster. One
+  swing is not an equal anything. The level is dated to the *second* confirmation's time while
+  `first_seen` keeps the *first* swing's — the disagreement between them is exactly what
+  `level_age_bars` reports.
+- **Tolerance for equality** is a *relative* band (`price/(1±tol)`, default 0.001) applied by the
+  bucket builder in `analysis.py`. `equal_level_for()` does **not** re-check it: membership is
+  decided where the swings are clustered, and a second check there comparing a swing's price to the
+  bucket's own anchor could never reject anything. The contract is documented and tested as
+  *membership is decided by the bucket*, rather than a second filtering rule being invented.
+- **Merging:** levels are identified by `(creation_index, level_type, price)` — identity, not price.
+  Two levels at the same price with different creation indices are different facts and both can be
+  swept; a bar and a price report exactly **one** sweep, under the most specific level at that price
+  (`LEVEL_SPECIFICITY`: equal 2 > range/session/previous-day 1 > swing 0), then the most recently
+  created. Asserted by `test_a_co_located_sweep_is_reported_once_not_once_per_level`.
+- **Lifecycle:** a level stays active after being swept. It is *disarmed* while price remains beyond
+  it and re-arms when price trades back inside. Crossing → back inside → crossing again is **two**
+  events; a two-bar-long excursion is **one**. Both halves asserted, because asserting only one
+  passes on a detector that marks a level swept forever.
+- **Availability**, per family: a *rolling range* level completes at the close of its window's last
+  bar; a *calendar* level (session, previous day) completes at the boundary that ends its period,
+  which is the **open** of the bar that publishes it. Both are never later than the close of the bar
+  whose index they carry. Documented per type in the module docstring and asserted by
+  `assert_no_self_sweep` plus `test_a_level_is_dated_to_the_instant_its_information_completed`.
+
+**The nine sweep measurements, defined.** Each is `None` when its definition does not apply to the
+bar, rather than a fabricated number; a zero would be a claim about a bar that never moved.
+`penetration = (high − level)/level` for a high swept from underneath, `(level − low)/level` for a
+low; `penetration_percent = penetration × 100`. `time_above` / `time_below` count bars whose **close**
+sat on each side of the level — closes, not wicks, because the question is whether price was
+*accepted* out there, and a wick through a level that closed back is the definition of a sweep.
+`recovery_ratio = |close(confirmation) − level| / |extreme(pierce) − level|`: how much of the move
+past the level was given back, settled at the confirmation close. `wick_ratio = (pierced side past
+the level) / (high − low)`. `volume` is the pierce bar's volume. `volatility` is the shared trailing
+`_realized_volatility(before, last, 20)`. `structure_context` names whether a break of the same side
+occurred within 100 bars, or `None` if the lookback has no data.
+
+**Event timing is unchanged and correct:** `event_index` is the pierce bar, `confirmation_index` is
+the *next* bar, always — asserted by `test_a_sweep_is_confirmed_exactly_one_bar_after_the_pierce`.
+On the final bar present the confirmation falls back to that bar rather than naming one that does not
+exist. No incorrect event definition was preserved.
+
+**VALIDATED.** 18 tests in `test_liquidity_causality.py` plus 19 in `test_derived_levels.py`. §7's
+required properties are each asserted in a form that fails for a *distinct* reason: **prefix
+invariance** at four truncation points; **future mutation** (the tail rewritten to an extreme, with
+the pre-tail events required byte-identical); **confirmation timing**; **duplicates** (no repeated
+level identity, one sweep per bar-and-price, one level type per event); and **lifecycle** (the
+swept/re-armed pair above). Plus **segment equivalence** at segment sizes 1, 7, 50, 288 and **checkpoint
+round-trip**, both in `test_derived_levels.py`.
+
+**MEASURED on real 5m data** (BTCUSDT, 2021-01-01 → 2021-04-01, 30-day segments, 4 segments):
+25,887 bars, **269,470 events** (268,358 sweeps + 1,112 compressions), 16,767 levels, 3,295 swings,
+1,930 episodes, **1,077,880 outcomes**, **0 warnings, 0 errors**.
+
+Sweeps by level type — every one of the ten fires on real data:
+
+| level type | sweeps | | level type | sweeps |
+|---|---|---|---|---|
+| `range_low` | 123,589 | | `swing_low` | 4,396 |
+| `range_high` | 121,912 | | `swing_high` | 3,679 |
+| `session_high` | 5,850 | | `previous_day_low` | 1,019 |
+| `session_low` | 5,169 | | `previous_day_high` | 1,004 |
+| | | | `equal_highs` | 972 |
+| | | | `equal_lows` | 768 |
+
+By side: 134,941 low, 133,417 high — no side is starved. The two `range_*` families dominate, which
+is expected and not a finding: a 20-bar extreme moves far more often than a daily boundary does, so it
+is published far more often. It is a statement about *how often a level is republished*, not about
+which levels are worth trading. `time_above` / `time_below` are `null` on 38 events — those are the
+final-bar sweeps, where the confirmation bar the count is defined over does not exist. Every other
+measurement is populated on every event.
+
+**Segmented == continuous: VERIFIED on this exact range.** A whole-series run over the same 25,887
+bars produced **269,470 events, 16,767 levels** and an event-identity multiset **equal** to the
+segmented spill's (36,960 distinct identities, zero difference), and an outcome accumulator with
+**identical totals** (1,077,880, 604 truncated) and **0 of 44 cells differing** — barriers,
+excursions, targets, and every horizon's `n` and `mean` matched.
+
+**Resource usage: within budget.** Segmented run **291.7 s, 0.34 GB peak RSS** (0.34 GB self-reported,
+0.36 GB observed externally) against a 4 GB target / 6 GB ceiling; **186 MB spill + 6.2 MB checkpoint**
+on disk against a 256 GB ceiling. Full suite: **483 tests, 0 failures, 804 s user / 13:24 wall,
+539 MB peak RSS**. The continuous comparison run, which by construction holds the whole window in
+memory, peaked at 2.36 GB — still inside the ceiling, and it is only affordable because this is a
+three-month window; the full history uses the segmented path.
+
+**NOT RESEARCHED.** No liquidity definition has been evaluated for profitability, and none will be as
+part of this work. The correct question — *can we define and measure liquidity objectively without
+future leakage?* — is answered yes and demonstrated above. The question *which liquidity definition
+makes money* is a later question requiring the setup engine, which does not exist.
+
+**Remaining Phase 7 limitations.** (1) The parameters are defensible but not the only defensible ones;
+a different session length or window would be equally valid and would produce different counts, so the
+numbers above are properties of *these* definitions. (2) `equal_highs`/`equal_lows` membership depends
+on the bucket builder's clustering, which has no test of its own against a hand-built cluster — only
+against the function that consumes it. (3) Levels are never explicitly *expired*; activity is bounded
+only by the swept/re-armed state, so a very old level can still be swept years later, and
+`level_age_bars` is the only record of that. (4) `structure_context` is a single label within a
+100-bar lookback, not a graded measure.
+
+**Next dependency: Phase 9 — zones and retests.** They do not exist in any form, and the setup engine
+depends on them, so this is the first genuinely incomplete Phase 9 item.
 
 **Remaining work:** actual strategy research and validation — choosing candidate strategies,
 measuring them against the null baselines, and applying Benjamini–Hochberg across whatever that

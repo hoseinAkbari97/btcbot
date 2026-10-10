@@ -18,6 +18,7 @@ from __future__ import annotations
 import random
 import statistics
 from decimal import Decimal
+from dataclasses import astuple
 from math import sqrt
 
 import pytest
@@ -40,6 +41,7 @@ from app.services.research.events import (
     detect_liquidity_sweeps,
     detect_structure_events,
     detect_volatility_expansions,
+    measure_sweep,
 )
 from app.services.research.lookahead import audit
 from app.services.research.outcomes import (
@@ -57,6 +59,12 @@ from app.services.research.statistics import (
     paired_difference,
     standard_error,
 )
+
+
+#: The same excursion window the segmented runner uses, so the audit exercises
+#: the path real runs take rather than the zero-window default.
+SWEEP_EXCURSION_BARS = 6
+SWEEP_MEASURE_WINDOW = 20
 
 
 def noisy(count: int = 400, seed: int = 7) -> list:
@@ -111,6 +119,46 @@ def event_at(index: int, confirmation: int, price: str = "100") -> ResearchEvent
 DETECTORS = {
     "structure": lambda c: detect_structure_events(structure(c)),
     "sweeps": lambda c: detect_liquidity_sweeps(c, result=structure(c)),
+    # The measurement-bearing sweep detectors, each audited separately from the
+    # plain one above. They take extra inputs -- an excursion window and the
+    # preceding bars -- and an extra input is exactly where a leak hides: the
+    # prepending and the window slicing both read bars the event bar cannot see.
+    # ``measure_sweep`` also has to survive on its own, since it is reachable
+    # directly and reports the numbers the sweep event publishes.
+    "sweeps_measured": lambda c: detect_liquidity_sweeps(
+        c, result=structure(c), excursion_bars=SWEEP_EXCURSION_BARS, before=c
+    ),
+    # ``measure_sweep`` also has to survive on its own, since it is reachable
+    # directly and reports the numbers the sweep event publishes. Its inputs are
+    # built exactly as the detector builds them -- the trailing window ending at
+    # the event bar, and the level the event actually swept -- because a harness
+    # that hands it the whole series measures the volatility at the end of the
+    # data and would flag its own mistake as a leak.
+    "sweep_measures": lambda c: sorted(
+        (
+            measure_sweep(
+                c,
+                event.event_index,
+                level,
+                event.context["sweep_side"],
+                excursion_bars=SWEEP_EXCURSION_BARS,
+                before=c[: event.event_index][-SWEEP_MEASURE_WINDOW:],
+                structure=structure(c[: event.event_index + 1]),
+            )
+            for event in detect_liquidity_sweeps(
+                c, result=structure(c), excursion_bars=SWEEP_EXCURSION_BARS
+            )
+            for level in structure(c).liquidity_levels
+            if level.price == event.price
+            and level.level_type == event.context["level_type"]
+            and level.creation_index == event.context["level_creation_index"]
+        ),
+        # Ordered by the whole record rather than by any single field: the audit
+        # compares record *by record*, so the order must be total and causal.
+        # Sorting on one field leaves ties in generator order, which changes
+        # when bars are appended, and the audit reports that as a leak.
+        key=lambda m: repr(astuple(m)),
+    ),
     "displacement": detect_displacement,
     "compression": detect_compression,
     "volatility_expansion": detect_volatility_expansions,

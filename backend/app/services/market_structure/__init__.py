@@ -43,8 +43,34 @@ SwingKind = Literal["high", "low"]
 EventType = Literal["HH", "HL", "LH", "LL", "BOS", "structure_shift"]
 
 LevelType = Literal[
-    "swing_high", "swing_low", "equal_highs", "equal_lows", "range_high", "range_low"
+    "swing_high",
+    "swing_low",
+    "equal_highs",
+    "equal_lows",
+    "range_high",
+    "range_low",
+    "session_high",
+    "session_low",
+    "previous_day_high",
+    "previous_day_low",
 ]
+
+#: The ten liquidity levels the specification (Section 14) names. Kept as one
+#: tuple so a report, a test and the sweep detector all enumerate the same set and
+#: a level type cannot be added to one place and forgotten in another -- which is
+#: exactly how "equal highs" sat declared in the enum and derived by nothing.
+LIQUIDITY_LEVEL_TYPES: tuple[LevelType, ...] = (
+    "swing_high",
+    "swing_low",
+    "equal_highs",
+    "equal_lows",
+    "range_high",
+    "range_low",
+    "session_high",
+    "session_low",
+    "previous_day_high",
+    "previous_day_low",
+)
 
 RegimeLabel = Literal["TREND_UP", "TREND_DOWN", "RANGE", "UNKNOWN"]
 

@@ -75,6 +75,7 @@ from .analysis import (
     _swing_state,
     regime_from_closes,
 )
+from .derived_levels import equal_level_for
 
 #: Trailing closes the regime classifier reads. Matches the ``window`` default of
 #: :func:`classify_candles_as_regime`; carried so a segment boundary cannot
@@ -762,6 +763,12 @@ class StructureState:
         The batch path filters on ``MIN_TOUCHES`` and sorts by creation index;
         both happen here so that a bucket which never reached the threshold is
         retained in state (a later swing may raise it) but never published.
+
+        Equal levels are *not* returned from here. They are derived by
+        :meth:`equal_levels` and merged in at the call site, because an equal
+        high and the swing high it grows out of sit at the same price, and
+        emitting them from two different methods of one object is how the two
+        would come to disagree about which creation bar applies.
         """
         out: list[LiquidityLevel] = []
         for bucket in self._buckets:
@@ -786,6 +793,90 @@ class StructureState:
                     ),
                 )
             )
+        out.sort(key=lambda level: level.creation_index)
+        return out
+
+    def all_liquidity_levels(self) -> list[LiquidityLevel]:
+        """Swing levels and equal levels together, in creation order.
+
+        The single place the two swing-derived families are combined, so a
+        caller cannot pick one and forget the other. Equal levels come from
+        :meth:`equal_levels`; the time-anchored families
+        (``range_*``/``session_*``/``previous_day_*``) come from
+        :class:`~app.services.market_structure.derived_levels.DerivedLevelState`
+        and are *not* here, because they are a separate state machine with a
+        separate persistence contract.
+        """
+        combined = self.levels() + self.equal_levels()
+        # Full tiebreak, not just creation index. A consumer that has to guess
+        # the order of same-index levels -- and the sweep detector's per-price
+        # merge does exactly that -- would otherwise get a different answer from
+        # the batch path purely from how the two lists were concatenated.
+        combined.sort(
+            key=lambda level: (level.creation_index, level.price, level.level_type)
+        )
+        return combined
+
+    def bars_before(self, index: int, limit: int) -> list[CandleData]:
+        """The ``limit`` bars immediately before absolute bar ``index``.
+
+        Bounded by ``limit``, so calling this from a detector is not a way to
+        reach for the whole history. Only the swing lookback window is carried,
+        so anything longer is genuinely unavailable rather than merely expensive
+        -- and a measurement that reports ``None`` because its window was not
+        carried is honest about a limitation rather than quietly reading the
+        series it was handed.
+        """
+        if index <= 0:
+            return []
+        # ``_window`` is a contiguous trailing run ending at absolute bar
+        # ``_next_index - 1``, so the bar before ``index`` sits a fixed distance
+        # from its end and no index arithmetic against ``_base`` is needed.
+        offset_from_end = self._next_index - index
+        end = len(self._window) - offset_from_end
+        if end <= 0:
+            return []
+        start = max(0, end - limit)
+        return list(self._window[start:end])
+
+    def equal_levels(self) -> list[LiquidityLevel]:
+        """The ``equal_highs`` / ``equal_lows`` levels formed so far.
+
+        One per bucket that has accumulated at least ``EQUAL_MIN_SWINGS`` swings,
+        dated to the confirmation bar of its *second* qualifying swing — see
+        :func:`~app.services.market_structure.derived_levels.equal_level_for` for
+        why that is not the bucket's own creation bar, which would be a claim
+        about a swing that had not printed yet.
+
+        A bucket that never reached ``MIN_TOUCHES`` is skipped here for the same
+        reason it is skipped by :meth:`levels`: a level nobody traded through
+        twice is not a liquidity level, and equal-ness built on a bucket of one
+        touch would be describing a coincidence rather than a pattern.
+
+        Recomputed rather than stored, because it is a pure function of the
+        buckets — which is exactly why it must not be checkpointed. A stored
+        equal level would be a derived value that has to be kept consistent with
+        its source across every future change to the clustering rule, and the
+        one bug it could hide is a resumed run reporting an equal high the
+        uninterrupted run never formed.
+        """
+        out: list[LiquidityLevel] = []
+        for bucket in self._buckets:
+            if bucket.touches < MIN_TOUCHES:
+                continue
+            confirmations = [
+                (swing.index, swing.confirmation_index, swing.confirmation_time)
+                for swing in bucket.swings
+            ]
+            level = equal_level_for(
+                bucket.price,
+                kind=bucket.kind,
+                swing_confirmations=confirmations,
+                tolerance=LEVEL_CLUSTER_TOLERANCE,
+                origin="swing",
+            )
+            if level is not None:
+                out.append(level)
         out.sort(key=lambda level: level.creation_index)
         return out
 

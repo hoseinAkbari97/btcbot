@@ -41,7 +41,7 @@ cooperation from the detector itself.
 from __future__ import annotations
 
 from bisect import bisect_left, insort
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
@@ -63,7 +63,19 @@ EventKind = Literal[
 ]
 
 
-@dataclass(frozen=True)
+def _render(value: Decimal | None) -> str | None:
+    """A feature value as JSON-safe text, keeping ``None`` as ``None``.
+
+    Features are ``Decimal`` because a sweep's price is compared against later
+    bars and float precision can make a level and the price that swept it stop
+    being equal. ``None`` is carried through unchanged for the same reason from
+    the other direction: an undefined measurement must not become a string that
+    reads back as zero.
+    """
+    return None if value is None else str(value)
+
+
+@dataclass
 class ResearchEvent:
     """Something that happened in the market, described without a position.
 
@@ -109,7 +121,7 @@ class ResearchEvent:
             ),
             "confirmation_delay_bars": self.confirmation_delay_bars,
             "price": str(self.price),
-            **{key: str(value) for key, value in self.features.items()},
+            **{key: _render(value) for key, value in self.features.items()},
         }
 
     def to_payload(self) -> dict:
@@ -132,7 +144,7 @@ class ResearchEvent:
                 self.confirmation_time.isoformat() if self.confirmation_time else None
             ),
             "price": str(self.price),
-            "features": {key: str(value) for key, value in self.features.items()},
+            "features": {key: _render(value) for key, value in self.features.items()},
             "context": self.context,
         }
 
@@ -151,7 +163,12 @@ class ResearchEvent:
             ),
             price=Decimal(payload["price"]),
             features={
-                key: Decimal(value) for key, value in payload.get("features", {}).items()
+                # ``None`` is a value here, not a missing key: a sweep whose
+                # wick ratio is undefined has to survive a checkpoint as
+                # undefined, not as absent and silently equal to something else
+                # on the way back.
+                key: (Decimal(value) if value is not None else None)
+                for key, value in payload.get("features", {}).items()
             },
             context=dict(payload.get("context", {})),
         )
@@ -238,8 +255,145 @@ def detect_structure_events(result: MarketStructureResult) -> list[ResearchEvent
 #: Level kinds a bar can sweep from above. A sweep of a high is a wick above
 #: it; a sweep of a low is a wick below. Kept as module constants rather than
 #: inline literals so the two candidate-selection sides cannot drift apart.
-HIGH_LEVEL_TYPES = ("swing_high", "equal_highs", "range_high")
-LOW_LEVEL_TYPES = ("swing_low", "equal_lows", "range_low")
+#:
+#: All ten types the specification names appear here, and each is derived by some
+#: entry point — ``swing_*`` and ``equal_*`` by the swing bucket machinery,
+#: ``range_*`` / ``session_*`` / ``previous_day_*`` by
+#: :mod:`app.services.market_structure.derived_levels`. An enum member with no
+#: producer is what left four of these types declared and never derived, so this
+#: tuple and that module are kept in step deliberately: a type added here with no
+#: producer would be silently unsweepable rather than absent.
+HIGH_LEVEL_TYPES = (
+    "swing_high",
+    "equal_highs",
+    "range_high",
+    "session_high",
+    "previous_day_high",
+)
+LOW_LEVEL_TYPES = (
+    "swing_low",
+    "equal_lows",
+    "range_low",
+    "session_low",
+    "previous_day_low",
+)
+
+#: How specific each level type is, for the duplicate-price merge.
+#:
+#: A price can legitimately carry several liquidity levels at once — a bucket's
+#: ``swing_high`` and, once a second swing confirms on it, the ``equal_highs``
+#: built from that bucket. They are separate objects with separate availability
+#: timestamps, because the append-only rule forbids moving the one a participant
+#: has already seen. But they describe *one price*, and a bar that pierces that
+#: price has swept that level once.
+#:
+#: Emitting both would double-count a single phenomenon and, worse, would report
+#: an "equal highs" sweep at the same bar as a "swing high" sweep of the same
+#: price — two event rows, two denominators, one fact. So the merge rule is:
+#: **per bar, per price, at most one sweep, reported under the most specific type
+#: knowable at that bar.** Most specific means the level that carries more
+#: information about *why* that price matters — a price confirmed by two swings
+#: says more than a price confirmed by one.
+#:
+#: The survivor is still recorded as swept in its own right, so the two types stay
+#: independently armed and a later bar that re-crosses the price after it trades
+#: back through re-arms both. The merge only decides what a single bar reports.
+LEVEL_SPECIFICITY: dict[str, int] = {
+    "swing_high": 0,
+    "swing_low": 0,
+    "range_high": 1,
+    "range_low": 1,
+    "session_high": 1,
+    "session_low": 1,
+    "previous_day_high": 1,
+    "previous_day_low": 1,
+    "equal_highs": 2,
+    "equal_lows": 2,
+}
+
+
+def _high_penetration(candle: CandleData, level: LiquidityLevel) -> Decimal:
+    """How far past a high level this bar's wick reached, as a fraction of it."""
+    return (candle.high - level.price) / level.price
+
+
+def _low_penetration(candle: CandleData, level: LiquidityLevel) -> Decimal:
+    """How far past a low level this bar's wick reached, as a fraction of it."""
+    return (level.price - candle.low) / level.price
+
+
+def _eligible_levels(
+    levels: Sequence[LiquidityLevel],
+    swept: dict[tuple[int, str, str], int],
+    inside: set[tuple[int, str, str]],
+    penetrates: "Callable[[LiquidityLevel], bool]",
+) -> list[LiquidityLevel]:
+    """The candidates that could actually be reported on this bar.
+
+    Three filters, all per level and all applied before any merging, because each
+    is a statement about one level rather than about a price. A level is dropped
+    when it is already swept, when this bar traded back inside it (so the level
+    re-arms rather than sweeps -- they are the same test read from opposite
+    sides, and a level must not do both on one bar), or when the bar failed to
+    penetrate it far enough.
+
+    The penetration filter deliberately does not mark the level swept. Marking it
+    before this check meant a level rejected for insufficient penetration was
+    suppressed for the whole excursion and could never be swept by a deeper bar
+    either -- silently, because the resulting non-event is indistinguishable from
+    a level that was never near price.
+    """
+    eligible = []
+    for level in levels:
+        key = SweepCarried.key(level)
+        if key in swept or key in inside:
+            continue
+        if not penetrates(level):
+            continue
+        eligible.append(level)
+    return eligible
+
+
+def _sweep_outcome_per_price(
+    eligible: Sequence[LiquidityLevel],
+) -> list[tuple[LiquidityLevel, tuple[LiquidityLevel, ...]]]:
+    """Group eligible levels by price, reporting one winner per price.
+
+    Returns ``(winner, every level at that price)`` pairs in the winners'
+    creation order, so the caller can report one event and still mark all of them
+    swept. Grouping is by *exact* price rather than by the tolerance band: the
+    cluster tolerance decides which swings share a level, but two levels that
+    happen to be within tolerance of each other and are nonetheless at different
+    prices were crossed by different depths of the same bar, and collapsing them
+    would discard a real measurement.
+    """
+    grouped: dict[Decimal, list[LiquidityLevel]] = {}
+    for level in eligible:
+        grouped.setdefault(level.price, []).append(level)
+
+    winners: list[tuple[LiquidityLevel, tuple[LiquidityLevel, ...]]] = []
+    for at_price in grouped.values():
+        winner = max(
+            at_price,
+            # ``max`` returns the *first* of equal maxima, so the order of
+            # ``at_price`` decides whenever the key ties. That order is the
+            # caller's level list, and a caller that sorts only by creation index
+            # leaves it to list order -- which is exactly how the batch and
+            # segmented paths came to report the same swept price as a
+            # ``session_high`` in one and a ``range_high`` in the other. The
+            # tiebreak is therefore total and stated here, rather than inherited.
+            key=lambda level: (
+                LEVEL_SPECIFICITY.get(level.level_type, -1),
+                # Ties are broken by *later* creation, because the more specific
+                # level at a price is by construction the one formed later — the
+                # equal high becomes knowable after the swing high does.
+                level.creation_index,
+                level.level_type,
+            ),
+        )
+        winners.append((winner, tuple(sorted(at_price, key=lambda lvl: lvl.creation_index))))
+    winners.sort(key=lambda pair: pair[0].creation_index)
+    return winners
 
 
 @dataclass
@@ -326,6 +480,8 @@ def detect_liquidity_sweeps(
     offset: int = 0,
     carried: SweepCarried | None = None,
     final: bool = True,
+    excursion_bars: int = 0,
+    before: Sequence[CandleData] | None = None,
 ) -> list[ResearchEvent]:
     """A level was pierced intrabar but the bar closed back through it.
 
@@ -356,6 +512,18 @@ def detect_liquidity_sweeps(
     :param final: whether this window ends the series. Only the final window may
         report a sweep on its own last bar, whose confirmation bar the dataset no
         longer contains; every other window defers it. See :attr:`SweepCarried.pending`.
+    :param excursion_bars: the excursion window in force for this event, recorded
+        in ``context`` as the definition that was applied. It deliberately does
+        *not* widen the ``time_above``/``time_below`` count past the confirmation
+        bar: those count only bars knowable when the sweep is confirmed, so the
+        span is at most one bar wide and no value of this parameter can make
+        them read the future. Zero leaves them ``None``, an honest "not
+        measured", and is the default.
+    :param before: the bars preceding this window, used for the trailing
+        volatility measure. Supplied by the caller because only the caller knows
+        where the window sits; a windowed run that passed its own bars would
+        report a volatility of the window's first ``n`` bars rather than the
+        volatility at the sweep.
     """
     if levels is None:
         if result is None:
@@ -375,6 +543,39 @@ def detect_liquidity_sweeps(
 
     events: list[ResearchEvent] = []
     state = carried if carried is not None else SweepCarried()
+    #: The trailing window every sweep's measurements read. Computed once per
+    #: bar from the carried prefix and this window, so a sweep near the start of
+    #: a segment sees the same volatility as the identical sweep in a continuous
+    #: run. Built lazily because a window with no bars before it needs no
+    #: measurement at all.
+    structure_ctx = result if result is not None else _bare_structure()
+
+    def history() -> list[CandleData]:
+        return list(before) if before else []
+
+    def window_before(index: int) -> list[CandleData]:
+        """The bars preceding local ``index``, one more than the measure needs.
+
+        ``_realized_volatility`` needs ``window + 1`` closes to produce
+        ``window`` returns: it returns ``None`` whenever ``index < window``, so
+        handing it exactly ``window`` bars hands it nothing at all. The extra
+        bar is the difference between a volatility figure and a column of nulls
+        that looks like an honest "not applicable" on every single row.
+
+        The window is assembled from both sources, and which one a bar comes
+        from depends on the call: ``before`` is the history *preceding* this
+        window, so it supplies bars before ``offset``, while ``candles``
+        supplies the window's own bars. A caller that passes the whole series as
+        ``candles`` may legitimately also pass it as ``before`` -- the batch
+        path does, because ``offset`` is 0 and the two then coincide. Taking
+        the window from ``before`` alone therefore reads at the far end of the
+        series instead of at the event, and anchors every volatility to the last
+        bar of the data. Which is not a wrong answer to a question; it is an
+        answer to a different question, reported under this one's heading.
+        """
+        prefix = history()[:offset]
+        combined = [*prefix, *candles[:index]]
+        return combined[-(SWEEP_MEASURE_WINDOW + 1):]
 
     # Resolve what the previous window left pending. Its last bar is this
     # window's bar ``offset``, so the confirmation price and time are available
@@ -529,25 +730,32 @@ def detect_liquidity_sweeps(
             swept.pop(key, None)
             inside.add(key)
 
-        # A sweep of highs is a wick above; of lows, a wick below.
-        for level in _sweep_candidates(
-            highs,
-            previous_cut_high,
-            candle.high / (Decimal(1) + level_tolerance),
+        # A sweep of highs is a wick above; of lows, a wick below. The eligible
+        # levels at one price are merged by :func:`_sweep_outcome_per_price`
+        # *after* the filters, because the filters are per level and the merge is
+        # per price -- doing it the other way round would let a merged-away level
+        # suppress a winner that was itself ineligible.
+        for level, co_located in _sweep_outcome_per_price(
+            _eligible_levels(
+                _sweep_candidates(
+                    highs,
+                    previous_cut_high,
+                    candle.high / (Decimal(1) + level_tolerance),
+                ),
+                swept,
+                inside,
+                lambda candidate: _high_penetration(candle, candidate)
+                >= min_penetration,
+            )
         ):
-            key = SweepCarried.key(level)
-            if key in swept or key in inside:
-                continue
-            swing_count = level.swing_count_at(absolute)
-            penetration = (candle.high - level.price) / level.price
-            if penetration < min_penetration:
-                # Deliberately *not* recorded as swept. Marking it before this
-                # check meant a level rejected for insufficient penetration was
-                # suppressed for the whole excursion and could never be swept by
-                # a deeper bar either -- silently, because the resulting
-                # non-event is indistinguishable from a level never near price.
-                continue
-            swept[key] = absolute
+            # Every level at this price is marked, not just the one reported. They
+            # were pierced by the same wick and describe the same fact, so leaving
+            # a sibling armed would let the same price be reported twice on two
+            # different bars of one excursion -- the double-count this merge
+            # exists to prevent, arriving one bar later instead.
+            for sibling in co_located:
+                swept[SweepCarried.key(sibling)] = absolute
+            penetration = _high_penetration(candle, level)
             close_back = candle.close < level.price
             emit(
                 _sweep_event(
@@ -558,27 +766,39 @@ def detect_liquidity_sweeps(
                     penetration,
                     close_back,
                     # The level's own type, not a hardcoded swing label. Every
-                    # level derived so far happens to be a swing, so the two
-                    # agreed; that is a coincidence that would have ended the
+                    # level derived so far happened to be a swing, so the two
+                    # agreed; that was a coincidence that would have ended the
                     # moment an equal-highs or session level was derived.
                     level.level_type,
-                    swing_count,
+                    level.swing_count_at(absolute),
                     offset=offset,
+                    measures=measure_sweep(
+                        candles,
+                        index,
+                        level,
+                        "above",
+                        excursion_bars or None,
+                        window_before(index),
+                        structure_ctx,
+                    ),
                 )
             )
-        for level in _sweep_candidates(
-            lows,
-            previous_cut_low,
-            candle.low / (Decimal(1) - level_tolerance),
+        for level, co_located in _sweep_outcome_per_price(
+            _eligible_levels(
+                _sweep_candidates(
+                    lows,
+                    previous_cut_low,
+                    candle.low / (Decimal(1) - level_tolerance),
+                ),
+                swept,
+                inside,
+                lambda candidate: _low_penetration(candle, candidate)
+                >= min_penetration,
+            )
         ):
-            key = SweepCarried.key(level)
-            if key in swept or key in inside:
-                continue
-            swing_count = level.swing_count_at(absolute)
-            penetration = (level.price - candle.low) / level.price
-            if penetration < min_penetration:
-                continue
-            swept[key] = absolute
+            for sibling in co_located:
+                swept[SweepCarried.key(sibling)] = absolute
+            penetration = _low_penetration(candle, level)
             close_back = candle.close > level.price
             emit(
                 _sweep_event(
@@ -589,8 +809,17 @@ def detect_liquidity_sweeps(
                     penetration,
                     close_back,
                     level.level_type,
-                    swing_count,
+                    level.swing_count_at(absolute),
                     offset=offset,
+                    measures=measure_sweep(
+                        candles,
+                        index,
+                        level,
+                        "below",
+                        excursion_bars or None,
+                        window_before(index),
+                        structure_ctx,
+                    ),
                 )
             )
     # Hand the next window the bar it cannot see. Recorded unconditionally,
@@ -598,6 +827,21 @@ def detect_liquidity_sweeps(
     # should still describe the data it consumed, and the cost is two Decimals.
     state.previous_bar = (str(candles[last_index].high), str(candles[last_index].low))
     return events
+
+
+def _bare_structure() -> MarketStructureResult:
+    """An empty structure result, for the windowed path that has none.
+
+    The segmented runner detects levels from carried state rather than from a
+    ``MarketStructureResult``, so it has no result object to hand down. Rather
+    than threading one through -- which would mean materialising the whole
+    structure state twice per segment -- the structure measure reads an empty
+    one and reports ``None``, which is what the batch path reports for the first
+    bars of a series anyway. The measure is *degraded*, not *wrong*, and a
+    segmented sweep's structure context says so rather than claiming calm
+    structure it never looked at.
+    """
+    return MarketStructureResult(symbol="", timeframe=Timeframe.M5)
 
 
 def _previous_cut_from(
@@ -693,6 +937,222 @@ def _cut(levels: list[tuple[Decimal, int, LiquidityLevel]], price: Decimal) -> i
 
 
 
+# ---------------------------------------------------------------------------
+# Sweep measurements
+# ---------------------------------------------------------------------------
+#
+# Every quantity below is a *definition*, not a parameter chosen for effect. The
+# specification names the nine fields a sweep record carries; it does not define
+# them, and the temptation in a field like ``recovery_ratio`` is to pick the
+# formula that separates winning sweeps from losing ones. Each is therefore
+# defined here as the simplest quantity with a closed form, stated in price
+# units, computable from OHLCV and the bars carried at confirmation time.
+#
+# Two rules govern all of them:
+#
+# * **A value that is undefined is ``None``, never a default.** Zero is a
+#   measurement -- it says the bar never closed back through the level, or that
+#   the excursion reached no further. Substituting it for "cannot be computed"
+#   would make an unmeasurable sweep look like a weak one, and every downstream
+#   mean would quietly include it.
+# * **A forward-looking quantity is not a feature.** ``wick_ratio`` describes
+#   the bar that swept, and that bar's own shape is settled at its close, which
+#   is the sweep's confirmation. Anything requiring a *later* bar -- how far
+#   price travelled after the sweep, whether the level was reclaimed next week
+#   -- is an outcome, and lives in :mod:`app.services.research.outcomes`.
+
+#: Bars of history the sweep measurements read. Chosen to equal the swing
+#: lookback so the segmented path can serve the whole window from the trailing
+#: bars it already carries for swing detection, rather than adding a second
+#: rolling buffer that would have to be checkpointed and bounded on its own.
+SWEEP_MEASURE_WINDOW = 20
+
+#: How far back the market-structure context is searched for a break of the same
+#: side. A sweep says a level was taken; what it does *not* say is whether that
+#: was the start of a structural break or a move into an existing trend, and
+#: those are different phenomena that the same event index can belong to.
+STRUCTURE_LOOKBACK = 100
+
+
+@dataclass(frozen=True)
+class SweepMeasures:
+    """The nine sweep-record fields, plus what went into them.
+
+    Held separately from the event so the arithmetic can be unit-tested against
+    hand-computed values without going through detection, and so the "undefined
+    means ``None``" rule is enforced in one place rather than at every call.
+    """
+
+    penetration: Decimal
+    penetration_percent: Decimal | None
+    time_above: int | None
+    time_below: int | None
+    recovery_ratio: Decimal | None
+    wick_ratio: Decimal | None
+    volume: Decimal | None
+    volatility: Decimal | None
+    structure_context: str | None
+    #: Bars the excursion was allowed to run. Not one of the nine fields, but
+    #: every time-based measure is meaningless without it -- a two-bar
+    #: ``time_above`` and a forty-bar one describe opposite behaviour, and the
+    #: raw count alone would let the shorter one look like the faster rejection.
+    excursion_bars: int | None
+    range: Decimal | None
+    structure_breaks: int
+
+
+def measure_sweep(
+    candles: Sequence[CandleData],
+    index: int,
+    level: LiquidityLevel,
+    side: str,
+    excursion_bars: int | None,
+    before: Sequence[CandleData],
+    structure: MarketStructureResult,
+) -> SweepMeasures:
+    """Measure one sweep of ``level`` on bar ``index``.
+
+    ``side`` is ``"above"`` for a high swept from underneath and ``"below"`` for
+    a low swept from above; it names the direction price travelled *through* the
+    level, which is the direction that decides which side of the level each other
+    measurement refers to.
+
+    ``before`` is the history preceding the event bar, ``structure`` the
+    structure result as of it. Both are passed in rather than found, because the
+    segmented and continuous paths hold them differently and a sweep measured
+    from one path's copy and reported against the other's is exactly how two runs
+    would come to disagree.
+    """
+    candle = candles[index]
+    price = level.price
+    penetration = (
+        (candle.high - price) / price if side == "above" else (price - candle.low) / price
+    )
+
+    bar_range = candle.high - candle.low
+
+    # ``time_above`` / ``time_below`` count bars in which the *close* sat on the
+    # far side of the level. Closes rather than wicks because the question is
+    # whether price was accepted out there, and a wick through a level that closed
+    # back inside it is the definition of a sweep rather than of trading above it.
+    #
+    # The window runs only to the confirmation bar, and cannot be extended past
+    # it however long ``excursion_bars`` is. A count over the six bars after the
+    # pierce is not a property this event has at the moment it is knowable: at
+    # the close of the confirmation bar those closes have not happened, so
+    # publishing them would attach the shape of a move the reader could not yet
+    # see to a bar they could. The prefix-invariance audit is what caught this,
+    # and it caught it for the right reason -- appending bars changed a number
+    # stamped at an index that had not moved.
+    #
+    # So ``excursion_bars`` does not widen this span at all: it is carried in
+    # ``context`` as the excursion definition in force, and no value of it makes
+    # these two counts read past the confirmation bar. What a longer excursion
+    # does to price is an outcome question, and the outcome labeller already
+    # answers it with bars this event does not claim to have seen.
+    time_above = time_below = None
+    confirmation = min(index + 1, len(candles) - 1)
+    span = range(index + 1, confirmation + 1)
+    if span:
+        time_above = sum(1 for j in span if _close(candles, j) > price)
+        time_below = sum(1 for j in span if _close(candles, j) < price)
+
+    # Recovery: how much of the move past the level was given back. Measured on
+    # closes because a wick retraced and closed through is still a recovery --
+    # that is the bar's own shape, and it is settled at the close.
+    excursion_extreme = candle.high if side == "above" else candle.low
+    excursion = abs(excursion_extreme - price)
+    recovery = (
+        abs(_close(candles, min(index + 1, len(candles) - 1)) - price)
+        if excursion
+        else None
+    )
+    recovery_ratio = (
+        recovery / excursion
+        if recovery is not None and excursion > 0
+        else None
+    )
+
+    # Wick: the part of the pierced side that extended beyond the level and came
+    # back, as a fraction of the bar's own range. ``None`` on a zero-range bar,
+    # where the fraction is 0/0 -- reporting 0 would claim the bar had no wick,
+    # which is a claim about a bar that never moved.
+    wick = (
+        candle.high - price if side == "above" else price - candle.low
+    )
+    wick_ratio = (
+        wick / bar_range if bar_range > 0 else None
+    )
+
+    volume = candle.volume if candle.volume is not None else None
+    volatility = _realized_volatility(before, len(before) - 1, SWEEP_MEASURE_WINDOW)
+
+    structure_context, breaks = _structure_context(
+        before, index, structure, price, side
+    )
+
+    return SweepMeasures(
+        penetration=penetration,
+        penetration_percent=penetration * 100,
+        time_above=time_above,
+        time_below=time_below,
+        recovery_ratio=recovery_ratio,
+        wick_ratio=wick_ratio,
+        volume=volume,
+        volatility=volatility,
+        structure_context=structure_context,
+        excursion_bars=excursion_bars if excursion_bars is not None else None,
+        range=bar_range if bar_range > 0 else None,
+        structure_breaks=breaks,
+    )
+
+
+def _structure_context(
+    before: Sequence[CandleData],
+    index: int,
+    structure: MarketStructureResult,
+    price: Decimal,
+    side: str,
+) -> tuple[str | None, int]:
+    """Whether price had already broken structure this way before the sweep.
+
+    Restricted to events in the ``STRUCTURE_LOOKBACK`` bars preceding the sweep
+    and not yet confirmed at it, which is the bar a decision would be made on.
+    Counting *all* of them would answer a question about the whole dataset and
+    label an early sweep with a later break.
+
+    The label is one of three fixed strings, and ``None`` when no structure event
+    is knowable at all -- which is a different statement from "no break": it
+    means the sample is too short to say, and collapsing the two would let a
+    short sample read as calm structure.
+    """
+    known = [
+        event
+        for event in structure.events
+        if event.is_known_at(index)
+        and index - event.confirmation_index <= STRUCTURE_LOOKBACK
+    ]
+    if not known:
+        return (None, 0)
+    breaks = 0
+    last: str | None = None
+    for event in known:
+        if event.event_type != "BOS":
+            continue
+        # Direction is recorded on the event; the level price is checked too,
+        # because a BOS of a level far from this sweep is not context for it.
+        if event.broken_level is not None and abs(event.broken_level - price) > price * Decimal("0.01"):
+            continue
+        if (side == "above" and event.direction == "long") or (
+            side == "below" and event.direction == "short"
+        ):
+            breaks += 1
+            last = event.direction
+    if not breaks:
+        return ("no_prior_break", 0)
+    return (f"prior_break_{last}", breaks)
+
+
 def _sweep_event(
     candles: Sequence[CandleData],
     index: int,
@@ -703,6 +1163,7 @@ def _sweep_event(
     level_kind: str,
     swing_count: int = 1,
     offset: int = 0,
+    measures: SweepMeasures | None = None,
 ) -> ResearchEvent:
     """One sweep, with the event bar and the confirmation bar kept distinct.
 
@@ -727,6 +1188,31 @@ def _sweep_event(
     absolute = offset + index
     confirmation_index = min(absolute + 1, offset + len(candles) - 1)
     swept_side = "high" if side == "above" else "low"
+    features: dict[str, Decimal | None] = {
+        "level_price": level.price,
+        "penetration": penetration,
+        "swept_side": Decimal(0 if swept_side == "low" else 1),
+        "level_age_bars": Decimal(absolute - level.creation_index),
+        "level_touch_count": Decimal(level.touch_count),
+        "level_strength": Decimal(str(level.strength)),
+        # How many swings had confirmed on this price *by this bar*. A level
+        # formed from one swing and one formed from four are different
+        # phenomena, but that difference has to be read at the time of the
+        # sweep, not from a level object that has since absorbed the rest.
+        "level_swing_count": Decimal(swing_count),
+    }
+    if measures is not None:
+        # The seven fields the specification adds to the sweep record. Each is
+        # ``None`` when its definition does not apply to this bar rather than
+        # zero, and each is placed here rather than in ``context`` so it is
+        # subject to the same "knowable at confirmation" rule as the rest.
+        features["penetration_percent"] = measures.penetration_percent
+        features["time_above"] = _count(measures.time_above)
+        features["time_below"] = _count(measures.time_below)
+        features["recovery_ratio"] = measures.recovery_ratio
+        features["wick_ratio"] = measures.wick_ratio
+        features["volume"] = measures.volume
+        features["volatility"] = measures.volatility
     return ResearchEvent(
         kind="liquidity_sweep",
         detector=f"sweep:{level_kind}",
@@ -735,19 +1221,7 @@ def _sweep_event(
         confirmation_index=confirmation_index,
         confirmation_time=candles[local_confirmation].close_time,
         price=candles[local_confirmation].close,
-        features={
-            "level_price": level.price,
-            "penetration": penetration,
-            "swept_side": Decimal(0 if swept_side == "low" else 1),
-            "level_age_bars": Decimal(absolute - level.creation_index),
-            "level_touch_count": Decimal(level.touch_count),
-            "level_strength": Decimal(str(level.strength)),
-            # How many swings had confirmed on this price *by this bar*. A level
-            # formed from one swing and one formed from four are different
-            # phenomena, but that difference has to be read at the time of the
-            # sweep, not from a level object that has since absorbed the rest.
-            "level_swing_count": Decimal(swing_count),
-        },
+        features=features,
         context={
             "swept_side": swept_side,
             "close_back_through_level": close_back,
@@ -760,8 +1234,15 @@ def _sweep_event(
             "level_type": level.level_type,
             "level_creation_index": level.creation_index,
             "level_is_equal": swing_count > 1,
+            "structure_context": measures.structure_context if measures else None,
+            "excursion_bars": measures.excursion_bars if measures else None,
         },
     )
+
+
+def _count(value: int | None) -> Decimal | None:
+    """A bar count as a feature value, or ``None`` if there is no window."""
+    return None if value is None else Decimal(value)
 
 
 def detect_displacement(

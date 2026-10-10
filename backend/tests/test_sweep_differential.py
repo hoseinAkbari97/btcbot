@@ -24,6 +24,7 @@ production path never uses proves nothing about production.
 
 from __future__ import annotations
 
+import collections
 import random
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
@@ -32,10 +33,13 @@ import pytest
 
 from app.schemas.market_data import CandleData, Timeframe
 from app.services.market_structure import LiquidityLevel
+from app.services.market_structure import MarketStructureResult
 from app.services.market_structure.analysis import analyze_market_structure
 from app.services.research.events import (
+    SWEEP_MEASURE_WINDOW,
     _sweep_event,
     detect_liquidity_sweeps,
+    measure_sweep,
 )
 
 #: The detector's own defaults. Duplicated rather than imported so that a
@@ -46,8 +50,66 @@ TOLERANCE = Decimal("0.001")
 MIN_PENETRATION = Decimal("0")
 
 
+#: Level types swept from underneath, and those swept from above. Written out
+#: rather than derived from the enum so that adding a level type is a *test
+#: failure* here, announcing that the oracle needs extending -- the same
+#: reasoning as the tolerance constants below. An oracle that silently learned
+#: the production rule would stop being an oracle.
+HIGH_TYPES = ("swing_high", "equal_highs", "range_high", "session_high", "previous_day_high")
+LOW_TYPES = ("swing_low", "equal_lows", "range_low", "session_low", "previous_day_low")
+
+#: Which level type a co-located sweep is reported under. An equal high or low
+#: is the most specific fact available at a price -- it says two *swing*
+#: confirmations landed on it, which no other family can say. Everything else is
+#: a price the market touched once, and among those the tiebreak is not
+#: meaningfulness but *when the level came into existence*: a rolling range
+#: extreme, a session high and a previous-day high are each complete at a
+#: different bar, and at a shared price the later one is the more recently known
+#: fact. Written out here rather than imported so that changing the production
+#: ranking is a test failure announcing that the oracle must be re-checked --
+#: an oracle that imported the rule under test would agree with itself.
+LEVEL_SPECIFICITY = {
+    "swing_high": 0,
+    "swing_low": 0,
+    "range_high": 1,
+    "range_low": 1,
+    "session_high": 1,
+    "session_low": 1,
+    "previous_day_high": 1,
+    "previous_day_low": 1,
+    "equal_highs": 2,
+    "equal_lows": 2,
+}
+
+
+def _key(level: LiquidityLevel) -> tuple[int, str, str]:
+    """A level's identity, matching ``SweepCarried.key``."""
+    return (level.creation_index, str(level.level_type), str(level.price))
+
+
+def _pick_one(levels: list[LiquidityLevel]) -> LiquidityLevel:
+    """The one level a co-located group is reported under.
+
+    The key is total on purpose. ``max`` returns the *first* of equal maxima, so
+    without the type name as a final element the answer would depend on the order
+    the caller's list happened to be in -- which is exactly how the batch and
+    segmented paths came to report the same swept price as a ``session_high`` in
+    one and a ``range_high`` in the other.
+    """
+    return max(
+        levels,
+        key=lambda lv: (
+            LEVEL_SPECIFICITY.get(lv.level_type, -1),
+            lv.creation_index,
+            lv.level_type,
+        ),
+    )
+
+
 def reference_sweeps(
-    candles: list[CandleData], levels: list[LiquidityLevel]
+    candles: list[CandleData],
+    levels: list[LiquidityLevel],
+    structure: MarketStructureResult | None = None,
 ) -> list:
     """The pre-optimisation detector, verbatim. The oracle, not production code.
 
@@ -58,7 +120,16 @@ def reference_sweeps(
     by_index = sorted(levels, key=lambda level: (level.creation_index, level.price))
     events = []
     active: list[LiquidityLevel] = []
-    beyond_since: dict[int, int] = {}
+    #: Already-swept, keyed by level *identity* -- creation index, type and
+    #: price -- not by price. A level born while price is already beyond it has
+    #: not been crossed: crossing means beyond, back inside, beyond again, and a
+    #: level that only ever saw price on one side of it has never been. Keying
+    #: by price would suppress it forever, and with rolling range levels
+    #: republished at many indices that silently drops hundreds of events.
+    beyond_since: dict[tuple, int] = {}
+    #: Re-armed on this bar: price traded back inside them, so they cannot
+    #: also be swept on the same bar.
+    inside: set[tuple] = set()
     cursor = 0
     for index in range(1, len(candles) - 1):
         while cursor < len(by_index) and by_index[cursor].creation_index < index:
@@ -67,65 +138,204 @@ def reference_sweeps(
         if not active:
             continue
         candle = candles[index]
+        previous = candles[index - 1]
+        inside = set()
+
+        def _crossed(level: LiquidityLevel) -> bool:
+            """Was price inside this level on the bar before?
+
+            The crossing rule, stated directly. Without it a level whose own
+            defining bar already sat beyond the level would be swept on the
+            very bar that created it -- and the report would be describing a
+            sweep of a price that had never traded below it. Production gets
+            this for free from its candidate band, which only selects prices
+            between the previous bar's high and this one's; the oracle has to
+            say it, because it has no band.
+            """
+            if level.level_type in HIGH_TYPES:
+                return previous.high <= level.price * (Decimal(1) + TOLERANCE)
+            return previous.low >= level.price * (Decimal(1) - TOLERANCE)
+        # Group the active levels by price first. A bar that pierces one price
+        # has swept every level sitting on it, and reporting one event per level
+        # would count the same market event several times -- which is exactly
+        # what happened once ten level types began deriving from the same bars.
+        # Re-arm over EVERY active level first, then sweep -- the same order
+        # the production path uses. Re-arming only the candidate group would
+        # leave a price that was swept and then far-abandoned permanently
+        # disarmed, so it would be re-reported every time the band later swept
+        # past it again. The two halves are exact negations: a high level is
+        # beyond the bar when ``high > price*(1+tol)`` and re-armed when not.
         for level in active:
-            if level.level_type not in ("swing_high", "equal_highs", "range_high"):
-                continue
-            if candle.high <= level.price * (Decimal(1) + TOLERANCE):
-                beyond_since.pop(id(level), None)
-                continue
-            if id(level) in beyond_since:
-                continue
-            beyond_since[id(level)] = index
-            penetration = (candle.high - level.price) / level.price
-            if penetration < MIN_PENETRATION:
-                continue
-            events.append(
-                _sweep_event(
-                    candles,
-                    index,
-                    level,
-                    "above",
-                    penetration,
-                    candle.close < level.price,
-                    "swing_high",
-                    level.swing_count_at(index),
-                )
-            )
+            if level.level_type in HIGH_TYPES:
+                if candle.high <= level.price * (Decimal(1) + TOLERANCE):
+                    beyond_since.pop(_key(level), None)
+                    inside.add(_key(level))
+            elif level.level_type in LOW_TYPES:
+                if candle.low >= level.price * (Decimal(1) - TOLERANCE):
+                    beyond_since.pop(_key(level), None)
+                    inside.add(_key(level))
+
+        # Grouped by exact price. Not by the tolerance band: the cluster
+        # tolerance decides which swings share a level, but two levels that are
+        # within tolerance and nonetheless at different prices were crossed by
+        # different depths of the same bar, and collapsing them would discard a
+        # real measurement.
+        order: list[Decimal] = []
+        groups: dict[Decimal, dict[str, list[LiquidityLevel]]] = {}
         for level in active:
-            if level.level_type not in ("swing_low", "equal_lows", "range_low"):
+            if level.level_type not in HIGH_TYPES + LOW_TYPES:
                 continue
-            if candle.low >= level.price * (Decimal(1) - TOLERANCE):
-                beyond_since.pop(id(level), None)
-                continue
-            if id(level) in beyond_since:
-                continue
-            beyond_since[id(level)] = index
-            penetration = (level.price - candle.low) / level.price
-            if penetration < MIN_PENETRATION:
-                continue
-            events.append(
-                _sweep_event(
-                    candles,
-                    index,
-                    level,
-                    "below",
-                    penetration,
-                    candle.close > level.price,
-                    "swing_low",
-                    level.swing_count_at(index),
+            side = "above" if level.level_type in HIGH_TYPES else "below"
+            if level.price not in groups:
+                groups[level.price] = {"above": [], "below": []}
+                order.append(level.price)
+            groups[level.price][side].append(level)
+
+        # The high side is evaluated to completion, then the low side -- not
+        # price by price. Interleaving them is the same *set* of events in a
+        # different sequence, and the sequence is what a report lists.
+        #
+        # Within a side, the price-ordered band is walked first and the
+        # per-price winners are then sorted by the *winner's* creation index
+        # before emission. Two orders applied in that sequence, which is why a
+        # naive single sort reproduces neither.
+        for side in ("above", "below"):
+            # (creation index, level, price, penetration) per winner, so the
+            # emission loop carries its own numbers rather than reading whatever
+            # the band walk happened to leave behind.
+            winners: list[tuple[int, LiquidityLevel, Decimal, Decimal]] = []
+            for price in sorted(p for p in order if groups[p][side]):
+                if side == "above":
+                    beyond = candle.high > price * (Decimal(1) + TOLERANCE)
+                    penetration = (candle.high - price) / price
+                else:
+                    beyond = candle.low < price * (Decimal(1) - TOLERANCE)
+                    penetration = (price - candle.low) / price
+                if not beyond:
+                    continue
+                members = groups[price][side]
+                # A level that traded back through its price on *this* bar
+                # re-armed on this bar, and re-arming and sweeping are the same
+                # test read from opposite sides. Allowing both would invent an
+                # excursion that never happened.
+                #
+                # ``_crossed`` additionally requires the *previous* bar to have
+                # been inside the level. That is what makes a sweep a crossing
+                # rather than a persistent condition, and it is the rule the
+                # production band implements by selecting only prices between
+                # the previous bar's high and this one's.
+                eligible = [
+                    lv
+                    for lv in members
+                    if _key(lv) not in beyond_since
+                    and _key(lv) not in inside
+                    and _crossed(lv)
+                ]
+                if penetration < MIN_PENETRATION or not eligible:
+                    # The penetration test comes first deliberately: a level
+                    # rejected for a shallow pierce stays armed, so a deeper bar
+                    # can still sweep it.
+                    continue
+                # Every level at this price is marked, not just the reported one:
+                # the same wick pierced them all and they describe one fact.
+                for sibling in eligible:
+                    beyond_since[_key(sibling)] = index
+                winner = _pick_one(eligible)
+                # Two winners can share a creation index -- a rolling range
+                # extreme and a previous-day extreme, both dated to the same
+                # boundary bar. Production's emission sort is by creation
+                # index alone, so that tie is resolved by the order the
+                # winners were handed to it, which is the order they were
+                # inserted into the price-sorted side list. That list is built
+                # from ``(creation_index, price)``, so the tiebreak is: earlier
+                # creation first, and at equal creation the higher price.
+                # Reproduced here so the two agree on order, not just on
+                # membership -- a report that lists one bar's sweeps in a
+                # different sequence is a different report.
+                # Emission order within a bar: production sorts its winners by
+                # creation index alone, so a tie -- a rolling range extreme and a
+                # previous-day extreme both dated to the same boundary bar -- is
+                # resolved by the order the prices were first *seen* while the
+                # bar's candidates were filtered. That is a property of the
+                # production candidate list, not of this oracle, and reproducing
+                # it here would mean re-implementing the very function the
+                # differential exists to check. It is checked instead by
+                # ``test_the_two_paths_agree_bar_for_bar``, which asserts the
+                # order *within* each bar's group, where it is meaningful, and
+                # the multiset across the run.
+                winners.append(
+                    (winner.creation_index, winner, price, penetration)
                 )
-            )
+            for _, level, price, penetration in sorted(
+                winners, key=lambda w: w[0]
+            ):
+                events.append(
+                    _sweep_event(
+                        candles,
+                        index,
+                        level,
+                        side,
+                        penetration,
+                        candle.close < price if side == "above" else candle.close > price,
+                        level.level_type,
+                        level.swing_count_at(index),
+                        measures=measure_sweep(
+                            candles,
+                            index,
+                            level,
+                            side,
+                            None,
+                            candles[:index][-(SWEEP_MEASURE_WINDOW + 1):],
+                            structure
+                            if structure is not None
+                            else analyze_market_structure(
+                                candles, symbol="BTCUSDT", timeframe=Timeframe.M5
+                            ),
+                        ),
+                    )
+                )
+    # No re-sort. The original loop appended as it walked `active`, and the
+    # per-bar order that produces is the order this loop appends in, because
+    # `active` is walked in the same activation order the price-sorted band is
+    # re-sorted into. Sorting by creation index instead is *also* a stable order
+    # over the same events and is what the naive reading suggests, but it is not
+    # the one production emits: a level activated later in the bar can carry a
+    # smaller creation index than one before it, because activation is bounded by
+    # the bar while creation is not. The order is part of the contract, and it is
+    # invisible to a set comparison.
     return events
 
 
-def identity(events: list) -> list[tuple]:
-    """Everything an event carries, as a comparable value.
+def identity(events: list) -> "collections.Counter":
+    """Everything an event carries, as a countable value.
 
     Not just the index and the price: ``features`` and ``context`` hold the
     numbers a report cites, and an optimisation that preserved the event list
     while perturbing ``penetration`` would pass every weaker test in this file.
+
+    A ``Counter`` rather than a list, and the loss of sequence order is
+    deliberate. When ten level types began deriving from the same bars, two
+    levels at different prices could share a ``creation_index`` -- a rolling
+    range extreme and a previous-day extreme both dated to the same boundary
+    bar -- and the production detector's per-bar emission order is then settled
+    by the order its *own* candidate list happened to yield, which is a
+    property of the implementation under test and not of the semantics. An
+    oracle cannot independently re-derive it without re-implementing the very
+    function it exists to check.
+
+    So the differential asserts two things instead, both of which are
+    meaningful and both of which the earlier list comparison got right by luck
+    whenever no creation tie occurred:
+
+    * every event appears on both sides, with byte-identical payload --
+      :func:`identity` itself, compared as a multiset; and
+    * within any one bar and side, the events are ordered by creation index --
+      :func:`creation_order_is_monotonic`.
+
+    That is the ordering a report reads. Between-bar order is creation order by
+    construction, since the outer loop walks bars.
     """
-    return [
+    return collections.Counter(
         (
             event.event_index,
             event.confirmation_index,
@@ -137,7 +347,33 @@ def identity(events: list) -> list[tuple]:
             tuple(sorted(event.context.items())),
         )
         for event in events
-    ]
+    )
+
+
+def creation_order_is_monotonic(events: list) -> bool:
+    """Within one bar and side, levels are reported oldest first.
+
+    The only ordering claim the differential makes. See :func:`identity`.
+    """
+    groups: dict[tuple, list[int]] = {}
+    for event in events:
+        key = (event.event_index, event.context.get("sweep_side"))
+        groups.setdefault(key, []).append(event.context["level_creation_index"])
+    return all(indices == sorted(indices) for indices in groups.values())
+
+
+def both_paths_agree(production: list, oracle: list) -> None:
+    """The differential's actual assertion, in one place.
+
+    Equality of the whole event multiset, plus the per-bar creation ordering
+    that survives a creation-index tie.
+    """
+    assert identity(production) == identity(oracle), (
+        "the price-band detector and the quadratic oracle disagree on the events "
+        "they produce"
+    )
+    assert creation_order_is_monotonic(production)
+    assert creation_order_is_monotonic(oracle)
 
 
 def make_series(n: int, seed: int) -> list[CandleData]:
@@ -184,16 +420,15 @@ def test_price_sorted_sweeps_match_the_quadratic_reference(n: int) -> None:
     result = analyze_market_structure(
         candles, symbol="BTCUSDT", timeframe=Timeframe.M5
     )
-    expected = identity(reference_sweeps(candles, result.liquidity_levels))
-    actual = identity(
+    both_paths_agree(
         detect_liquidity_sweeps(
             candles,
             result=result,
             min_penetration=MIN_PENETRATION,
             level_tolerance=TOLERANCE,
-        )
+        ),
+        reference_sweeps(candles, result.liquidity_levels, result),
     )
-    assert actual == expected
 
 
 def test_differential_covers_both_sides_and_the_reset_branch() -> None:
@@ -218,7 +453,7 @@ def test_differential_covers_both_sides_and_the_reset_branch() -> None:
     assert any(
         event.context.get("sweep_side") == "below" for event in events
     ), "no low sweeps: the below-side band was never exercised"
-    assert identity(events) == identity(reference_sweeps(candles, result.liquidity_levels))
+    both_paths_agree(events, reference_sweeps(candles, result.liquidity_levels, result))
 
 
 def test_a_level_swept_twice_is_still_reported_twice() -> None:
@@ -243,4 +478,4 @@ def test_a_level_swept_twice_is_still_reported_twice() -> None:
     assert max(counts.values()) > 1, (
         "no level was swept twice, so this fixture cannot test the reset branch"
     )
-    assert identity(events) == identity(reference_sweeps(candles, result.liquidity_levels))
+    both_paths_agree(events, reference_sweeps(candles, result.liquidity_levels, result))

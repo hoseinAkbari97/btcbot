@@ -33,6 +33,7 @@ from app.services.research.aggregate import OutcomeAccumulator, label_events_str
 from app.services.research.events import detect_compression, detect_liquidity_sweeps
 from app.services.research.segmented_runner import (
     COMPRESSION_VOL_WINDOW,
+    SWEEP_EXCURSION_BARS,
     SegmentedResearchRunner,
 )
 from app.services.research.streaming import stream_candles
@@ -70,7 +71,11 @@ def whole(month) -> OutcomeAccumulator:
     # baseline would still agree on the sweep cells while silently ignoring the
     # compression ones, and the test would keep passing on a runner that had
     # lost every compression event -- which is the failure this file exists for.
-    sweeps = detect_liquidity_sweeps(month, levels=structure.liquidity_levels)
+    sweeps = detect_liquidity_sweeps(
+        month,
+        levels=structure.liquidity_levels,
+        excursion_bars=SWEEP_EXCURSION_BARS,
+    )
     events = sorted(
         itertools.chain(
             sweeps,

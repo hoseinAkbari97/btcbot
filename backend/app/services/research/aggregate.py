@@ -176,6 +176,13 @@ class OutcomeAccumulator:
         self._targets: dict[str, dict[str, dict]] = {}
         self._truncated = 0
         self.total = 0
+        #: Set once a checkpoint has been restored into this accumulator. The
+        #: R sample behind each median is a capped list that is deliberately not
+        #: serialised, so *every* bucket here -- including one created later by
+        #: ``add`` for a family the interrupted run had not yet reached -- sees
+        #: only its post-checkpoint tail. Such a bucket must report no median
+        #: rather than the median of the tail presented as the whole run.
+        self.restored = False
 
     def add(self, outcome: EventOutcome) -> None:
         self.total += 1
@@ -249,6 +256,12 @@ class OutcomeAccumulator:
                     "r_sum": 0.0,
                     "r_n": 0,
                     "_sorted_r": [],
+                    # A family first seen after a restore has no pre-checkpoint
+                    # sample at all, so its median is no more whole-run than a
+                    # restored bucket's. Keying this on the restored flag, not
+                    # on "was this bucket deserialised", is what keeps a family
+                    # that the interrupted run never reached honest.
+                    "median_unrecoverable": self.restored,
                 }
             if target.target_before_stop is True:
                 bucket["wins"] += 1

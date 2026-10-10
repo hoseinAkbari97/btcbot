@@ -32,6 +32,7 @@ from . import (
     SwingPoint,
     confirmation_time_for,
 )
+from .derived_levels import DerivedLevelState, equal_level_for
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -594,6 +595,77 @@ def extract_liquidity_levels(
     return levels
 
 
+def extract_equal_levels(
+    swings: list[SwingPoint], levels: list[LiquidityLevel]
+) -> list[LiquidityLevel]:
+    """The ``equal_highs`` / ``equal_lows`` levels implied by swing levels.
+
+    The batch counterpart of
+    :meth:`~app.services.market_structure.segmented.StructureState.equal_levels`.
+    It takes both arguments — the published levels *and* the swings — because the
+    level objects store swing provenance as bare ``(index, index)`` pairs while
+    the forming swing's confirmation *timestamp* is needed to date the equal level.
+    Reading the timestamp off a level would mean attributing the level's own
+    creation time to whichever swing happens to be listed last, which is the wrong
+    swing and a fabricated availability time for the rest.
+
+    A level qualifies once two of its confirmed swings sit within
+    ``LEVEL_CLUSTER_TOLERANCE`` of its price, and its creation index is the
+    confirmation bar of the **second** of them. That second-swing dating is the
+    whole causality argument, and it is the part a naive implementation gets
+    wrong: reusing the source level's ``creation_index`` — when *one* swing
+    confirmed there — would publish an "equal high" on a bar where only one high
+    existed, and the sweep detector could then report a sweep of an equal high
+    before the second high had printed. The leak would be in the label rather than
+    the price, which is why it survives a casual look.
+
+    ``levels`` arrives pre-filtered on ``MIN_TOUCHES``, so no equal level is built
+    on a price that was touched once.
+    """
+    by_index = {swing.index: swing for swing in swings}
+    out: list[LiquidityLevel] = []
+    for level in levels:
+        confirmations = [
+            (
+                swing_index,
+                confirmed,
+                by_index[swing_index].confirmation_time
+                if swing_index in by_index
+                else None,
+            )
+            for swing_index, confirmed in level.swing_confirmations
+        ]
+        equal = equal_level_for(
+            level.price,
+            kind="high" if level.level_type.endswith("high") else "low",
+            swing_confirmations=confirmations,
+            tolerance=LEVEL_CLUSTER_TOLERANCE,
+            origin="swing",
+        )
+        if equal is not None:
+            out.append(equal)
+    out.sort(key=lambda level: level.creation_index)
+    return out
+
+
+def _derived_levels(series: list[CandleData]) -> list[LiquidityLevel]:
+    """Range, session and previous-day levels over a whole series.
+
+    The batch counterpart of driving
+    :class:`~app.services.market_structure.derived_levels.DerivedLevelState` from
+    the segmented runner. It runs the *same* state object over the same bars in
+    the same order rather than reimplementing the period logic, because two
+    implementations of "the previous day's high" are two answers and the spec
+    names one.
+    """
+    if not series:
+        return []
+    state = DerivedLevelState()
+    for candle in series:
+        state.observe([candle])
+    return state.as_liquidity_levels()
+
+
 def classify_candles_as_regime(
     candles: list[CandleData],
     *,
@@ -668,6 +740,18 @@ def analyze_market_structure(
     swings = detect_swings(series, lookback)
     events = classify_swing_sequence(swings)
     liquidity = extract_liquidity_levels(swings, series)
+
+    # Phase 7 completes the level set: swing levels alone are two of the ten
+    # types the specification names. Equal highs/lows come from the swing levels
+    # that survived MIN_TOUCHES; range/session/previous-day levels come from the
+    # streaming state, fed the same bars in the same order so that the
+    # continuous path and the segmented path publish the same levels at the same
+    # indices -- the equality that Phase 7 requires, and that a report over one
+    # path but not the other would quietly violate.
+    liquidity = sorted(
+        [*liquidity, *extract_equal_levels(swings, liquidity), *_derived_levels(series)],
+        key=lambda level: (level.creation_index, level.price, level.level_type),
+    )
 
     range_high: Decimal | None = None
     range_low: Decimal | None = None
