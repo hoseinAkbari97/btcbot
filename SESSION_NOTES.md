@@ -1559,6 +1559,12 @@ available and against the run's own total (16,767) elsewhere.
 3. **Full-history 1h pass** still unmeasured (unchanged).
 4. **No zone, retest, sweep or cluster has been evaluated for predictive value**,
    and none is claimed.
+5. **A resumed run loses event-log rows** — `run-2021b` is missing 169 sweeps at
+   its resume boundary while its checkpoint is byte-identical to an uninterrupted
+   run. Statistics are unaffected; the event log is not. Mechanism unidentified;
+   see GAP_REPORT G4.
+6. **The tolerance decision gates the first experiment** (Setups 1 and 2 consume
+   `equal_highs`/`equal_lows` sweeps, whose population changes with the rule).
 
 #### Resource profile of this milestone
 
@@ -1584,8 +1590,469 @@ regression in cost:
 
 All validation output went to `/tmp`; nothing was written into `backend/data/`,
 whose 1.15 GB of pre-existing run directories remain gitignored and untouched.
-`run-2021b` and `run-2021c` are still byte-identical re-runs of `run-2021` from
-earlier debugging and remain safe to delete, as recorded above.
+The claim below that `run-2021b`/`run-2021c` were byte-identical re-runs has since
+been **corrected** — see the artifact section of Milestone 3, which records that
+`run-2021b` is missing 169 sweep events from its event log.
+
+Milestone 3 added no research runs beyond the count verification above
+(292 s, **383 MB observed peak RSS**, same 25,887-bar window) and a 60,000-bar
+market-structure census for the clustering study. Full suite after Milestone 3:
+**553 passed, 0 failures**, 18:24, **962 MB peak RSS**.
+
+### Milestone 3 (2026-10-14): tolerance semantics, setup audit, research protocol
+
+#### 1. What the specification actually requires
+
+The specification's **only** mention of equal highs/lows is line 885–886 of
+`btc_quant_trading_project.md`, inside the Phase 7 list of level types:
+
+```
+Possible liquidity levels:
+- previous swing high
+- previous swing low
+- equal highs
+- equal lows
+...
+```
+
+There is **no tolerance anywhere in the specification** — no number, no
+fraction, no absolute/relative statement. The only related instruction is
+Section 3's: *"These concepts must be converted from subjective trading language
+into precise mathematical definitions"* — which is a demand for precision, not a
+specification of one. Every quantitative property of equal-level clustering in
+this repository is therefore an **engineering decision**, and the codebase
+documents that fact (`derived_levels.equal_level_for`: "The specification names
+the nine fields a sweep record carries; it does not define them").
+
+**This is a specification gap, not a specification conflict.** The comments that
+say "0.1%" were never backed by a requirement.
+
+#### 2. Trace: what the code does, traced end to end
+
+| stage | behaviour |
+|---|---|
+| configuration | `LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")`, commented `# 0.1%` |
+| candidate matching | linear scan of buckets, **first match in creation order wins** |
+| membership test | `abs(swing.price − bucket["price"]) > tol` → skip. **Absolute**, `Decimal` |
+| reference price | `bucket["price"]` = `quantize(first_swing.price, 0.01)` — frozen at creation, never re-averaged |
+| bucket indexing | `by_price` sorted list, `bisect_left` on a **relative** range `p/(1±tol)` |
+| cluster publication | `equal_level_for` requires ≥2 confirmations; dated to the **second** |
+
+So the index is relative and the test is absolute. They only agree as filters
+where the relative band happens to be wider.
+
+#### 3. Third defect found this milestone — the index was NOT a superset
+
+The previous milestone asserted "at every price the absolute band sits inside the
+relative one". **That was false.** The crossover is at a price of exactly $1:
+
+* price ≥ $1: relative band (0.1%) is **wider** than the absolute band → index
+  over-includes → safe;
+* price < $1: relative band is **narrower** → the index can exclude a bucket the
+  membership test would accept.
+
+Verified by sweep: anchors $0.01–$2,000, five candidate offsets each, **35
+(anchor, candidate) pairs were admissible and invisible to the index — every one
+below $1**. Example: anchor `0.01`, candidate `0.011`, `|Δ| = 0.001` admissible,
+but the index range was `[0.010989…, 0.011011…]` which excludes `0.01`.
+
+At a BTC quote the two bands differ by five orders of magnitude, which is exactly
+why it survived a suite that only ever used BTC-scale prices. **Fixed** by making
+the bounds the *union* of both bands. Re-swept after the fix: **0 missed**. Real
+data is unchanged — 38,524 levels on 60k bars, identical by type, because for BTC
+the union equals the relative band it already used.
+
+`test_the_index_never_hides_a_bucket_the_test_would_admit` now drives the
+boundary case at $0.01, $0.22, $100 and $30,000, and **fails** against the
+pre-fix relative-only bounds.
+
+#### 4. Transitivity and order-dependence — measured, not assumed
+
+Both are now answered explicitly, because the previous milestone had not asked.
+
+**Not transitive.** Membership is against the frozen anchor, never pairwise.
+With `A=100.0000, B=100.0009, C=100.0018`: `A~B` ✓, `B~C` ✓, `A~C` ✗. Production
+returns **two** clusters — `[A,B]` and `[C]` — because the anchor quantises to
+`100.00` and `C` is 0.0018 from it. This is the correct and intended behaviour for
+an append-only level: re-averaging or merging would move a price an event has
+already been published against.
+
+**Not order-independent.** The anchor *is* the first member, so contents depend on
+confirmation order. Over the 6 permutations of those three prices there are **4
+distinct clusterings**. This is a direct consequence of the append-only rule and
+is accepted, not a defect: a level's price must not move after publication.
+It does mean a cluster's *contents* cannot be reproduced from its price alone —
+`first_seen` and the recorded swing confirmations are part of its identity.
+
+#### 5. Decision required from you — absolute vs relative
+
+**The specification does not determine this, so this milestone does not choose.**
+
+Descriptive comparison, 60,000 real BTCUSDT 5m bars. **Descriptive only — no
+outcome, return or expectancy was computed for any row.**
+
+| candidate rule | definition | buckets | clusters (≥2 members) | max member spread |
+|---|---|---|---|---|
+| **A. absolute (current)** | `\|p−b\| ≤ 0.001` | 7,395 | **271** | **0.00** |
+| B. relative to anchor (comment) | `\|p−b\| ≤ 0.001·b` | 986 | **844** | 117.96 |
+| C. relative to candidate | `\|p−b\| ≤ 0.001·p` | 986 | 843 | 117.96 |
+| D. exchange tick | `p == b` | 7,395 | 271 | 0.00 |
+
+Consequences of each:
+
+* **A (current).** On BTC, `0.001` is ~1/30,000 of the quote, so after 2dp
+  quantisation it degenerates to **"the same price to the cent"** — which is
+  almost certainly *not* what "equal highs" means to a trader. Every one of the
+  271 clusters has spread exactly 0.00. It is self-consistent, cheap, and
+  arguably wrong as a concept.
+* **B (relative).** Matches the existing comments and the trading concept. Costs
+  3.1× more clusters and merges levels up to ~118 price units apart at BTC's
+  scale, which may be too coarse. Would change every `equal_highs` /
+  `equal_lows` level and every sweep attributed to one.
+* **D (tick).** The strictest reading of "equal"; on BTC it coincides with A.
+
+**Recommendation: B (relative to the anchor), and version the change.** Reasons:
+it is the only candidate that matches the written intent of the constant and the
+trading concept; A and D make "equal" mean "identical", which is a degenerate
+cluster; and the anchor reference is the only one consistent with the
+append-only rule. **But B is a change of dataset**, so it must not be mixed with
+existing measurements — see the versioning note below.
+
+I am not choosing on cluster count. B produces more clusters; that is a
+*consequence*, and the argument above is about meaning, not yield.
+
+#### 6. Versioning if the rule changes
+
+Any change regenerates `equal_highs`/`equal_lows` levels and every sweep drawn
+from them. Therefore:
+
+* the rule must become a **named, fingerprinted configuration** (as the zone
+  parameters already are) so a run records which rule produced it;
+* outputs under A and under B must never be concatenated or compared without
+  saying which produced each;
+* the full-history run must be regenerated; the Q1-2021 figures in this document
+  are all rule A and are labelled as such.
+
+**No research outputs were regenerated in this milestone**, per the instruction to
+settle the rule first.
+
+#### 7. Generated artifacts — byte-level identity, and a correction
+
+A previous entry recorded `run-2021b` and `run-2021c` as "byte-identical re-runs
+of `run-2021`". **That was wrong.** It was inferred from `du` sizes, not
+checksums, and the checksums contradict it. Measured now:
+
+| file | run-2021 | run-2021b | run-2021c |
+|---|---|---|---|
+| `events.jsonl` | `ac6669aa…` | **`957cf5a2…`** | `ac6669aa…` |
+| `checkpoint.json` | `276cf244…` | `4861ed33…` | `4861ed33…` |
+| `report.json` | `b25a767a…` | `d57c309a…` | `9a68a7f4…` |
+
+What the runs actually are:
+
+* **`run-2021`** — 104,923 bars, 731,839 events, 2,927,356 outcomes, but
+  **73,257 episodes**. Written by the pre-episode-fix code (its `report.json`
+  predates the current schema: no `start`/`end`/`complete`).
+* **`run-2021c`** — same bars/events/levels/outcomes, **7,720 episodes**, a clean
+  uninterrupted run.
+* **`run-2021b`** — same bars/events/levels/outcomes/episodes as `run-2021c`,
+  `resumed_from_bar = 86779`. **Its final checkpoint is byte-identical to
+  `run-2021c`'s.**
+
+So `run-2021b` and `run-2021c` agree on every substantive quantity and on the
+final accumulated state; they differ only in timing fields and in the **event
+log**. Comparing the two logs: `run-2021b` is missing exactly **169
+`liquidity_sweep` events**, in the contiguous `event_index` range
+**86,730–86,777**, ending immediately before the resume point.
+
+**Finding, stated precisely:** resuming a run reproduces the *statistics* but
+not the *event log*. The checkpoint is byte-identical, so no outcome is lost or
+double-counted — but 169 event rows are absent from the spilled log. A resumed
+run's event log therefore cannot be treated as equivalent to an uninterrupted
+one's, and any analysis that reads `events.jsonl` from a resumed run may be
+missing boundary events. The mechanism is not yet identified and is **not
+investigated in this milestone**; it is recorded as an open defect below.
+
+No artifacts were deleted. Exact paths, if deletion is approved:
+
+```
+backend/data/research/run-2021b/checkpoint.json    11,694,265 bytes  4861ed33…  (identical to run-2021c)
+backend/data/research/run-2021b/events.jsonl      325,472,962 bytes  957cf5a2…  (MISSING 169 events)
+backend/data/research/run-2021b/report.json            1,672 bytes  d57c309a…
+backend/data/research/run-2021c/checkpoint.json    11,694,265 bytes  4861ed33…  (identical to run-2021b)
+backend/data/research/run-2021c/events.jsonl      325,548,989 bytes  ac6669aa…  (identical to run-2021)
+backend/data/research/run-2021c/report.json            4,486 bytes  9a68a7f4…
+```
+
+If they are deleted, the loss is ~640 MB and nothing is unrecoverable — both are
+regenerable by re-running `scripts/run_segmented_research.py` over 2021, and
+`run-2021c` in particular is the *correct* complete run for that window, so
+**keeping `run-2021c` is advisable**. `run-2021` should be kept or regenerated:
+its 73,257-episode figure is a pre-fix artefact and is **not** comparable with
+the 7,720-episode figure recorded elsewhere in this document.
+
+#### 8. Research-unit counts — regenerated and defined
+
+Re-measured from a fresh segmented run rather than carried forward, so "still
+current" is evidence rather than assumption. BTCUSDT 5m, 2021-01-01 → 2021-04-01,
+25,887 bars, horizons `[1, 3, 6, 12]`. **All six reported figures reproduce
+exactly.**
+
+| # | unit | count | definition |
+|---|---|---|---|
+| 1 | event rows | **273,901** | one row per detected event, one line of `events.jsonl`: 268,358 sweeps + 1,192 zones + 3,239 retests + 1,112 compressions |
+| 2 | `(detector, bar)` identities | **35,848** | distinct detector/bar pairs among sweeps. **7.49 rows per identity**; 18,833 distinct bars carry ≥1 sweep |
+| 3 | level identities published | **16,767** | `(creation_index, level_type, price)`; 13,553 of them time-anchored and retained cumulatively |
+| 4 | level identities swept ≥1 | **12,514** | reconstructed exactly, since `level_age_bars == event_index − creation_index` |
+| 5 | episodes | **1,946** | a new episode opens when a confirmation bar falls outside the previous event's forward window (max horizon 12). **140.8 event rows per episode** |
+| 6 | outcomes | **1,095,604** | `(event, side, stop model, horizon)` labels — exactly 4.00 per event row (2 sides × 2 stop models) |
+
+**A trade is not an event row.** One wick pierces many co-located range levels, so
+one piece of market action yields many rows; and a level re-arms and fires again
+on later bars. The chain, and where each stage is measured:
+
+```
+market episode        1,946   the independent unit; the bootstrap resamples these
+    |
+    +-- event rows   273,901  measurements, NOT independent          (measured)
+            |
+            +-- candidate setups    a subset, thinned by the setup rule   (unknown)
+                    |
+                    +-- executable trades   thinned by costs, missed
+                                         entries, censoring              (unknown)
+                            |
+                            +-- outcome observations   the R-multiple grid (measured)
+```
+
+**Three thinnings, and two of them are not yet measurable** because the setup
+engine does not exist. The episode-level bootstrap absorbs thinning 1
+automatically. Thinnings 2 and 3 need no special statistical handling but **must
+be counted and reported**, because the most likely way to manufacture a false edge
+in this pipeline is counting one wick that pierces ten levels as ten
+independent trades. The protocol requires both counts to be published alongside
+every result.
+
+### Audit of the five proposed candidate setups
+
+Compared against specification Section 17 (setups), Section 18 (statistics) and
+Section 11 (execution). **Nothing below is implemented.** Requirements are drawn
+from the specification; everything else is a proposal or an open question.
+
+Legend: **[SPEC]** required by the specification · **[DOC]** previously
+documented decision in this repository · **[PROP]** new proposal here ·
+**[OPEN]** unresolved, needs a decision.
+
+#### Setup 1 — Liquidity sweep + rejection
+
+| Aspect | Assessment |
+|---|---|
+| Purpose | Sweep of a liquidity level followed by a rejection of that level |
+| Inputs | `liquidity_sweep` events: `level_price`, `penetration`, `wick_ratio`, `recovery_ratio`, `time_above`/`below` |
+| Exact rule | **[PROP]** sweep confirmed at bar *c* **and** `recovery_ratio ≥ θ` **and** `wick_ratio ≥ φ`. θ, φ unspecified |
+| Decision-time info | All inputs are knowable at *c*'s close **[DOC]** — the sweep is a two-bar definition and `confirmation_index = event_index + 1` |
+| Entry | **[SPEC §11]** execution at *c+1*, never at *c*'s close |
+| Stop / invalidation | **[PROP]** stop beyond the swept level; **θ/φ are themselves the invalidation rule** and are the whole experiment |
+| Target / horizon | **[SPEC §18]** +0.5R/+1R/+1.5R/+2R; horizon from `FORWARD_HORIZONS` |
+| Cancels the setup | **[DOC]** bar containing both target and stop → `ambiguous`, not a win |
+| Ambiguous OHLC | **[DOC]** handled: `ambiguous` count reported separately from losses |
+| Costs | **[SPEC §23]** normal / 1.5× / 2× / 3× sensitivity; a setup surviving only at 1× is rejected |
+| Risks | Multiple levels co-located on one bar are merged to one event **[DOC]** — good, but means *which* level fired is chosen by `LEVEL_SPECIFICITY`, a research choice that conditions the sample |
+| Unresolved | **[OPEN]** θ, φ; whether the stop is the level or an ATR multiple; whether `recovery_ratio` is measured on the pierce bar or the confirmation |
+| Baseline | **[SPEC §10]** random entry; plus a **prior-window high/low** detector |
+| Evidence before "useful" | Net expectancy in R exceeding the matched random baseline **after** 2× costs, with a bootstrap interval over **episodes** excluding zero, surviving Benjamini–Hochberg across the whole grid |
+
+#### Setup 2 — Liquidity sweep + structure shift
+
+| Aspect | Assessment |
+|---|---|
+| Purpose | Sweep coinciding with a break of structure in the swept direction |
+| Inputs | `liquidity_sweep` + `StructureEvent` (BOS) |
+| Exact rule | **[PROP]** BOS on the same side within *w* bars of the sweep confirmation. **[SPEC §17]** names only "liquidity sweep + structure shift" |
+| Decision-time info | **[OPEN]** — a BOS at a *confirmed* swing is knowable at that swing's confirmation; "within *w* bars" must be anchored at the sweep's confirmation, not the BOS's |
+| Entry | **[SPEC §11]** *c+1* |
+| Stop / invalidation | **[PROP]** beyond the structure point that defined the BOS |
+| Target / horizon | **[SPEC §18]** grid; **[SPEC §18]**'s own worked example is "15m liquidity sweep + structure shift, +1.5R before −1R" — the specification's own question |
+| Cancels | **[DOC]** ambiguous-bar rule |
+| Ambiguous OHLC | **[DOC]** same |
+| Costs | **[SPEC §23]** |
+| Risks | **Selection**: conditioning on a BOS makes the sample strongly regime-dependent (trending markets produce more BOS). Must be reported by regime **[SPEC §25]** |
+| Unresolved | **[OPEN]** *w*; whether the BOS must break the swept level itself; whether "structure shift" is BOS or BOS + displacement |
+| Baseline | random entry matched on regime and timing; prior-window detector |
+| Evidence before "useful" | As Setup 1, plus no concentration in a single regime — if the edge exists only in trends that is a finding to report, not to trade around |
+
+#### Setup 3 — Compression + breakout + retest
+
+| Aspect | Assessment |
+|---|---|
+| Purpose | Coil, its release, and a return to the zone the release left |
+| Inputs | `compression` events (`compression_ratio`, `range_5/10/20`, `volume_ratio`), `zone` / `zone_retest` |
+| Exact rule | **[PROP]** compression confirmed **and** close beyond the release extreme **and** a `zone_retest` whose `creation_index` is that release bar |
+| Decision-time info | **[DOC]** compression is confirmed at its own bar (`confirmation_index == event_index`); the retest is confirmed at its own bar |
+| Entry | **[SPEC §11]** *c+1* |
+| Stop / invalidation | **[PROP]** beyond the release bar's low |
+| Target / horizon | **[SPEC §18]** grid |
+| Cancels | **[DOC]** ambiguous-bar rule; **[PROP]** a retest before the zone was cleared is not a retest **[DOC]** |
+| Ambiguous OHLC | **[DOC]** same |
+| Costs | **[SPEC §23]** |
+| Risks | **Overlap with Setup 4** — both are "zone retest" setups and share events; counting them as two independent candidates double-counts. Must be treated as a family in the multiple-testing correction **[SPEC §53]** |
+| Unresolved | **[OPEN]** whether "breakout" means the release extreme or the zone's far edge; whether the compression must be the *same* release |
+| Baseline | compression release alone (without the retest), which isolates the retest's contribution |
+| Evidence before "useful" | Must beat **both** "compression alone" and "retest alone", not just the random baseline — otherwise the combination is doing nothing that either part does not already do |
+
+#### Setup 4 — Displacement + retest
+
+| Aspect | Assessment |
+|---|---|
+| Purpose | A large directional candle, then a return to the base it left |
+| Inputs | `displacement` (`magnitude_in_volatility`, `body_ratio`, z-scores), `zone` / `zone_retest` |
+| Exact rule | **[PROP]** `magnitude_in_volatility ≥ m` **and** a `zone_retest` whose zone's `creation_index` is that displacement bar |
+| Decision-time info | **[DOC]** displacement confirms at *i+1*; zone confirms at the later of displacement and structural-swing confirmation, so the retest is strictly after both |
+| Entry | **[SPEC §11]** *c+1* |
+| Stop / invalidation | **[DOC]** a close deeper than `max_touch_depth` (0.5 of zone height) invalidates the zone — so invalidation is **already implemented**, with 0.5 an **undocumented default** |
+| Target / horizon | **[SPEC §18]** grid |
+| Cancels | **[DOC]** `invalidated` / `expired` zones stop emitting **[DOC]**; **[OPEN]** whether an *invalidated* zone's retests before invalidation count |
+| Ambiguous OHLC | **[DOC]** same |
+| Costs | **[SPEC §23]** |
+| Risks | `max_touch_depth = 0.5` and `max_age_bars = 500` are **defaults chosen for meaning, not calibrated** — if the result is sensitive to them, that is a robustness failure **[SPEC §24]** |
+| Unresolved | **[OPEN]** *m*; whether the first or any retest qualifies; `max_touch_depth` calibration |
+| Baseline | displacement alone; zone retest alone |
+| Evidence before "useful" | Must survive perturbation of `max_touch_depth` and `max_age_bars` **[SPEC §24]** — a broad plateau, not a single optimum **[SPEC §24]** |
+
+#### Setup 5 — Higher-timeframe zone + lower-timeframe structure confirmation
+
+| Aspect | Assessment |
+|---|---|
+| Purpose | Context filter from a higher timeframe applied to a 5m signal |
+| Inputs | zones and BOS on 1H/4H; BOS on 5m |
+| Exact rule | **[PROP]** a 1H/4H zone published strictly before the 5m decision bar **and** a 5m BOS into it |
+| Decision-time info | **[OPEN] — the blocking gap.** Nothing in this repository carries a zone across timeframes. `detect_zones` is single-series; there is no cross-timeframe state, and the 1H series must be resampled from 5m with an explicit, stated rule about bars that straddle a boundary |
+| Entry | **[SPEC §11]** *c+1* on the 5m series |
+| Stop / invalidation | **[PROP]** beyond the 5m structure point |
+| Target / horizon | **[SPEC §18]** grid on 5m |
+| Cancels | **[DOC]** ambiguous-bar rule |
+| Ambiguous OHLC | **[DOC]** same, plus the resampling ambiguity above |
+| Costs | **[SPEC §23]** |
+| Risks | **[SPEC §60]** explicitly warns the HTF→LTF hierarchy is an **assumption to be tested, not to be built in**: "Do not hard-code the assumption that 4H trend + 15m setup + 5m entry is automatically superior" |
+| Unresolved | **[OPEN]** everything above; this is the least-defined of the five and needs the most design before code |
+| Baseline | the 5m BOS **without** the HTF filter — the only way to tell whether the filter adds anything |
+| Evidence before "useful" | Must beat its own no-filter control. If it does not, the correct conclusion is that HTF context does not help, and that is a result, not a failure |
+
+#### Cross-cutting dependency on the tolerance decision
+
+**Setups 1 and 2 consume `sweep` events, which include `sweep:equal_highs` and
+`sweep:equal_lows`.** Under rule A those are 1,740 of 268,358 sweep rows (0.65%);
+under rule B they would grow materially (equal-levels are 844 vs 271). So:
+
+* Setup 1/2 results computed under A and under B are **not comparable**;
+* any result table must state the rule, and a change of rule invalidates
+  previously computed Setup 1/2 numbers;
+* this is the concrete reason the tolerance decision gates the first experiment
+  rather than being able to run alongside it.
+
+### Proposed first controlled experiment (PROTOCOL — NOT IMPLEMENTED)
+
+#### Data separation
+
+Chronological, never random **[SPEC §21]**. On the available history
+(2021-01-01 → 2026-09-01, 5m):
+
+| period | range | role |
+|---|---|---|
+| development | 2021-01-01 → 2024-06-30 | definitions fixed here; thresholds chosen here |
+| validation | 2024-07-01 → 2025-06-30 | confirmatory; may be used once per candidate |
+| out-of-sample | 2025-07-01 → 2026-09-01 | **touched once**, at the end, and reported whatever it says |
+
+Every run records the experiment id, the git commit, the dataset digest, the
+full parameter set **including the tolerance rule**, and the period — the
+repository already has `config_fingerprint` and `dataset_sha256` for this
+**[DOC]**. Repeated experiments append; nothing is overwritten **[SPEC §52]**.
+
+#### Preventing leakage
+
+* A setup is *knowable* at the max of its ingredients' `confirmation_index`;
+  entry is at the open of the **following** bar **[SPEC §11]**.
+* Thresholds θ/φ/m/*w* are fixed on the development period **before** validation
+  or OOS is read. This is the single most important discipline in the protocol.
+* No parameter is selected on OOS, ever.
+* Cluster/level *membership* may grow with later swings **[DOC]** — a setup
+  depending on `equal_highs` must use the membership knowable at the decision
+  bar, not the final membership.
+
+#### Execution assumptions
+
+* Entry at the open of the bar after confirmation; a signal on a bar whose close
+  is the last bar of the dataset is **censored**, not assumed filled.
+* Stop/target precedence when one bar spans both: **unorderable from OHLC**, so
+  it is recorded `ambiguous` and excluded from the win/loss rate, with the count
+  reported **[DOC]**. It is never silently scored as a loss or a win.
+* Gaps through the stop are modelled at the **open**, not the stop price —
+  otherwise every gap loss is understated.
+* Costs **[SPEC §23]**: fees + spread + slippage, each reported at 1×/1.5×/2×/3×.
+  Slippage is proportional and applied to the entry; a stop gap adds slippage too.
+* Missed entries (price already beyond the entry assumption) are recorded and
+  excluded from the sample, with the count reported.
+* **Position sizing is kept separate**: expectancy in R is computed on a
+  fixed-risk notional (risk = 1R per trade by construction). Monetary and
+  drawdown figures come only from a portfolio simulation that is reported
+  separately, so that a sizing choice cannot flatter the signal.
+
+#### Statistical evaluation
+
+* **Unit of analysis is the episode**, never the event row. Measured on the
+  validation window: 273,901 event rows but 35,848 `(detector, bar)` identities
+  and **1,946 episodes** — 140.8 rows per episode. Treating events as
+  independent would understate every interval by roughly an order of magnitude.
+* Intervals by **cluster bootstrap over episodes** (whole episodes resampled,
+  each contributing all its events) — already the repository default
+  `episode_exact` **[DOC]**.
+* Reported per candidate: n (episodes), n (events), win rate, payoff ratio,
+  expectancy in R **net of 2× costs**, mean/median R, MFE, MAE, time-to-target,
+  time-to-stop, ambiguous count, censored count, max drawdown (portfolio
+  simulation only) **[SPEC §18]**.
+* By regime **[SPEC §25]** and by level/setup type **where sample size supports
+  it**; a cell with too few episodes is reported as "insufficient", not as a
+  number.
+* Overlapping horizons: events within one episode share price action and their
+  forward windows overlap. The episode-level bootstrap absorbs this; **additionally
+  the same setup firing on two levels swept by one bar must be deduplicated to
+  one trade**, or one wick becomes several trades.
+
+#### Rejection criteria — fixed **before** looking at OOS
+
+A candidate is rejected if any of these holds. Stated now, on the development
+period, so they cannot be tuned afterwards:
+
+1. **No excess over baseline.** Net expectancy in R at 2× costs does not exceed
+   the matched random-entry baseline with a bootstrap interval (over episodes)
+   excluding zero.
+2. **Cost-fragile.** The excess disappears at 2× or 3× cost **[SPEC §16]**.
+3. **Parameter-fragile.** The result holds only at a narrow θ/φ/*w*/m region
+   rather than a broad plateau **[SPEC §24]**.
+4. **Period-fragile.** It fails on the validation period after being chosen on
+   development.
+5. **Regime-concentrated.** It survives only in one regime **[SPEC §25]**.
+6. **Multiple-testing artefact.** It does not survive Benjamini–Hochberg across
+   the whole grid (5 setups × 2 sides × 2 stop models × 4 targets × horizons).
+7. **Composition artefact.** It does not beat the **simpler variant of itself**
+   (e.g. "compression alone" for Setup 3, "BOS without HTF filter" for Setup 5).
+
+**On sample size and significance thresholds:** no arbitrary minimum is
+invented here. The honest statement is that the binding constraint is the
+**episode count**, not the event count — 1,946 episodes on this window is the
+resolution of any interval, and a bootstrap over 40 episodes cannot narrow one.
+Before running, the episode count per candidate is computed first and reported;
+if it is too small for a useful interval, that is reported as the finding rather
+than papered over with a significance threshold chosen afterwards.
+
+#### Baselines
+
+**[SPEC §10]** buy-and-hold; **[DOC]** all-bars and random-events controls;
+plus two the specification does not name and which matter most here:
+
+* a **prior-window high/low detector** — the null that says whether the whole
+  liquidity apparatus beats "the highest high of the last 20 bars";
+* the **simpler variant of each setup** (Setup 3 vs compression alone, Setup 5
+  vs unfiltered BOS).
 
 ### Proposed next milestone — objective candidate setup definitions (PROPOSAL ONLY, NOT IMPLEMENTED)
 
@@ -1681,6 +2148,33 @@ any event whose forward window is truncated.
 
 Passing this milestone's acceptance criteria establishes only that the
 *measurement* is sound. It establishes no predictive value and no profitability.
+
+### Next milestone — depends on the tolerance decision
+
+Nothing can be measured for Setups 1 and 2 until the tolerance rule is settled,
+because their `equal_highs`/`equal_lows` population changes with it. The order
+is therefore:
+
+1. **Human decision on absolute vs relative** (this milestone's blocker). On
+   approval, the rule becomes a named, fingerprinted configuration so a run
+   records which produced it, and the full history is regenerated under a new
+   version tag. Existing figures are rule A and must not be mixed with rule B.
+2. **Setup 1 first, alone.** It is the cheapest (no cross-timeframe state), it
+   has the specification's own worked question attached to Setup 2, and it
+   establishes the measurement protocol end to end before the more entangled
+   setups are attempted.
+3. Setups 3/4 as a **family** (they share zone-retest events and must be
+   corrected for multiplicity together), then Setup 5, which needs the
+   cross-timeframe zone design resolved first.
+
+**Acceptance criteria for that milestone**, unchanged from the protocol above:
+each setup written as a spec with hand-computed fixtures before code; episode
+counts published per candidate; baselines including the prior-window detector
+and each setup's simpler variant; Benjamini–Hochberg across the whole grid; and
+the seven rejection criteria fixed *before* the out-of-sample period is read.
+
+**Out of scope until justified:** ML filtering, parameter optimisation, live or
+paper trading, and any statement about profitability.
 
 ## Project Philosophy
 

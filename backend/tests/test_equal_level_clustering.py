@@ -112,12 +112,17 @@ def build(
     *,
     total: int = 90,
     extra_levels: tuple[Decimal, ...] = (),
+    filler: Decimal = FILLER_HIGH,
 ) -> list[CandleData]:
     """A series whose confirmed swing highs are exactly ``pivots``.
 
     :param pivots: ``(bar_index, high)``, each strictly above its neighbours.
     :param extra_levels: further prices needing touch bars of their own, for
         fixtures with more than one level.
+    :param filler: the price of every bar that is neither a pivot nor a touch.
+        It must sit *below* the pivots, so sub-$1 fixtures need their own --
+        the default of 90 would make a $0.01 pivot the lowest high in the
+        series and therefore not a swing high at all.
     """
     anchors = {p.quantize(Decimal("0.01")) for _, p in pivots}
     anchors.update(extra_levels)
@@ -136,14 +141,14 @@ def build(
         elif index in touch_at:
             high = touch_at[index]
         else:
-            high = FILLER_HIGH
-        close = high - Decimal("0.5")
+            high = filler
+        close = high - filler / 2
         candles.append(
             make_candle(
                 index * 5,
                 open_price=str(close),
                 high=str(high),
-                low=str(high - 1),
+                low=str(high - filler / 4),
                 close=str(close),
                 volume="10",
             )
@@ -266,38 +271,36 @@ def test_the_band_is_measured_from_the_quantised_anchor_not_the_raw_pivot() -> N
 
 
 def test_the_index_never_hides_a_bucket_the_test_would_admit() -> None:
-    """The price index is a superset filter, and that has to hold exactly.
+    """The price index is a superset filter at **every** price, not just BTC's.
 
-    The scan bounds are derived in ``float`` from a *relative* band while the
-    membership test is an absolute one in ``Decimal``. That is only sound because
-    the absolute band is contained in the relative one at every price -- a
-    property this fixture checks at both a low and a BTC-scale quote, by driving
-    the exact-boundary case through the real index.
+    The scan bounds are a pre-filter and their only obligation is to never
+    exclude a bucket the exact membership test would accept. Using the relative
+    band alone satisfied that only above a price of 1: at $0.01 the relative
+    band is $0.00001 wide and the absolute band is $0.001, so the index was
+    *narrower* than the test it was guarding.
 
-    Scope of what is actually pinned: this test **does** fail against the
-    pre-fix float comparison (it is the second test reported as failing when that
-    fix was reverted). It does **not** fail against the pre-fix *exclusive upper
-    bound*, and that is not an oversight -- it is currently unobservable:
+    Sweeping anchors from $0.01 to $2,000 against the pre-fix bounds found 35
+    (anchor, candidate) pairs the membership test would admit and the index
+    would have skipped -- every one of them below $1. At a BTC quote the two
+    bands differ by five orders of magnitude, which is why the defect survived
+    a test suite that only ever used BTC-scale prices.
 
-    * the upper-edge exclusion only matters when a bucket sits exactly on
-      ``high = p / (1 - tol)``;
-    * under the absolute rule in force, admitting such a bucket requires
-      ``|p - b| == tol``, i.e. an exact coincidence between two different
-      expressions, which 60,000 bars of real BTCUSDT data never produced;
-    * under the *relative* rule the index range **is** the membership set, so
-      the exclusion would become live and would drop admissible boundary cases
-      from the opposite side.
-
-    The inclusive bound is therefore kept as a defensive correctness fix for the
-    relative reading that is currently under review, and is flagged here rather
-    than left to be discovered again if that reading is adopted.
+    The bounds are now the union of both bands. This drives the exact-boundary
+    case through the real index at three scales, including one where the two
+    bands are the wrong way round.
     """
-    for first, second in (
-        (MEMBER_INSIDE, MEMBER_EXACT),
-        (FAR_MEMBER, FAR_EXACT),
+    for first, second, filler in (
+        (MEMBER_INSIDE, MEMBER_EXACT, FILLER_HIGH),
+        (FAR_MEMBER, FAR_EXACT, FILLER_HIGH),
+        # Below $1 the relative band is narrower than the absolute one, so these
+        # are the cases that were actually being missed.
+        (Decimal("0.0100"), Decimal("0.0110"), Decimal("0.005")),
+        (Decimal("0.2200"), Decimal("0.2210"), Decimal("0.10")),
     ):
         level = first.quantize(Decimal("0.01"))
-        found = clusters(build([(20, first), (50, second)]))
+        found = clusters(
+            build([(20, first), (50, second)], filler=filler)
+        )
         assert len(found) == 1 and found[0][1] == (20, 50), (
             f"the exact-boundary member must be reachable through the index at "
             f"anchor {level}; got {found}"

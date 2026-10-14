@@ -184,3 +184,71 @@ from the scalar implementation. Tests assert distributional properties (an inter
 widens with dispersion, a constant sample gives a degenerate interval, a sample
 compared with itself gives exactly zero) rather than exact values, so this is sound —
 but previously reported bootstrap intervals would shift slightly on re-run.
+
+---
+
+## G3. Windowed-detection defects hidden by tests running at offset 0
+
+**Found:** October 2026, auditing the Phase 9 zone work.
+
+Five defects lived in code that only executes when the analysis window's absolute
+index is non-zero — that is, in **every segment after the first** of a segmented
+research run. Every existing test called those functions with the whole series and
+`offset = 0`, where a window-local bar index and an absolute bar index are the
+same number. A windowed-detection bug is therefore *invisible* to a test suite
+written entirely at offset 0, which is what this one was.
+
+The five:
+
+| # | Defect | Symptom | How it hid |
+|---|---|---|---|
+| 1 | `_build_zone` converted indices to absolute, then indexed the *window* with them | `IndexError`, or a plausible candle from the wrong bar | `offset == 0` makes the two index spaces identical |
+| 2 | Creation gate compared a window-local index against the absolute offset | most zones dropped after segment 1 — whole series reported zones at bars 8 and 17, the segmented run only bar 8 | no exception; a detector that finds less looks like one that found less |
+| 3 | Lifecycle walk replayed prefix bars | `touch_count` 4 where the whole series says 3 | the retest count coincidentally matched, so the check a reader would run passed |
+| 4 | Terminal zones never pruned | checkpoint grew with run length: 255 zones of which **3 open**, 212 KB after 6 000 bars | contradicted the module's own docstring, which claimed the state was bounded |
+| 5 | A sweep deferred across a segment boundary was re-dated but not re-measured | **38 of 268 358** events carried `time_above`/`time_below`/`recovery_ratio` from the wrong bar | every aggregate matched; those three fields never enter the outcome labeller |
+
+A sixth, found the following day while writing the clustering tests, is the same
+shape of blindness in a different form: the equal-level price index used a
+*relative* tolerance band while the membership test used an *absolute* one. The
+two coincide above a price of $1 and invert below it, so the index silently
+excluded admissible buckets — **35 (anchor, candidate) pairs below $1**, none of
+them reachable from BTC-scale prices.
+
+**Rule adopted:** any test of a detector that consumes a window must construct
+that window at a **non-zero offset**, with a prefix whose bars the detector is
+expected to have already seen. `tests/test_research_zones.py` and
+`tests/test_equal_level_clustering.py` now do so explicitly.
+
+Regression tests for all six were confirmed to **fail against the pre-fix source**
+and pass after it, by re-introducing each defect in a temporary copy of the file.
+
+## G4. A resumed research run reproduces the statistics but not the event log
+
+**Found:** October 2026, during artifact verification.
+
+`run-2021b` is a run resumed from bar 86,779. Its **final checkpoint is
+byte-identical** to an uninterrupted run of the same window (`run-2021c`) — so no
+outcome was lost or double-counted. Its **event log is not identical**: it is
+missing exactly **169 `liquidity_sweep` events**, in the contiguous `event_index`
+range 86,730–86,777, immediately before the resume point.
+
+Consequence: a resumed run's `events.jsonl` cannot be treated as equivalent to an
+uninterrupted one's. Any analysis reading the spill from a resumed run may be
+missing boundary events, while the reported statistics look complete. The
+mechanism is not yet identified and is **open**.
+
+Not fixed here. Until it is, a research run whose event log is to be analysed
+rather than merely summarised should be produced uninterrupted.
+
+## G5. A measurement disagreement that aggregates could not see
+
+`time_above`, `time_below` and `recovery_ratio` are recorded on every sweep event
+but are **never read by the outcome labeller**. Rewriting them to any value leaves
+every outcome aggregate byte-identical. This is not an accident of magnitude — no
+aggregate comparison could have detected the 38-event defect in G3 at any size.
+
+`tests/test_event_measurement_contract.py` now pins this as a standing canary
+(`test_an_aggregate_check_cannot_see_a_wrong_measurement`) so that anyone trusting
+an aggregate equivalence check knows exactly what it does not cover, and compares
+event **content** in lockstep rather than statistics alone.

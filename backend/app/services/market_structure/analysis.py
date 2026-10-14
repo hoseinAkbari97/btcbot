@@ -467,39 +467,37 @@ def extract_liquidity_levels(
     for swing in confirmed:
         target = None
         price = float(swing.price)
-        # |p - b| <= tol * b  <=>  p/(1 + tol) <= b <= p/(1 - tol).
+        # The membership test below is ``|p - b| <= tol`` -- an ABSOLUTE price
+        # distance. The scan bounds below are only a *pre-filter*, and their sole
+        # job is to never exclude a bucket the membership test would accept.
         #
-        # NOTE: that identity describes the *index range only*. The membership
-        # test below is ``|p - b| <= tol`` -- an ABSOLUTE price distance -- and
-        # the two are not the same rule. The index is deliberately the wider of
-        # the two so it can only ever over-include; see "Superset" below. The
-        # discrepancy between the two is a known open question about what
-        # "equal highs" should mean, escalated in SESSION_NOTES.md and pinned by
-        # ``test_the_tolerance_is_absolute_while_the_documentation_says_relative``
-        # in ``tests/test_equal_level_clustering.py``. Nothing here decides it.
+        # They are therefore the **union** of the two bands either rule could
+        # mean, not just the relative one:
         #
-        #   * Superset. The index uses the relative band ``p/(1 +/- tol)`` while
-        #     the test uses the absolute ``|p - b| <= tol``. At every price the
-        #     absolute band sits inside the relative one, so nothing the test
-        #     would accept is ever missing from the index.
-        #   * Exact. The test compares ``Decimal`` prices. Comparing them as
-        #     ``float`` decided the boundary on binary representation error
-        #     rather than on the stated arithmetic: ``abs(100.001 - 100.0)`` is
-        #     ``0.0010000000000047748`` in IEEE double, which is *greater* than
-        #     ``0.001``, so a pivot sitting exactly at the tolerance was
-        #     rejected while one a hair inside it was accepted. The error's sign
-        #     depends on the magnitude, so the verdict was an artefact of the
-        #     price level. The band is inclusive (``>`` rejects, ``==`` admits)
-        #     and that has to be decided by the decimal values levels are built
-        #     from.
+        #   absolute band   b in [p - tol, p + tol]        (what is tested)
+        #   relative band   b in [p/(1+tol), p/(1-tol)]    (what the constant's
+        #                                                       comment describes)
+        #
+        # Using the relative band alone was correct only above a price of 1. At
+        # $0.01 the relative band is $0.00001 wide while the absolute band is
+        # $0.001, so the index was *narrower* than the test and could skip an
+        # admissible bucket: sweeping anchors up to $2,000 found 35 such
+        # (anchor, candidate) pairs, every one of them below $1. At a BTC quote
+        # the two bands differ by five orders of magnitude and the bug is
+        # invisible, which is precisely why it survived. The union is correct at
+        # every price and costs a handful of extra candidate scans below $1.
+        #
+        # The discrepancy between the two bands is a separate, open question --
+        # see the note on ``LEVEL_CLUSTER_TOLERANCE`` and SESSION_NOTES.md. This
+        # code does not decide which band is *meant*; it only guarantees the
+        # filter cannot disagree with the test that follows it.
         #
         # The upper bound passes a sentinel position so a bucket sitting exactly
-        # on ``high`` is *inside* the scan. ``bisect_left`` on the bare price
-        # would exclude it -- the same off-by-one arriving from the other side.
-        # Currently unobservable under the absolute rule; kept correct for the
-        # relative reading that is under review.
-        low = price / (1.0 + tolerance)
-        high = price / (1.0 - tolerance)
+        # on the upper edge is *inside* the scan; ``bisect_left`` on the bare
+        # price would exclude it.
+        tolerance_float = float(tolerance_exact)
+        low = min(price - tolerance_float, price / (1.0 + tolerance))
+        high = max(price + tolerance_float, price / (1.0 - tolerance))
         first = bisect_left(by_price, (Decimal(repr(low)), -1))
         last = bisect_left(by_price, (Decimal(repr(high)), len(by_price) + 1))
         best: int | None = None

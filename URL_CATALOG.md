@@ -1,7 +1,7 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **October 5, 2026** (updated for the Phase 1–5 final hardening pass: run modes on
-`POST /backtests/run`)
+Last reviewed: **October 14, 2026** (added research-module pointers for equal-level clustering and
+the event measurement contract; no URL routes changed)
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
 Examples are illustrative; database contents, generated IDs, timestamps, and output file names vary at
@@ -1276,6 +1276,12 @@ The printed output includes a `risk_violations` list for every run, empty when n
 - Research event detection: `backend/app/services/research/events.py`
 - Research outcomes (forward returns, R-barriers): `backend/app/services/research/outcomes.py`
 - Supply/demand zones and retests (Phase 9): `backend/app/services/research/zones.py`
+- Equal-level cluster formation and tolerance: `backend/app/services/market_structure/analysis.py`
+  (`extract_liquidity_levels`), `backend/app/services/market_structure/derived_levels.py`
+  (`equal_level_for`, `EQUAL_MIN_SWINGS`)
+- Equal-level clustering tests: `backend/tests/test_equal_level_clustering.py`
+- Event measurement contract (continuous vs segmented, aggregate blindness):
+  `backend/tests/test_event_measurement_contract.py`
 - Segmented research runner: `backend/app/services/research/segmented_runner.py`
 - Research aggregator: `backend/app/services/research/aggregate.py`
 - Research report: `backend/app/services/research/report.py`
