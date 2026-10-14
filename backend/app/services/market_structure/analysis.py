@@ -39,9 +39,21 @@ from .derived_levels import DerivedLevelState, equal_level_for
 # ---------------------------------------------------------------------------
 
 SWING_LOOKBACK_DEFAULT = 5
-# Two swing prices within this fraction of each other are treated as one level
-# (an "equal high/low" cluster) rather than two independent ones.
-LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")  # 0.1%
+#: How close two swing prices must be to be treated as one level (an "equal
+#: high/low" cluster) rather than two independent ones.
+#:
+#: The trailing ``# 0.1%`` is **wrong**, and deliberately left in place rather
+#: than quietly corrected, because the mismatch is the open question and hiding
+#: it would hide the evidence. ``extract_liquidity_levels`` applies this as an
+#: **absolute** price distance (``abs(p - anchor) <= 0.001``), so on a BTC quote
+#: near 30,000 it admits two swing highs whose prices agree to a tenth of a
+#: cent -- measured on real data, every multi-member cluster has a member price
+#: spread of exactly zero. Under the relative reading the comment describes, the
+#: same constant would produce 3.1x as many clusters (271 vs 844 over 60,000
+#: bars). Which reading is intended is a specification decision, escalated in
+#: SESSION_NOTES.md and pinned by
+#: ``test_the_tolerance_is_absolute_while_the_documentation_says_relative``.
+LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")  # 0.1% (comment says fraction; applied as absolute)
 # A level is only interesting if at least this many later candles reached it.
 MIN_TOUCHES = 2
 
@@ -451,28 +463,51 @@ def extract_liquidity_levels(
     by_price: list[tuple[Decimal, int]] = []
 
     tolerance = float(LEVEL_CLUSTER_TOLERANCE)
+    tolerance_exact = LEVEL_CLUSTER_TOLERANCE
     for swing in confirmed:
         target = None
         price = float(swing.price)
         # |p - b| <= tol * b  <=>  p/(1 + tol) <= b <= p/(1 - tol).
         #
-        # The tolerance is relative to the *bucket's* price rather than
-        # symmetric around the swing's, so the matching window is not simply
-        # p +/- tol*p and has to be derived rather than guessed. Deriving it in
-        # float and re-checking each candidate with the original comparison
-        # means the index only ever decides *which* candidates are considered;
-        # the test itself is still the one the original loop made, so the two
-        # cannot disagree about a boundary case.
+        # NOTE: that identity describes the *index range only*. The membership
+        # test below is ``|p - b| <= tol`` -- an ABSOLUTE price distance -- and
+        # the two are not the same rule. The index is deliberately the wider of
+        # the two so it can only ever over-include; see "Superset" below. The
+        # discrepancy between the two is a known open question about what
+        # "equal highs" should mean, escalated in SESSION_NOTES.md and pinned by
+        # ``test_the_tolerance_is_absolute_while_the_documentation_says_relative``
+        # in ``tests/test_equal_level_clustering.py``. Nothing here decides it.
+        #
+        #   * Superset. The index uses the relative band ``p/(1 +/- tol)`` while
+        #     the test uses the absolute ``|p - b| <= tol``. At every price the
+        #     absolute band sits inside the relative one, so nothing the test
+        #     would accept is ever missing from the index.
+        #   * Exact. The test compares ``Decimal`` prices. Comparing them as
+        #     ``float`` decided the boundary on binary representation error
+        #     rather than on the stated arithmetic: ``abs(100.001 - 100.0)`` is
+        #     ``0.0010000000000047748`` in IEEE double, which is *greater* than
+        #     ``0.001``, so a pivot sitting exactly at the tolerance was
+        #     rejected while one a hair inside it was accepted. The error's sign
+        #     depends on the magnitude, so the verdict was an artefact of the
+        #     price level. The band is inclusive (``>`` rejects, ``==`` admits)
+        #     and that has to be decided by the decimal values levels are built
+        #     from.
+        #
+        # The upper bound passes a sentinel position so a bucket sitting exactly
+        # on ``high`` is *inside* the scan. ``bisect_left`` on the bare price
+        # would exclude it -- the same off-by-one arriving from the other side.
+        # Currently unobservable under the absolute rule; kept correct for the
+        # relative reading that is under review.
         low = price / (1.0 + tolerance)
         high = price / (1.0 - tolerance)
         first = bisect_left(by_price, (Decimal(repr(low)), -1))
-        last = bisect_left(by_price, (Decimal(repr(high)), -1))
+        last = bisect_left(by_price, (Decimal(repr(high)), len(by_price) + 1))
         best: int | None = None
         for candidate in range(first, last):
             position = by_price[candidate][1]
             if buckets[position]["kind"] != swing.kind:
                 continue
-            if abs(price - float(buckets[position]["price"])) > tolerance:
+            if abs(swing.price - buckets[position]["price"]) > tolerance_exact:
                 continue
             # First match wins, so among matching candidates the earliest
             # created is the one the linear scan would have stopped on.

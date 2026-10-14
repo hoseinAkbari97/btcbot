@@ -34,9 +34,17 @@ from app.services.research.events import detect_compression, detect_liquidity_sw
 from app.services.research.segmented_runner import (
     COMPRESSION_VOL_WINDOW,
     SWEEP_EXCURSION_BARS,
+    ZONE_BASE_BARS,
+    ZONE_MAX_AGE_BARS,
+    ZONE_MAX_BASE_BARS,
+    ZONE_MAX_TOUCH_DEPTH,
+    ZONE_MIN_RETEST_SEPARATION_BARS,
+    ZONE_STRUCTURE_LOOKBACK,
+    ZONE_STRUCTURE_WINDOW,
     SegmentedResearchRunner,
 )
 from app.services.research.streaming import stream_candles
+from app.services.research.zones import detect_zones
 
 DATASET = (
     Path(__file__).resolve().parents[1]
@@ -47,6 +55,21 @@ DATASET = (
 
 START = datetime(2021, 1, 1, tzinfo=UTC)
 END = datetime(2021, 2, 1, tzinfo=UTC)
+
+#: The zone parameters the runner uses, read from the runner rather than
+#: restated. A copy here would drift the moment a default changed, and would
+#: then fail as a *segmentation* bug while being a *baseline* bug -- which is
+#: the specific confusion this file exists to prevent.
+_ZONE_BASELINE_PARAMS = {
+    "vol_window": COMPRESSION_VOL_WINDOW,
+    "base_bars": ZONE_BASE_BARS,
+    "max_base_bars": ZONE_MAX_BASE_BARS,
+    "structure_lookback": ZONE_STRUCTURE_LOOKBACK,
+    "structure_window": ZONE_STRUCTURE_WINDOW,
+    "max_touch_depth": ZONE_MAX_TOUCH_DEPTH,
+    "max_age_bars": ZONE_MAX_AGE_BARS,
+    "min_retest_separation_bars": ZONE_MIN_RETEST_SEPARATION_BARS,
+}
 
 
 @pytest.fixture(scope="module")
@@ -82,6 +105,7 @@ def whole(month) -> OutcomeAccumulator:
             # The first segment starts at bar 0, so there is no prefix and the
             # baseline's window is the whole month.
             detect_compression(month, vol_window=COMPRESSION_VOL_WINDOW),
+            detect_zones(month, final=True, **_ZONE_BASELINE_PARAMS),
         ),
         key=lambda event: (event.confirmation_index, event.kind, event.detector),
     )

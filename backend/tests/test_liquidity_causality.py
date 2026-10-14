@@ -28,7 +28,6 @@ Nothing here is fitted to BTC. The fixtures are seeded so a failure reproduces.
 
 from __future__ import annotations
 
-import copy
 import random
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
@@ -257,6 +256,14 @@ def test_each_measured_field_is_individually_covered() -> None:
         "wick_ratio",
         "volume",
         "volatility",
+        # The denominator of ``recovery_ratio``, on the pierce bar. Its window is
+        # the pierce bar alone -- it reads ``high``/``low`` and the level price,
+        # all of which are settled at the pierce bar's own close, so it is
+        # strictly *earlier* than the confirmation and leaks nothing. It is
+        # carried so a sweep deferred across a segment boundary can be
+        # re-measured exactly rather than reconstructed from ``penetration``,
+        # which is equal to it only up to float round-off.
+        "pierce_excursion",
     }
     assert expected <= keys, f"features missing from sweeps: {sorted(expected - keys)}"
     assert keys == expected, (
@@ -336,6 +343,13 @@ def test_no_measurement_reads_past_the_confirmation_bar() -> None:
     assert a.recovery_ratio == b.recovery_ratio, (
         "recovery is measured at the confirmation bar's close, so it must not "
         "depend on what later bars do"
+    )
+    # The pierce excursion is read on the pierce bar alone, so it must not move
+    # either. Asserted separately because it is a distinct field with a distinct
+    # window, and it exists specifically so a deferred sweep can be re-measured.
+    assert a.pierce_excursion == b.pierce_excursion == plain.pierce_excursion, (
+        "pierce_excursion reads the pierce bar's own high/low against the level "
+        "price, all settled at that bar's close; it must not depend on later bars"
     )
 
 
@@ -428,7 +442,7 @@ def test_a_swept_level_stays_swept_while_price_remains_beyond_it() -> None:
     assert repeats, "no level was swept twice; the reset branch is untested here"
     for key, indices in repeats.items():
         # Consecutive indices would mean a persistent condition, not a crossing.
-        for a, b in zip(indices, indices[1:]):
+        for a, b in zip(indices, indices[1:], strict=False):
             assert b - a > 1, (
                 f"level {key} was reported on consecutive bars {a} and {b}; a "
                 f"single excursion lasting two bars is one event"

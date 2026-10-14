@@ -1273,3 +1273,15 @@ The printed output includes a `risk_violations` list for every run, empty when n
 - Runtime base URLs and ports: `docker-compose.yml`
 - Reverse-proxy paths: `docker/nginx.conf`
 - Vite development proxy: `frontend/vite.config.ts`
+- Research event detection: `backend/app/services/research/events.py`
+- Research outcomes (forward returns, R-barriers): `backend/app/services/research/outcomes.py`
+- Supply/demand zones and retests (Phase 9): `backend/app/services/research/zones.py`
+- Segmented research runner: `backend/app/services/research/segmented_runner.py`
+- Research aggregator: `backend/app/services/research/aggregate.py`
+- Research report: `backend/app/services/research/report.py`
+- Research statistics: `backend/app/services/research/statistics.py`
+- Frontend market chart overlay components:
+  - `frontend/src/components/SwingHighLowMarkers.tsx`
+  - `frontend/src/components/StructureShifts.tsx`
+  - `frontend/src/components/LiquidityZones.tsx`
+  - `frontend/src/components/SetupMarkers.tsx`

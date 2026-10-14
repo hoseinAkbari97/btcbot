@@ -946,8 +946,7 @@ is unchanged by its presence (92.8 MB before and after, against a 6 GB limit).
 
 **Remaining in Milestone 6:** **Phase 7 (liquidity model) is now COMPLETE** — all 10 level types are
 derived and all 9 sweep measurements are recorded; see the Phase 7 entry below. Phase 9 (zones,
-retests) and Phase 10 (setup engine) have no code. Those are the next dependencies, in that order,
-and the setup engine depends on zones and retests existing first.
+retests) is now COMPLETE — see the Phase 9 entry below. Phase 10 (setup engine) has no code.
 
 ### Phase 7 — Liquidity Model: IMPLEMENTED and VALIDATED
 
@@ -1071,18 +1070,617 @@ only by the swept/re-armed state, so a very old level can still be swept years l
 `level_age_bars` is the only record of that. (4) `structure_context` is a single label within a
 100-bar lookback, not a graded measure.
 
-**Next dependency: Phase 9 — zones and retests.** They do not exist in any form, and the setup engine
-depends on them, so this is the first genuinely incomplete Phase 9 item.
+**Next dependency: Phase 10 — Setup Engine.** Phase 9 exists and is tested; Phase 10 (combining
+Phase 7 (liquidity model), Phase 8 (compression), and Phase 9 (zones + retests) into candidate
+setups: liquidity sweep + rejection, liquidity sweep + structure shift,
+compression + breakout + retest, displacement + retest, higher-timeframe zone + lower-timeframe
+structure confirmation) has no code.
 
 **Remaining work:** actual strategy research and validation — choosing candidate strategies,
 measuring them against the null baselines, and applying Benjamini–Hochberg across whatever that
 produces. Everything in the "Current Limitations" section above is still true unless explicitly
 marked resolved; this section is a summary, not a replacement for it.
 
+### Phase 9 — Supply / Demand Zones and Retests: IMPLEMENTED and VALIDATED
+
+**IMPLEMENTED.** A full implementation exists in `backend/app/services/research/zones.py` (1109 lines)
+with 34 passing tests in `backend/tests/test_research_zones.py`. The implementation predates this
+documentation update and was built as the causal dependency for Phase 10 (setup engine).
+
+**Zone definition.** A zone is a rectangular price band derived from three causal ingredients:
+(1) a base — the bars immediately *before* the displacement bar; (2) a displacement — the departure
+candle with `magnitude_in_volatility` from `detect_displacement`; (3) structural significance — a
+confirmed swing (lookback-confirmed) in the direction of the move near the base. The zone's
+`high`/`low` are the exact extremes of the base bars — no rounding, no buffer.
+
+**Three timestamps, deliberately not two.** `ResearchEvent` carries `event_index` and
+`confirmation_index`. A zone adds `start_index` (first base bar). A zone is not published before
+its `confirmation_index`, which is the later of the displacement's confirmation and the structural
+swing's confirmation. The first legal retest is the first bar at or after `confirmation_index`.
+
+**Lifecycle.** `fresh` → `mitigated` (touched) → `invalidated` (close deeper than
+`max_touch_depth` fraction into the band) or `expired` (older than `max_age_bars`). A retest
+increments `retest_count` and moves the zone to `mitigated`; it never returns to `fresh`. Both
+terminal states are truly terminal: one invalidation per zone, not one per crossing.
+
+**Touch vs invalidation.** Depth is measured from the bar's *range* (how far in came); invalidation
+from the bar's *close* (how far it stayed). A long wick into a zone that closed back out is the
+rejection the concept is named for, not a death.
+
+**Clearing.** Price must be *clear* of the zone (close beyond the departure-side boundary) before a
+retest is legal. Without this, a zone emits retests on bars that are part of its own construction —
+on real data this was worth 38k phantom retests over 937 zones.
+
+**Retest separation.** `min_retest_separation_bars` (default 3) suppresses repeated retests on
+oscillating price. A bar touching a zone too soon after the previous one is recorded as a touch but
+does not emit a retest event.
+
+**Overlapping zones.** Two zones from different displacements may overlap and are left unmerged. A
+bar entering two overlapping zones produces two retest events with different `zone_id` values.
+
+**Carried state.** `ZoneCarried` survives segment boundaries, keyed by structural identity
+`(creation_index, zone_type, low, high)` rather than `id()`. It carries open zones, pending zones
+(confirmation bar not yet printed), `last_retest_index` for dedup, and `cleared` set. Checkpoint
+round-trip is lossless.
+
+**Causality.** No future leakage: the zone's boundaries are fixed at creation; `confirmation_index`
+is never earlier than all three ingredients are knowable; outcomes are measured from
+`confirmation_index`, not `event_index`. Prefix-invariance asserted by
+`test_prefix_invariance` in `test_research_zones.py`.
+
+**Validated:** 34 tests covering:
+- Fixture hand-built with known zone boundaries, creation/confirmation times
+- Retests before and after confirmation (first touch vs valid retest)
+- No future leakage, including prefix-invariance at four truncation points
+- Zone invalidation and expiration
+- Overlapping zones with independent touch counts
+- Duplicate suppression (oscillating price)
+- Lifecycle carries across segment boundaries
+- Checkpoint round-trip (payload serialization)
+- `detect_all` includes both `zone` and `zone_retest` kinds
+- Events round-trip through `to_payload`/`from_payload`
+
+**NOT RESEARCHED.** No zone has been evaluated for profitability. The question *do zones have
+predictive value?* is a Phase 11 question. This module measures what a zone is and when it is
+touched — nothing more.
+
+**Remaining Phase 9 limitations.** (1) Zone boundaries are fixed at creation and never revised — a
+zone that should have been wider or narrower was created too narrowly or too widely with no
+opportunity to adjust. (2) `max_touch_depth` is a fixed fraction, not calibrated against the
+instrument's typical wick ratios. (3) A zone's `confirmation_index` can lag the displacement bar by
+a variable amount (swing confirmation delay), which means a retest window can be shorter for zones
+near segment boundaries. (4) Zones that remain open at end-of-data are not explicitly marked; they
+simply stop being updated.
+
+**CORRECTED BY THE 2026-10-13 AUDIT.** The Phase 9 entry above was written from
+the code and its tests rather than from a segmented run, and the implementation it
+describes did not survive either check. Five defects were found and fixed; the
+entry's claims about segmentation equivalence and bounding state were false.
+
+### Audit of 2026-10-13: five defects in the zone/sweep path, all fixed
+
+Every one of these lived in the code path that only executes when `offset > 0`,
+which is every segment after the first in a segmented run. **Every existing unit
+test ran at `offset == 0`**, where the window *is* the series, so a window-local
+index and an absolute index are the same number and each defect was invisible to
+them. That is the general lesson and it is now enforced: the zone tests below all
+construct windows at a non-zero offset.
+
+1. **`_build_zone` indexed the window with absolute indices.** `start` and `index`
+   were converted to absolute and then used to read `candles[start]` /
+   `candles[index]` anyway. At `offset == 0` harmless; above it, either an
+   `IndexError` or a plausible candle from the wrong bar. Fixed by converting in
+   one place at the boundary and reading `candles` with window-local indices
+   throughout.
+
+2. **The creation gate silently dropped most zones after the first segment.**
+   `if not (offset <= index < len(candles))` compared a *window-local* `index`
+   against the *absolute* `offset`. At `offset == 0` it accepts everything. At
+   `offset == 9` it rejects every bar below local index 9 — which, in a window of
+   tail-plus-segment, is most of the segment's own new bars. Verified against the
+   pre-fix source on a repeating fixture: the whole series reports zones at bars 8
+   and 17, the broken segmented run reports only bar 8. The consequence was not a
+   crash but a run that quietly under-reports, which reads exactly like a detector
+   that found less. Suppressing the prefix is a question of identity, not index
+   arithmetic, and is now handled by the two structural-key checks.
+
+3. **The lifecycle walk replayed prefix bars, corrupting carried zone state.**
+   `touch_count`, `first_touch_index` and `last_touch_index` are increments, so
+   re-applying bars a previous segment had already applied silently inflated them.
+   Measured on a hand-built fixture: `touch_count` 4 where the whole series says 3
+   — and the retest count coincidentally matched, because
+   `min_retest_separation_bars` happened to suppress the replayed retest. A match
+   on the number a reader would check, produced by luck rather than correctness.
+   Fixed with a per-zone `applied_through` watermark, advanced before any branch
+   can `continue` so a bar is applied at most once on every path.
+
+4. **Terminal zones were never pruned, so the checkpoint grew without limit.**
+   A terminal zone can never emit or change again, but every one was retained
+   forever. Measured on real data before the fix: after 6,000 bars the carried
+   state held 255 zones of which **3 were open**, 212 KB. Extrapolated to a
+   multi-year run that is a checkpoint written at every segment boundary and
+   growing with the length of the run — the exact resource profile this project is
+   not allowed to have, and a direct contradiction of the module's own docstring.
+   Fixed by `ZoneCarried.prune`, with a `max_age_bars` horizon rather than an
+   immediate delete so a run resuming shortly after a zone ends can still report
+   *how* it ended. After the fix: 27 retained zones, 23.5 KB.
+
+5. **Deferred sweeps were re-dated but not re-measured.** Unrelated to zones, and
+   found while validating the zone fix: a sweep on a non-final window's last bar is
+   parked in `SweepCarried.pending` and re-emitted by the next window — the first
+   place its confirmation bar exists. Three measurements depend on that bar, and
+   they were computed in the window that could not see it, with the confirmation
+   clamped back onto the pierce bar by `min(index + 1, len(candles) - 1)` — the
+   *window's* length standing in for the series' length. The replay then patched
+   only the index, time and price, so `time_above`, `time_below` and
+   `recovery_ratio` described a bar the reader never saw them describe.
+   **38 of 268,358 sweep events** differed from a continuous run in exactly this
+   way — one per segment boundary — while every aggregate still matched, because
+   38 rows out of 268,358 move no mean enough to notice. Fixed by taking the
+   confirmation bar as an explicit argument, and by re-measuring the deferred
+   event rather than replaying it blind. Reconstructing the excursion denominator
+   from `penetration` is algebraically equal and numerically not, so
+   `pierce_excursion` is now carried explicitly; that round-trip was moving the
+   28th decimal place on 9 events, which is fatal to an equality check.
+
+**Verification.** Each fix has a regression test that was confirmed to **fail
+against the pre-fix source and pass after it** — re-introducing each defect in a
+temporary copy of the file and running the suite, rather than trusting that a new
+test is load-bearing. The `test_terminal_zones_are_pruned...` test was itself
+tautological when first written (it passed with pruning disabled) and was rewritten
+to drive the real detector; noted because a test that cannot fail is worse than no
+test.
+
+**Full suite: 527 tests, 0 failures** (was 483 before the zone work, 526 at the
+first audit pass, and one transient failure at 526 that did not reproduce in two
+subsequent full runs — recorded rather than rounded away). Peak RSS 513 MB against
+the 6 GB ceiling.
+
+### Validation after the fixes (BTCUSDT 5m, 2021-01-01 → 2021-04-01)
+
+25,887 bars, 30-day segments, 4 segments, 0 warnings, 0 errors.
+
+| | value |
+|---|---|
+| events | 273,901 |
+| — sweeps | 268,358 |
+| — compressions | 1,112 |
+| — zones / zone retests | 1,192 / 3,239 |
+| episodes | 1,946 |
+| levels published | 16,767 |
+| outcomes | 1,095,604 (624 truncated) |
+| runtime | 240 s |
+| peak RSS | 0.35 GB self-reported / **377 MB observed** (`/usr/bin/time -v`) |
+| spill | 197 MB `events.jsonl` + 6.3 MB checkpoint |
+| zones in checkpoint | **27 retained / 23.5 KB** (bounded, see defect 4) |
+
+**Continuous == segmented: exact.** A whole-series run over the same 25,887 bars
+produces a **byte-identical event list** — 273,901 rows, every field, *including
+output ordering*, across all 13 detector families — and an outcome accumulator with
+identical totals and 52/52 cells equal. This is a stronger result than the
+previously recorded one, which compared the segmented spill against itself.
+
+Getting there took three rounds, and the sequence is the useful part:
+
+| comparison | rows differing |
+|---|---|
+| first attempt | 38 (`time_above`, `time_below`, `recovery_ratio` wrong) |
+| after re-measuring the deferred sweep | 9 (`recovery_ratio`, 28th decimal) |
+| after carrying `pierce_excursion` | **0**, and ordering equal too |
+
+The middle row is the one worth remembering: the first fix was *correct in
+substance* and still failed, because `level * (1 + penetration)` is algebraically
+equal to `|extreme - level|` but not numerically equal. A value recomputed across a
+segment boundary is a value that can drift, and "equal to within rounding" is not
+equal — it is the state in which a real difference hides.
+
+### Reconciling 269,470 vs 36,960 (previously flagged as a discrepancy)
+
+These are **different units**, and neither was wrong:
+
+- **269,470** — event *rows* in the spill (sweeps + compressions). A bar can sweep
+  many co-located levels at once: up to **300** sweeps on one
+  `(detector, bar)`, because one wick can pierce many range levels.
+- **36,960** — distinct `(kind, detector, event_index, confirmation_index)`
+  tuples: 35,848 sweep identities + 1,112 compression identities, zero overlap.
+- **16,767** — level identities published over the run (`creation_index`,
+  level type, price).
+- **1,946** — episodes, the clustering unit the bootstrap resamples.
+
+The useful statement is the ratio, not the totals: **268,358 sweep rows across
+only 35,848 distinct `(detector, bar)` identities — 7.49 rows per identity**, and
+18,833 distinct bars carry at least one sweep. Any statistic computed per *event*
+is therefore computed over heavily repeated observations, which is exactly why the
+bootstrap's default resampling unit is the **episode** and not the event.
+
+### Event dependence: measured, not asserted
+
+This was the open question from the previous session ("range-high and range-low
+events make up a very large fraction of all sweep events — determine whether
+rolling-window levels are being repeatedly republished"). Measured:
+
+- `range_high` + `range_low` are **91.5%** of all sweeps (245,501 of 268,358).
+- They are the *only* families with heavy within-bar multiplicity: 12.54 and 11.79
+  rows per `(detector, bar)` identity, versus 1.04–1.63 for every other family.
+- Median gap between distinct `range_low` bars is **2 bars**; p10 is 1.
+- Sweeps of levels older than the entire 25,887-bar window: **0.0%** for every
+  family. Median level age at sweep is ~2,292 bars (median `range_low` 2,267).
+
+So the concern is real and now quantified: a rolling 20-bar extreme is republished
+far more often than a daily boundary is, and the resulting events are strongly
+dependent — but the dependence is **temporal clustering within a bar-and-price
+identity**, not republication of one level object. Levels are append-only and
+never re-published at a moved price, so a "level" in the identity sense is distinct
+each time. The correct unit for inference remains the episode, which is what the
+bootstrap already resamples. **No correction to the detector is implied** — this is
+a property of what a rolling-window extreme *is*.
+
+### Level expiration: absent by design, and now measured rather than assumed
+
+The previous session recorded as a limitation that levels are never explicitly
+expired. It is still absent, and the audit **deliberately did not add it**, because
+doing so would silently change every measurement already in this document and the
+specification is silent on the point. What the audit did instead was quantify the
+consequence, so the choice is informed rather than merely noted:
+
+| detector | n | median age at sweep | p90 | p99 | max |
+|---|---|---|---|---|---|
+| `range_low` | 123,589 | 2,267 | 6,669 | 10,121 | 11,145 |
+| `range_high` | 121,912 | 2,310 | 6,713 | 10,241 | 11,189 |
+| `session_high` | 5,850 | 2,380 | 7,020 | 10,323 | 10,918 |
+| `swing_low` | 4,396 | 1,814 | 6,085 | 10,170 | 10,835 |
+| `equal_lows` | 768 | 1,201 | 5,658 | 7,874 | 7,990 |
+| all sweeps | 268,358 | 2,292 | 6,682 | 10,184 | 11,189 |
+
+**No sweep in this run is of a level older than the run itself**, and the maximum
+age observed is 11,189 bars (~39 days on 5m) against a 25,887-bar window. So on
+this evidence the missing expiry policy changed nothing measurable — but that is a
+statement about *this window*, not a property of the code. Over a multi-year run
+the age distribution would extend, and whether a 6-month-old swing high is still a
+"liquidity level" is a research question, not an implementation detail.
+
+**Recommendation, not implemented:** add a configurable `level_max_age_bars` and
+report outcomes both with and without the cap, so the effect is visible rather than
+assumed. Making it a silent default would mean every historical number in this
+document no longer describes the code.
+
+### Still open after this audit
+
+1. **`structure_context` is one label in a 100-bar lookback**, not a graded
+   measure — unchanged, and it discards information (how many breaks, how recent).
+2. **Equal-high/low membership has no test against a hand-built cluster.** The
+   bucket builder's tolerance boundary is exercised only through the function that
+   consumes it. Named as limitation (2) in the Phase 7 entry and still true.
+3. **The 38-event boundary bug was invisible to the aggregate comparison.** The
+   aggregate cells matched while 38 event rows were wrong, because the aggregates
+   are means over ~10⁶ outcomes. This is a property of the equivalence tests
+   themselves, not a one-off: aggregate equality cannot detect sparse per-event
+   corruption. The event-level byte-comparison added above is what caught it, and
+   it should be the primary equivalence check going forward.
+4. **Full-history 1h pass still not measured** — unchanged.
+5. **No zone or retest has been evaluated for predictive value**, and none is
+   claimed. Zones/retests are measurement infrastructure, like the rest.
+
+### Generated research output: retention
+
+`backend/data/research/` currently holds **1.15 GB** across four run directories
+(`liquidity-q1-2021` 184 MB, `run-2021`/`run-2021b`/`run-2021c` 322 MB each).
+All four are covered by `.gitignore` (lines 43 and 56) and none appears in
+`git status`, so a `git add -A` cannot sweep them into a commit — verified, not
+assumed.
+
+`run-2021b` and `run-2021c` are byte-for-byte re-runs of `run-2021` kept from
+earlier debugging and are **safe to delete**; they are regenerable from the
+dataset. Nothing in this session wrote into `backend/data/` — the audit's
+validation runs went to `/tmp`. Recommend deleting `run-2021b` and `run-2021c`
+unless they are being kept as a deliberate reproducibility cross-check; if they
+are, that intent should be recorded here rather than left implicit.
+
 Apply migrations:
-```bash
-make migrate
-```
+
+### Milestone 2 (2026-10-14): equal-level clustering, expiration, measurement contract
+
+Baseline re-verified before any change: **527 tests, 0 failures**; segmented run
+over BTCUSDT 5m 2021-01-01 → 2021-04-01 reproduced at 273,901 events / 1,946
+episodes / 16,767 levels.
+
+#### Two defects in the equal-level bucket builder
+
+The clustering rule had no test of its own — coverage reached it only through
+`equal_level_for`, the function that *consumes* clusters. Writing the missing
+tests found two real defects, both in `extract_liquidity_levels`.
+
+**1. The tolerance boundary was decided by IEEE-double representation error.**
+The membership test compared `float` prices: `abs(price - anchor) > tolerance`.
+The error's **sign depends on the magnitude**, so the verdict on a pivot sitting
+exactly at the tolerance was an artefact of the price level:
+
+| anchor | `abs(anchor+0.001 - anchor)` in float | verdict |
+|---|---|---|
+| 100 | 0.0010000000000047748 | rejected |
+| 1,000 | 0.0009999999999763531 | admitted |
+| 30,000 | 0.0010000000002037268 | rejected |
+
+The stated rule is inclusive (`>` rejects, `==` admits), so at a BTC quote the
+boundary was on the wrong side of the test purely by representation. Fixed by
+comparing `Decimal` prices. **Real-data neutral** on this window — 38,524 levels
+before and after, identical by type — because no real cluster member happens to
+sit exactly on the boundary. It is a correctness fix that current prices do not
+exercise, not a no-op.
+
+**2. The price index excluded a bucket sitting exactly on its upper edge.**
+`bisect_left(by_price, (high, -1))` stops *before* an entry whose price equals
+`high`, while the membership test admits that case. The comment claimed the two
+"cannot disagree about a boundary case"; they did, from opposite sides. Fixed
+with an inclusive sentinel. **Currently unobservable and honestly labelled as
+such**: under the absolute rule in force, admitting such a bucket requires
+`|p - b| == tol`, a coincidence 60,000 real bars never produced. It becomes live
+under the *relative* reading discussed below, which is why it was fixed anyway.
+
+Both reverts were run against a temporary copy of the file: reverting defect 1
+fails 2 tests; reverting defect 2 fails **none**, and
+`test_the_index_never_hides_a_bucket_the_test_would_admit` says so explicitly
+rather than implying coverage it does not have.
+
+#### ESCALATED — absolute vs relative tolerance. Needs a human decision.
+
+Three places describe the tolerance as **relative**; the rule applied is
+**absolute**:
+
+* `LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")  # 0.1%`
+* "The tolerance is relative to the *bucket's* price … derives `p/(1+tol) <= b <= p/(1-tol)`"
+* `equal_level_for`: "confirmed within `tolerance` of it"
+
+Measured on 60,000 real BTCUSDT 5m bars:
+
+| rule | buckets | multi-member clusters ("equal levels") | max member spread |
+|---|---|---|---|
+| **A. absolute `|p-b| <= 0.001` (current)** | 7,395 | **271** | **0.00** |
+| B. relative `|p-b| <= tol*b` (documented) | 986 | **844** | 117.96 |
+| C. symmetric `|p-b| <= tol*p` | 986 | 843 | 117.96 |
+
+Under the implemented rule **every** multi-member cluster has a member price
+spread of exactly zero — an "equal high" is two swing highs at the identical
+price to the cent. The relative reading yields 3.1× as many equal levels and
+merges levels up to ~118 price units apart.
+
+**This is not decided here.** It changes the dataset materially, it is a
+specification question rather than an implementation one, and both readings are
+defensible. `test_the_tolerance_is_absolute_while_the_documentation_says_relative`
+pins the behaviour that exists so it cannot drift unnoticed in either direction.
+Choosing by event count would be choosing by whichever definition produces more
+events, which is exactly the reasoning this project forbids.
+
+#### Level expiration: quantified, deliberately NOT changed
+
+The specification is silent on level expiry, so no cap was introduced. The
+mechanical effect was measured instead (BTCUSDT 5m, 25,887 bars, 90 days).
+
+Levels published: **16,767** (13,553 time-anchored + 3,214 swing/equal).
+Distinct level identities swept at least once: **12,514** → **4,253 (25.4%)
+never swept** within the window.
+
+| type | never swept / published |
+|---|---|
+| `range_high` | 463 / 6,284 (7.4%) |
+| `range_low` | 774 / 6,373 (12.1%) |
+| `session_high` | 77 / 359 (21.4%) |
+| `session_low` | 117 / 359 (32.6%) |
+| `previous_day_high` | 38 / 89 (42.7%) |
+| `previous_day_low` | 43 / 89 (48.3%) |
+
+Mechanical effect of a max-age cap (no outcome consulted):
+
+| policy | sweep rows kept | excluded | levels touched | episodes |
+|---|---|---|---|---|
+| no expiry (current) | 268,358 | 0 | 12,514 | 1,946 |
+| max age ≤ p90 (6,682 bars ≈ 23d) | 241,526 | 26,832 (10.0%) | 12,480 | — |
+| max age ≤ p50 (2,292 bars ≈ 8d) | 134,205 | 134,153 (50.0%) | 12,170 | 1,944 |
+
+Three findings that matter more than the caps themselves:
+
+1. **No sweep in this window is of a level older than 11,189 bars (38.9 days)
+   against a 90-day window.** The median age at sweep is ~8 days for every
+   family. So the missing expiry policy has changed nothing *measurable here* —
+   but that is a property of the window, not of the code. Over a multi-year run
+   the distribution would extend, and whether a 6-month-old swing high is still
+   a "liquidity level" is a research question.
+2. **A p90 cap removes 10% of event rows while touching 0.27% of levels** — the
+   excluded rows are concentrated in a few very old, very frequently re-swept
+   levels (~21 sweep rows per level, from the re-arm lifecycle).
+3. **A cap does not reduce the number of independent clusters.** Applying p90
+   leaves 1,944 episodes against 1,946. The bootstrap resamples *episodes*, so a
+   cap thins each cluster rather than reducing how many there are — a change to
+   the estimand's variance, not to the sample's independence.
+
+**Recommendation: leave the current behaviour in force.** Adding a cap now would
+silently invalidate every measurement recorded in this document. If one is
+wanted it should be a configurable `level_max_age_bars`, recorded in the run
+fingerprint (as the zone parameters are), and reported **both with and without**
+the cap so the effect is visible rather than assumed.
+
+#### Event measurement contract: no tolerances, and what that costs
+
+`tests/test_event_measurement_contract.py` formalises the two notions of equality
+and, more usefully, pins what the aggregate one **cannot** see.
+`time_above`, `time_below` and `recovery_ratio` are recorded on the event for
+downstream research and are **never read by the outcome labeller** — so
+rewriting them to `999` leaves every aggregate byte-identical. That blindness is
+structural, not accidental: no aggregate comparison could ever have detected the
+38-event bug, at any magnitude. The canary is asserted deliberately so the next
+person to trust an aggregate comparison knows its boundary.
+
+**No field is compared with a tolerance.** The 9-row, 2e-25 `recovery_ratio`
+difference had a removable cause (reconstructing the excursion denominator as
+`level * (1 + penetration)` instead of carrying it) and was fixed at the source.
+A tolerance would have been the wrong repair: "equal to within 1e-20" is not
+equality, and choosing one means choosing how much corruption to accept.
+`test_measurements_are_compared_exactly_and_no_tolerance_is_silently_in_use`
+perturbs one value in the 25th significant place and requires the comparison to
+report it.
+
+#### Event dependence: figures verified, not re-asserted
+
+Recomputed from the run's own spill (the earlier numbers are confirmed):
+
+| unit | count |
+|---|---|
+| event rows | 273,901 |
+| sweep event rows | 268,358 |
+| distinct `(detector, bar)` sweep identities | 35,848 (**7.49 rows per identity**) |
+| distinct bars carrying ≥1 sweep | 18,833 |
+| distinct `level_price` among sweeps | 11,507 |
+| distinct level identities published | 16,767 |
+| distinct level identities swept ≥1 | 12,514 |
+| episodes (the bootstrap's resampling unit) | 1,946 |
+| outcomes | 1,095,604 |
+
+**`range_high` + `range_low` = 245,501 of 268,358 sweep rows (91.5%)**, and they
+are the only families with heavy within-bar multiplicity (12.54 and 11.79 rows
+per identity, versus 1.04–1.63 for every other family). A rolling 20-bar extreme
+is republished far more often than a daily boundary is — that is what a rolling
+window extreme *is*, not a defect, and levels are append-only so no level object
+is ever repriced. The consequence for inference is that **event rows are not
+independent observations**, which is exactly why the bootstrap's default unit is
+the episode.
+
+One structural limit found: the episode recomputation in the census reproduces
+the runner's 1,946 exactly, but the checkpoint retains only *live* structure
+buckets, not the cumulative swing-level list, so the never-swept figure is
+reported against the cumulative time-anchored set (13,553) where that set is
+available and against the run's own total (16,767) elsewhere.
+
+#### Still open
+
+1. **Absolute vs relative tolerance** — escalated above; blocks nothing until a
+   decision is made, and the current behaviour is pinned either way.
+2. **`structure_context`** is still one label in a 100-bar lookback rather than a
+   graded measure (unchanged).
+3. **Full-history 1h pass** still unmeasured (unchanged).
+4. **No zone, retest, sweep or cluster has been evaluated for predictive value**,
+   and none is claimed.
+
+#### Resource profile of this milestone
+
+| | value |
+|---|---|
+| dataset | BTCUSDT 5m, 2021-01-01 → 2021-04-01, 25,887 bars |
+| segmented run | 267 s, **375 MB observed peak RSS** (`/usr/bin/time -v`) |
+| spill / checkpoint | 197 MB `events.jsonl` + 6.3 MB checkpoint |
+| clustering census | 60,000 bars held in memory for the bucket study |
+| full test suite | **553 passed, 0 failures**, 16:54 wall, **910 MB peak RSS** (was 527 / 12:29 / 513 MB) |
+
+Note on suite cost: the two new test files add ~4.5 minutes and roughly 260 MB
+above the 476 MB interpreter-and-import baseline. Three deliberate reductions
+were made after measuring, and are worth recording because each was a real
+regression in cost:
+
+* memoising the whole-series event pass (was recomputed per test, ~4 min);
+* mutating events in place in the canary rather than `copy.deepcopy`-ing ~78k
+  objects (~1 GB of peak RSS);
+* comparing the segmented log in **lockstep** rather than as a second
+  materialised list, which also made a separate ordering test redundant --
+  a row at a different position fails the lockstep comparison immediately.
+
+All validation output went to `/tmp`; nothing was written into `backend/data/`,
+whose 1.15 GB of pre-existing run directories remain gitignored and untouched.
+`run-2021b` and `run-2021c` are still byte-identical re-runs of `run-2021` from
+earlier debugging and remain safe to delete, as recorded above.
+
+### Proposed next milestone — objective candidate setup definitions (PROPOSAL ONLY, NOT IMPLEMENTED)
+
+Everything below is a **proposal**, labelled as such, derived from the main
+specification (Sections 17, 18, 19, 21, 22). Nothing here has been coded and
+no setup has been evaluated. It is written down so the next milestone has a
+target to be measured against rather than being defined by whatever the first
+implementation happens to detect.
+
+#### Scope boundary
+
+In scope: precise, testable definitions of the five candidate setups named in
+Section 17, the information each needs at decision time, and the statistical
+protocol for evaluating them.
+
+Explicitly out of scope until justified: the setup engine's execution semantics,
+ML filtering (Section 20), parameter optimisation, and any live or paper
+trading. Section 56's ordering still governs: DATA → MEASUREMENT → HYPOTHESIS.
+
+#### Stage A — define before detecting
+
+For each candidate, the specification's vocabulary has to become arithmetic
+*before* any code runs, or the code defines the concept retroactively. Proposed
+definitions, each to be written as a hand-checkable spec first:
+
+| # | Setup (Section 17) | Proposed mathematical rule | Ambiguity to resolve |
+|---|---|---|---|
+| 1 | Liquidity sweep + rejection | `sweep` per the existing two-bar definition **and** `recovery_ratio >= θ` and `wick_ratio >= φ` on the pierce bar, evaluated at `confirmation_index` | θ, φ are *proposed* thresholds; the spec gives none. Must be fixed before seeing outcomes, not tuned after |
+| 2 | Liquidity sweep + structure shift | `sweep` **and** a BOS on the same side within `w` bars of the confirmation, where BOS requires close beyond a *confirmed* swing | `w`; and whether the shift must be on the swept level itself |
+| 3 | Compression + breakout + retest | compression event (`volatility_5/volatility_20 <= c`) **and** a close beyond the release extreme **and** a retest of the zone left by the release | the breakout reference (extreme vs. zone edge) |
+| 4 | Displacement + retest | `magnitude_in_volatility >= m` **and** a zone retest whose `creation_index` is that displacement bar | whether the retest must be the *first* one |
+| 5 | HTF zone + LTF structure | a 1H/4H zone published before the 5m decision bar **and** a 5m BOS in the zone's direction | how a zone on a different timeframe is carried into a 5m decision — **not yet specified anywhere** |
+
+Every threshold above is a **definition to be pre-registered**, not a parameter
+to be searched. Section 53's danger signs are explicit that too many parameters
+and exact-threshold dependence are failure modes.
+
+#### Stage B — decision-time information
+
+For each setup, the availability time is the maximum of its ingredients'
+`confirmation_index`. Two rules from this milestone's work carry directly:
+
+* a *cluster* grows as later swings confirm, so an equal-highs setup's
+  availability is the **second** swing's confirmation, never the first;
+* a *sweep* is confirmed on the bar **after** the pierce — entry cannot be at
+  the pierce bar's close, which would be 3–5 bars better than reality
+  (Section 11's "signal at T, execution at T+1").
+
+#### Stage C — entry, invalidation, target, horizon
+
+Proposed, matching Section 18's grid (+0.5R / +1R / +1.5R / +2R):
+
+* entry at the **open of the bar after confirmation** (Section 11's rule);
+* stop from the setup's structural point (zone far edge, swept level, swing low),
+  with an ATR multiple as the alternative already implemented;
+* target defined in R, resolved on a **single pass** per bar so a bar containing
+  both target and stop is recorded `ambiguous`, never as a win;
+* holding horizon from the existing `FORWARD_HORIZONS`; outcomes beyond the data
+  end recorded as `truncated`, never imputed.
+
+No-trade cases to be specified explicitly: a bar whose range spans both
+boundaries, a level swept by more than one co-located price on the same bar
+(the merge rule already reports one event under the most specific level), and
+any event whose forward window is truncated.
+
+#### Stage D — evaluation protocol
+
+* chronological development / out-of-sample, never random splits (Section 21);
+* costs: Section 16's model with the 1×/1.5×/2×/3× sensitivity, and rejection of
+  any candidate that only survives 1×;
+* **dependence**: bootstrap over **episodes**, not events. This milestone
+  measured 7.49 sweep rows per `(detector, bar)` identity and 140.8 rows per
+  episode — treating events as independent would understate every interval by
+  roughly an order of magnitude;
+* multiple testing: Benjamini–Hochberg across the whole grid (detector × side ×
+  stop model × target × horizon), reported, not optional;
+* baselines before any candidate: buy-and-hold, all-bars, random events, **and
+  a plain prior-window high/low detector**. The last one matters most here — if
+  the sophisticated liquidity detector does not beat a trailing 20-bar extreme,
+  that is the finding, and it should be measured rather than assumed.
+
+#### Acceptance criteria for the next milestone
+
+1. Each setup written as a spec with hand-computed fixtures before code.
+2. A minimum sample size stated *per episode count*, not per event count, with
+   the interval width reported at that count.
+3. Every candidate compared to the trailing-window baseline and to the null
+   controls, with the comparison's dependence handled.
+4. Benjamini–Hochberg applied and the surviving set reported as such.
+5. A candidate is **rejected** on any of: no significant excess over baseline,
+   significance that does not survive cost sensitivity, or dependence on a
+   narrow parameter region.
+
+Passing this milestone's acceptance criteria establishes only that the
+*measurement* is sound. It establishes no predictive value and no profitability.
 
 ## Project Philosophy
 

@@ -71,6 +71,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 
 from app.core.resources import (
@@ -109,6 +110,7 @@ from app.services.research.outcomes import (
     OffsetCandles,
 )
 from app.services.research.streaming import dataset_timeframe, stream_candles
+from app.services.research.zones import ZoneCarried, detect_zones
 
 #: How far past an event's confirmation bar its forward window reaches. An
 #: event needs this many *future* bars before its outcome is fully determined,
@@ -135,6 +137,21 @@ COMPRESSION_VOL_WINDOW = 20
 #: to be carried in the fingerprint for the same reason the horizons are: a run
 #: at 6 and a run at 12 are different analyses of the same sweeps.
 SWEEP_EXCURSION_BARS = 6
+
+#: Zone and retest parameters. Named here, and recorded in the fingerprint, for
+#: the same reason ``SWEEP_EXCURSION_BARS`` is: a run at ``max_touch_depth`` 0.5
+#: and a run at 0.9 are different analyses of the same bars, and concatenating
+#: their results would be a segmentation bug that reads as a finding.
+#:
+#: These are the detector's own defaults, written down so the two can be seen to
+#: agree rather than drift apart when one of them is edited.
+ZONE_BASE_BARS = 5
+ZONE_MAX_BASE_BARS = 20
+ZONE_STRUCTURE_LOOKBACK = 3
+ZONE_STRUCTURE_WINDOW = 10
+ZONE_MAX_TOUCH_DEPTH = Decimal("0.5")
+ZONE_MAX_AGE_BARS = 500
+ZONE_MIN_RETEST_SEPARATION_BARS = 3
 
 #: Sentinel for "the dataset has more bars than this run has seen". Larger than
 #: any reachable bar index, so every target bar reads as present; the last flush
@@ -231,6 +248,12 @@ class Checkpoint:
     #: the report would flag as a resume artifact.
     derived_levels: dict
     sweep: dict
+    #: Supply/demand zone state. Separate from ``sweep`` because zones have a
+    #: different lifetime -- one survives many segments, bounded by
+    #: ``ZONE_MAX_AGE_BARS`` -- and because a run that carried only the swept set
+    #: would resume with every pre-boundary zone missing, silently losing their
+    #: retests for the rest of the run.
+    zones: dict
     #: Events detected but not yet labellable. Small -- bounded by the forward
     #: horizon -- but dropping them would leave a run whose later segments are
     #: measured on fewer events than its earlier ones, which reads as a finding.
@@ -272,6 +295,7 @@ class Checkpoint:
             "structure": self.structure,
             "derived_levels": self.derived_levels,
             "sweep": self.sweep,
+            "zones": self.zones,
             "pending_events": list(self.pending_events),
             "tail": list(self.tail),
             "outcomes": self.outcomes,
@@ -439,6 +463,7 @@ class SegmentedResearchRunner:
         self.derived = DerivedLevelState()
         self._range_window = DEFAULT_RANGE_WINDOW
         self.sweep = SweepCarried()
+        self.zones = ZoneCarried()
         self.accumulators = OutcomeAccumulator()
         self.baseline = BaselineAccumulator()
         self.events_path = self.out_dir / "events.jsonl"
@@ -520,6 +545,13 @@ class SegmentedResearchRunner:
             sweep_excursion_bars=SWEEP_EXCURSION_BARS,
             sweep_measure_window=SWEEP_MEASURE_WINDOW,
             compression_vol_window=COMPRESSION_VOL_WINDOW,
+            zone_base_bars=ZONE_BASE_BARS,
+            zone_max_base_bars=ZONE_MAX_BASE_BARS,
+            zone_structure_lookback=ZONE_STRUCTURE_LOOKBACK,
+            zone_structure_window=ZONE_STRUCTURE_WINDOW,
+            zone_max_touch_depth=str(ZONE_MAX_TOUCH_DEPTH),
+            zone_max_age_bars=ZONE_MAX_AGE_BARS,
+            zone_min_retest_separation=ZONE_MIN_RETEST_SEPARATION_BARS,
             min_penetration="0",
             stop_models=["atr_mult_1.5", "atr_mult_2.5"],
             horizons=[1, 3, 6, 12],
@@ -563,6 +595,7 @@ class SegmentedResearchRunner:
             structure=self.state.to_payload(),
             derived_levels=self.derived.to_payload(),
             sweep=self.sweep.to_payload(),
+            zones=self.zones.to_payload(),
             pending_events=[e.to_payload() for e in self._pending_events],
             tail=[c.model_dump(mode="json") for c in self._tail],
             outcomes=self.accumulators.as_dict(),
@@ -619,6 +652,7 @@ class SegmentedResearchRunner:
         self.derived = DerivedLevelState.from_payload(checkpoint.derived_levels)
         self._range_window = self.derived.range_window
         self.sweep = SweepCarried.from_payload(checkpoint.sweep)
+        self.zones = ZoneCarried.from_payload(checkpoint.zones)
         self._pending_events = [
             ResearchEvent.from_payload(p) for p in checkpoint.pending_events
         ]
@@ -1014,6 +1048,38 @@ class SegmentedResearchRunner:
             if event.event_index >= offset
         ]
 
+        # 2c. Zones and retests. Anchored to the *same* displacement objects the
+        #     zone detector derives internally from ``self._tail + bars``, so the
+        #     zone's ``departure_strength`` is the displacement event's
+        #     ``magnitude_in_volatility`` and not a second measurement of the same
+        #     bar that could differ.
+        #
+        #     Run on the tail for the same reason compression is: a zone needs
+        #     ``ZONE_STRUCTURE_LOOKBACK`` bars either side of a pivot and up to
+        #     ``ZONE_MAX_BASE_BARS`` bars of base behind its displacement, so a
+        #     displacement in the first bars of this segment cannot be evaluated
+        #     without history from the previous one.
+        #
+        #     ``self.zones`` is carried, and unlike compression this detector is
+        #     emphatically *not* stateless: a zone lives for up to
+        #     ``ZONE_MAX_AGE_BARS`` bars and collects retests across many
+        #     segments. ``offset`` stops the prefix re-creating zones and
+        #     re-emitting retests the previous segment already wrote.
+        zone_events = detect_zones(
+            self._tail + bars,
+            offset=tail_start,
+            carried=self.zones,
+            final=final,
+            vol_window=COMPRESSION_VOL_WINDOW,
+            base_bars=ZONE_BASE_BARS,
+            max_base_bars=ZONE_MAX_BASE_BARS,
+            structure_lookback=ZONE_STRUCTURE_LOOKBACK,
+            structure_window=ZONE_STRUCTURE_WINDOW,
+            max_touch_depth=ZONE_MAX_TOUCH_DEPTH,
+            max_age_bars=ZONE_MAX_AGE_BARS,
+            min_retest_separation_bars=ZONE_MIN_RETEST_SEPARATION_BARS,
+        )
+
         # Folded together and sorted by bar before anything sees them. Folding
         # them in one at a time would interleave two detectors' events out of
         # confirmation order, and ``_note_episode`` is a single-pass sweep: it
@@ -1022,7 +1088,7 @@ class SegmentedResearchRunner:
         # the divergence ``test_episode_partition_matches_the_batch_sweep``
         # exists to catch -- and it catches it, which is the point.
         detected = sorted(
-            itertools.chain(events, compression_events),
+            itertools.chain(events, compression_events, zone_events),
             key=lambda event: (event.confirmation_index, event.kind, event.detector),
         )
         for event in detected:

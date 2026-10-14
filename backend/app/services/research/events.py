@@ -60,6 +60,8 @@ EventKind = Literal[
     "volatility",  # realised volatility crosses a threshold
     "compression",  # the market coiled and then released
     "regime",  # the market state label changed
+    "zone",  # a supply/demand band left behind by a displacement
+    "zone_retest",  # price returned into a previously published zone
 ]
 
 
@@ -580,13 +582,70 @@ def detect_liquidity_sweeps(
     # Resolve what the previous window left pending. Its last bar is this
     # window's bar ``offset``, so the confirmation price and time are available
     # now and were not available then.
+    #
+    # The sweep is *re-measured* here rather than merely re-dated, and that is the
+    # point of this block. The previous window could not see the confirmation bar,
+    # so any measurement that needs it was necessarily wrong there: it fell back
+    # to the pierce bar's own close, which made ``time_above``/``time_below``
+    # ``None`` and ``recovery_ratio`` a ratio against the wrong price. Patching
+    # only the timestamp and the price left those three fields describing a bar
+    # the reader never saw them describe.
+    #
+    # 38 of 268,358 sweep events on BTCUSDT 5m Q1 2021 differed from a continuous
+    # run in exactly this way -- one per boundary -- while every aggregate still
+    # matched, because 38 rows out of 268,358 move no mean enough to notice. The
+    # re-measurement needs the level, so the pending payload carries its price and
+    # type rather than being replayed blind.
     if state.pending:
         first = candles[0]
         for payload in state.pending:
+            # The pierce bar itself is the *previous* window's last bar and is not
+            # in this window, so the event cannot be rebuilt from candles here --
+            # ``candles[-1]`` would be this window's last bar and every field read
+            # from it would be a plausible wrong answer. What is patched instead is
+            # the three measurements that need the confirmation bar, plus the
+            # confirmation's own index, time and price.
+            #
+            # ``recovery_ratio`` is settled at the confirmation close exactly as it
+            # would have been had the bar been present, because it is
+            # ``|confirmation_close - level| / |pierce_extreme - level|`` and the
+            # pierce extreme is already carried in the parked payload.
+            features = dict(payload["features"])
+            level_price = Decimal(features["level_price"])
+            side = str(payload["context"]["sweep_side"])
+            # The excursion denominator, taken from the parked payload rather than
+            # reconstructed. Recovering it as ``level * (1 + penetration)`` is
+            # algebraically equal and numerically *not*: that round-trips through
+            # a division and a multiplication, and on BTCUSDT 5m it left float
+            # noise in the 28th decimal place of ``recovery_ratio`` on the
+            # deferred events -- 0.5727951023531662521522862062 against
+            # 0.5727951023531662521522860967. Utterly negligible as a number and
+            # fatal to an equality check, which is exactly why a segmented run has
+            # to carry the value rather than re-derive it.
+            raw_excursion = features.get("pierce_excursion")
+            if raw_excursion is None:
+                # A payload written before this field existed.
+                penetration = Decimal(features["penetration"])
+                pierced_extreme = (
+                    level_price * (1 + penetration)
+                    if side == "above"
+                    else level_price * (1 - penetration)
+                )
+                raw_excursion = _render(abs(pierced_extreme - level_price))
+            excursion = Decimal(str(raw_excursion))
+            recovery = abs(first.close - level_price) if excursion > 0 else None
+            features["recovery_ratio"] = (
+                _render(recovery / excursion)
+                if (recovery is not None and excursion > 0)
+                else None
+            )
+            features["time_above"] = _count(1 if first.close > level_price else 0)
+            features["time_below"] = _count(1 if first.close < level_price else 0)
             events.append(
                 ResearchEvent.from_payload(
                     {
                         **payload,
+                        "features": features,
                         "confirmation_index": offset,
                         # Close of the confirmation bar, matching what
                         # ``_sweep_event`` reads on the batch path. Using the open
@@ -780,6 +839,10 @@ def detect_liquidity_sweeps(
                         excursion_bars or None,
                         window_before(index),
                         structure_ctx,
+                        # The confirmation bar, when this window has it. Absent on
+                        # the window's final bar, where the sweep is parked in
+                        # ``pending`` and re-measured by the next window.
+                        candles[index + 1] if index + 1 < len(candles) else None,
                     ),
                 )
             )
@@ -819,6 +882,7 @@ def detect_liquidity_sweeps(
                         excursion_bars or None,
                         window_before(index),
                         structure_ctx,
+                        candles[index + 1] if index + 1 < len(candles) else None,
                     ),
                 )
             )
@@ -999,6 +1063,12 @@ class SweepMeasures:
     excursion_bars: int | None
     range: Decimal | None
     structure_breaks: int
+    #: ``|pierce_extreme - level_price|`` on the pierced side -- the denominator
+    #: of ``recovery_ratio``, and the one quantity a deferred sweep cannot read
+    #: for itself because its pierce bar is in the previous window. Carried
+    #: rather than recomputed from ``penetration``, which is only equal to it up
+    #: to floating-point round-off.
+    pierce_excursion: Decimal | None = None
 
 
 def measure_sweep(
@@ -1009,6 +1079,7 @@ def measure_sweep(
     excursion_bars: int | None,
     before: Sequence[CandleData],
     structure: MarketStructureResult,
+    confirmation: CandleData | None = None,
 ) -> SweepMeasures:
     """Measure one sweep of ``level`` on bar ``index``.
 
@@ -1022,6 +1093,30 @@ def measure_sweep(
     segmented and continuous paths hold them differently and a sweep measured
     from one path's copy and reported against the other's is exactly how two runs
     would come to disagree.
+
+    ``confirmation`` is the bar the sweep is confirmed on -- the one after the
+    pierce -- and it is passed in for the same reason. An earlier revision derived
+    it as ``min(index + 1, len(candles) - 1)``, which reads the window's *length*
+    as if it were the series' length. On a window that happens to end at the pierce
+    bar the clamp lands the "confirmation" back on the pierce bar itself, so the
+    span it then measures is the empty range ``range(index+1, index+1)``:
+    ``time_above``/``time_below`` come back ``None`` and ``recovery_ratio`` is
+    computed against the pierce bar's own close instead of the confirmation's.
+
+    That is not a rounding difference. Measured over BTCUSDT 5m Q1 2021, 38 of
+    268,358 sweep events -- one per segment boundary where a level was swept on
+    the final bar of the window -- carried different ``time_above``,
+    ``time_below`` and ``recovery_ratio`` values between a continuous run and a
+    segmented one, while every aggregate still matched. Those 38 events were the
+    *last-bar* sweeps, which are exactly the ones a segmented run defers into
+    :attr:`SweepCarried.pending` and re-emits from the next window -- so the
+    measurement was taken in the window that could not see the bar, and the
+    replay patched only the timestamp and the price.
+
+    Passing the bar in makes the three fields independent of where the window
+    boundary fell, which is the property the whole segmented runner rests on.
+    It is optional only so the batch path, where the bar is always in hand, keeps
+    working unchanged.
     """
     candle = candles[index]
     price = level.price
@@ -1051,11 +1146,16 @@ def measure_sweep(
     # does to price is an outcome question, and the outcome labeller already
     # answers it with bars this event does not claim to have seen.
     time_above = time_below = None
-    confirmation = min(index + 1, len(candles) - 1)
-    span = range(index + 1, confirmation + 1)
-    if span:
-        time_above = sum(1 for j in span if _close(candles, j) > price)
-        time_below = sum(1 for j in span if _close(candles, j) < price)
+    # The confirmation bar, from the caller rather than from this window's length.
+    # See the docstring: deriving it here made three measurements depend on where
+    # a segment boundary happened to fall.
+    confirmation_bar = confirmation
+    if confirmation_bar is None:
+        local = min(index + 1, len(candles) - 1)
+        confirmation_bar = candles[local] if 0 <= local < len(candles) else None
+    if confirmation_bar is not None:
+        time_above = 1 if confirmation_bar.close > price else 0
+        time_below = 1 if confirmation_bar.close < price else 0
 
     # Recovery: how much of the move past the level was given back. Measured on
     # closes because a wick retraced and closed through is still a recovery --
@@ -1063,8 +1163,8 @@ def measure_sweep(
     excursion_extreme = candle.high if side == "above" else candle.low
     excursion = abs(excursion_extreme - price)
     recovery = (
-        abs(_close(candles, min(index + 1, len(candles) - 1)) - price)
-        if excursion
+        abs(confirmation_bar.close - price)
+        if excursion and confirmation_bar is not None
         else None
     )
     recovery_ratio = (
@@ -1104,6 +1204,7 @@ def measure_sweep(
         excursion_bars=excursion_bars if excursion_bars is not None else None,
         range=bar_range if bar_range > 0 else None,
         structure_breaks=breaks,
+        pierce_excursion=excursion,
     )
 
 
@@ -1202,6 +1303,12 @@ def _sweep_event(
         "level_swing_count": Decimal(swing_count),
     }
     if measures is not None:
+        # The denominator of ``recovery_ratio``, carried so that a sweep deferred
+        # to the next window can re-measure it exactly rather than reconstructing
+        # it from ``penetration``. See the pending-replay block. Not one of the
+        # nine recorded fields -- it is the input to one of them, kept so the
+        # recomputation is exact rather than algebraically equivalent.
+        features["pierce_excursion"] = _render(measures.pierce_excursion)
         # The seven fields the specification adds to the sweep record. Each is
         # ``None`` when its definition does not apply to this bar rather than
         # zero, and each is placed here rather than in ``context`` so it is
@@ -1782,6 +1889,18 @@ def detect_all(
     lookback: int = 3,
     vol_window: int = 20,
     trend_window: int = 50,
+    #: Zone parameters, forwarded verbatim to :func:`detect_zones`. They live
+    #: here rather than at the call site so that the batch path and the
+    #: segmented runner are tunable by the same names: a batch run that used the
+    #: detector's defaults while the runner used its own would produce two event
+    #: logs from one dataset that disagree only on these numbers.
+    zone_structure_lookback: int = 3,
+    zone_structure_window: int = 10,
+    zone_base_bars: int = 5,
+    zone_max_base_bars: int = 20,
+    zone_max_touch_depth: Decimal = Decimal("0.5"),
+    zone_max_age_bars: int = 500,
+    zone_min_retest_separation_bars: int = 3,
     #: Quoted and imported inside the body: ``Timeframe`` is resolved locally
     #: there so this module's detectors stay importable without pulling in the
     #: schema layer's enum at module scope.
@@ -1802,14 +1921,40 @@ def detect_all(
     if timeframe is None:
         timeframe = candles[0].timeframe if candles else Timeframe.M5
 
+    # Imported here, not at module scope: ``zones`` builds on this module's
+    # ``ResearchEvent`` and ``detect_displacement``, so a top-level import in
+    # either direction is a cycle. Resolving it at call time means importing
+    # either module standalone works, which is what lets the zone tests import
+    # ``zones`` without dragging in this module's full detector set.
+    from app.services.research.zones import detect_zones
+
     result = analyze_market_structure(
         list(candles), symbol=symbol, timeframe=timeframe, lookback=lookback
     )
     events: list[ResearchEvent] = []
     events.extend(detect_structure_events(result))
     events.extend(detect_liquidity_sweeps(candles, result=result))
-    events.extend(detect_displacement(candles, vol_window=vol_window))
+    displacements = detect_displacement(candles, vol_window=vol_window)
+    events.extend(displacements)
     events.extend(detect_compression(candles, vol_window=vol_window))
+    # Zones are anchored to the *same* displacement objects just published above
+    # rather than to a second detection pass. Passing the list in is what
+    # guarantees the zone's ``departure_strength`` equals the displacement
+    # event's ``magnitude_in_volatility`` rather than a re-measurement that
+    # could differ if a parameter were ever changed on one path and not the other.
+    events.extend(
+        detect_zones(
+            candles,
+            displacements=displacements,
+            structure_lookback=zone_structure_lookback,
+            structure_window=zone_structure_window,
+            base_bars=zone_base_bars,
+            max_base_bars=zone_max_base_bars,
+            max_touch_depth=zone_max_touch_depth,
+            max_age_bars=zone_max_age_bars,
+            min_retest_separation_bars=zone_min_retest_separation_bars,
+        )
+    )
     events.extend(detect_volatility_expansions(candles, vol_window=vol_window))
     events.extend(
         detect_regime_changes(
