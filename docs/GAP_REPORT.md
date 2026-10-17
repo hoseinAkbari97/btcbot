@@ -235,11 +235,42 @@ range 86,730–86,777, immediately before the resume point.
 
 Consequence: a resumed run's `events.jsonl` cannot be treated as equivalent to an
 uninterrupted one's. Any analysis reading the spill from a resumed run may be
-missing boundary events, while the reported statistics look complete. The
-mechanism is not yet identified and is **open**.
+missing boundary events, while the reported statistics look complete.
 
-Not fixed here. Until it is, a research run whose event log is to be analysed
-rather than merely summarised should be produced uninterrupted.
+**Resolution, October 2026 (Milestone 4).** The mechanism is identified and fixed —
+but the reproduction is of a **duplication**, not the loss reported above.
+
+**Root cause.** `EventSpill` flushes every 1,000 events, which can happen part-way
+through a segment. `checkpoint.json` is written only at a segment boundary. A
+process killed between the two leaves `events.jsonl` holding events from a segment
+the checkpoint does **not** yet claim. On resume the runner skips forward to the
+checkpoint's bar and re-processes that segment, so **appending** to the spill wrote
+those events a second time.
+
+**Measured before the fix** (BTCUSDT 5m, 2021-01-01 → 2021-03-01, killed 6,000
+events into a run): the resumed log held **156,757 rows against a continuous run's
+155,601 — 1,156 duplicated events**, spanning the whole re-processed segment. Every
+aggregate still matched; only the event log showed the difference.
+
+**Fix.** Truncate-to-offset rather than append. The checkpoint records the spill's
+byte length (`events_bytes`), and a resumed run cuts the file back to it before
+appending. A byte offset rather than a line count because it also repairs a
+**partially written final line**, which a line count cannot distinguish from a
+complete one. Two adjacent defects fell out of the same investigation and are also
+fixed: `events_written` under-counted on resume (a fresh spill counts from zero), and
+the *final* checkpoint recorded `events_bytes = 0` because it is written after the
+spill closes — which would have told the next resume to truncate the entire log.
+
+**After the fix:** the same kill reproduces 155,601 rows against 155,601, identity
+multiset equal, zero duplicates, and `events_written` matching the file.
+
+**Limit, stated plainly.** The originally reported symptom was a **loss** of 169
+rows; the mechanism reproduced is a **duplication**. Both are the same class — the
+spill and the checkpoint disagreeing about how far the run got — and the protocol
+now enforces agreement in both directions. The specific `run-2021b` loss was **not**
+reproduced in a controlled experiment and is **not claimed to be fixed**; the
+interruption that produced it is not recorded, so it cannot be re-tested. The
+evidence for the fix is the before/after duplicate reproduction above.
 
 ## G5. A measurement disagreement that aggregates could not see
 

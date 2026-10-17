@@ -39,21 +39,33 @@ from .derived_levels import DerivedLevelState, equal_level_for
 # ---------------------------------------------------------------------------
 
 SWING_LOOKBACK_DEFAULT = 5
-#: How close two swing prices must be to be treated as one level (an "equal
-#: high/low" cluster) rather than two independent ones.
+#: Fractional distance within which two swing prices are treated as one level
+#: (an "equal high/low" cluster) rather than two independent ones.
 #:
-#: The trailing ``# 0.1%`` is **wrong**, and deliberately left in place rather
-#: than quietly corrected, because the mismatch is the open question and hiding
-#: it would hide the evidence. ``extract_liquidity_levels`` applies this as an
-#: **absolute** price distance (``abs(p - anchor) <= 0.001``), so on a BTC quote
-#: near 30,000 it admits two swing highs whose prices agree to a tenth of a
-#: cent -- measured on real data, every multi-member cluster has a member price
-#: spread of exactly zero. Under the relative reading the comment describes, the
-#: same constant would produce 3.1x as many clusters (271 vs 844 over 60,000
-#: bars). Which reading is intended is a specification decision, escalated in
-#: SESSION_NOTES.md and pinned by
-#: ``test_the_tolerance_is_absolute_while_the_documentation_says_relative``.
-LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")  # 0.1% (comment says fraction; applied as absolute)
+#: **Engineering decision, 2026-10-17. The main specification does not define
+#: this.** It lists "equal highs"/"equal lows" among the level types
+#: (``btc_quant_trading_project.md`` Section 14) and Section 3 demands that these
+#: concepts be "converted from subjective trading language into precise
+#: mathematical definitions" -- but supplies no tolerance. The value below is
+#: therefore this repository's choice, recorded here so a run can say which rule
+#: produced it, and kept in ``config_fingerprint`` for the same reason.
+#:
+#: **The rule is RELATIVE to the frozen anchor**: a swing joins a bucket when
+#:
+#:     abs(swing.price - anchor) <= LEVEL_CLUSTER_TOLERANCE * anchor
+#:
+#: where ``anchor`` is the first swing's price quantised to 0.01, fixed at bucket
+#: creation and never re-averaged. See :func:`extract_liquidity_levels`.
+#:
+#: The rule was previously absolute (``abs(p - anchor) <= 0.001``), which on a BTC
+#: quote near 30,000 is a tenth of a cent and therefore degenerated to "the same
+#: price to the cent": over 60,000 real bars every one of its 271 clusters had a
+#: member price spread of exactly 0.00. The relative rule is what "equal highs"
+#: means to a trader and matches the constant's original ``# 0.1%`` comment.
+#: It was adopted on the meaning of the term, **not** on the fact that it yields
+#: more clusters (844 vs 271 on the same data) -- selecting a definition by its
+#: yield is the failure mode this project exists to avoid.
+LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")  # 0.1%, relative to the anchor
 # A level is only interesting if at least this many later candles reached it.
 MIN_TOUCHES = 2
 
@@ -487,25 +499,38 @@ def extract_liquidity_levels(
         # invisible, which is precisely why it survived. The union is correct at
         # every price and costs a handful of extra candidate scans below $1.
         #
-        # The discrepancy between the two bands is a separate, open question --
-        # see the note on ``LEVEL_CLUSTER_TOLERANCE`` and SESSION_NOTES.md. This
-        # code does not decide which band is *meant*; it only guarantees the
-        # filter cannot disagree with the test that follows it.
+        # The discrepancy between the two bands was the open question of Milestone 3.
+        # It is now decided -- the membership test below is **relative to the
+        # anchor**, see ``LEVEL_CLUSTER_TOLERANCE`` -- and the union is retained
+        # anyway rather than narrowed to the winning band. Keeping both costs a
+        # few extra candidate scans per swing below $1 and buys two properties:
+        # the filter stays correct whichever rule a future version adopts, and a
+        # sub-$1 instrument cannot silently fall out of the index if that rule is
+        # ever relative again. The bounds must be a superset of the test, never
+        # narrower than it; that is the whole obligation of this code.
         #
         # The upper bound passes a sentinel position so a bucket sitting exactly
         # on the upper edge is *inside* the scan; ``bisect_left`` on the bare
         # price would exclude it.
-        tolerance_float = float(tolerance_exact)
-        low = min(price - tolerance_float, price / (1.0 + tolerance))
-        high = max(price + tolerance_float, price / (1.0 - tolerance))
-        first = bisect_left(by_price, (Decimal(repr(low)), -1))
-        last = bisect_left(by_price, (Decimal(repr(high)), len(by_price) + 1))
+        one_plus = Decimal(1) + tolerance_exact
+        one_minus = Decimal(1) - tolerance_exact
+        # Computed in ``Decimal``. In binary double ``30030 / 1.001`` is
+        # ``30000.000000000004`` -- four femto-units above the true boundary -- so
+        # a bucket sitting exactly at the edge was excluded from the scan and the
+        # exact membership test below never got to admit it. A pre-filter narrower
+        # than the test by a representation error is not a pre-filter.
+        low = min(swing.price - tolerance_exact, swing.price / one_plus)
+        high = max(swing.price + tolerance_exact, swing.price / one_minus)
+        first = bisect_left(by_price, (low, -1))
+        last = bisect_left(by_price, (high, len(by_price) + 1))
         best: int | None = None
         for candidate in range(first, last):
             position = by_price[candidate][1]
             if buckets[position]["kind"] != swing.kind:
                 continue
-            if abs(swing.price - buckets[position]["price"]) > tolerance_exact:
+            if abs(swing.price - buckets[position]["price"]) > (
+                tolerance_exact * buckets[position]["price"]
+            ):
                 continue
             # First match wins, so among matching candidates the earliest
             # created is the one the linear scan would have stopped on.

@@ -82,6 +82,7 @@ from app.core.resources import (
 )
 from app.schemas.market_data import CandleData, Timeframe
 from app.services.market_structure import LiquidityLevel
+from app.services.market_structure.analysis import LEVEL_CLUSTER_TOLERANCE
 from app.services.market_structure.derived_levels import (
     DEFAULT_RANGE_WINDOW,
     DerivedLevelState,
@@ -283,6 +284,20 @@ class Checkpoint:
     #: "stopped at the last segment boundary", and only the first has flushed.
     complete: bool = False
 
+    #: Byte length of ``events.jsonl`` at the moment this checkpoint was taken.
+    #:
+    #: The resume protocol's durable offset, and the reason ``events_written``
+    #: alone cannot reconcile a resumed spill. The spill flushes mid-segment
+    #: while the checkpoint is written only at a segment boundary, so the file
+    #: can hold events from a segment the checkpoint does not yet claim. That
+    #: segment is re-processed on resume, so appending writes its events twice --
+    #: 1,156 duplicates measured on real data before this was fixed.
+    #:
+    #: A byte offset rather than a line count because it also repairs a partially
+    #: written final line, which a line count cannot distinguish from a
+    #: complete one. Declared last so every preceding field stays required.
+    events_bytes: int = 0
+
     def to_payload(self) -> dict:
         return {
             "dataset_sha256": self.dataset_sha256,
@@ -301,6 +316,7 @@ class Checkpoint:
             "outcomes": self.outcomes,
             "baseline": self.baseline,
             "events_written": self.events_written,
+            "events_bytes": self.events_bytes,
             "segments_done": self.segments_done,
             "episode_starts": list(self.episode_starts),
             "complete": self.complete,
@@ -471,6 +487,10 @@ class SegmentedResearchRunner:
         self.report_path = self.out_dir / "report.json"
 
         self._events_written = 0
+        #: Byte length of the spill that ``self._events_written`` events occupy.
+        #: Restored from the checkpoint and used to truncate the spill before a
+        #: resumed run appends to it.
+        self._events_bytes = 0
         self._segments_done = 0
         self._bar_index = 0
         self._episode_starts: list[int] = []
@@ -545,6 +565,13 @@ class SegmentedResearchRunner:
             sweep_excursion_bars=SWEEP_EXCURSION_BARS,
             sweep_measure_window=SWEEP_MEASURE_WINDOW,
             compression_vol_window=COMPRESSION_VOL_WINDOW,
+            # Equal-level clustering is a *definition*, so two runs that disagree
+            # about it are not comparable and must not be concatenated. Naming it
+            # and the rule here means a checkpoint written under one rule is
+            # refused by a build using another, rather than silently resuming
+            # into a mix.
+            level_cluster_tolerance=str(LEVEL_CLUSTER_TOLERANCE),
+            level_cluster_rule="relative_to_frozen_anchor",
             zone_base_bars=ZONE_BASE_BARS,
             zone_max_base_bars=ZONE_MAX_BASE_BARS,
             zone_structure_lookback=ZONE_STRUCTURE_LOOKBACK,
@@ -602,6 +629,11 @@ class SegmentedResearchRunner:
             baseline=self.baseline.as_dict(),
             events_written=(
                 spill.count if spill is not None else self._events_written
+            ),
+            events_bytes=(
+                spill.byte_offset()
+                if spill is not None and spill.is_open()
+                else self._events_bytes
             ),
             segments_done=self._segments_done,
             episode_starts=self._episode_starts,
@@ -661,6 +693,7 @@ class SegmentedResearchRunner:
         ]
         self._bar_index = checkpoint.bar_index
         self._events_written = checkpoint.events_written
+        self._events_bytes = checkpoint.events_bytes
         self._segments_done = checkpoint.segments_done
         self._restore_accumulators(checkpoint)
         self._restore_episodes(checkpoint)
@@ -830,7 +863,22 @@ class SegmentedResearchRunner:
         # alone would truncate the file in the one case where there is most to
         # lose.
         existing = resumed or self._resume_complete
-        spill = EventSpill(self.events_path, mode="a" if existing else "w")
+        # ...but appending alone is wrong on a *resumed* run. The spill flushes
+        # mid-segment while the checkpoint is written only at a segment boundary,
+        # so a process killed between the two leaves events in the file that the
+        # checkpoint does not claim. The segment containing them is then
+        # re-processed, and appending writes them twice. Truncating back to the
+        # offset the checkpoint vouched for first makes the resume exactly-once.
+        #
+        # Measured on BTCUSDT 5m (2021-01-01 to 2021-03-01), killed 6,000 events
+        # into a run: 1,156 duplicated events without this, zero with it.
+        # See ``EventSpill`` and GAP_REPORT G4.
+        spill = EventSpill(
+            self.events_path,
+            mode="a" if existing else "w",
+            initial_count=self._events_written if resumed else 0,
+            truncate_to=self._events_bytes if resumed else None,
+        )
         try:
             # A completed checkpoint has nothing left to process, and writing a
             # fresh spill on top of the one it produced would leave the finished
@@ -873,6 +921,12 @@ class SegmentedResearchRunner:
                         )
                         break
         finally:
+            # Capture the durable offset *before* closing. The final checkpoint
+            # below is written after the close, and reading the offset from a
+            # closed handle would record 0 -- which would tell the next resume to
+            # truncate the run's entire event log away.
+            if spill.is_open():
+                self._events_bytes = spill.byte_offset()
             spill.close()
 
         # The tail. Events whose forward window ran past the last bar are

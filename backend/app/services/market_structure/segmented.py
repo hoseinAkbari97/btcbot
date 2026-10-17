@@ -51,7 +51,7 @@ the swing list already retained.
 from __future__ import annotations
 
 import json
-from bisect import bisect_left, insort
+from bisect import bisect_left, bisect_right, insort
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -700,19 +700,40 @@ class StructureState:
         prices = self._bucket_prices.get(swing.kind)
         if not prices:
             return None
-        tolerance = float(LEVEL_CLUSTER_TOLERANCE)
-        price = float(swing.price)
-        low = Decimal(repr(price / (1.0 + tolerance)))
-        high = Decimal(repr(price / (1.0 - tolerance)))
+        tolerance = LEVEL_CLUSTER_TOLERANCE
+        one_plus = Decimal(1) + tolerance
+        one_minus = Decimal(1) - tolerance
+        price = swing.price
+        # Superset filter: the union of the absolute and relative bands, exactly
+        # as in ``analysis.extract_liquidity_levels``. Using the relative band
+        # alone was only correct above a price of 1, and a band expressed in
+        # absolute terms would be far too narrow at $30,000 -- the two paths must
+        # derive membership identically or a windowed run stops matching a
+        # continuous one.
+        #
+        # The bounds are computed in ``Decimal``, not ``float``. In binary double
+        # ``30030 / 1.001`` is ``30000.000000000004`` -- four femto-units above the
+        # true boundary -- so a bucket sitting exactly at the edge was excluded
+        # from the scan by four units in the fifteenth decimal place, and the
+        # ``Decimal`` membership test below never got a chance to admit it. A
+        # pre-filter that is narrower than the test by a representation error is
+        # not a pre-filter.
+        low = min(price - tolerance, price / one_plus)
+        high = max(price + tolerance, price / one_minus)
         first = bisect_left(prices, low)
-        last = bisect_left(prices, high)
+        # ``bisect_right`` rather than ``bisect_left`` so a bucket sitting
+        # exactly on the upper edge is *inside* the scan. ``prices`` holds bare
+        # Decimals here, so there is no position component to use as a sentinel
+        # the way the batch path's ``(price, position)`` tuples allow.
+        last = bisect_right(prices, high)
         best: int | None = None
         for slot in range(first, last):
             candidate = prices[slot]
-            # Re-checked with the original comparison so the index only ever
-            # decides *which* candidates are considered; the two cannot then
-            # disagree about a boundary case.
-            if abs(price - float(candidate)) > tolerance:
+            # The authoritative test, in ``Decimal``: membership is relative to
+            # the bucket's frozen anchor and is **inclusive** at the boundary.
+            # Deciding this in float makes the verdict depend on the price
+            # level's representation error rather than on the rule.
+            if abs(swing.price - candidate) > tolerance * candidate:
                 continue
             position = self._bucket_by_key[(swing.kind, candidate)]
             if best is None or position < best:

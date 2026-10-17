@@ -65,7 +65,17 @@ def reference_levels(swings: list, series: list[CandleData]) -> list[LiquidityLe
         for bucket in buckets:
             if bucket["kind"] != swing.kind:
                 continue
-            if abs(float(swing.price - bucket["price"])) <= float(LEVEL_CLUSTER_TOLERANCE):
+            # Transcribes the **approved** rule: relative to the bucket's frozen
+            # anchor, inclusive at the boundary, in exact arithmetic. This was
+            # transcribing the old absolute rule until Milestone 4 changed it,
+            # and the oracle then disagreed with the implementation for exactly
+            # the reason an oracle should be updated by hand and reviewed -- it is
+            # a transcription of *the rule*, not an independent opinion about
+            # *which* rule is right. The independent check on the rule's meaning
+            # lives in ``test_equal_level_clustering.py``, on hand-written prices.
+            if abs(swing.price - bucket["price"]) <= (
+                LEVEL_CLUSTER_TOLERANCE * bucket["price"]
+            ):
                 target = bucket
                 break
         if target is None:
@@ -206,9 +216,18 @@ def test_a_level_sharing_a_price_with_a_second_swing_keeps_both() -> None:
         # side would compare a low level against highs far from it.
         field = "high" if level.level_type == "swing_high" else "low"
         prices = [getattr(bars[index], field) for index, _ in level.swing_confirmations]
-        assert max(prices) - min(prices) <= float(level.price) * float(
-            LEVEL_CLUSTER_TOLERANCE
-        )
+        # Every member is measured against the **frozen anchor**, not against the
+        # other members. The spread of the members themselves can be twice the
+        # band -- 100.05 and 100.15 both sit within 0.1% of a 100.10 anchor while
+        # being 0.10 apart -- so a pairwise-spread assertion would be testing a
+        # transitive rule the implementation deliberately does not use.
+        for price in prices:
+            assert abs(Decimal(price) - level.price) <= (
+                LEVEL_CLUSTER_TOLERANCE * level.price
+            ), (
+                f"member {price} is further from the anchor {level.price} than "
+                f"{LEVEL_CLUSTER_TOLERANCE} of it, so it should not be clustered"
+            )
 
 
 def test_first_match_wins_is_preserved() -> None:

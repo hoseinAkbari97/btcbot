@@ -2176,6 +2176,201 @@ the seven rejection criteria fixed *before* the out-of-sample period is read.
 **Out of scope until justified:** ML filtering, parameter optimisation, live or
 paper trading, and any statement about profitability.
 
+### Milestone 4 (2026-10-17): relative-to-anchor tolerance adopted; resume defect fixed
+
+#### 1. The equal-level rule, as approved and implemented
+
+**Relative to the frozen anchor.** A swing joins a bucket when
+
+```
+abs(swing.price - anchor) <= LEVEL_CLUSTER_TOLERANCE * anchor
+```
+
+* ``LEVEL_CLUSTER_TOLERANCE = Decimal("0.001")`` — the existing value, 0.1%.
+* ``anchor`` is the **first** swing that created the bucket, quantised to
+  ``Decimal("0.01")``, and is **never re-averaged** as the cluster grows.
+* The band is **inclusive** at the boundary (``>`` skips, ``==`` joins).
+* Comparison is exact ``Decimal`` throughout — membership *and* the search index
+  bounds. No binary float participates in a decision.
+* **Not transitive.** Every member is tested against the anchor, never pairwise.
+  ``A~B`` and ``B~C`` do not imply ``A~C``.
+* **Order-dependent.** The anchor is the first member, so a cluster's contents
+  follow confirmation order. A direct consequence of the append-only rule and
+  accepted: a published level must not move its price.
+* The index is a **superset** filter and may never exclude an admissible bucket.
+* Recorded in ``config_fingerprint`` as ``level_cluster_tolerance`` and
+  ``level_cluster_rule="relative_to_frozen_anchor"``, so a checkpoint written
+  under one rule is refused by a build using another.
+
+**Recorded as an engineering decision, because the specification does not define
+it.** The only mention of equal highs/lows is the level-type list in Section 14;
+Section 3 demands precise mathematical definitions but supplies no tolerance. The
+rule was adopted on the meaning of the term — the previous absolute rule made
+"equal" mean "identical to the cent", since on a ~$30,000 quote `0.001` is
+1/30,000 of the price and every one of its 271 clusters over 60,000 bars had a
+member spread of exactly 0.00 — **not** on the fact that the relative rule yields
+more clusters.
+
+#### 2. Two further defects found while implementing it
+
+**(a) The rule was implemented twice, and only once.** ``extract_liquidity_levels``
+(batch) and ``StructureState._find_bucket`` (segmented) each carried their own
+copy of the membership test. Both were absolute and both in ``float``. Fixing only
+the batch path made the two disagree, and the first symptom was the
+segment-boundary clustering test failing — a segmented run stopped matching a
+continuous one. **Both now derive membership from the same rule in exact
+arithmetic.** A duplicated rule in two modules is a standing divergence risk and is
+recorded as such.
+
+**(b) The float index bounds excluded exactly-at-boundary anchors.** The
+pre-filter's lower bound is ``price / (1 + tol)``. In binary double
+``30030.0 / 1.001`` is ``30000.000000000004`` — four femto-units above the true
+boundary — so a bucket sitting exactly at the edge was excluded from the scan and
+the exact membership test never got to admit it. The bounds are now computed in
+``Decimal``. A pre-filter that is narrower than the test by a representation error
+is not a pre-filter.
+
+#### 3. Tests for the approved rule
+
+22 tests in `tests/test_equal_level_clustering.py`, all with hand-written prices
+and expectations derived from the arithmetic, never from the production
+clusterer:
+
+* boundary equality joins / one unit past splits;
+* **the band scales with the anchor** — $0.10 at $100, $30.00 at $30,000, and the
+  converse below $1 where the relative band is the *narrow* one;
+* membership measured against the frozen **quantised** anchor, not the raw pivot;
+* anchor never re-averaged;
+* **non-transitivity** (A~B, B~C, not A~C) and **order-dependence** as explicit
+  properties, each asserting the two orders differ;
+* index cannot hide an admissible bucket at four price scales ($0.01, $0.22,
+  $100, $30,000) — verified to **fail** against the pre-fix float bounds;
+* formation, opposite-side non-merging, equal-level dating to the second
+  confirmation, prefix append-only property, segment-boundary and checkpoint
+  equality, empty/short/flat input.
+
+Reverting either path to the absolute rule fails 8 of the 22.
+
+#### 4. Effect of the change on the dataset — do not mix with earlier figures
+
+BTCUSDT 5m, 2021-01-01 → 2021-04-01, 25,887 bars, 30-day segments, 247 s,
+**371 MB peak RSS**, 0 warnings, 0 errors.
+
+| | absolute (previous) | relative (current) |
+|---|---|---|
+| events | 273,901 | **267,992** |
+| levels published | 16,767 | **14,899** |
+| outcomes | 1,095,604 | **1,071,968** |
+| episodes | 1,946 | **1,946** |
+| `sweep:equal_highs` | 972 | **6,302** |
+| `sweep:equal_lows` | 768 | **7,962** |
+| `sweep:swing_high` | 3,679 | **351** |
+| `sweep:swing_low` | 4,396 | **476** |
+
+The swing-level collapse is **not** fewer swing levels: it is the documented merge
+rule (`LEVEL_SPECIFICITY` prefers equal > range/session/day > swing) doing its job.
+The same price swept by one bar is now reported once, under the *equal* label,
+because far more prices qualify as equal. **Every figure recorded under the
+absolute rule earlier in this document is superseded** and must not be compared
+with these.
+
+#### 5. Resume event-log defect — root cause, fix, and what was *not* reproduced
+
+**Root cause.** The event spill flushes every 1,000 events, which can happen
+part-way through a segment. The checkpoint is written only at a segment boundary.
+A process killed between the two leaves the file holding events from a segment the
+checkpoint does **not** yet claim. On resume the runner skips forward to the
+checkpoint's bar and **re-processes** that segment, and appending writes those
+events a second time.
+
+**Reproduced before the fix:** BTCUSDT 5m, 2021-01-01 → 2021-03-01, killed 6,000
+events into a run — the resumed log held **156,757 rows against a continuous
+run's 155,601: 1,156 duplicated events** spanning the whole re-processed segment.
+Every aggregate still matched, because duplicates fold into the same accumulators.
+Only the event log showed them.
+
+**Fix — truncate-to-offset, not append.** The checkpoint records the spill's byte
+length (`events_bytes`); a resumed run cuts the file back to it before appending.
+A byte offset rather than a line count because it also repairs a **partially
+written final line**, which a line count cannot distinguish from a complete one.
+
+Two further defects in the same code, both found by the new tests:
+
+* `events_written` **under-counted** on a resumed run: a fresh `EventSpill` counts
+  from zero, so the checkpoint described only the resumed portion — 150,757 against
+  a file holding 155,601. Now seeded from the checkpoint.
+* The **final** checkpoint recorded `events_bytes = 0`, because it is written after
+  the spill is closed. Left unfixed, any resume would truncate the run's entire
+  event log. The offset is now captured before closing.
+
+**After the fix:** the same mid-segment kill reproduces 155,601 rows against
+155,601, identity multiset **equal**, zero duplicates, and `events_written` matches
+the file.
+
+**What was NOT reproduced — stated plainly.** The originally reported symptom was
+a **loss** of 169 sweep events in `run-2021b`; the mechanism reproduced here is a
+**duplication**. Both are the same class (the spill and the checkpoint disagreeing
+about how far the run got), and the protocol now enforces agreement in both
+directions. But the specific loss in `run-2021b` could **not** be reproduced in a
+controlled experiment, so **I do not claim that specific instance is fixed**. It
+cannot be re-tested: the interruption that produced it is not recorded. The
+evidence for the class is the 1,156-duplicate reproduction, before and after.
+
+**Regression tests** (`tests/test_resume_event_log.py`, 9 tests): mid-segment kill
+vs continuous, compared as canonical records; no duplicates; **three resume
+cycles**; every-segment-boundary interruption; checkpoint count matches the file;
+recorded offset matches the file size; a **partially written final line** is
+repaired; a spill shorter than the offset is refused rather than padded; and
+downstream aggregates agree with the log.
+
+Two other test defects surfaced and were fixed:
+* `test_liquidity_differential.py`'s quadratic **oracle** was a transcription of
+  the *old absolute* rule. An oracle is a transcription of the rule, not an
+  independent opinion about which rule is right, so it was updated by hand and
+  annotated — silently letting the implementation win by rewriting the oracle's
+  expectations would have destroyed its entire purpose.
+* The same file's merge assertion checked the **spread of the members**, which
+  assumes transitivity. Under the frozen-anchor rule members may straddle the
+  anchor and span twice the band, so it now measures each member against the
+  anchor.
+
+**Honest note on test stability:** three of these failed in one full-file run and
+passed individually and on a re-run. The cause was initially unknown and I guessed
+at a shared-state interaction. It is now established: **the disk.** Each run wrote
+~110 MB of event log, `/tmp` is a 5.8 GB tmpfs, and twenty runs exhausted it, so
+`ensure_disk_space` raised `InsufficientDiskSpace` — an error about free space
+surfacing as nine resume failures. The test window is now 14 days with 3-day
+segments (~1/50 the output); the bookkeeping being tested is scale-independent.
+
+#### 6. Other output paths audited
+
+* `checkpoint.json` — atomic (temp file + `replace`). Safe.
+* `events.jsonl` — now carries a durable offset and truncates on resume. Fixed.
+* `report.json` — written **once at the end**, non-atomically. A crash mid-write
+  would leave a truncated report beside a checkpoint marked `complete`. **Not
+  fixed**: there is no evidence it has occurred, and the milestone's instruction
+  is to expand only where evidence supports. Flagged for the next milestone; the
+  fix is the same temp-file-plus-rename already used for the checkpoint.
+
+#### 7. Artifact provenance (nothing deleted)
+
+| run | interval | rows | episodes | kind | status |
+|---|---|---|---|---|---|
+| `run-2021` | 2021-01-01→2022-01-01, 104,923 bars | 731,839 | **73,257** | continuous, **pre-episode-fix code** | **historical artefact — obsolete.** Its episode figure is not comparable with anything current |
+| `run-2021c` | same | 731,839 | 7,720 | continuous, complete | the correct complete run for that window, but **also pre-relative-tolerance** |
+| `run-2021b` | same | 731,670 | 7,720 | **resumed** from bar 86,779 | checkpoint byte-identical to `run-2021c`; **log missing 169 sweeps** (GAP_REPORT G4) |
+
+**Identical checkpoints do not establish identical event logs.** `run-2021b` and
+`run-2021c` have byte-identical `checkpoint.json` and **different**
+`events.jsonl`: the checkpoint holds the accumulated *statistics*, which both runs
+computed identically, while the spill holds the *event stream*, which the resumed
+one corrupted. A checkpoint is evidence about totals, not about the log.
+
+All three predate the relative-tolerance change and are therefore **superseded**
+for any equal-level analysis. None is deleted; a deletion proposal is in the
+previous milestone and stands, with the added note that all three should be
+regenerated under the new rule before any is used again.
+
 ## Project Philosophy
 
 ### Research-First Approach
