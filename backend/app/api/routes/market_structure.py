@@ -22,6 +22,18 @@ from app.services.market_structure.analysis import analyze_market_structure
 router = APIRouter(prefix="/api/v1/structure", tags=["market-structure"])
 
 
+def _level_type(value: str) -> LiquidityLevelType:
+    """Map a service level type onto the API enum, never raising.
+
+    The service's ``LevelType`` is the source of truth and is free to grow; an
+    unknown value must not turn the whole analysis into a 500.
+    """
+    try:
+        return LiquidityLevelType(value)
+    except ValueError:
+        return LiquidityLevelType.RANGE_HIGH if value.endswith("high") else LiquidityLevelType.RANGE_LOW
+
+
 @router.get("/analyze", response_model=MarketStructureResponse)
 async def analyze(
     symbol: str = Query("BTCUSDT", pattern=r"^[A-Za-z0-9/]{6,20}$"),
@@ -73,7 +85,7 @@ async def analyze(
         liquidity_levels=[
             LiquidityLevelResponse(
                 price=str(l.price),
-                level_type=LiquidityLevelType(l.level_type),
+                level_type=_level_type(l.level_type),
                 strength=l.strength,
                 first_seen=l.first_seen,
                 last_seen=l.last_seen,

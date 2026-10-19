@@ -29,6 +29,10 @@ class LiquidityLevelType(str, Enum):
     EQUAL_LOWS = "equal_lows"
     RANGE_HIGH = "range_high"
     RANGE_LOW = "range_low"
+    SESSION_HIGH = "session_high"
+    SESSION_LOW = "session_low"
+    PREVIOUS_DAY_HIGH = "previous_day_high"
+    PREVIOUS_DAY_LOW = "previous_day_low"
 
 
 class MarketRegime(str, Enum):

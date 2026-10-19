@@ -58,7 +58,11 @@ export type LiquidityLevelType =
   | "equal_highs"
   | "equal_lows"
   | "range_high"
-  | "range_low";
+  | "range_low"
+  | "session_high"
+  | "session_low"
+  | "previous_day_high"
+  | "previous_day_low";
 
 export interface LiquidityLevel {
   price: string;
