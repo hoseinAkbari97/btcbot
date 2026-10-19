@@ -10,9 +10,7 @@ import {
 import { useEffect, useRef, useState, useCallback } from "react";
 
 import LiquidityZones from "../components/LiquidityZones";
-import SetupMarkers from "../components/SetupMarkers";
-import StructureShifts from "../components/StructureShifts";
-import SwingHighLowMarkers from "../components/SwingHighLowMarkers";
+import StructureOverlays from "../components/StructureOverlays";
 import {
   candleWebSocketUrl,
   getCandles,
@@ -59,6 +57,11 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<any>(null);
   const volumeSeriesRef = useRef<any>(null);
+  // Mirrors candleSeriesRef into state. A ref alone cannot drive rendering:
+  // assigning it during the mount effect does not re-render, so overlays that
+  // need the series would read null on the first pass and never mount until
+  // some unrelated state change happened to arrive.
+  const [candleSeries, setCandleSeries] = useState<any>(null);
   const [state, setState] = useState<"loading" | "live" | "offline">("loading");
   const [last, setLast] = useState<Candle | null>(null);
   const [structure, setStructure] = useState<MarketStructure | null>(null);
@@ -108,6 +111,11 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
       }).format(new Date(seconds * 1000));
     };
 
+    // Declared before the series are built: the effect body publishes the
+    // series into state below and needs the cleanup guard to already exist.
+    let active = true;
+    let socket: WebSocket | null = null;
+
     const chart = createChart(container.current, {
       autoSize: true,
       layout: {
@@ -151,6 +159,7 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
       borderVisible: false,
     });
     candleSeriesRef.current = candleSeries;
+    if (active) setCandleSeries(candleSeries);
 
     const volumeSeries = chart.addHistogramSeries({
       priceFormat: { type: "volume" },
@@ -161,8 +170,6 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
       scaleMargins: { top: 0.85, bottom: 0 },
     });
 
-    let active = true;
-    let socket: WebSocket | null = null;
     setState("loading");
 
     getCandles(symbol, timeframe)
@@ -195,6 +202,7 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
       chartRef.current = null;
       candleSeriesRef.current = null;
       volumeSeriesRef.current = null;
+      setCandleSeries(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, timeframe, timezone]);
@@ -203,7 +211,6 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
     setOverlays((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const candleSeries = candleSeriesRef.current;
   const regime = structure?.current_regime;
 
   return (
@@ -282,11 +289,14 @@ export function MarketChart({ symbol, timeframe, timezone }: Props) {
 
       <div className="chart-canvas" ref={container} />
       {/* Overlay components — mounted inside the chart container via refs */}
-      {candleSeries && structure && overlays.swings && (
-        <SwingHighLowMarkers candleSeries={candleSeries} swings={structure.swings} />
-      )}
-      {candleSeries && structure && overlays.structure && (
-        <StructureShifts candleSeries={candleSeries} events={structure.events} />
+      {candleSeries && structure && (
+        <StructureOverlays
+          candleSeries={candleSeries}
+          swings={structure.swings}
+          events={structure.events}
+          showSwings={overlays.swings}
+          showStructure={overlays.structure}
+        />
       )}
       {candleSeries && structure && overlays.liquidity && (
         <LiquidityZones candleSeries={candleSeries} levels={structure.liquidity_levels} enabled />

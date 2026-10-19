@@ -100,22 +100,38 @@ function makeStructureMarker(
   };
 }
 
-export function applySwingMarkers(series: LTSeries, swings: Array<{ time: number; price: number; kind: "high" | "low" }>): void {
-  if (!swings.length) {
-    series.setMarkers([]);
-    return;
-  }
-  const markers: ChartMarker[] = swings.map((s) => makeCandlestickMarker(s.time, s.price, s.kind));
-  series.setMarkers(markers);
+export function makeSwingMarker(swing: { time: number; price: number; kind: "high" | "low" }): ChartMarker {
+  return makeCandlestickMarker(swing.time, swing.price, swing.kind);
 }
 
-export function applyStructureMarkers(series: LTSeries, events: Array<{ time: number; price: number; event_type: string }>): void {
-  if (!events.length) {
-    series.setMarkers([]);
-    return;
-  }
-  const markers: ChartMarker[] = events.map((e) => makeStructureMarker(e.time, e.price, e.event_type));
-  series.setMarkers(markers);
+export function makeEventMarker(event: { time: number; price: number; event_type: string }): ChartMarker {
+  return makeStructureMarker(event.time, event.price, event.event_type);
+}
+
+/**
+ * Composes every marker layer into the SINGLE array that is handed to
+ * `setMarkers`.
+ *
+ * `setMarkers` replaces the whole marker set rather than appending, so each
+ * layer cannot own the call independently -- the last writer wins and the
+ * earlier layers vanish. Everything that draws on the series has to be merged
+ * here first and applied once.
+ *
+ * The result is sorted by time because lightweight-charts requires it, with
+ * swings ordered before events at an identical timestamp so the structural
+ * primitive stays underneath the label derived from it.
+ */
+export function composeMarkers(input: {
+  swings: Array<{ time: number; price: number; kind: "high" | "low" }>;
+  events: Array<{ time: number; price: number; event_type: string }>;
+}): ChartMarker[] {
+  const withRank = (marker: ChartMarker, rank: number) => ({ marker, rank });
+  const composed = [
+    ...input.swings.map((s) => withRank(makeSwingMarker(s), 0)),
+    ...input.events.map((e) => withRank(makeEventMarker(e), 1)),
+  ];
+  composed.sort((a, b) => a.marker.time - b.marker.time || a.rank - b.rank);
+  return composed.map((c) => c.marker);
 }
 
 // ── Liquidity zones (horizontal price lines on series) ────────────────────────

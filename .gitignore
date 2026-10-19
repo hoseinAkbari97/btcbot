@@ -9,6 +9,15 @@ __pycache__/
 htmlcov/
 node_modules/
 frontend/dist/
+# Emitted by `tsc -b` alongside the sources; regenerate with `npm run build`.
+# These were committed by accident -- vite.config.js and vite.config.d.ts are
+# compiled copies of vite.config.ts, and the .tsbuildinfo files are pure cache.
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+# NTFS alternate-data stream created when the spec was saved from a Windows
+# browser download; carries no content.
+*:Zone.Identifier
 data/raw/*
 data/processed/*
 data/parquet/*

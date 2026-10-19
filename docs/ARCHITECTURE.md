@@ -114,6 +114,25 @@ Docker Compose starts four services:
 The browser only speaks to the frontend origin. Nginx routes API and WebSocket traffic internally,
 avoiding provider details and credentials in browser code.
 
+## Chart overlays
+
+`lightweight-charts`' `series.setMarkers()` **replaces** the entire marker set; it does not
+append. Two overlays on one series therefore cannot each call it — the last effect to run
+silently erases the other, and which one that is depends on React mount order rather than
+intent. This made swing markers invisible on the chart, because the structure-event overlay
+was declared second and always won.
+
+The rule the chart layer follows:
+
+- **One component owns `setMarkers` per series.** `components/StructureOverlays.tsx` merges
+  swings and structure events via `composeMarkers()` and applies them in a single call.
+  Adding a third marker layer means adding to that composition, never a new `setMarkers` call.
+- **Price lines are a different API.** Liquidity levels use `createPriceLine`, owned by
+  `LiquidityZones`, and are unaffected by the marker rule.
+- **The series is published through state, not a ref.** Assigning `chartRef`/`candleSeriesRef`
+  during the mount effect does not re-render, so overlays reading `candleSeriesRef.current`
+  during render would see `null` on the first pass.
+
 ## Extension points
 
 - Add providers under `backend/app/services/market_data/`.
