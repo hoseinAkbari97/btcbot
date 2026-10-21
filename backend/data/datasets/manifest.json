@@ -1,6 +1,18 @@
 [
   {
     "symbol": "BTCUSDT",
+    "timeframe": "5m",
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2026-08-31T23:59:59.999000+00:00",
+    "bars": 595659,
+    "expected_bars": 595872,
+    "gap_count": 7,
+    "gap_bars_total": 213,
+    "file": "BTCUSDT-5m-20210101-20260901.json",
+    "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681"
+  },
+  {
+    "symbol": "BTCUSDT",
     "timeframe": "15m",
     "start": "2021-01-01T00:00:00+00:00",
     "end": "2026-08-31T23:59:59.999000+00:00",

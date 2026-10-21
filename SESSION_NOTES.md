@@ -1853,8 +1853,8 @@ documented decision in this repository · **[PROP]** new proposal here ·
 | Entry | **[SPEC §11]** execution at *c+1*, never at *c*'s close |
 | Stop / invalidation | **[PROP]** stop beyond the swept level; **θ/φ are themselves the invalidation rule** and are the whole experiment |
 | Target / horizon | **[SPEC §18]** +0.5R/+1R/+1.5R/+2R; horizon from `FORWARD_HORIZONS` |
-| Cancels the setup | **[DOC]** bar containing both target and stop → `ambiguous`, not a win |
-| Ambiguous OHLC | **[DOC]** handled: `ambiguous` count reported separately from losses |
+| Cancels the setup | **FROZEN** a bar containing both target and stop → **stop-loss** (user convention), flagged `ambiguous_bar` |
+| Ambiguous OHLC | **FROZEN** ties sit inside the loss count; the `ambiguous` column reports how many losses the convention decided |
 | Costs | **[SPEC §23]** normal / 1.5× / 2× / 3× sensitivity; a setup surviving only at 1× is rejected |
 | Risks | Multiple levels co-located on one bar are merged to one event **[DOC]** — good, but means *which* level fired is chosen by `LEVEL_SPECIFICITY`, a research choice that conditions the sample |
 | Unresolved | **[OPEN]** θ, φ; whether the stop is the level or an ATR multiple; whether `recovery_ratio` is measured on the pierce bar or the confirmation |
@@ -1951,6 +1951,13 @@ under rule B they would grow materially (equal-levels are 844 vs 271). So:
 
 ### Proposed first controlled experiment (PROTOCOL — NOT IMPLEMENTED)
 
+> **Status update (protocol-freeze milestone):** the *outcome contract* this
+> experiment depends on is now FROZEN and implemented — tie → loss, gap fills
+> at the open, T+1 open entry, shared resolver. See **§4b** for the frozen
+> clauses and the approvals still required. Everything below remains the
+> experiment protocol; where it still describes ties as excluded from the
+> win/loss rate, §4b supersedes it.
+
 #### Data separation
 
 Chronological, never random **[SPEC §21]**. On the available history
@@ -1982,9 +1989,13 @@ repository already has `config_fingerprint` and `dataset_sha256` for this
 
 * Entry at the open of the bar after confirmation; a signal on a bar whose close
   is the last bar of the dataset is **censored**, not assumed filled.
-* Stop/target precedence when one bar spans both: **unorderable from OHLC**, so
-  it is recorded `ambiguous` and excluded from the win/loss rate, with the count
-  reported **[DOC]**. It is never silently scored as a loss or a win.
+* Stop/target precedence when one bar spans both: **unorderable from OHLC**.
+  **FROZEN — user convention: the tie counts as a stop-loss**, in the primary
+  backtest *and* in the labeller's resolved denominator alike, with the count
+  still reported as the `ambiguous`/`unclear` diagnostic so the size of the
+  decision is always visible (one canonical resolver,
+  `backend/app/services/outcome_contract.py`; tests in
+  `backend/tests/test_outcome_contract.py`).
 * Gaps through the stop are modelled at the **open**, not the stop price —
   otherwise every gap loss is understated.
 * Costs **[SPEC §23]**: fees + spread + slippage, each reported at 1×/1.5×/2×/3×.
@@ -2108,8 +2119,9 @@ Proposed, matching Section 18's grid (+0.5R / +1R / +1.5R / +2R):
 * entry at the **open of the bar after confirmation** (Section 11's rule);
 * stop from the setup's structural point (zone far edge, swept level, swing low),
   with an ATR multiple as the alternative already implemented;
-* target defined in R, resolved on a **single pass** per bar so a bar containing
-  both target and stop is recorded `ambiguous`, never as a win;
+* target defined in R, resolved on a **single pass** per bar through the
+  shared contract: a bar containing both target and stop counts as a **loss**
+  (frozen convention) flagged `ambiguous_bar`, never as a win;
 * holding horizon from the existing `FORWARD_HORIZONS`; outcomes beyond the data
   end recorded as `truncated`, never imputed.
 
@@ -2521,16 +2533,34 @@ level. **UNSPECIFIED:** whether both sides are in scope at once, or whether the
 first run is long-only. *Recommendation: long-side lows only* — a symmetric
 two-sided run doubles the multiple-testing burden before a single result exists.
 
-**Stop.** **UNSPECIFIED.** Candidates: beyond the swept level, or an ATR multiple.
-*Recommendation: beyond the swept level, using the `swing_extreme` stop model
-already implemented in `outcomes.py`.* Note the interaction with the existing
-`max_touch_depth = 0.5` zone default, which is itself an uncalibrated default
-(`SESSION_NOTES.md:1916`).
+**Stop.** **UNSPECIFIED in the spec; PROPOSED primary stop — requires approval
+before the run.** Candidates: beyond the swept level, or an ATR multiple.
+*Recommendation: beyond the swept level, i.e. the `swing_extreme` (SWING_STOP)
+stop model already implemented in `outcomes.py`.* Rationale: it is the level
+the sweep itself defines, so the stop distance is a property of the event
+rather than of a volatility parameter; ATR_STOP remains in the grid as the
+alternative stop model for the secondary analysis and the multiple-testing
+family. Note the interaction with the existing `max_touch_depth = 0.5` zone
+default, which is itself an uncalibrated default (`SESSION_NOTES.md:1916`).
 
 **Target.** The existing `TARGET_R_GRID = (0.5, 1, 1.5, 2)`. **Fixed, not chosen**
 — the notes' rationale is that "a target grid chosen after seeing the results is a
 grid that will always contain a winner", and that reasoning applies with more
 force to the first experiment than to any later one.
+
+**Primary target (PROPOSED — requires approval before the run): +1R.**
+Stated now, before any outcome data exists, because choosing it afterwards is
+exactly the failure the grid's rationale guards against. Rationale: (a) it is
+symmetric with the −1R structural stop, so the win and the loss cost the same
+size and the win rate alone decides the sign of expectancy — no payoff
+assumption is smuggled in; (b) it is the first cell of the already-fixed grid,
+so designating it changes no measurement, only which cell carries the primary
+claim; (c) a multiple beyond 1R asserts that sweeps tend to travel more than
+their own stop distance, which is precisely what the experiment must *test*,
+not assume. The remaining cells (+0.5R/+1.5R/+2R) are **secondary/exploratory**,
+reported with the multiple-testing correction, and cannot be promoted to
+primary after the run. If the user prefers a different primary cell, that
+choice must be recorded here before any development-period outcome is read.
 
 **Invalidation.** Distinct from the stop and not yet written down: the event is
 discarded if the level is already invalid, if the sweep resolves as
@@ -2543,16 +2573,105 @@ the assumed entry price.
 are **Binance** costs; Nobitex figures are absent, so every result here is an
 upper bound. Sensitivity at 1×/1.5×/2×/3× is mandatory per spec §16.
 
-**Ambiguous bars — an unreconciled conflict.** Two conventions exist and the docs
-do not reconcile them:
-* the **backtester** scores a same-bar stop/target tie as a **stop loss**
-  (`engine.py:791-794`, deliberately conservative);
-* the **research labeller** scores it as **`ambiguous`** and excludes it from both
-  win and loss rate (`outcomes.py:76-82`).
+**Ambiguous bars — RESOLVED and FROZEN this milestone.** The conflict that
+lived at this spot (backtester: tie → stop loss; labeller: tie → excluded as
+`ambiguous`) is reconciled by the user's explicit convention, now the single
+canonical rule in `backend/app/services/outcome_contract.py`, called by both
+the labeller (`research/outcomes.py::_scan_barriers`) and the engine
+(`backtest/engine.py::_intrabar_exit`):
 
-Both are defensible for their own purpose, but a setup measured by one and traded
-by the other will not agree. **This must be chosen explicitly before the first run
-and written down.** *Recommendation: report both.*
+* a tie counts as a **stop-loss** in the primary backtest *and* in the
+  labeller's resolved denominator — the labeller may no longer drop ties from
+  its win/loss rates while the engine calls them losses;
+* `ambiguous_bar` / the `ambiguous` column survives as a **diagnostic on top
+  of the loss count**, never as a separate population;
+* the same function decides **gap fills**: a level the bar *opened* through
+  fills at that open (a stop gapped down fills worse than its trigger; a
+  target gapped up fills better), and a gap also *orders* the bar, so such a
+  bar is not ambiguous.
+
+Two further reconciliations shipped with it: the labeller's entry is now the
+**open of the bar after confirmation** (it used to be that bar's close, one
+full bar later than the engine's fill), and its stop distance is signed — a
+structural stop the entry bar gapped through is **no completed trade** in
+either component (the engine refuses it as "not protective"; the labeller
+returns no stop distance), where the old `abs()` turned it into a guaranteed
+instant loss. The labeller's R multiples remain **gross** of costs (event
+study); executable net results come from the engine applying spread, slippage
+and fees once, on top of the same raw fill references.
+
+**θ and φ — exact definitions (from code, this milestone).** The two thresholds
+gate the *rejection* reading of a sweep. Both are anchored to the **pierce bar**
+(`event_index`) — the bar whose wick took the level — and both are settled at
+the **confirmation bar's close** (`confirmation_index = event_index + 1`), which
+is exactly the instant the signal is actionable. Neither reads any bar later
+than the confirmation, so neither leaks a future price.
+
+*Source, `backend/app/services/research/events.py`, `measure_sweep` (the
+`SweepMeasures` block; the seven measured fields are attached as event features
+in `_sweep_event`, so they are first-class and available at confirmation):*
+
+| symbol | field | formula | units / range | notes |
+|---|---|---|---|---|
+| **θ** | `recovery_ratio` | `|confirmation_close − level_price| / |pierce_extreme − level_price|`, where `pierce_extreme = pierce_bar.high` for a high-side sweep and `pierce_bar.low` for a low-side sweep | dimensionless, **[0, ∞)** in principle; **≈ [0, 1]** in practice, > 1 only when the confirmation close overshoots *past* the level to the far side beyond the price the level was swept from | `None` when the excursion denominator is 0 (a zero-range pierce bar) — never a default 0 |
+| **φ** | `wick_ratio` | `wick / bar_range`, where `wick = pierce_bar.high − level_price` (high side) or `level_price − pierce_bar.low` (low side) and `bar_range = pierce_bar.high − pierce_bar.low` | dimensionless, **[0, 1]** | `None` on a zero-range bar (0/0), never a fabricated 0 |
+
+Numerator/denominator placement matters and is the source of the earlier "measured
+on the pierce bar or the confirmation" ambiguity (`SESSION_NOTES.md:1860`): θ's
+**numerator is a confirmation-bar quantity** (the close) while its **denominator
+is a pierce-bar quantity** (the excursion); φ is **entirely a pierce-bar
+property**. So a sweep can have a large φ (long wick) and a small θ (price closed
+far from the level, i.e. did not recover) — the two are not redundant with each
+other. The filed ambiguity is therefore resolved: **θ = recovery at the
+confirmation close; φ = wick fraction of the pierce bar.**
+
+**Redundancy check (required by the milestone).** `close_back`
+(`events.py:818/865`, carried as `context["close_back_through_level"]`) is a
+**boolean**, `pierce_bar.close < level_price` (high side) / `> level_price`
+(low side), and by design it is a **feature, not a filter** — a sweep that did
+not close back is still a sweep. So `close_back` is a *strict, weaker* relative
+of θ: it only asks "did the close finish on the far side of the level", whereas
+θ asks "how far back toward/through the level did it recover, relative to the
+excursion". With `θ ≥ 0`, `recovery_ratio ≥ θ` already implies the price
+recovered at least θ of the excursion — and `close_back` is implied by any
+θ that requires a close beyond the level (i.e. θ > the excursion's own
+overshoot fraction). **Implication for the proposal: θ must not be set so high
+that it collapses to `close_back`; at the mid-scale value below it does not, so
+the two are not redundant at the proposed operating point.** No other existing
+filter duplicates either threshold: `min_penetration` bounds how *far past* the
+level the wick went (a price-fraction of the level, applied before the event is
+emitted), which is orthogonal to how much of that excursion was recovered (θ) or
+how much of the bar was wick (φ).
+
+**PROPOSED FIXED PAIR — θ = 0.50, φ = 0.50 (APPROVAL REQUIRED).** Rationale is
+by **signal definition and feature scale, not performance** (no Setup 1 outcome
+has been computed, and none will be read before this is confirmed):
+
+* θ = 0.50 — "the market gave back at least half of the ground the wick took past
+  the level". It is the exact midpoint of the feature's natural [0, 1] scale, so
+  it separates *recovered* from *not recovered* without asserting a precise
+  trading band; it is symmetric in spirit with the primary target/stop being 1R
+  each. It is deliberately **not** 0 (which admits a graze, i.e. would make θ a
+  no-op) and deliberately **not** ≥ 1 (which would collapse θ into `close_back`,
+  the redundancy the milestone asks to avoid). At 0.50, θ is non-trivial and
+  non-redundant.
+* φ = 0.50 — "at least half of the pierce bar's range was the wick that took the
+  level". This is the defining shape of *rejection* (a bar dominated by the
+  excursion past the level and its return), and again the midpoint of the
+  feature's [0, 1] range: it excludes bodies that merely happened to cross a
+  level. φ = 0.50 is the value at which the bar is *more wick than body+opposite
+  wick*, which is the ordinary-language meaning of a rejection bar.
+
+Both are **mid-scale, definitional midpoints** — the only defensible fixed pair
+that can be stated *before* any return is observed without encoding a
+profitability prior. They are the values the milestone asks to freeze; the
+**grid/plateau** requirement (`SESSION_NOTES.md:2020-2037`) is satisfied by
+reporting the neighbourhood around them *after* the frozen pair is recorded, not
+by selecting the pair from that neighbourhood. **If the user prefers different
+values, they must be written here before the development period is labelled**;
+the alternative defensible reading (θ ≥ 0.5 as above but φ = 0.6/0.7 for a
+stricter rejection bar) is noted only so the choice is explicit, not so it can
+be tuned.
 
 **Chronological split** (spec §14 — never random). Proposed, mapping onto the
 actual data range 2021-01-01 → 2026-08-31, consistent with the existing proposal at
@@ -2564,6 +2683,50 @@ actual data range 2021-01-01 → 2026-08-31, consistent with the existing propos
 | validation | 2024-07-01 → 2025-06-30 | confirmatory, used once |
 | out-of-sample | 2025-07-01 → 2026-08-31 | touched once, at the end |
 
+**Split coverage and boundary handling (checked against the data this
+milestone).** The registered 5m dataset covers 2021-01-01T00:00Z →
+2026-08-31T23:55Z with seven internal 5-minute gaps (213 bars total, all in
+2021 except one in 2023-03); every proposed boundary is inside the data with
+room on both sides. Frozen rules:
+
+* **Warm-up is allowed, scoring is not.** Indicator/level state may be built
+  from bars before a split's start (a swing needs its lookback), but an event
+  whose `confirmation_index` falls before the split start is **not scored** in
+  that split.
+* **Boundary-crossing observations are excluded, not truncated.** An event is
+  assigned to a split only if its **entire evaluation window** fits inside that
+  split: `confirmation_index = event_index + 1`, entry at `+2`, and the barrier
+  horizon runs to `entry_index + 12`, so the last scorable confirmation bar of a
+  split is `split_end − 14` bars. The excluded tail events are **counted and
+  reported**, so a reader can see how many were dropped and that the count is
+  small relative to the split. Truncating instead (scoring a partial horizon)
+  would silently convert an unresolved outcome into a shorter, non-comparable
+  one — the same error the sparse `forward_return` dict exists to prevent.
+* **Episodes do not straddle a boundary either.** Because events within 12 bars
+  cluster into one episode, a cluster is assigned wholly to one split; an
+  episode near a boundary is excluded from both rather than split across them.
+* **No trades, labels, or horizons leak across splits.** Entry, stop, and the
+  barrier scan are functions only of bars at or after confirmation and at or
+  before `entry_index + 12`; a scan that would run past the split end is
+  excluded by the rule above rather than reading the next split's bars.
+* **Machinery status.** This is a **documented protocol, not yet code** (open
+  risk 3: no walk-forward/split splitter exists). The feasibility run must
+  filter the continuous segment by these rules before scoring; the filter is a
+  small, testable layer on top of the existing segmented runner.
+
+**Horizon expiry — exact semantics.** The position is live from the entry
+candle's open. Barriers are evaluated on the entry candle (`bars_to_* == 0` if a
+barrier prints there) and on each of the next `barrier_horizon = 12` candles,
+i.e. candles `entry_index … entry_index + 12` inclusive; the scan stops at
+`min(entry_index + 12, last_data_bar)`. If neither barrier printed by the close
+of candle `entry_index + 12`, the outcome is **unresolved** — expiry is *not* a
+time exit and does not price a trade; the row is censored rather than booked as
+a win or a loss. `forward_return` diagnostics use `FORWARD_HORIZONS (1/3/6/12)`
+measured from the entry open to each horizon's close, and a horizon past the end
+of the data is left absent, never zero. For an executable backtest the engine's
+`default_max_hold_bars` must be set to 12 so its time exit matches this horizon
+(the engine default is 200 and applies only to bracketed positions).
+
 **Smallest sufficient feasibility run.** The episode rule makes **episodes**, not
 events, the independent unit (events within `|a-b| ≤ 12` bars are one experiment).
 So the binding constraint on sample size is episode count, not bar count. The
@@ -2573,6 +2736,79 @@ small enough to run in minutes. Required minimum tests before any result is read
 the existing `test_lookahead_audit.py` prefix-invariance suite (Setup 1 must pass
 it), the clustering suite (the tolerance rule underpins the levels it consumes),
 and a resume test (the run must survive interruption).
+
+### 4b. Outcome protocol — FROZEN status, approvals still required
+
+Written at the protocol-freeze milestone. Code and tests exist for the
+contract; the items marked **APPROVAL** are decisions the user must confirm
+before any historical experiment reads an outcome.
+
+**Frozen and implemented** (one canonical resolver,
+`app/services/outcome_contract.py`; focused tests in
+`backend/tests/test_outcome_contract.py`, plus rewrites in
+`test_research_target_grid.py`):
+
+| clause | rule |
+|---|---|
+| stop only | loss, at the stop level |
+| target only | win, at the target level |
+| both in one bar | **loss** (user convention), flagged `ambiguous_bar` — in the backtester *and* the labeller's resolved denominator |
+| neither by the horizon | unresolved/censored, outside the denominator — never silently a loss |
+| gap through a stop | fills at the bar's **open**, worse than the trigger |
+| gap through a target | fills at the bar's **open**, better than the level; touch alone never fills |
+| entry baseline | signal at T's close → fill at **T+1 open** in both components |
+| entry bar | **evaluated** for exits once the fill has happened (both components). The fill is the bar's open, so every price after that open is post-entry; a barrier printed in the entry candle resolves the trade on it, `bars_to_* == 0`. The entry price is never read as a barrier hit because brackets are validated strictly beyond it |
+| invalid before entry | inverted/gapped-through stop ⇒ no completed trade, in either component |
+| costs | applied once, on top of the shared raw fill reference, by the engine; labeller R is explicitly gross |
+| spot scope | `is_spot_executable("short") is False`; short event studies are reported separately and never as spot performance; the engine rejects `OPEN_SHORT` by default |
+
+**APPROVALS STILL REQUIRED before the first experiment:**
+
+1. **Primary target: +1R** (proposed above, with rationale) — the grid's other
+   three cells stay secondary/exploratory.
+2. **Primary stop: SWING_STOP** (structural, beyond the swept level) —
+   ATR_STOP stays as the secondary stop model.
+3. **θ (min `recovery_ratio`) and φ (min `wick_ratio`)** — the rejection rule
+   itself. **Definitions extracted from code and PROPOSED values recorded this
+   milestone**: θ = **0.50**, φ = **0.50** (full rationale in §4, "θ and φ —
+   exact definitions" and "PROPOSED FIXED PAIR"; the former ambiguity is
+   resolved: θ is measured at the confirmation close against the pierce-bar
+   excursion, φ is the pierce bar's wick fraction). The pair must be confirmed
+   here **before the development period is labelled**, not tuned against it.
+4. **Direction: long-only first** (sweeps of low-side levels) — recommended to
+   halve the multiple-testing burden before any result exists.
+5. **Chronological splits:** development 2021-01-01 → 2024-06-30, validation
+   2024-07-01 → 2025-06-30, out-of-sample 2025-07-01 → last data bar
+   2026-08-31 (one boundary, written both as "→ 2026-09-01 exclusive" and
+   "→ 2026-08-31 inclusive" in earlier tables — same split).
+6. **Horizon:** the 12-bar barrier horizon with `FORWARD_HORIZONS` (1/3/6/12)
+   diagnostics, as already implemented.
+
+**Cost assumptions (frozen by reference, [SPEC §23]):** fee 0.1% per side,
+spread 0.02%, slippage 0.01%, latency 1 bar (Binance figures — every result is
+an upper bound); sensitivity at 1×/1.5×/2×/3× is mandatory, and a candidate
+surviving only at 1× is rejected. **Denominator (frozen):** ties are inside
+`losses`; unresolved rows are outside `n`; the `ambiguous` column is a
+diagnostic subset of losses. **Episodes, correction, metrics, rejection
+criteria:** unchanged from the protocol above (`SESSION_NOTES.md` protocol
+section: episode-level bootstrap, Benjamini–Hochberg across the whole grid,
+rejection criteria 1–7 fixed before OOS, no invented minimum sample size —
+episode counts reported with the estimates).
+
+**Known simplifications carried into the first experiment, documented not
+fixed:** (a) ~~the entry candle is not evaluated for stop/target touches in
+either component~~ — **FIXED this milestone**: both components now evaluate the
+entry candle immediately after the fill (see the contract row above; tests
+`test_the_entry_candle_is_evaluated_after_the_fill`,
+`test_an_entry_candle_deep_into_the_target_resolves_as_a_win`,
+`test_a_tie_in_the_entry_candle_is_a_flagged_loss`,
+`test_the_entry_price_itself_is_never_a_barrier_hit`); (b) the engine's MFE/MAE
+diagnostics include the entry candle while the labeller's start one bar later —
+diagnostic-only fields, no effect on outcomes; (c) checkpoints written before
+this milestone (`run-2021*`, deliberately retained) carry the old
+excludes-ties semantics and must not be resumed under the frozen protocol;
+(d) the 5m dataset is still absent from `manifest.json` (open risk 4) — a
+feasibility-run blocker to close first.
 
 ### 5. Open risks carried forward
 
@@ -2585,8 +2821,13 @@ and a resume test (the run must survive interruption).
    **not deleted here**, because this milestone's instruction was to delete no
    artifacts. Decision still open.
 3. **No walk-forward machinery exists.** The split above is a table, not code.
-4. **The 5m dataset is absent from `manifest.json`**, so it carries no recorded
-   dataset version even though `data/datasets/` holds a 256 MB copy of it.
+4. **The 5m dataset was absent from `manifest.json`** — **CLOSED this
+   milestone**: the 5m row is now registered (`bars 595659`, `expected_bars
+   595872`, `gap_count 7`, `gap_bars_total 213`, sha256
+   `20f8f50d…027681`), computed from the file itself and consistent with the
+   same seven gap events the other timeframes record. Full coverage of
+   2021-01-01 → 2026-08-31 (last bar `2026-08-31T23:55:00Z`), which confirms the
+   proposed split boundaries are inside the data.
 5. **Existing research results are all null.** "No event survives multiple-testing
    correction" (`SESSION_NOTES.md:397-401`). Setup 1 should be expected to fail;
    a null here is a valid, publishable result and must be reported as one.

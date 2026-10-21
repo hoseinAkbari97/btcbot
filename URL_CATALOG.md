@@ -1,6 +1,6 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **October 14, 2026** (added research-module pointers for equal-level clustering and
+Last reviewed: **October 21, 2026** (added research-module pointers for equal-level clustering and
 the event measurement contract; no URL routes changed)
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
@@ -1275,6 +1275,8 @@ The printed output includes a `risk_violations` list for every run, empty when n
 - Vite development proxy: `frontend/vite.config.ts`
 - Research event detection: `backend/app/services/research/events.py`
 - Research outcomes (forward returns, R-barriers): `backend/app/services/research/outcomes.py`
+- Frozen outcome contract (shared stop/target resolver — ties, gap fills, entry candle):
+  `backend/app/services/outcome_contract.py`, tests `backend/tests/test_outcome_contract.py`
 - Supply/demand zones and retests (Phase 9): `backend/app/services/research/zones.py`
 - Equal-level cluster formation and tolerance: `backend/app/services/market_structure/analysis.py`
   (`extract_liquidity_levels`), `backend/app/services/market_structure/derived_levels.py`
