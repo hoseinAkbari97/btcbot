@@ -32,6 +32,7 @@ import json
 import math
 from bisect import insort
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Iterable, Iterator
 
@@ -135,16 +136,29 @@ TARGET_R_SAMPLE_CAP = 20_000
 
 
 def _resolved_r(outcome, target) -> float | None:
-    """The realised R multiple for a target, or ``None`` if unresolved.
+    """The realised **gross** R multiple for a target, or ``None`` if unresolved.
 
-    A win is worth exactly the target multiple, and a loss exactly -1: both are
-    known the moment the barrier prints, and neither depends on where price went
-    afterwards. Reading it off the *final* forward return instead would measure
-    something else entirely -- how far the trade wandered past its target, which
-    a target-and-stop exit would never have captured.
+    Gross, not net: this is the event study. Fees, spread and slippage are the
+    executable layer and belong to the backtest engine, which applies them to
+    the same raw fill references this function reads — so labeller and engine
+    cannot disagree about *which price* filled, only about whether costs are
+    on top.
+
+    Computed from the fill reference the canonical resolver chose rather than
+    from the level, so a stop gapped through at the open is worse than -1R and
+    a target gapped through is better than +XR, instead of pretending every
+    fill landed exactly on its level. A fill on the level itself still gives
+    exactly -1 or exactly the target multiple, because the R unit *is* the
+    distance to that same stop.
     """
     if outcome.stop_distance is None or outcome.entry_price is None:
         return None
+    if target.exit_price is not None:
+        direction = Decimal(1) if outcome.side == "long" else Decimal(-1)
+        move = (target.exit_price - outcome.entry_price) * direction
+        return float(move / outcome.stop_distance)
+    # Outcomes built without the resolver's fill fall back to the convention
+    # itself: win at its multiple, loss at exactly -1.
     if target.target_before_stop is True:
         return float(target.target_r)
     if target.target_before_stop is False:
@@ -220,11 +234,14 @@ class OutcomeAccumulator:
         if outcome.r_barrier_hit is True:
             barrier_bucket["hit"] += 1
         elif outcome.r_barrier_hit is False:
+            # Missed, including the same-bar ties: the frozen primary
+            # convention resolves those as losses, so they are misses here
+            # exactly as they are losses in the per-target grid below.
             barrier_bucket["missed"] += 1
         else:
-            # Both barriers inside one bar: which printed first is unknowable
-            # from OHLC. Counted separately rather than as a miss, so the
-            # ambiguity rate is visible instead of quietly inflating "missed".
+            # No R unit, or the horizon expired before either barrier printed.
+            # Counted separately so the unanswerable rate stays visible instead
+            # of quietly landing in "missed".
             barrier_bucket["ambiguous"] += 1
 
         for label, value in (("mae", outcome.mae), ("mfe", outcome.mfe)):
@@ -266,10 +283,21 @@ class OutcomeAccumulator:
             if target.target_before_stop is True:
                 bucket["wins"] += 1
             elif target.target_before_stop is False:
+                # Losses include the same-bar ties: the frozen primary
+                # convention counts them as losses, so they belong in the
+                # resolved denominator like any other loss. The ``ambiguous``
+                # counter below still tracks them, but only as a *diagnostic
+                # on top of* this count — it is deliberately a subset of
+                # ``losses`` and never an alternative to it.
                 bucket["losses"] += 1
+                if target.ambiguous_bar:
+                    bucket["ambiguous"] += 1
             elif target.unresolved:
                 bucket["unresolved"] += 1
             else:
+                # Neither barrier printed and no horizon explains it: an
+                # outcome built outside the resolver. Kept out of the
+                # denominator rather than guessed at.
                 bucket["ambiguous"] += 1
             if target.bars_to_target is not None:
                 bucket["time_to_win"].add(float(target.bars_to_target))
@@ -401,11 +429,15 @@ class OutcomeAccumulator:
             "n": resolved,
             "wins": wins,
             "losses": losses,
+            # A *diagnostic* count of the one-bar ties, which are already inside
+            # ``losses`` under the frozen primary convention. The ``unresolved``
+            # count is genuinely outside the denominator: those events ran out
+            # of horizon, they were not trades that lost.
             "ambiguous": bucket["ambiguous"],
             "unresolved": bucket["unresolved"],
-            # Rates are over *resolved* outcomes only. Folding the ambiguous and
-            # unresolved cells into the denominator would report an inability
-            # to tell which barrier printed as a directional loss.
+            # Rates are over resolved outcomes only — wins plus losses, ties
+            # included as losses. Only the unresolved rows are excluded, because
+            # "never resolved" is not a trade result.
             "win_rate": wins / resolved if resolved else None,
             "loss_rate": losses / resolved if resolved else None,
             "average_r": bucket["r_sum"] / bucket["r_n"] if bucket["r_n"] else None,

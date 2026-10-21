@@ -12,9 +12,13 @@ Two failure modes this file exists to prevent:
   unresolved population -- +2R is reached by far fewer events than +0.5R -- so
   the win rates are not four views of one sample and must never be averaged
   together or compared without their counts.
-* **Unresolvable bars become losses.** When the target and the stop land in the
-  same bar, OHLC cannot say which printed first. Counting that as a loss
-  silently manufactures an edge that OHLC never supported.
+* **Ties are decided by convention, and the convention must stay visible.**
+  When the target and the stop land in the same bar, OHLC cannot say which
+  printed first. The frozen primary convention counts each of these as a
+  **loss** — the same answer the backtest engine gives — so they sit inside
+  the resolved denominator like any other loss. The ``ambiguous_bar``
+  diagnostic marks them, so a reader can always size how many rows the
+  convention, not the data, decided about.
 
 The fixtures here are a handful of bars each. Nothing is loaded.
 """
@@ -83,9 +87,11 @@ def swing_event_with_stop() -> ResearchEvent:
 
 ENTRY_BAR = ("100", "99", "100")
 
-#: Prepended to every forward path, because the entry is the *close* of the
-#: first bar after confirmation. Without it the entry drifts to whatever the
-#: fixture's first forward bar closed at, and every R in the grid moves with it.
+#: Prepended to every forward path, because the entry is the *open* of the
+#: first bar after confirmation — the same "signal at T, execute at T+1 open"
+#: baseline the backtest engine uses. Without it the entry drifts to whatever
+#: the fixture's first forward bar opened at, and every R in the grid moves
+#: with it.
 def path(*, forward: list[tuple[str, str, str]], short: bool = False) -> list[CandleData]:
     """Three setup bars (confirmation bar 2, close 100), the entry bar, then
     the forward path.
@@ -201,25 +207,31 @@ def test_the_stop_ending_the_scan_resolves_every_open_target_as_a_loss() -> None
         assert targets[key].bars_to_stop == 3, key
 
 
-def test_both_barriers_in_one_bar_is_ambiguous_not_a_loss() -> None:
+def test_both_barriers_in_one_bar_counts_as_a_loss_with_a_diagnostic() -> None:
     """A bar spanning the target *and* the stop: OHLC cannot order them.
 
-    This is the single most consequential case in the module. Reporting it as a
-    loss would inflate every loss rate by exactly the number of such bars --
-    which on a tight stop is not a rounding error.
+    The frozen primary convention resolves the tie as a loss — exactly what
+    the backtest engine does with the same bar — so the row lands in the
+    resolved denominator. ``ambiguous_bar`` is what keeps that honest: it lets
+    every report size how many rows the convention, not the data, decided.
     """
     outcome = label_event(
-        path(forward=[("100", "99", "100"), ("121", "85", "90")]),
+        # Opens at 95: strictly between the 90 stop and every target level
+        # (105..120), so neither the open-gap rule nor an observable order can
+        # decide this bar — only the convention can.
+        path(forward=[("100", "99", "100"), ("121", "85", "95")]),
         swing_event_with_stop(),
         side="long",
         stop_model=SWING_STOP,
     )
 
     for key, target in outcome.targets.items():
-        assert target.target_before_stop is None, key
+        assert target.target_before_stop is False, key
         assert target.unresolved is False, key
-        # It resolved -- there is an answer, just not an orderable one.
+        assert target.ambiguous_bar is True, key
+        # It resolved — as a loss, at the stop level, tie recorded on top.
         assert target.bars_to_resolve is not None, key
+        assert target.exit_price == Decimal("90"), key
 
 
 def test_the_legacy_single_barrier_field_is_unchanged_by_the_grid() -> None:
@@ -318,17 +330,26 @@ def _outcome(target: TargetOutcome, **extra) -> object:
 
 
 def test_win_and_loss_rates_use_resolved_outcomes_only() -> None:
-    """The ambiguous and unresolved rows leave the denominator.
+    """The unresolved rows leave the denominator; the ties do not.
 
-    2 wins, 1 loss, 1 ambiguous, 1 unresolved. Counting the last two would
-    report 40% instead of 2/3 -- and would do it silently, because the row
-    still looks like a complete measurement.
+    2 wins, 1 plain loss, 1 tie, 1 unresolved. The tie is a loss under the
+    frozen primary convention, so it belongs in the denominator: n is 4, not
+    3, and win/loss rates are 0.5/0.5. The ``ambiguous`` diagnostic still
+    counts the tie — but only *on top of* the loss column, never as an
+    alternative population. The unresolved row is the one genuinely outside:
+    it ran out of horizon, which is not a trade result at all.
     """
     accumulator = OutcomeAccumulator()
     accumulator.add(_outcome(TargetOutcome(Decimal("1"), True, 2, bars_to_target=2)))
     accumulator.add(_outcome(TargetOutcome(Decimal("1"), True, 3, bars_to_target=3)))
     accumulator.add(_outcome(TargetOutcome(Decimal("1"), False, 4, bars_to_stop=4)))
-    accumulator.add(_outcome(TargetOutcome(Decimal("1"), None, 5)))
+    accumulator.add(
+        _outcome(
+            TargetOutcome(
+                Decimal("1"), False, 4, bars_to_stop=4, ambiguous_bar=True
+            )
+        )
+    )
     accumulator.add(
         _outcome(
             TargetOutcome(Decimal("1"), None, None, bars_to_stop=2, unresolved=True)
@@ -338,12 +359,12 @@ def test_win_and_loss_rates_use_resolved_outcomes_only() -> None:
     stats = accumulator.target_stats("test", "structure", "long", "swing_extreme", "1")
 
     assert stats["wins"] == 2
-    assert stats["losses"] == 1
-    assert stats["ambiguous"] == 1
+    assert stats["losses"] == 2, "the tie is a loss, inside the denominator"
+    assert stats["ambiguous"] == 1, "diagnostic subset of the losses, not an extra"
     assert stats["unresolved"] == 1
-    assert stats["n"] == 3
-    assert stats["win_rate"] == pytest.approx(2 / 3)
-    assert stats["loss_rate"] == pytest.approx(1 / 3)
+    assert stats["n"] == 4, "2 wins + 2 losses (tie included); unresolved excluded"
+    assert stats["win_rate"] == pytest.approx(0.5)
+    assert stats["loss_rate"] == pytest.approx(0.5)
 
 
 def test_average_r_counts_a_win_at_its_target_and_a_loss_at_minus_one() -> None:

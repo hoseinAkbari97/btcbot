@@ -213,10 +213,13 @@ class ResearchReport:
         return "\n".join(lines)
 
 
-#: The target table's columns. ``n`` is the *resolved* count, and the
-#: ambiguous/unresolved columns are printed next to it for the same reason the
-#: denominator excludes them: a reader comparing +0.5R's win rate to +2R's has
-#: to see that they were measured on different populations.
+#: The target table's columns. ``n`` is the *resolved* count: wins plus
+#: losses, with the one-bar stop/target ties already inside the losses under
+#: the frozen primary convention. ``unclear`` is a diagnostic on top of that
+#: (a subset of the loss column, never an addition to the denominator);
+#: ``not reached`` is genuinely outside it — those events ran out of horizon.
+#: A reader comparing +0.5R's win rate to +2R's still has to see that they
+#: were measured on different populations.
 _TARGET_COLUMNS = (
     "target", "n", "win", "loss", "unclear", "not reached", "avg R",
     "median R", "bars to target", "bars to stop",
@@ -263,9 +266,10 @@ def _target_notes(targets: dict[str, dict]) -> list[str]:
     if ambiguous:
         notes.append(
             f"- 'unclear' bars held both the target and the stop: OHLC cannot say "
-            f"which printed first, so they are counted in neither the win nor the "
-            f"loss rate ({ambiguous} rows here). Treating them as losses would "
-            f"understate the setup by exactly this many events."
+            f"which printed first. The frozen primary convention counts each of "
+            f"them as a loss, so these {ambiguous} rows are already inside the "
+            f"loss column and the denominator; the column only sizes the "
+            f"population the convention — not OHLC — decided about."
         )
     if unresolved:
         notes.append(

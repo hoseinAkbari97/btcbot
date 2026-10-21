@@ -7,8 +7,14 @@ Design rules enforced here (project principles 1.4 / 11):
   future leakage is impossible rather than merely discouraged.
 * A signal produced at the close of bar *T* fills at the open of bar
   ``T + latency_bars``.  Fills never reuse the signal bar's own close.
-* Stops and targets are evaluated intrabar against the bar's high/low.
-  When a single bar touches both, the stop is assumed to fill first.
+* Stops and targets are evaluated through the canonical resolver in
+  :mod:`app.services.outcome_contract`: a single bar touching both levels is a
+  loss, and a bar that *opens* at or through a level fills at that open (a
+  stop gapped down fills worse than its trigger, a target gapped up fills
+  better). The resolver returns a raw fill reference; the cost model is
+  applied here, once, on top of it. The entry bar is evaluated too, right
+  after the fill: the position is exposed from the fill price onward, and any
+  barrier printed later in that candle closes the trade on it.
 * Cash, equity, realized and unrealized PnL are tracked explicitly.
 * Any position still open at the end of the data is liquidated at the final
   close, so reported final equity is always a realized figure.
@@ -26,6 +32,7 @@ from decimal import Decimal
 from enum import Enum
 
 from app.schemas.market_data import CandleData, Timeframe
+from app.services.outcome_contract import resolve_barriers
 
 from .costs import BacktestCosts, apply_slippage
 from .risk import RiskEngine
@@ -676,6 +683,25 @@ class BacktestEngine:
                         risk_amount=risk_amount,
                         strategy_context={"reason": order.reason},
                     )
+                    # 3b. The position exists from this candle's open, so this
+                    #     candle's own remaining range can stop it out or reach
+                    #     its target. Steps 0 and 1 ran before the position
+                    #     existed and could not see it; without this a barrier
+                    #     printed in the entry candle would be deferred to the
+                    #     next bar's exit pass, disagreeing with the labeller.
+                    #     The entry price itself can never register as a hit:
+                    #     brackets are validated strictly beyond it, so the
+                    #     resolver's open-through rules cannot fire here.
+                    position.observe(candle)
+                    closed = self._intrabar_exit(candle, position)
+                    if closed is not None:
+                        reason, price = closed
+                        cash, trade = self._settle(
+                            cash, position, price, candle.close_time, index, reason, trade_id
+                        )
+                        trades.append(trade)
+                        trade_id += 1
+                        position = None
 
             # 4. Mark to market on this bar's close.
             unrealized = position.unrealized(candle.close) if position else ZERO
@@ -779,28 +805,23 @@ class BacktestEngine:
     def _intrabar_exit(
         self, candle: CandleData, position: OpenPosition
     ) -> tuple[str, Decimal] | None:
-        """Return ``(reason, price)`` if the position closes on this bar."""
+        """Return ``(reason, price)`` if the position closes on this bar.
+
+        The decision — which barrier printed, and the raw fill reference —
+        comes from :func:`app.services.outcome_contract.resolve_barriers`,
+        shared with the research labeller, so the tie-break and the gap rules
+        exist in exactly one place. This method only applies the cost model to
+        the reference the resolver chose.
+        """
         side = "sell" if position.side == "long" else "buy"
-
-        if position.stop_price is not None:
-            stop_hit = (
-                candle.low <= position.stop_price
-                if position.side == "long"
-                else candle.high >= position.stop_price
-            )
-            if stop_hit:
-                # Conservative tie-break: if both levels fall inside one bar we
-                # assume the stop filled first, because we cannot know the order.
-                return "stop_loss", apply_slippage(position.stop_price, side, self.costs)
-
-        if position.target_price is not None:
-            target_hit = (
-                candle.high >= position.target_price
-                if position.side == "long"
-                else candle.low <= position.target_price
-            )
-            if target_hit:
-                return "take_profit", apply_slippage(position.target_price, side, self.costs)
+        fill = resolve_barriers(
+            candle,
+            side=position.side,
+            stop_price=position.stop_price,
+            target_price=position.target_price,
+        )
+        if fill is not None:
+            return fill.reason, apply_slippage(fill.fill_price, side, self.costs)
 
         if self._has_time_limit(position) and candle.open_time - position.entry_time >= timedelta(
             seconds=position.max_hold_bars * self.timeframe.seconds

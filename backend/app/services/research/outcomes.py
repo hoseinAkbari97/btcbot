@@ -37,6 +37,17 @@ across a whole event log that inflates every result it touches.
 The cost of that honesty is recorded, not hidden: ``confirmation_delay_bars``
 is a column in the output, so a reader can see how much of the sample sits at
 the edge of the data and how many events have truncated forward windows.
+
+The outcome contract is shared, not re-implemented
+----------------------------------------------------
+Barrier resolution — stop-only, target-only, both-in-one-candle, gap fills —
+is delegated to :mod:`app.services.outcome_contract`, the exact function the
+backtest engine calls on its own bars. The frozen convention is that a candle
+containing both barriers is a **loss** (flagged ``ambiguous_bar`` so the
+decision stays visible), and that this module's R multiples are **gross** of
+costs: they are an event study. Executable, net results come from the
+backtest engine, which applies spread, slippage and fees on top of the same
+raw fill references.
 """
 
 from __future__ import annotations
@@ -46,6 +57,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 from app.schemas.market_data import CandleData
+from app.services.outcome_contract import TAKE_PROFIT, resolve_barriers
 from app.services.research.events import ResearchEvent
 
 #: Forward horizons, in bars. One, three, six and twelve span from "the next
@@ -75,26 +87,42 @@ def _grid_key(r: Decimal) -> str:
 class TargetOutcome:
     """Did ``+XR`` print before the stop, and how long did each take?
 
-    Three-valued ``target_before_stop``, not a bool, for the same reason
-    ``r_barrier_hit`` is: ``None`` means the two barriers landed inside the same
-    bar and OHLC cannot say which printed first. Collapsing that into ``False``
-    would quietly inflate every loss rate in the report by the size of the
-    ambiguity, which is exactly the population a real trader would have had to
-    guess about.
+    ``target_before_stop`` is three-valued, and its values changed meaning once
+    the outcome contract was frozen (see
+    :mod:`app.services.outcome_contract`):
+
+    ``True``    the target filled first; ``False`` the stop did.
+    ``False``   **also** covers bars where both barriers sat inside one candle:
+                the frozen primary convention counts those ties as losses, so
+                they belong in the resolved denominator exactly like any other
+                loss. ``ambiguous_bar`` records that the convention — not OHLC —
+                decided this one, so the population it decided about is always
+                visible and can be reported next to the rates.
+    ``None``    neither barrier printed within the horizon (see ``unresolved``).
     """
 
     #: The target multiple this describes, e.g. ``Decimal("1.5")``.
     target_r: Decimal
-    #: True if +XR printed first, False if the stop printed first, None if both
-    #: landed in the same bar or neither was reached within the horizon.
+    #: True if +XR printed first, False if the stop did (including same-bar
+    #: ties), None if neither printed within the horizon.
     target_before_stop: bool | None
     #: Bars from entry to whichever barrier printed, or ``None`` when neither did.
+    #: ``0`` means the entry candle itself resolved it: the fill is that candle's
+    #: open, so the barrier printed within the same five minutes.
     bars_to_resolve: int | None
     bars_to_target: int | None = None
     bars_to_stop: int | None = None
     #: True when the scan ran out of data before either barrier printed, which
     #: is different from "neither printed within the horizon".
     unresolved: bool = False
+    #: Diagnostic: stop and target were both inside one candle and OHLC could
+    #: not order them. The outcome is still resolved — as a loss — and this
+    #: flag exists so that decision stays visible in every report.
+    ambiguous_bar: bool = False
+    #: The raw fill reference (before spread/slippage) the canonical resolver
+    #: used: the level itself, or the candle's open for a gap fill. ``None``
+    #: when the outcome is unresolved.
+    exit_price: Decimal | None = None
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -104,6 +132,8 @@ class TargetOutcome:
             "bars_to_target": self.bars_to_target,
             "bars_to_stop": self.bars_to_stop,
             "unresolved": self.unresolved,
+            "ambiguous_bar": self.ambiguous_bar,
+            "exit_price": None if self.exit_price is None else str(self.exit_price),
         }
 
 #: The bar an outcome is measured from: the bar *after* confirmation, since the
@@ -290,6 +320,21 @@ def _scan_barriers(
     Targets are resolved independently, which is what makes a grid possible:
     +1R can print before the stop and +2R can fail to print at all, and the
     second fact is not an error, it is the whole question the grid asks.
+
+    Every per-bar decision is delegated to
+    :func:`app.services.outcome_contract.resolve_barriers`, the same function
+    the backtest engine calls: same tie-break (a one-bar tie is a loss, flagged
+    ``ambiguous_bar``), same gap fills (a stop gapped through resolves at the
+    open, so the loss can be worse than -1R).
+
+    The scan starts *at* the entry candle, not after it: the fill happens at
+    that candle's open, so every price after the open is post-entry and a
+    barrier printed there exits the trade. The open itself cannot be mistaken
+    for a barrier hit, because brackets are validated strictly beyond the
+    entry price (``_stop_for`` returns no stop at or past entry), which keeps
+    the resolver's open-through rules from firing on this candle. A barrier
+    printed on the entry candle reports ``bars_to_*`` of 0 — resolved in the
+    same five minutes the position was opened.
     """
     if stop_distance <= 0 or not target_rs:
         return {}
@@ -302,41 +347,43 @@ def _scan_barriers(
         (key, entry_price + direction * multiple * stop_distance)
         for key, multiple in prices.items()
     ]
-    is_long = direction > 0
+    side = "long" if direction > 0 else "short"
     stop_seen_at: int | None = None
 
-    for index in range(entry_index + 1, last_barrier + 1):
+    # The entry candle is part of the scan: the position existed from its open,
+    # so a barrier printed later in that same candle exits the trade. See the
+    # docstring for why the open itself can never count as a hit.
+    for index in range(entry_index, last_barrier + 1):
         candle = candles[index]
-        stop_now = candle.low <= stop_price if is_long else candle.high >= stop_price
-        if stop_now and stop_seen_at is None:
+        if stop_seen_at is None and resolve_barriers(
+            candle, side=side, stop_price=stop_price, target_price=None
+        ) is not None:
             stop_seen_at = index - entry_index
         if not pending:
             break
         still: list[tuple[str, Decimal]] = []
         for key, price in pending:
-            reached = candle.high >= price if is_long else candle.low <= price
-            if reached:
-                # Both barriers in one bar: unresolvable, and recorded as such
-                # rather than resolved in either direction.
-                resolved[key] = TargetOutcome(
-                    target_r=prices[key],
-                    target_before_stop=None if stop_now else True,
-                    bars_to_resolve=index - entry_index,
-                    bars_to_target=index - entry_index,
-                    bars_to_stop=stop_seen_at if stop_now else None,
-                )
-            elif stop_now:
-                resolved[key] = TargetOutcome(
-                    target_r=prices[key],
-                    target_before_stop=False,
-                    bars_to_resolve=stop_seen_at,
-                    bars_to_stop=stop_seen_at,
-                )
-            else:
-                # Only still-open while the stop has not printed. Once it has,
-                # this target can no longer win, and leaving it open would turn
-                # a settled loss into a permanently-unresolved row.
+            fill = resolve_barriers(
+                candle, side=side, stop_price=stop_price, target_price=price
+            )
+            if fill is None:
+                # Only still-open while neither barrier has printed. Once the
+                # stop has, this target can no longer win, and leaving it open
+                # would turn a settled loss into a permanently-unresolved row.
                 still.append((key, price))
+                continue
+            won = fill.reason == TAKE_PROFIT
+            resolved[key] = TargetOutcome(
+                target_r=prices[key],
+                target_before_stop=won,
+                # A win resolves on this bar; a loss resolves when the stop
+                # printed (this bar, for a tie or a gap — stop_seen_at above).
+                bars_to_resolve=index - entry_index if won else stop_seen_at,
+                bars_to_target=index - entry_index if won else None,
+                bars_to_stop=stop_seen_at if not won else None,
+                ambiguous_bar=fill.ambiguous_bar,
+                exit_price=fill.fill_price,
+            )
         pending = still
 
     for key, _price in pending:
@@ -362,7 +409,6 @@ def _stop_for(
         stop = _structural_stop(candles, event, side)
         if stop is None:
             return None
-        distance = abs(entry_price - stop)
     elif model.kind == "atr":
         # ATR at the *entry* bar and earlier, never later: the volatility a
         # trader could see when sizing is the volatility behind them.
@@ -376,8 +422,13 @@ def _stop_for(
         stop = entry_price - distance if side == "long" else entry_price + distance
     else:
         raise ValueError(f"unknown stop model kind: {model.kind!r}")
-    # A zero-distance stop would divide by zero in every R calculation below, and
-    # it means the entry is already at the stop, so there is no trade to size.
+    # Signed distance from the *filled entry price*, not an absolute one: a
+    # structural stop the entry bar gapped through is a stop already at or past
+    # the fill, which the backtest engine refuses as "not protective" — no
+    # completed trade. Abs() here would turn exactly that signal into a
+    # guaranteed instant loss, so it returns None instead: unmeasurable, not
+    # measured-as-a-loss.
+    distance = entry_price - stop if side == "long" else stop - entry_price
     if distance <= 0:
         return None
     return stop, distance
@@ -404,13 +455,14 @@ def label_event(
         raise ValueError(f"side must be 'long' or 'short', got {side!r}")
     direction = Decimal(1) if side == "long" else Decimal(-1)
 
-    # The earliest bar anyone could transact on. Entering at the confirmation
-    # bar's close is a *limit* of what is achievable — it assumes an order
-    # placed the instant that close prints, with no latency. Adding a bar is a
-    # cost, not a refinement; the honest default is the optimistic one and the
-    # assumption is stated here.
+    # The entry baseline the frozen protocol fixes: the signal is confirmed at
+    # this bar's close, and the fill is the *open* of the next bar — the same
+    # "signal at T, execute at T+1 open" the backtest engine uses, so a labeller
+    # win rate and an engine win rate are measured from the same price. (This
+    # used to be the next bar's close, a full bar later than the engine's fill,
+    # which made the two components disagree on every scenario they shared.)
     entry_index = min(event.confirmation_index + ENTRY_OFFSET, _data_end(candles) - 1)
-    entry_price = _close(candles, entry_index)
+    entry_price = _open(candles, entry_index)
 
     stop = _stop_for(candles, event, side, entry_price, stop_model)
     stop_price = stop[0] if stop else None
@@ -527,6 +579,10 @@ def label_events(
 
 def _close(candles: Sequence[CandleData], index: int) -> Decimal:
     return candles[index].close
+
+
+def _open(candles: Sequence[CandleData], index: int) -> Decimal:
+    return candles[index].open
 
 
 def _data_end(candles: Sequence[CandleData]) -> int:
