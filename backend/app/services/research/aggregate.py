@@ -498,6 +498,48 @@ class OutcomeAccumulator:
         }
 
 
+def restore_outcome_accumulator(
+    accumulator: OutcomeAccumulator, payload: dict
+) -> None:
+    """Restore a checkpointed :class:`OutcomeAccumulator` in place.
+
+    Shared by the aggregate runner and the Setup 1 evaluator so a resumed run
+    cannot report only the segments after its checkpoint.  The R sample behind a
+    median is deliberately not serialised; such buckets report no median and are
+    marked ``median_unrecoverable`` rather than presenting their post-checkpoint
+    tail as the whole run.
+    """
+    for cell in payload.get("cells", []):
+        key = OutcomeKey(
+            cell["detector"], cell["kind"], cell["side"], cell["stop_model"]
+        )
+        name = key.as_str()
+        accumulator._keys.setdefault(name, key)
+        for horizon, moment in cell.get("horizons", {}).items():
+            accumulator._moments[(name, int(horizon))] = Moment.from_dict(moment)
+        for label, moment in cell.get("excursions", {}).items():
+            accumulator._excursions[(label, name)] = Moment.from_dict(moment)
+        if cell.get("barriers"):
+            accumulator._barriers[name] = dict(cell["barriers"])
+        for target_r, stats in cell.get("targets", {}).items():
+            resolved = int(stats.get("wins", 0)) + int(stats.get("losses", 0))
+            accumulator._targets.setdefault(name, {})[target_r] = {
+                "wins": int(stats.get("wins", 0)),
+                "losses": int(stats.get("losses", 0)),
+                "ambiguous": int(stats.get("ambiguous", 0)),
+                "unresolved": int(stats.get("unresolved", 0)),
+                "time_to_win": Moment.from_dict(stats.get("time_to_target", {})),
+                "time_to_loss": Moment.from_dict(stats.get("time_to_stop", {})),
+                "r_sum": float(stats.get("average_r") or 0.0) * resolved,
+                "r_n": resolved,
+                "_sorted_r": [],
+                "median_unrecoverable": True,
+            }
+    accumulator.total = int(payload.get("total_outcomes", 0))
+    accumulator._truncated = int(payload.get("truncated_outcomes", 0))
+    accumulator.restored = True
+
+
 # ---------------------------------------------------------------------------
 # Baseline accumulation
 # ---------------------------------------------------------------------------

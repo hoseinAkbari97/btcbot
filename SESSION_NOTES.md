@@ -2709,23 +2709,27 @@ room on both sides. Frozen rules:
   barrier scan are functions only of bars at or after confirmation and at or
   before `entry_index + 12`; a scan that would run past the split end is
   excluded by the rule above rather than reading the next split's bars.
-* **Machinery status.** This is a **documented protocol, not yet code** (open
-  risk 3: no walk-forward/split splitter exists). The feasibility run must
-  filter the continuous segment by these rules before scoring; the filter is a
-  small, testable layer on top of the existing segmented runner.
+* **Machinery status.** **CLOSED this milestone.** The frozen split table and
+  half-open boundary rules are implemented in
+  `backend/app/services/research/split_filter.py`; Setup 1 eligibility,
+  gap handling, stop validity and scoring are integrated into the segmented
+  runner through `backend/app/services/research/setup1.py`. See
+  `docs/SETUP1_INTEGRATION.md`. The parameters are still proposed and are not
+  approved for a scored development run.
 
-**Horizon expiry — exact semantics.** The position is live from the entry
-candle's open. Barriers are evaluated on the entry candle (`bars_to_* == 0` if a
-barrier prints there) and on each of the next `barrier_horizon = 12` candles,
-i.e. candles `entry_index … entry_index + 12` inclusive; the scan stops at
-`min(entry_index + 12, last_data_bar)`. If neither barrier printed by the close
-of candle `entry_index + 12`, the outcome is **unresolved** — expiry is *not* a
+**Horizon expiry — exact semantics (corrected this milestone).** The position
+is live from the entry candle's open. `barrier_horizon = 12` counts **evaluated
+candles total, including the entry candle**, i.e. candles
+`entry_index … entry_index + 11` inclusive; the scan stops at
+`min(entry_index + 11, last_data_bar)`. If neither barrier printed by the close
+of candle `entry_index + 11`, the outcome is **unresolved** — expiry is *not* a
 time exit and does not price a trade; the row is censored rather than booked as
 a win or a loss. `forward_return` diagnostics use `FORWARD_HORIZONS (1/3/6/12)`
 measured from the entry open to each horizon's close, and a horizon past the end
-of the data is left absent, never zero. For an executable backtest the engine's
-`default_max_hold_bars` must be set to 12 so its time exit matches this horizon
-(the engine default is 200 and applies only to bracketed positions).
+of the data is left absent, never zero. The engine's
+`default_max_hold_bars` is now **12**, matching this 12-evaluated-candle
+horizon. The metrics fixture that needs a longer hold passes 200 explicitly
+because it tests aggregation, not the horizon default.
 
 **Smallest sufficient feasibility run.** The episode rule makes **episodes**, not
 events, the independent unit (events within `|a-b| ≤ 12` bars are one experiment).
@@ -2806,9 +2810,9 @@ entry candle immediately after the fill (see the contract row above; tests
 diagnostics include the entry candle while the labeller's start one bar later —
 diagnostic-only fields, no effect on outcomes; (c) checkpoints written before
 this milestone (`run-2021*`, deliberately retained) carry the old
-excludes-ties semantics and must not be resumed under the frozen protocol;
-(d) the 5m dataset is still absent from `manifest.json` (open risk 4) — a
-feasibility-run blocker to close first.
+excludes-ties semantics; `ENGINE_VERSION` is now 4 and they are refused rather
+than resumed; (d) the 5m dataset is registered in `manifest.json` (open risk 4
+closed) — no longer a feasibility-run blocker.
 
 ### 5. Open risks carried forward
 
@@ -2820,7 +2824,11 @@ feasibility-run blocker to close first.
    milestone proposed deleting `run-2021b`/`run-2021c` (~640 MB, regenerable);
    **not deleted here**, because this milestone's instruction was to delete no
    artifacts. Decision still open.
-3. **No walk-forward machinery exists.** The split above is a table, not code.
+3. **Chronological split machinery — CLOSED this milestone.** The frozen
+   half-open split table and Setup 1 filtering/scoring are now code
+   (`split_filter.py`, `setup1.py`) and are integrated into
+   `SegmentedResearchRunner`. Full walk-forward optimisation is still not
+   implemented, and is not part of this milestone.
 4. **The 5m dataset was absent from `manifest.json`** — **CLOSED this
    milestone**: the 5m row is now registered (`bars 595659`, `expected_bars
    595872`, `gap_count 7`, `gap_bars_total 213`, sha256
@@ -2831,6 +2839,59 @@ feasibility-run blocker to close first.
 5. **Existing research results are all null.** "No event survives multiple-testing
    correction" (`SESSION_NOTES.md:397-401`). Setup 1 should be expected to fail;
    a null here is a valid, publishable result and must be reported as one.
+
+### 6. Setup 1 split/gap integration — implementation record (2026-10-25)
+
+This milestone closed the integration gap between the frozen Setup 1 protocol
+and the research runner. It did **not** produce or publish a scored
+development-period Setup 1 result; the proposed parameters are still pending
+user approval. Full protocol details are in `docs/SETUP1_INTEGRATION.md`.
+
+**What changed**
+
+- `split_filter.py` now uses half-open UTC intervals with the frozen
+  development end `2024-07-01T00:00:00Z` (exclusive), matching the protocol.
+- New `setup1.py` is the actual Setup 1 scoring path. It applies long-only,
+  `theta=0.50`, `phi=0.50`, `SWING_STOP` validity, the 12-evaluated-candle
+  window, split warm-up/boundary rules and gap rules to the observations that
+  are actually labelled. Raw detections, threshold candidates, eligible
+  signals, executable entries and scored observations are separate counters.
+- `SegmentedResearchRunner` accepts an opt-in `Setup1Config` and carries the
+  evaluator's counts, gap index, episode state and outcome accumulator through
+  checkpoints. `ENGINE_VERSION` was bumped to 4 and the Setup 1 configuration
+  is in the config hash.
+- The CLI exposes the path as `--setup1` (with `--setup1-split`), disabled by
+  default and labelled PROPOSED / APPROVAL REQUIRED.
+- The engine's `default_max_hold_bars` changed from 200 to 12, matching the
+  12-evaluated-candle horizon. The one metrics fixture that deliberately keeps
+  a position open to the end of the data now passes 200 explicitly.
+- Gap handling is timestamp-based and never inserts candles. A gap in entry
+  formation is `gap_before_entry_excluded`; a gap inside the forward window is
+  `gap_in_window_excluded`; both are reported separately from split-boundary
+  exclusions.
+
+**Tests**
+
+- Focused: `test_split_filter.py`, `test_setup1.py`,
+  `test_setup1_runner.py`, plus the existing outcome/segment/checkpoint/resume
+  suites. Continuous and segmented Setup 1 summaries are equal on a synthetic
+  dataset; an interrupted run resumes to the same counts/episodes/target
+  tallies; a changed theta is refused by the checkpoint fingerprint.
+- Full suite: **610 passed, 0 failed**, 22:47 wall (1367 s user / 6 s system),
+  **983,224 KB (~0.94 GiB) peak RSS**, exit status 0 (`/usr/bin/time -v`).
+  No scored Q1/development result was read or published.
+
+**Artifacts**
+
+No generated research output, event spill, report or checkpoint was committed.
+Historical `backend/data/research/run-2021*` artifacts were left untouched.
+
+**Approval still required**
+
+The user must approve or reject `theta=0.50`, `phi=0.50`, `+1R`,
+`SWING_STOP`, long-only and the frozen split before the development-period
+Setup 1 run may be executed and read. Until then the smallest next step is that
+approval decision, not another run.
 
 ## Project Philosophy
 

@@ -636,7 +636,81 @@ def test_short_labelling_is_not_spot_execution_eligibility() -> None:
     assert is_spot_executable("short") is False
 
 
-def test_a_stop_already_passed_at_entry_completes_no_trade() -> None:
+def test_twelve_evaluated_candles_including_the_entry_candle() -> None:
+    """Horizon = 12 evaluated candles total, counting the entry candle.
+
+    The 12th evaluated candle is entry_index + 11 relative to entry; a barrier
+    that prints there resolves the trade. A barrier on the 13th candle
+    (entry_index + 12) must not be evaluated.
+    """
+    # Flat candles through the horizon tail
+    candles = bars(
+        *LONG_HEAD,
+        ("100", "101", "99", "100"),   # eval candle 1 (entry)
+        ("100", "101", "99", "100"),   # 2
+        ("100", "101", "99", "100"),   # 3
+        ("100", "101", "99", "100"),   # 4
+        ("100", "101", "99", "100"),   # 5
+        ("100", "101", "99", "100"),   # 6
+        ("100", "101", "99", "100"),   # 7
+        ("100", "101", "99", "100"),   # 8
+        ("100", "101", "99", "100"),   # 9
+        ("100", "101", "99", "100"),   # 10
+        ("100", "101", "99", "100"),   # 11
+        ("100", "110", "99", "105"),   # 12th evaluated candle: hits target
+        ("100", "101", "99", "100"),   # 13th: would hit but must not be evaluated
+    )
+    outcome = label_event(
+        candles, event_at_confirmation(candles), side="long", stop_model=SWING_STOP
+    )
+    target = outcome.targets["1"]
+    assert target.target_before_stop is True
+    assert target.bars_to_target == 11, "resolved on the 12th evaluated candle"
+    assert target.exit_price == Decimal("110")
+
+    run = run_engine(
+        candles,
+        Signal(kind=OPEN_LONG, stop_price=Decimal("90"), target_price=Decimal("110")),
+    )
+    assert len(run.trades) == 1
+    assert run.trades[0].exit_reason == TAKE_PROFIT
+    assert run.trades[0].exit_price == Decimal("110")
+
+
+def test_horizon_expiry_after_the_twelfth_evaluated_candle_is_unresolved() -> None:
+    """No barrier by close of the 12th evaluated candle => unresolved/censored."""
+    tail = [("100", "101", "99", "100")] * 15
+    candles = long_path(*tail)
+    outcome = label_event(
+        candles, event_at_confirmation(candles), side="long", stop_model=SWING_STOP
+    )
+    for key, target in outcome.targets.items():
+        assert target.unresolved is True, key
+        assert target.target_before_stop is None, key
+
+    # Also prove the 13th candle is not evaluated by putting a target hit there
+    # but not earlier; with correct counting it must be unresolved.
+    candles2 = bars(
+        *LONG_HEAD,
+        ("100", "101", "99", "100"),   # 1
+        ("100", "101", "99", "100"),   # 2
+        ("100", "101", "99", "100"),   # 3
+        ("100", "101", "99", "100"),   # 4
+        ("100", "101", "99", "100"),   # 5
+        ("100", "101", "99", "100"),   # 6
+        ("100", "101", "99", "100"),   # 7
+        ("100", "101", "99", "100"),   # 8
+        ("100", "101", "99", "100"),   # 9
+        ("100", "101", "99", "100"),   # 10
+        ("100", "101", "99", "100"),   # 11
+        ("100", "101", "99", "100"),   # 12th: flat, no barrier
+        ("100", "110", "99", "105"),   # 13th: would hit but beyond horizon
+    )
+    outcome2 = label_event(
+        candles2, event_at_confirmation(candles2), side="long", stop_model=SWING_STOP
+    )
+    assert outcome2.targets["1"].unresolved is True
+    assert outcome2.targets["1"].target_before_stop is None
     """Signal invalid before entry: neither component reports a result.
 
     The confirmation low is 90, but the entry candle gapped to 85 — a stop

@@ -506,7 +506,10 @@ def label_event(
     bars_to_barrier: int | None = None
     targets: dict[str, TargetOutcome] = {}
     if stop_distance is not None:
-        last_barrier = min(entry_index + barrier_horizon, _data_end(candles) - 1)
+        # ``barrier_horizon`` counts evaluated candles total, including the entry
+        # candle. The entry candle is scanned (index 0 relative to entry); the
+        # twelfth and final candle is ``entry_index + barrier_horizon - 1``.
+        last_barrier = min(entry_index + barrier_horizon - 1, _data_end(candles) - 1)
         targets = _scan_barriers(
             candles,
             entry_index=entry_index,

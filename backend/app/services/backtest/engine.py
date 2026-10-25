@@ -402,7 +402,7 @@ class BacktestEngine:
         default_risk_fraction: Decimal = Decimal("0.01"),
         default_stop_fraction: Decimal = Decimal("0.01"),
         default_target_fraction: Decimal = Decimal("0.02"),
-        default_max_hold_bars: int = 200,
+        default_max_hold_bars: int = 12,
         risk: RiskEngine | None = None,
         mode: RunMode = RunMode.RESEARCH,
         strategy_version: str = "1",

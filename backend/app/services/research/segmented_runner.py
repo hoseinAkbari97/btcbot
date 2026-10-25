@@ -97,6 +97,7 @@ from app.services.research.aggregate import (
     OutcomeAccumulator,
     adaptive_resamples,
     label_events_streaming,
+    restore_outcome_accumulator,
 )
 from app.services.research.events import (
     ResearchEvent,
@@ -110,6 +111,7 @@ from app.services.research.outcomes import (
     FORWARD_HORIZONS,
     OffsetCandles,
 )
+from app.services.research.setup1 import Setup1Config, Setup1Evaluator
 from app.services.research.streaming import dataset_timeframe, stream_candles
 from app.services.research.zones import ZoneCarried, detect_zones
 
@@ -210,7 +212,7 @@ EXIT_RESUMABLE = 75
 #: Bumped when the meaning of a research event or outcome changes. A checkpoint
 #: written by a different engine version describes a different analysis, and
 #: merging the two produces a report that is confidently wrong.
-ENGINE_VERSION = 3
+ENGINE_VERSION = 4
 
 
 class CheckpointMismatch(RuntimeError):
@@ -298,6 +300,12 @@ class Checkpoint:
     #: complete one. Declared last so every preceding field stays required.
     events_bytes: int = 0
 
+    #: Setup 1 evaluator state, when that research path is enabled. Carried so
+    #: an interrupted Setup 1 run resumes with the same eligible observations,
+    #: exclusions, gap index and episodes rather than only the post-checkpoint
+    #: tail. Empty for aggregate-only runs.
+    setup1: dict = field(default_factory=dict)
+
     def to_payload(self) -> dict:
         return {
             "dataset_sha256": self.dataset_sha256,
@@ -319,6 +327,7 @@ class Checkpoint:
             "events_bytes": self.events_bytes,
             "segments_done": self.segments_done,
             "episode_starts": list(self.episode_starts),
+            "setup1": self.setup1,
             "complete": self.complete,
         }
 
@@ -401,6 +410,9 @@ class RunReport:
     #: includes allocations the guard's own sampling might miss between
     #: checkpoints.
     peak_process_gb: float | None = None
+    #: Setup 1 counts, gaps, episodes and outcome accumulator, when enabled.
+    #: ``None`` means the aggregate-only path was run.
+    setup1: dict | None = None
 
     def as_dict(self) -> dict:
         return {
@@ -438,6 +450,7 @@ class RunReport:
             "seconds": round(self.seconds, 2),
             "resources": self.resources,
             "peak_process_gb": self.peak_process_gb,
+            "setup1": self.setup1,
         }
 
 
@@ -459,6 +472,7 @@ class SegmentedResearchRunner:
         start: datetime | None = None,
         end: datetime | None = None,
         lookback: int | None = None,
+        setup1: Setup1Config | None = None,
     ) -> None:
         self.dataset = Path(dataset)
         self.symbol = symbol
@@ -467,6 +481,8 @@ class SegmentedResearchRunner:
         self.start = start
         self.end = end
         self.lookback = lookback
+        self.setup1_config = setup1
+        self._setup1: Setup1Evaluator | None = None
 
         if not self.dataset.exists():
             raise FileNotFoundError(self.dataset)
@@ -582,6 +598,15 @@ class SegmentedResearchRunner:
             min_penetration="0",
             stop_models=["atr_mult_1.5", "atr_mult_2.5"],
             horizons=[1, 3, 6, 12],
+            # The Setup 1 research path is separate from the aggregate study.
+            # Its signal definition, split, stop and target are part of what
+            # makes a checkpoint resumable: changing theta or the split is a
+            # different analysis, not a continuation.
+            setup1=(
+                self.setup1_config.as_fingerprint()
+                if self.setup1_config is not None
+                else None
+            ),
         )
 
     # -- checkpointing ----------------------------------------------------
@@ -637,6 +662,9 @@ class SegmentedResearchRunner:
             ),
             segments_done=self._segments_done,
             episode_starts=self._episode_starts,
+            setup1=(
+                self._setup1.to_payload() if self._setup1 is not None else {}
+            ),
             complete=complete,
         )
         temporary = self.checkpoint_path.with_suffix(".json.tmp")
@@ -697,6 +725,17 @@ class SegmentedResearchRunner:
         self._segments_done = checkpoint.segments_done
         self._restore_accumulators(checkpoint)
         self._restore_episodes(checkpoint)
+        if self.setup1_config is not None:
+            if not checkpoint.setup1:
+                raise CheckpointMismatch(
+                    "checkpoint has no Setup 1 state but this run enables it"
+                )
+            try:
+                self._setup1 = Setup1Evaluator.from_payload(
+                    self.setup1_config, self.timeframe, checkpoint.setup1
+                )
+            except ValueError as exc:
+                raise CheckpointMismatch(str(exc)) from exc
         if checkpoint.complete:
             # The work is done. Say so rather than reprocessing from bar zero:
             # a caller that re-invokes a finished run would otherwise re-detect
@@ -759,56 +798,9 @@ class SegmentedResearchRunner:
         checkpoint, which is indistinguishable from a detector that stopped
         finding barriers.
         """
-        from app.services.research.aggregate import Moment, OutcomeKey
+        from app.services.research.aggregate import Moment
 
-        for cell in checkpoint.outcomes.get("cells", []):
-            key = OutcomeKey(
-                cell["detector"], cell["kind"], cell["side"], cell["stop_model"]
-            )
-            name = key.as_str()
-            self.accumulators._keys.setdefault(name, key)
-            for horizon, moment in cell.get("horizons", {}).items():
-                self.accumulators._moments[(name, int(horizon))] = Moment.from_dict(
-                    moment
-                )
-            for label, moment in cell.get("excursions", {}).items():
-                self.accumulators._excursions[(label, name)] = Moment.from_dict(moment)
-            if cell.get("barriers"):
-                self.accumulators._barriers[name] = dict(cell["barriers"])
-            for target_r, stats in cell.get("targets", {}).items():
-                # Rebuild the bucket from the *reported* summary rather than a
-                # private dump, so the spill stays a summary and not a second
-                # copy of the accumulator.
-                resolved = int(stats.get("wins", 0)) + int(stats.get("losses", 0))
-                self.accumulators._targets.setdefault(name, {})[target_r] = {
-                    "wins": int(stats.get("wins", 0)),
-                    "losses": int(stats.get("losses", 0)),
-                    "ambiguous": int(stats.get("ambiguous", 0)),
-                    "unresolved": int(stats.get("unresolved", 0)),
-                    "time_to_win": Moment.from_dict(stats.get("time_to_target", {})),
-                    "time_to_loss": Moment.from_dict(stats.get("time_to_stop", {})),
-                    "r_sum": float(stats.get("average_r") or 0.0) * resolved,
-                    "r_n": resolved,
-                    "_sorted_r": [],
-                    # The R sample itself is not in the spill -- it is a capped
-                    # per-cell list, not a moment -- so a resumed run cannot
-                    # report a median over the whole run. Record that it is
-                    # unavailable rather than reporting the post-checkpoint
-                    # sample as if it were the whole.
-                    "median_unrecoverable": True,
-                }
-        self.accumulators.total = int(
-            checkpoint.outcomes.get("total_outcomes", 0)
-        )
-        self.accumulators._truncated = int(
-            checkpoint.outcomes.get("truncated_outcomes", 0)
-        )
-        # From here on this accumulator is partial by construction: the R
-        # sample behind every median stopped at the checkpoint. Families the
-        # interrupted run had not yet reached are created fresh by ``add``, so
-        # they have to be told this too, or they report a median of their own
-        # short tail as though it covered the whole run.
-        self.accumulators.restored = True
+        restore_outcome_accumulator(self.accumulators, checkpoint.outcomes)
 
         for horizon, moment in checkpoint.baseline.get("horizons", {}).items():
             self.baseline._moments[int(horizon)] = Moment.from_dict(moment)
@@ -840,6 +832,13 @@ class SegmentedResearchRunner:
         ensure_disk_space(
             self.dataset.stat().st_size, path=self.out_dir, limits=self.limits
         )
+
+        # Created before loading, because a resumed run replaces it from the
+        # checkpoint only after the hash and schema checks have passed.
+        if self.setup1_config is not None:
+            self._setup1 = Setup1Evaluator(self.setup1_config, self.timeframe)
+        else:
+            self._setup1 = None
 
         resumed = self._load_checkpoint()
         if resumed:
@@ -941,6 +940,12 @@ class SegmentedResearchRunner:
             label_events_streaming(
                 final_window, self._pending_events, self.accumulators
             )
+            if self._setup1 is not None:
+                # At the dataset end these windows are incomplete, so this only
+                # classifies them (incomplete/boundary/gap) and scores none.
+                self._setup1.evaluate(
+                    self._pending_events, final_window, final=True
+                )
             self._pending_events.clear()
 
         # Only mark the checkpoint complete when the run actually reached the end
@@ -956,6 +961,7 @@ class SegmentedResearchRunner:
         report.levels = len(self._all_levels()) if self.state else 0
         report.outcomes = self.accumulators.total
         report.episodes = self.episode_count()
+        report.setup1 = self._setup1.as_dict() if self._setup1 is not None else None
         report.warnings.extend(self.guard.warnings)
         report.resources = self.guard.report()
         report.peak_process_gb = self.guard.peak_process_gb
@@ -1056,6 +1062,12 @@ class SegmentedResearchRunner:
         labelled = self._tail + bars
         last_available = offset + len(bars) - 1
         window = OffsetCandles(labelled, tail_start, last_available + 1)
+        if self._setup1 is not None:
+            # Gap detection is timestamp-based over the available bars, so it
+            # sees the same boundaries regardless of segment size. The tail is
+            # deliberately not re-observed: the gap index carries the previous
+            # segment's last timestamp.
+            self._setup1.observe_bars(bars, offset=offset)
 
         # 1. Structure. This is the genuinely global state, and it is carried
         #    rather than recomputed.
@@ -1149,6 +1161,11 @@ class SegmentedResearchRunner:
             spill.append(event)
             self._note_episode(event.confirmation_index)
         self._events_written += len(detected)
+        if self._setup1 is not None:
+            # Raw detection totals are counted here, before any split, signal,
+            # stop or gap filter. They stay distinct from eligible signals and
+            # executable entries in the report.
+            self._setup1.observe_detected(detected)
 
         # 3. Labelling. Done *after* detection, on this segment's own events as
         #    well as the last segment's leftovers, so that only the 13 bars still
@@ -1172,6 +1189,12 @@ class SegmentedResearchRunner:
         )
         if ready:
             label_events_streaming(window, ready, self.accumulators)
+            if self._setup1 is not None:
+                # The Setup 1 path scores only events whose full 12-candle
+                # window is available. Split, gap, stop and episode filters are
+                # applied inside the evaluator, on the observations that will
+                # actually be folded into the accumulator.
+                self._setup1.evaluate(ready, window)
 
         # Keep the tail the next segment's outcomes will need. Capped across the
         # join rather than sliced out of this segment alone: a short segment (a
@@ -1247,6 +1270,21 @@ def render_report(report: RunReport, limits: ResourceLimits) -> str:
         f"Swings:       {report.swings:,}",
         f"Levels:       {report.levels:,}",
         f"Outcomes:     {report.outcomes:,}",
+        *(
+            [
+                "",
+                "SETUP 1 (PROPOSED — APPROVAL REQUIRED; do not publish)",
+                *[
+                    f"  {key}: {value:,}"
+                    for key, value in (report.setup1 or {}).get("counts", {}).items()
+                ],
+                f"  episodes: {(report.setup1 or {}).get('episodes', 0):,}",
+                f"  registered gaps: "
+                f"{len((report.setup1 or {}).get('gaps', {}).get('gaps', []))}",
+            ]
+            if report.setup1 is not None
+            else []
+        ),
         f"Segments:     {len(report.segments)}",
         f"Checkpoints:  {report.checkpoints_written}",
         f"Runtime:      {report.seconds:.1f}s",

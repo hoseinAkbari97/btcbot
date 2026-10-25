@@ -37,12 +37,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.core.resources import ResourceLimits  # noqa: E402
-from app.services.research.segmented_runner import (  # noqa: E402
+from app.core.resources import ResourceLimits
+from app.services.research.segmented_runner import (
     EXIT_RESUMABLE,
     SegmentedResearchRunner,
     render_report,
 )
+from app.services.research.setup1 import Setup1Config
 
 
 def parse_date(value: str) -> datetime:
@@ -71,6 +72,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--lookback", type=int, default=None)
     parser.add_argument(
+        "--setup1",
+        action="store_true",
+        help="also evaluate the PROPOSED Setup 1 path (theta=0.50, phi=0.50, "
+        "long-only, SWING_STOP, +1R). Approval for scored development results "
+        "is still pending; do not publish them.",
+    )
+    parser.add_argument(
+        "--setup1-split",
+        choices=["development", "validation", "oos"],
+        default="development",
+        help="split to filter/scores when --setup1 is set (default: development)",
+    )
+    parser.add_argument(
         "--segment-days-max",
         type=int,
         default=None,
@@ -94,6 +108,11 @@ def main(argv: list[str] | None = None) -> int:
         end=args.end,
         lookback=args.lookback,
         out_dir=args.out,
+        setup1=(
+            Setup1Config.proposed(split=args.setup1_split)
+            if args.setup1
+            else None
+        ),
     )
     report = runner.run()
     print(render_report(report, limits))

@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "c8b436d8-75d4-49c7-a807-cd77ef29cb4d",
     "name": "BTCBot - Frontend, Backend, and Upstream URLs",
-    "description": "Tests the HTTP URLs documented in URL_CATALOG.md. Import BTCBot-WebSockets.asyncapi.yaml separately for WebSocket testing because Postman HTTP collections and multi-protocol WebSocket collections use different collection types. Phase 2 added market-structure analysis (swings, BOS, liquidity levels) via GET /api/v1/structure/analyze. The historical-ingestion request writes data and calls the configured market-data provider; review its dates before sending it. Phase 9 added supply/demand zones and retests research via scripts/run_event_research.py and scripts/run_segmented_research.py (not exposed as HTTP endpoints).",
+    "description": "Tests the HTTP URLs documented in URL_CATALOG.md. Import BTCBot-WebSockets.asyncapi.yaml separately for WebSocket testing because Postman HTTP collections and multi-protocol WebSocket collections use different collection types. Phase 2 added market-structure analysis (swings, BOS, liquidity levels) via GET /api/v1/structure/analyze. The historical-ingestion request writes data and calls the configured market-data provider; review its dates before sending it. Phase 9 added supply/demand zones and retests research via scripts/run_event_research.py and scripts/run_segmented_research.py (not exposed as HTTP endpoints). The Setup 1 split/gap scoring path is also CLI-only (`run_segmented_research.py --setup1`); its proposed parameters still require approval and no scored development result is published. No Postman HTTP request changed in that milestone.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

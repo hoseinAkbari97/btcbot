@@ -1,7 +1,7 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **October 21, 2026** (added research-module pointers for equal-level clustering and
-the event measurement contract; no URL routes changed)
+Last reviewed: **October 25, 2026** (added research-module pointers for the Setup 1 split/gap
+integration; no URL routes changed)
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
 Examples are illustrative; database contents, generated IDs, timestamps, and output file names vary at
@@ -1285,6 +1285,14 @@ The printed output includes a `risk_violations` list for every run, empty when n
 - Event measurement contract (continuous vs segmented, aggregate blindness):
   `backend/tests/test_event_measurement_contract.py`
 - Segmented research runner: `backend/app/services/research/segmented_runner.py`
+- Setup 1 split filter (half-open UTC development/validation/OOS):
+  `backend/app/services/research/split_filter.py`
+- Setup 1 eligibility, gap handling, stop validity and scoring:
+  `backend/app/services/research/setup1.py`, tests `backend/tests/test_setup1.py`
+  and `backend/tests/test_setup1_runner.py`
+- Setup 1 integration protocol/status: `docs/SETUP1_INTEGRATION.md`
+- CLI opt-in Setup 1 path (no HTTP route):
+  `backend/scripts/run_segmented_research.py --setup1 --setup1-split development`
 - Research aggregator: `backend/app/services/research/aggregate.py`
 - Research report: `backend/app/services/research/report.py`
 - Research statistics: `backend/app/services/research/statistics.py`

@@ -148,6 +148,10 @@ def test_win_rate_and_profit_factor_reflect_trade_outcomes() -> None:
         logic=lambda _: Signal(
             kind=OPEN_LONG, stop_price=Decimal("50"), target_price=Decimal("110")
         ),
+        # This fixture is about metrics aggregation, not the engine's horizon
+        # default. Keep the second position open to the end of the data so the
+        # exit population is exactly one win plus one flat mark-to-market.
+        default_max_hold_bars=200,
     )
     metrics = compute_metrics(run)
     # The second position is still open when the data ends, so it exits flat.
