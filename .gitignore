@@ -71,3 +71,12 @@ backend/data/research/q1_feasibility/
 analysis_setup1_dev/
 # Scratch directory used to verify generated files; not part of the source tree.
 .tmp-verify/
+
+# --- Stage 6 generated accounting artifacts ---
+# The canonical trade ledger is ~7 MB compressed and is regenerated from the
+# local Setup 1 observation ledger. The daily equity curve is likewise rebuilt
+# by `python stage6_rebuild/rebuild_setup1_accounting.py`. Keep the scripts, the
+# Markdown report, and the small machine-readable summary in version control.
+stage6_rebuild/canonical_trades.jsonl.gz
+stage6_rebuild/daily_equity.csv
+stage6_rebuild/__pycache__/
