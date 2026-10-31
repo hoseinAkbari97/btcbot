@@ -64,3 +64,10 @@ backend/data/exports/
 data/exports/
 backend/data/research/liquidity-q1-2021
 backend/data/research/q1_feasibility/
+
+# --- Stage 5A local audit inputs ---
+# The full Setup 1 analysis ledger is a local, regenerated research artifact
+# (~2.4 GB); the audit reads it but it is never committed.
+analysis_setup1_dev/
+# Scratch directory used to verify generated files; not part of the source tree.
+.tmp-verify/
