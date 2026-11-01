@@ -1,0 +1,221 @@
+{
+  "manifest": "Stage 6B development baseline freeze manifest",
+  "manifest_version": 1,
+  "stage": "Stage 6 v1 (approved rebuild v2) — development baseline",
+  "created_utc": "2026-11-01T08:22:00Z",
+  "freeze_type": "documentation, provenance, and experiment registration only",
+
+  "strategy": {
+    "strategy_id": "SETUP_1_LOW_SIDE_SWEEP_REJECTION",
+    "strategy_id_provenance": "assigned in this freeze record; no earlier repository artifact records this exact identifier",
+    "description": "Setup 1 — low-side liquidity sweep with rejection; long-only spot, +1R target, swing stop",
+    "registered_status": "COMPLETED — FROZEN",
+    "validation_oos_inspected": false,
+    "validation_oos_authorized": false
+  },
+
+  "freeze_point": {
+    "git_head": "5f735c0cab97076bee3f8d79687b9453bde9f91a",
+    "git_head_subject": "research: add Stage 6A final acceptance audit",
+    "generation_commit_recorded_by_stage6": "f24af18cd57f6a615160e53b997336ed79e1963e",
+    "generation_working_tree_recorded_by_stage6": "?? stage6_rebuild_v2/",
+    "branch": "main"
+  },
+
+  "dataset": {
+    "primary_dataset": {
+      "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "bytes": 256461100,
+      "symbol": "BTCUSDT",
+      "timeframe": "5m",
+      "coverage_start": "2021-01-01T00:00:00+00:00",
+      "coverage_end": "2026-08-31T23:59:59.999000+00:00",
+      "bars": 595659,
+      "registered_gaps": 7,
+      "gap_bars_total": 213,
+      "verification": "recomputed from disk at freeze: match"
+    },
+    "dataset_manifest": {
+      "path": "backend/data/datasets/manifest.json",
+      "sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25",
+      "bytes": 1484,
+      "verification": "recomputed from disk at freeze: match"
+    },
+    "scored_analysis_ledger": {
+      "path": "analysis_setup1_dev/setup1-analysis-ledger.jsonl",
+      "sha256": "f7a2d1da209ae31228f2688914a829cdda1edda9dfafce4f74c98388c9ced116",
+      "bytes": 2529464418,
+      "verification": "full checksum recomputed from disk at freeze: match (no data parsed or reprocessed)"
+    },
+    "stage5_run_report": {
+      "path": "backend/data/research/run-setup1-dev-20261027-approved/report.json",
+      "sha256": "6e59e50774d01efe346d2a6635699cb2b850e4c26a12180ee993c41fb9fe0481",
+      "bytes": 35038,
+      "verification": "recomputed from disk at freeze: match"
+    },
+    "stage5_ledger_reconciliation": {
+      "path": "backend/data/research/run-setup1-dev-20261027-approved/setup1-ledger-reconciliation.json",
+      "sha256": "3a33f5f9ae956934ee6e751e4a7d3c0973d7469f8da517061f59eac55b38f812",
+      "bytes": 1634,
+      "verification": "recomputed from disk at freeze: match"
+    },
+    "recorded_in": "stage6_rebuild_v2/input_hashes.json (sha256 f98ff7aa0d9ff369908db456d3b54afc08a37eb1ac00d4a45f9000b36e1860de)"
+  },
+
+  "engine": {
+    "engine_version": 4,
+    "engine_version_provenance": "Stage 5 checkpoint header (backend/data/research/run-setup1-dev-20261027-approved/checkpoint.json) field engine_version; corroborated by setup1-dev-analysis.json",
+    "state_schema_version": 1,
+    "state_schema_version_provenance": "Stage 5 checkpoint header field state_schema_version; structure.schema_version also 1",
+    "semantic_engine_version_string": "unavailable",
+    "semantic_engine_version_string_note": "no semantic version string is recorded in any accepted artifact; only the integer engine_version 4 exists",
+    "engine_field_hash_anchor": "unavailable",
+    "engine_field_hash_anchor_note": "stage6_rebuild_v2/input_hashes.json does not cover the Stage 5 checkpoint or setup1-dev-analysis.json, so engine_version, state_schema_version, and the reported Stage 5 config_hash are reported from those artifacts but are not hash-anchored by the Stage 6 manifest",
+    "stage6_config_hash": "71ab2005064f30f7",
+    "stage6_config_hash_provenance": "Stage 5 checkpoint header and setup1-dev-analysis.json field config_hash (reported by Stage 5, not re-derived here)",
+    "stage6_config_json_sha256": "8c4dfca037a71bcad915f674ce63ff0805df5a76b47d815dcb90be5032a3b1e0",
+    "stage6_config_json_path": "stage6_rebuild_v2/config.json",
+    "stage6_analysis_generated_at": "2026-10-28T12:10:28.902740+00:00"
+  },
+
+  "development_split": {
+    "split_name": "development",
+    "start_inclusive": "2021-01-01T00:00:00Z",
+    "end_exclusive": "2024-07-01T00:00:00Z",
+    "in_window_5m_bars": 367563,
+    "segments_written": 24,
+    "checkpoints_written": 24,
+    "run_complete": true,
+    "source": "stage6_rebuild_v2/config.json (data_scope, dev_end) and backend/data/research/run-setup1-dev-20261027-approved/setup1-dev-analysis.json (run_metadata)",
+    "validation_oos_split": "not read, not scored, not inspected, not authorized"
+  },
+
+  "frozen_protocol": {
+    "path": "stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md",
+    "sha256": "7603680d323e5d31463bb7d98027414892bee0f1133f15b2669fdcb0e1657f08",
+    "bytes": 5175,
+    "primary_tie_convention": "stop_first",
+    "canonical_identity": ["entry_index", "entry_price", "stop_price", "target_r=1"],
+    "time_stop_policy": "time_stop_c1_valid_12th_close",
+    "execution_proxy": "Binance BTCUSDT spot, long-only, no leverage",
+    "nobitex_integration": false
+  },
+
+  "accepted_stage6_artifacts": {
+    "note": "previously accepted generated artifacts; unmodified by this freeze; every hash recomputed from disk at freeze and matched stage6_rebuild_v2/determinism_check.json (10 artifacts, passed=true)",
+    "determinism_check_json_sha256": "7b0f46bd932ce3472b0d4be1343cc7ccefb3e67be792330c9f4ffd000ed89b8c",
+    "artifacts": [
+      { "filename": "canonical_trades.jsonl.gz", "sha256": "796d47230b28da858a5d7ac519d31ae81394896aeb09d9c23535f6aef3d5ea91", "bytes": 6365420 },
+      { "filename": "daily_equity.csv", "sha256": "255a822f7e77c1d63c340dcfd2b4caff9632e4f5523f777fc65afd38dc8f2d34", "bytes": 66782 },
+      { "filename": "primary_portfolio_trades.csv", "sha256": "3d1b88891b63c8d55aa210154ea4052506659c0dd35ba6eee77887484f530cb5", "bytes": 1237544 },
+      { "filename": "time_stop_trades.csv", "sha256": "d728177ba72e10c86cc12e474a33fdc2ff0cd2d3bb7335c63d000fcdd6dfee1f", "bytes": 69923 },
+      { "filename": "stage6_v2_summary.json", "sha256": "eb6ffb8eee7b6da2f14d9dfae2cffd756a28d599791247377c4704ab2fc9a46b", "bytes": 80015 },
+      { "filename": "verification_report.json", "sha256": "948d4089be14888a82b0c8ee4fe64b369df2edddc7cf9f9ca4885f8f4447fd88", "bytes": 43178 },
+      { "filename": "input_hashes.json", "sha256": "f98ff7aa0d9ff369908db456d3b54afc08a37eb1ac00d4a45f9000b36e1860de", "bytes": 1244 },
+      { "filename": "config.json", "sha256": "8c4dfca037a71bcad915f674ce63ff0805df5a76b47d815dcb90be5032a3b1e0", "bytes": 1741 },
+      { "filename": "code_version.json", "sha256": "79dfe5bc0b549246acc9d22a96c2b698778f21cea050faee22429966d069ad4f", "bytes": 786 },
+      { "filename": "STAGE6_ACCOUNTING_REBUILD_V2.md", "sha256": "5954bf83994ff4b02b1b21a4e6fdefcdfa1b21ac368b0d6b81a8f37c5e61c7b4", "bytes": 13181 }
+    ],
+    "source_hashes_recorded_by_the_accepted_run": {
+      "source": "stage6_rebuild_v2/code_version.json",
+      "accounting.py": "6899e39578c8f8ae671b7b10f05b025f27745f8e72c15e52824a1d107b128d97",
+      "canonical.py": "0c580381462d6c51cbce4bf24ca864679175eead57a580f5013e6e09d55ba7ed",
+      "frozen_signal.py": "9a2313b3fb06294bb21c9c3ec4edab185723c6972123b6d452119c3654cb9c82",
+      "portfolio.py": "8ada2a2e6ad967e71d9670008c1a3229c3d0a0e9698e08c4009d8d3c06dee176",
+      "rebuild_setup1_accounting.py": "a704ac184e7f69a488387a3fe086321f7afdee018e05a424d6c2dd327eb9e286",
+      "verification.py": "aa6ebcd3cdd0030e0867ef753912d4a41685cedacb56797a118f8b7c00e36d02",
+      "verify_determinism.py": "5531cd0b05174657fd3d7d7a2a489c367d66ffd35dd5622e224d26b6124682e7",
+      "note": "these are the hashes recorded by the accepted run; the source files were not modified by this freeze"
+    }
+  },
+
+  "stage6a_audit": {
+    "note": "unchanged by this freeze; all four hashes recomputed from disk at freeze and matched their committed values",
+    "audit_date": "2026-11-01",
+    "audit_verdict": "PASS_WITH_LIMITATIONS",
+    "audit_verdict_source": "stage6_acceptance_audit/acceptance_audit.json field verdict (\"PASS WITH LIMITATIONS\" — accounting acceptance only; not profitability or generalisability)",
+    "independent_checks_passed": 46,
+    "independent_checks_total": 46,
+    "independent_audit_imports_stage6_modules": false,
+    "artifacts": [
+      { "filename": "stage6_acceptance_audit/STAGE6A_FINAL_ACCEPTANCE_AUDIT.md", "sha256": "cbf46934f5c3c9822114c36d94115a39c6a005b74c1fba6cd786a35ff8ef5070", "bytes": 38694 },
+      { "filename": "stage6_acceptance_audit/acceptance_audit.json", "sha256": "e30a624d84f0187973f13bfc25fad7fbd3cbd1c8dda3b02f2773c8fad0581314", "bytes": 38255 },
+      { "filename": "stage6_acceptance_audit/independent_portfolio_audit.json", "sha256": "2eb64c6b09357b0372c733fe73eb9408e3bc44f83e5135cd3d9960682fc75269", "bytes": 24446 },
+      { "filename": "stage6_acceptance_audit/independent_portfolio_audit.py", "sha256": "913ccea494ae63a01d9ff90045eae8268a993742f08fa2bb314aaddb12d021ac", "bytes": 42676 }
+    ]
+  },
+
+  "research_conclusion": {
+    "verdict": "NEGATIVE_GROSS_EXPECTANCY_UNDER_PRIMARY_STOP_FIRST_CONVENTION",
+    "primary_stop_first_gross_expectancy_r": -0.22266647131037987,
+    "resolved_canonical_trades": 101789,
+    "tie_win_sensitivity_r": 0.2685064452118356,
+    "tie_split_sensitivity_r": 0.022919986950549184,
+    "note": "tie-win and 50/50 are sensitivities only; five-minute OHLC cannot establish intrabar ordering"
+  },
+
+  "new_documentation_files": {
+    "note": "created by this freeze; distinct from the previously accepted generated artifacts above; these are not part of the Stage 6 determinism set",
+    "files": [
+      {
+        "filename": "STAGE6_INTERPRETATION_ADDENDUM.md",
+        "sha256": "21270d81a67ad9764e4fcb363dfec8d367749cdcbd784e46054712725babf849",
+        "bytes": 13009,
+        "kind": "new documentation"
+      },
+      {
+        "filename": "DEVELOPMENT_EXPERIMENT_REGISTRY.md",
+        "sha256": "2dddc45907b4e6e3496e8b2c6371f3e21a8662750cf5d63969945d56fe832776",
+        "bytes": 11914,
+        "kind": "new documentation"
+      }
+    ],
+    "this_manifest": {
+      "filename": "DEVELOPMENT_FREEZE_MANIFEST.json",
+      "kind": "new documentation",
+      "self_sha256": "unavailable",
+      "self_sha256_note": "a file cannot contain its own SHA-256; compute with sha256sum stage6_rebuild_v2/DEVELOPMENT_FREEZE_MANIFEST.json"
+    }
+  },
+
+  "freeze_status": {
+    "status": "FROZEN",
+    "scope": "development baseline only",
+    "stage6_rebuild_modified": false,
+    "accepted_stage6_artifacts_modified": false,
+    "stage6a_audit_artifacts_modified": false,
+    "pipeline_or_simulation_run": false,
+    "parameters_tuned": false,
+    "validation_oos_artifact_read_or_generated": false,
+    "committed_or_pushed": false
+  },
+
+  "unavailable_provenance": [
+    {
+      "field": "strategy_id",
+      "status": "newly assigned",
+      "reason": "no earlier repository artifact records the identifier SETUP_1_LOW_SIDE_SWEEP_REJECTION; it is assigned in this freeze record"
+    },
+    {
+      "field": "engine semantic version string",
+      "status": "unavailable",
+      "reason": "accepted artifacts record only the integer engine_version 4"
+    },
+    {
+      "field": "engine_version / state_schema_version / Stage 5 config_hash hash anchor",
+      "status": "not hash-anchored",
+      "reason": "the Stage 6 input hash manifest does not cover the Stage 5 checkpoint or setup1-dev-analysis.json"
+    },
+    {
+      "field": "per-scenario trade ledgers",
+      "status": "unavailable",
+      "reason": "not retained by the accepted run; only the primary ledger exists"
+    },
+    {
+      "field": "provenance of the analysis ledger beyond its recorded hash",
+      "status": "partial",
+      "reason": "the ledger's generation run is documented by Stage 5 artifacts, but this freeze only verified its checksum and did not reprocess it"
+    }
+  ]
+}
