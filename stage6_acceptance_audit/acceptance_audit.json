@@ -1,0 +1,730 @@
+{
+  "audit": "Stage 6A final acceptance audit (read-only)",
+  "audit_date": "2026-11-01",
+  "verdict": "PASS WITH LIMITATIONS",
+  "verdict_rationale": "All accounting, counting, cash-constraint, cost-scenario identity, and independent reconstruction checks pass. The final equity is a valid consequence of the implemented rules, not a rounding or accounting defect. The verdict is not a clean PASS because the report omits material interpretation disclosures: trading effectively ends on 2021-06-19 while CAGR is annualised over the full 3.5-year window, the final ~$5 is a minimum-order residual rather than a continuous return, the time-in-market denominator is the full window rather than the active period, 38.4% of funded trades enter and exit within the same 5-minute bar, and scenario ledgers are not retained.",
+  "scope": {
+    "mode": "read-only audit of existing artifacts and source",
+    "pipeline_rerun": false,
+    "market_structure_engine_rerun": false,
+    "canonical_or_portfolio_regeneration": false,
+    "bootstrap_rerun": false,
+    "validation_or_oos_inspected": false,
+    "parameters_tuned": false,
+    "accepted_artifacts_modified": false,
+    "stage6_rebuild_touched": false
+  },
+  "repository_state": {
+    "head_commit": "2283135dfdcb49e4331f484da2370f4f4f505175",
+    "head_subject": "research: finalize Stage 6 v1 Setup 1 accounting (v2)",
+    "working_tree_before_audit": "clean",
+    "audit_outputs_untracked": [
+      "stage6_acceptance_audit/"
+    ],
+    "stage6_rebuild_v2_tracked_changes": "none",
+    "stage6_rebuild_tracked_changes": "none"
+  },
+  "artifact_integrity": {
+    "hashes_match_determinism_check": true,
+    "determinism_check_passed": true,
+    "compared_artifacts": 7,
+    "artifact_hashes": {
+      "primary_portfolio_trades.csv": {
+        "sha256": "3d1b88891b63c8d55aa210154ea4052506659c0dd35ba6eee77887484f530cb5",
+        "bytes": 1237544
+      },
+      "time_stop_trades.csv": {
+        "sha256": "d728177ba72e10c86cc12e474a33fdc2ff0cd2d3bb7335c63d000fcdd6dfee1f",
+        "bytes": 69923
+      },
+      "daily_equity.csv": {
+        "sha256": "255a822f7e77c1d63c340dcfd2b4caff9632e4f5523f777fc65afd38dc8f2d34",
+        "bytes": 66782
+      },
+      "canonical_trades.jsonl.gz": {
+        "sha256": "796d47230b28da858a5d7ac519d31ae81394896aeb09d9c23535f6aef3d5ea91",
+        "bytes": 6365420
+      },
+      "stage6_v2_summary.json": {
+        "sha256": "eb6ffb8eee7b6da2f14d9dfae2cffd756a28d599791247377c4704ab2fc9a46b",
+        "bytes": 80015
+      },
+      "verification_report.json": {
+        "sha256": "948d4089be14888a82b0c8ee4fe64b369df2edddc7cf9f9ca4885f8f4447fd88",
+        "bytes": 43178
+      },
+      "STAGE6_ACCOUNTING_REBUILD_V2.md": {
+        "sha256": "5954bf83994ff4b02b1b21a4e6fdefcdfa1b21ac368b0d6b81a8f37c5e61c7b4",
+        "bytes": 13181
+      },
+      "STAGE6_V2_PROTOCOL.md": {
+        "sha256": "7603680d323e5d31463bb7d98027414892bee0f1133f15b2669fdcb0e1657f08",
+        "bytes": 5175
+      }
+    },
+    "note": "determinism_check.json records a byte-identical repeated run over 10 generated artifacts. The audit read 7 of those generated artifacts and every SHA-256 matches its recorded a_sha256/b_sha256. The eighth audited file, STAGE6_V2_PROTOCOL.md, is a protocol document, not a generated artifact.",
+    "determinism_artifacts_total": 10,
+    "non_generated_files_read": [
+      "STAGE6_V2_PROTOCOL.md"
+    ]
+  },
+  "acceptance_criteria": [
+    {
+      "criterion": "No unexplained accounting discrepancies",
+      "status": "PASS",
+      "evidence": "Independent Decimal reconstruction of every primary row: notional, entry/exit fees, gross P&L, net P&L, total cost, fees, and spread/slippage all reconcile; the cash chain reproduces every recorded cash_before_entry, cash_after_entry, cash_before_exit and cash_after_exit field. Totals equal the summary to <1e-6."
+    },
+    {
+      "criterion": "No negative cash/equity violations",
+      "status": "PASS",
+      "evidence": "No negative cash or equity in the 2,711-row ledger or the 1,277-row daily curve; entry_cost > cash raises an invariant abort at portfolio.py:401-402."
+    },
+    {
+      "criterion": "Correct portfolio trade counts and censoring treatment",
+      "status": "PASS",
+      "evidence": "2,711 unique rows = 2,566 barrier-resolved + 145 C1-valid time exits; time_stop_trades.csv matches the primary time rows field-for-field; 1,769 censored trades are all C1-valid, 0 invalid, and none enter the frozen signal."
+    },
+    {
+      "criterion": "Correct cost scenario implementation",
+      "status": "PASS WITH LIMITATION",
+      "evidence": "All ten scenarios satisfy final_equity=initial+net, total_cost=gross-net, total_cost=fees+spread, and taken+skipped=n_canonical. The multiplier scales both FEE_RATE and ADVERSE_RATE in _rates (portfolio.py:60-61). Fixed scenarios hold the 14,978-candidate set constant; re-filtered scenarios reapply feasibility. Limitation: scenario trade ledgers are not retained, so only summary identities and the code contract can be checked per scenario."
+    },
+    {
+      "criterion": "Reproducible final portfolio reconciliation",
+      "status": "PASS",
+      "evidence": "46/46 independent checks pass. Independent final cash = 4.982039008899883 (reported 4.982039008876792; difference 2.3e-11). Initial + net P&L matches. All generated artifact hashes match the determinism record."
+    },
+    {
+      "criterion": "No material misrepresentation of execution or statistical assumptions",
+      "status": "PASS WITH LIMITATIONS",
+      "evidence": "The report explicitly labels the Binance spot proxy, says it is not a Nobitex execution claim, discloses the 5-minute OHLC limit and the 14-day block bootstrap limit, and labels tie-win/split as sensitivities. However, it does not disclose or quantify terminal capital exhaustion, the CAGR window, the min-order residual, the 38.4% same-bar round-trip share, or the 94.4% cash-cap share."
+    }
+  ],
+  "critical_findings": [],
+  "material_findings": [
+    {
+      "id": "MF-01",
+      "severity": "material",
+      "finding": "Terminal capital exhaustion and the effective end of trading are not disclosed.",
+      "evidence": "Last funded entry is trade 10621 at 2021-06-19T12:55:00+00:00; it exits at 2021-06-19T13:04:59.999 with cash 4.982039. After that, 11,210 baseline-feasible candidates through 2024-06-30 cannot be funded. The report presents total return -99.95% and CAGR -88.66% (STAGE6_ACCOUNTING_REBUILD_V2.md:79) without stating that the portfolio stopped trading after 169.4 days."
+    },
+    {
+      "id": "MF-02",
+      "severity": "material",
+      "finding": "Final equity is a minimum-order floor residual, not a meaningful continuous return; scenario final equities are not comparable performance rankings.",
+      "evidence": "Final cash 4.982039 is below the $5 notional + fee threshold; the last trade notional was $5.000394 on $5.006893 cash and lost $0.024854. All ten scenarios end between $4.966314 and $5.082277. The 3x re-filtered scenario ends highest ($5.082277) only because it kept trading into 2024 with a tiny residual (702 trades in 2021, 251 in 2022, 70 in 2023, 31 in 2024); this is residual-path noise, not superior performance."
+    },
+    {
+      "id": "MF-03",
+      "severity": "material",
+      "finding": "CAGR and time-in-market denominators are undocumented and materially change the interpretation.",
+      "evidence": "CAGR uses (end_bar-start_bar+1)*5/1440 days (portfolio.py:644-646), i.e. ~1,276 days from 2021-01-01 to 2024-06-30, although all capital is destroyed by 2021-06-19. Annualising over the 169.427-day active period gives approximately -99.999992%. time_in_market 1.677% is the fraction of the full 1,277-day evaluation window with an open position (18/1,277 daily rows), not the fraction of the active period; during the active period the portfolio was in the market about 12.6% of bars and 95.4% invested when in market."
+    },
+    {
+      "id": "MF-04",
+      "severity": "material",
+      "finding": "A large share of trades are same-bar round trips, so the result depends on intrabar assumptions that 5-minute OHLC cannot establish.",
+      "evidence": "1,041 of 2,711 funded trades (38.40%; 40.57% of resolved trades) have entry_index == exit_index. They account for -$5,658.28 of -$9,995.02 net P&L (56.6%). Breakdown: 485 stops, 465 targets, 91 stop-first ties. Median holding time is 10 minutes and the maximum is 60 minutes. The report discloses the 5-minute OHLC limit qualitatively but never quantifies this same-bar exposure."
+    },
+    {
+      "id": "MF-05",
+      "severity": "material",
+      "finding": "The nominal 1% risk budget is rarely achieved because the spot cash cap binds; the strategy is effectively all-in spot.",
+      "evidence": "spot_cap_binds is true for 2,559/2,711 entries (94.39%). Median actual/requested risk is 0.398; 1,864/2,711 entries (68.8%) take less than half the nominal 1% risk. Mean actual risk is $7.39 versus a mean requested $13.84. The report says the spot cap \"can force actual risk far below the 1% budget\" (line 220) but does not disclose the magnitude or that the strategy is effectively fully invested."
+    },
+    {
+      "id": "MF-06",
+      "severity": "material",
+      "finding": "Scenario comparisons are summary-level only; per-scenario trade ledgers are not retained, and the fixed universe holds eligibility rather than the executed trade set.",
+      "evidence": "Only the primary ledger is written. All ten scenario identities hold at summary level, but per-scenario cash chains, trade selection, and chronology cannot be independently reconstructed. The fixed universe fixes the 14,978 baseline-feasible candidates, not which candidates are actually funded: costs change the equity path, cash availability, and therefore the executed subset (fixed taken counts: 5,060 / 2,711 / 1,885 / 1,434 / 988)."
+    },
+    {
+      "id": "MF-07",
+      "severity": "material",
+      "finding": "The primary signal conclusion is not robust to the unresolved same-bar tie convention.",
+      "evidence": "24,998 of 101,789 resolved trades (24.56%) are ambiguous. Stop-first gives -0.2227R (95% CI -0.2290 to -0.2164); tie-win gives +0.2685R (+0.2624 to +0.2746); 50/50 gives +0.0229R (+0.0173 to +0.0286). The sign flips. The report labels tie-win/split as sensitivities and keeps stop-first primary, but does not emphasise that the primary sign depends on an unverified intrabar fact."
+    },
+    {
+      "id": "MF-08",
+      "severity": "material",
+      "finding": "The portfolio total net P&L cluster interval extends below total capital and must not be read as a portfolio risk interval.",
+      "evidence": "Episode-cluster total net P&L is -$9,995.02 with interval -$11,852.20 to -$8,161.71, which includes losses larger than the $10,000 capital. The report correctly calls it \"path-independent\" and says the intervals \"do not re-simulate capital allocation\" (line 150), but the impossible lower bound is a strong warning against interpreting it as a live-portfolio risk interval."
+    },
+    {
+      "id": "MF-09",
+      "severity": "material",
+      "finding": "The net loss is cost-dominated, not a directional-loss estimate, and the funded subset is not the signal population.",
+      "evidence": "Gross P&L is -$821.38 while total costs are $9,173.64 (fees $7,055.91; spread+slippage $2,117.74). Costs are ~11.2x the gross loss. The funded subset gross R is -0.0665 (n=2,711; -0.0772 on the 2,566 resolved) versus the full resolved signal -0.2227R, so the cost/risk feasibility filter selects a materially different subpopulation. The report shows the gross/net split but does not explain either effect."
+    },
+    {
+      "id": "MF-10",
+      "severity": "minor-material",
+      "finding": "Same-bar event ordering is deterministic but undocumented.",
+      "evidence": "Entries are processed before exits within a bar (portfolio.py:355-470), which is the correct chronology because entries use the bar open and exits occur later in the bar. No bar has more than one entry. Eight bars have an entry at the open plus a different position exiting later in that bar; five entries would be larger only under a look-ahead convention that credited same-bar exit proceeds at the open, which production correctly does not do. The convention is not stated in the protocol."
+    }
+  ],
+  "capital_exhaustion": {
+    "initial_capital": "10000.00",
+    "final_equity": "4.982039008876792",
+    "final_cash": "4.982039008876792",
+    "open_positions_at_end": 0,
+    "negative_cash_or_equity_events": 0,
+    "sizing_uses_current_equity": true,
+    "sizing_uses_current_cash": true,
+    "cash_constraint_enforced_before_every_entry": true,
+    "positions_can_be_opened_with_insufficient_cash": false,
+    "min_notional_and_lot_enforced_at_entry": true,
+    "explicit_halt": false,
+    "de_facto_stop": "minimum-order rejection after cash falls below the $5 notional + fee threshold",
+    "first_capital_constrained_candidate": {
+      "trade_id": 0,
+      "entry_time": "2021-01-01T02:50:00+00:00",
+      "risk_sized_notional_at_1pct": "35973.07503678273663560568905",
+      "cash_before_entry": "10000.0",
+      "actual_notional": "9989.8540236",
+      "spot_cap_binds": true,
+      "note": "Funded at reduced size; this is the first cash-cap event, not a rejection."
+    },
+    "first_min_notional_or_lot_rejection": {
+      "trade_id": 6,
+      "entry_time": "2021-01-01T07:20:00+00:00",
+      "cash_at_bar_open": "0.056573402899999",
+      "open_positions_at_bar_open": 1,
+      "note": "Transient: cash $0.056573 was reserved in the still-open trade 5, so trade 6 floored to zero size. It is not the terminal exhaustion point."
+    },
+    "last_funded_entry": {
+      "trade_id": 10621,
+      "entry_time": "2021-06-19T12:55:00+00:00",
+      "entry_index": 48708,
+      "notional": "5.000394",
+      "cash_before_entry": "5.006892928876791",
+      "cash_before_entry_bar_start": "5.0068929288998833603",
+      "exit_time": "2021-06-19T13:04:59.999000+00:00",
+      "cash_after_exit": "4.982039008876792"
+    },
+    "first_candidate_after_last_funded_entry": {
+      "trade_id": 10622,
+      "entry_index": 48709,
+      "entry_time": "2021-06-19T13:00:00+00:00",
+      "per_unit": "102.23",
+      "notional_at_risk": "34973.83351266751442825002445",
+      "cost_to_risk": "0.9103737650396165509146043236"
+    },
+    "first_candidate_after_last_exit": {
+      "trade_id": 10624,
+      "entry_index": 48722,
+      "entry_time": "2021-06-19T14:05:00+00:00",
+      "per_unit": "115.96",
+      "notional_at_risk": "30943.91169368747844084166954",
+      "cost_to_risk": "0.8056117626767850983097619869"
+    },
+    "eligible_candidates_after_last_exit": 11210,
+    "all_eligible_candidates_after_last_exit_unfunded": true,
+    "min_order_skips_total": 12267,
+    "min_order_skips_after_last_exit": 11210,
+    "min_order_skips_before_last_exit": 1057,
+    "final_equity_valid_under_implemented_rules": true,
+    "final_equity_is_rounding_or_accounting_defect": false,
+    "final_equity_interpretation": "Valid residual cash after the last permitted liquidation. The exact cents are not an economic return: the portfolio first became permanently unable to fund an eligible trade after the 2021-06-19T13:04:59.999 exit, and the residual is below the $5 notional plus fee floor."
+  },
+  "chronology_and_reconciliation": {
+    "rows": 2711,
+    "resolved_rows": 2566,
+    "time_exit_rows": 145,
+    "rows_sorted_by_exit_index": true,
+    "unique_trade_ids": 2711,
+    "time_stop_csv_field_level_match": true,
+    "time_exit_index_is_entry_plus_11": true,
+    "invalid_censored_included": 0,
+    "canonical_trades": 103558,
+    "canonical_resolved": 101789,
+    "canonical_censored_valid": 1769,
+    "canonical_censored_invalid": 0,
+    "entry_index_equals_confirmation_index_plus_one_all_rows": true,
+    "next_bar_open_entry": true,
+    "max_concurrent_positions_primary": 2,
+    "max_concurrent_scenarios": "2 in most scenarios; 3 in refiltered 2x/3x and fixed 0.5x",
+    "cash_chain_reconstructs_all_cash_fields": true,
+    "final_equity_equals_initial_plus_net_pnl": true,
+    "total_cost_equals_fees_plus_spread": true,
+    "fees_and_spread_reconcile_per_row": true,
+    "daily_rows": 1277,
+    "daily_final_equity_matches": true,
+    "equity_flat_after_last_exit": true,
+    "last_equity_change_date": "2021-06-19",
+    "execution_profile": {
+      "same_bar_round_trips": 1041,
+      "same_bar_share_of_taken": 0.383991147178163,
+      "same_bar_share_of_resolved": 0.40568978955572876,
+      "same_bar_by_exit_reason": {
+        "stop": 485,
+        "target": 465,
+        "stop_tie_stop_first": 91
+      },
+      "same_bar_net_pnl": "-5658.28298848771424666316",
+      "same_bar_share_of_portfolio_net_pnl": 0.566110337227111,
+      "hold_minutes": {
+        "min": 4.999983333333334,
+        "median": 9.999983333333335,
+        "max": 59.99998333333333,
+        "le_5_minutes": 1041,
+        "le_10_minutes": 1592
+      },
+      "spot_cap_binds_entries": 2559,
+      "spot_cap_share": 0.9439321283659167,
+      "actual_over_requested_risk_median": 0.39785554554885516,
+      "entries_actual_risk_below_half_requested": 1864,
+      "mean_actual_risk_usd": "7.391560706713389893028402803",
+      "mean_requested_risk_usd": "13.84324829073300212348358539",
+      "bars_with_multiple_entries": 0,
+      "bars_with_entry_and_other_trade_exit": 8,
+      "entries_whose_funding_would_change_if_same_bar_exits_settled_first": 5,
+      "note": "The production loop processes entries before exits within a bar. Only one bar has an entry plus a different trade's exit, and the pre-exit cash already exceeded that exit's proceeds, so the convention is immaterial for the primary ledger."
+    },
+    "ordering_note": "Result rows are appended at exit, so the CSV is ordered by exit_index. The event loop is chronological by bar; within a bar, entries are sized and booked before exits. This is deterministic and matches the bar-open entry / later-intrabar-exit chronology.",
+    "reconciliation_against_signal": {
+      "signal_uses_resolved_only": true,
+      "signal_censored_excluded": 1769,
+      "signal_rows": 101789,
+      "time_stop_contribution_separate": true,
+      "time_stop_trades": 145,
+      "time_stop_net_pnl": -191.0542809521979,
+      "time_stop_note": "Separate contribution of the time-stop policy. Never combined with the frozen barrier-only signal expectancy."
+    }
+  },
+  "cost_sensitivity": {
+    "scenario_count": 10,
+    "cost_scales": [
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      3.0
+    ],
+    "universes": [
+      "refiltered",
+      "fixed_primary"
+    ],
+    "multiplier_components": [
+      "FEE_RATE",
+      "ADVERSE_RATE"
+    ],
+    "multiplier_code": "portfolio.py:60-61 _rates() returns FEE_RATE*cost_scale, ADVERSE_RATE*cost_scale",
+    "fixed_universe_candidate_count": 14978,
+    "fixed_universe_constant": true,
+    "refiltered_reapplies_feasibility": true,
+    "refiltered_feasible_range": [
+      1140,
+      36485
+    ],
+    "costs_double_counted": false,
+    "identity_evidence": "Every scenario satisfies final_equity=initial+net, total_cost=gross-net, total_cost=fees+spread, taken+skipped=n_canonical (103,558), and taken+candidate-skips=n_candidates. The primary per-row ledger additionally proves the non-double-counting algebra: gross-net=(entry_fill-entry_raw)*size+(exit_raw-exit_fill)*size+fees.",
+    "cost_changes_selection_sizing_and_capital": true,
+    "cost_changes_selection_detail": "Taken trades vary from 988 to 5,105. Feasibility sets vary from 1,140 to 36,485 in the re-filtered scenarios. Even the fixed universe changes executed trades and sizing because the cost path changes cash and equity.",
+    "fixed_universe_is_not_pure_same_trade_cost_shift": true,
+    "all_scenarios_end_near_min_notional_floor": true,
+    "final_equity_range": [
+      4.966314,
+      5.082277
+    ],
+    "scenario_level_trust": "summary accounting trustworthy; per-scenario chronology not independently verifiable",
+    "scenarios": [
+      {
+        "scenario": "primary",
+        "cost_scale": 1.0,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 14978,
+        "taken": 2711,
+        "final_equity": 4.982039008876792,
+        "net_pnl": -9995.017960991121,
+        "fees": 7055.9063530911,
+        "spread_slippage": 2117.7355749000094,
+        "total_cost": 9173.64192799111,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_refiltered_0.5x",
+        "cost_scale": 0.5,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 36485,
+        "taken": 5105,
+        "final_equity": 4.999640655324083,
+        "net_pnl": -9995.000359344676,
+        "fees": 6479.19994744465,
+        "spread_slippage": 1945.495508700027,
+        "total_cost": 8424.695456144678,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_refiltered_1x",
+        "cost_scale": 1.0,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 14978,
+        "taken": 2711,
+        "final_equity": 4.982039008876792,
+        "net_pnl": -9995.017960991121,
+        "fees": 7055.9063530911,
+        "spread_slippage": 2117.7355749000094,
+        "total_cost": 9173.64192799111,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_refiltered_1.5x",
+        "cost_scale": 1.5,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 6719,
+        "taken": 1926,
+        "final_equity": 4.987128649719818,
+        "net_pnl": -9995.01287135028,
+        "fees": 7429.0636993503,
+        "spread_slippage": 2229.391319099972,
+        "total_cost": 9658.455018450271,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_refiltered_2x",
+        "cost_scale": 2.0,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 3326,
+        "taken": 1451,
+        "final_equity": 5.001637417795693,
+        "net_pnl": -9994.998362582202,
+        "fees": 7218.802588082201,
+        "spread_slippage": 2166.1069626999965,
+        "total_cost": 9384.909550782197,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_refiltered_3x",
+        "cost_scale": 3.0,
+        "universe": "refiltered",
+        "candidates": 103558,
+        "feasible": 1140,
+        "taken": 1054,
+        "final_equity": 5.082277474112466,
+        "net_pnl": -9994.917722525886,
+        "fees": 7255.8133406259,
+        "spread_slippage": 2177.0622061999834,
+        "total_cost": 9432.875546825884,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_fixed_0.5x",
+        "cost_scale": 0.5,
+        "universe": "fixed_primary",
+        "candidates": 14978,
+        "feasible": 14978,
+        "taken": 5060,
+        "final_equity": 4.984937948663406,
+        "net_pnl": -9995.01506205133,
+        "fees": 6359.64298335135,
+        "spread_slippage": 1909.544706299968,
+        "total_cost": 8269.187689651319,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_fixed_1x",
+        "cost_scale": 1.0,
+        "universe": "fixed_primary",
+        "candidates": 14978,
+        "feasible": 14978,
+        "taken": 2711,
+        "final_equity": 4.982039008876792,
+        "net_pnl": -9995.017960991121,
+        "fees": 7055.9063530911,
+        "spread_slippage": 2117.7355749000094,
+        "total_cost": 9173.64192799111,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_fixed_1.5x",
+        "cost_scale": 1.5,
+        "universe": "fixed_primary",
+        "candidates": 14978,
+        "feasible": 14978,
+        "taken": 1885,
+        "final_equity": 4.999014824016776,
+        "net_pnl": -9995.000985175984,
+        "fees": 7336.067906976,
+        "spread_slippage": 2201.4951295999776,
+        "total_cost": 9537.563036575975,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_fixed_2x",
+        "cost_scale": 2.0,
+        "universe": "fixed_primary",
+        "candidates": 14978,
+        "feasible": 14978,
+        "taken": 1434,
+        "final_equity": 4.974133789203581,
+        "net_pnl": -9995.025866210795,
+        "fees": 7476.1262700108,
+        "spread_slippage": 2243.343638999989,
+        "total_cost": 9719.46990901079,
+        "identities_pass": true
+      },
+      {
+        "scenario": "cost_fixed_3x",
+        "cost_scale": 3.0,
+        "universe": "fixed_primary",
+        "candidates": 14978,
+        "feasible": 14978,
+        "taken": 988,
+        "final_equity": 4.96631365280205,
+        "net_pnl": -9995.033686347198,
+        "fees": 7600.9856603472,
+        "spread_slippage": 2280.655610199995,
+        "total_cost": 9881.641270547194,
+        "identities_pass": true
+      }
+    ]
+  },
+  "execution_model_matrix": [
+    {
+      "item": "Venue / execution proxy: Binance BTCUSDT spot, long-only, no leverage",
+      "classification": "B",
+      "evidence": "Explicitly implemented as a historical proxy and labelled throughout the report (lines 3, 223). It is not calibrated to Nobitex. Classification B because the proxy assumption itself is unverified; Nobitex execution performance is C/not established."
+    },
+    {
+      "item": "Entry fill: next bar open, 3 bps adverse, ceil tick",
+      "classification": "B",
+      "evidence": "Implemented in accounting.py:64-65 and portfolio.py:73-75; verified mechanically on all rows (entry_fill = ceil_tick(entry_raw*1.0003)) and entry_index = confirmation_index + 1. Realistic 5-minute-open fills are not established."
+    },
+    {
+      "item": "Stop execution and gap-through behaviour",
+      "classification": "B",
+      "evidence": "Uses the frozen ledger exit reference (stop level or gap-through bar open) with an additional 3 bps adverse concession and tick-down. Mechanically verified; 5-minute OHLC cannot establish the intrabar path."
+    },
+    {
+      "item": "Target touch versus actual limit-order fill",
+      "classification": "B",
+      "evidence": "Target is booked at the target reference minus 3 bps and tick-down. The model assumes a touch is fillable; queue position, partial fills, and touch-and-reverse are not modelled. This is optimistic relative to a real limit order."
+    },
+    {
+      "item": "Same-candle stop/target ambiguity",
+      "classification": "B",
+      "evidence": "Predeclared stop-first convention; ambiguous flag retained; tie-win and 50/50 reported as sensitivities. 24,998/101,789 resolved trades are ambiguous (24.56%). The true intrabar ordering is C/not established, and the signal sign flips under the alternative."
+    },
+    {
+      "item": "Spread and slippage assumptions",
+      "classification": "B",
+      "evidence": "2 bps spread + 1 bps slippage per side (accounting.py:24-26), scaled by the cost scenario. Constants are frozen assumptions, not venue-measured."
+    },
+    {
+      "item": "Tick and lot-size rounding",
+      "classification": "A",
+      "evidence": "TICK 0.01, LOT 0.00001 (accounting.py:18-19); ceil on buys, floor on sells, floor on lot size. Independently verified on every row, including size % LOT == 0."
+    },
+    {
+      "item": "Minimum notional",
+      "classification": "A",
+      "evidence": "$5 enforced in size_position (accounting.py:122) and rechecked after cash scaling (portfolio.py:396-398). The venue-specific Nobitex minimum is not established (C)."
+    },
+    {
+      "item": "Fee assumptions",
+      "classification": "A",
+      "evidence": "0.1% per side, scaled by scenario; entry fee on notional and exit fee on proceeds. Per-row recomputation matches. Realised fee tier, rebates and BNB discounts are not modelled (B for venue realism)."
+    },
+    {
+      "item": "C1 time-stop execution",
+      "classification": "A",
+      "evidence": "Named policy time_stop_c1_valid_12th_close; exit at the 12th candle close, only when C1-valid with all 12 candles present and no window gap; adverse concession and tick-down. 145 funded time exits; invalid censored rows receive no exit."
+    },
+    {
+      "item": "Open positions at end of evaluation window",
+      "classification": "A",
+      "evidence": "Hard abort if any position remains open (portfolio.py:529-532); independently confirmed zero open positions and final equity equal to final cash."
+    },
+    {
+      "item": "Data gaps and split boundaries",
+      "classification": "A",
+      "evidence": "No synthetic candle; resolved windows crossing a gap are rejected; censored rows with gaps or insufficient future bars are excluded from the signal and receive no invented exit. Canonical counts and C1 partition verified."
+    },
+    {
+      "item": "Intrabar fill realism from 5-minute OHLC",
+      "classification": "C",
+      "evidence": "Not modelled. 38.4% of funded trades are same-bar round trips; 24.6% of resolved trades are same-bar ties. The available OHLC cannot resolve the ordering or the fill path, so the primary magnitudes inherit this unverifiable assumption."
+    },
+    {
+      "item": "Nobitex-specific execution performance",
+      "classification": "C",
+      "evidence": "Not established by any artifact. Binance BTCUSDT spot is a proxy; no Nobitex fees, tick/lot/min-notional rules, liquidity, latency, outages, or order-book impact are modelled or validated."
+    }
+  ],
+  "statistical_interpretation": {
+    "frozen_signal_primary_is_barrier_only": true,
+    "frozen_signal_uses_resolved_only": true,
+    "frozen_signal_n": 101789,
+    "frozen_signal_mean_r": -0.22266647131037987,
+    "frozen_signal_independent_mean_r": -0.22266647131081266,
+    "frozen_signal_ci": [
+      -0.229,
+      -0.2164
+    ],
+    "censored_reported_separately": true,
+    "censored_n": 1769,
+    "censored_all_c1_valid": true,
+    "time_stops_not_merged_into_signal": true,
+    "time_stop_contribution_separate": true,
+    "episode_cluster_intervals_correctly_labelled": true,
+    "episode_cluster_signal_ci": [
+      -0.229,
+      -0.2164
+    ],
+    "portfolio_net_r_ci": [
+      -0.7275,
+      -0.6566
+    ],
+    "portfolio_net_pnl_per_trade_ci": [
+      -4.3413,
+      -3.0255
+    ],
+    "block_bootstrap_not_live_portfolio_risk": true,
+    "block_bootstrap_evidence": "The report explicitly says the intervals do not re-simulate capital allocation and defers portfolio path bootstrap to Stage 6b (line 150). The total net P&L cluster interval nevertheless reaches -$11,852, below the $10,000 capital, so it cannot be a feasible live-portfolio loss distribution.",
+    "negative_gross_expectancy_not_confused_with_net_loss": true,
+    "gross_vs_net_evidence": {
+      "signal_gross_mean_r": -0.2227,
+      "portfolio_gross_pnl": -821.3760330000105,
+      "portfolio_net_pnl": -9995.017960991121,
+      "portfolio_total_cost": 9173.64192799111,
+      "cost_to_gross_loss_ratio": 11.168626255729807
+    },
+    "cagr_interpreted_with_capital_infeasibility_disclosure": false,
+    "cagr_issue": "Reported CAGR -88.66% is annualised over ~1,276 days while the portfolio stopped trading after 169.4 days. The active-period annualisation is approximately -99.999992%. The disclosure is absent from the report.",
+    "time_in_market_denominator_documented": false,
+    "time_in_market_issue": "1.677% is the share of the full 1,277-day evaluation window, not the active period. Only 18 of 1,277 daily rows have an open position; the active period is 169.4 days.",
+    "tie_win_and_split_remain_sensitivities": true,
+    "tie_sensitivity": {
+      "ambiguous_resolved": 24998,
+      "ambiguous_share": 0.24558645826169823,
+      "stop_first_mean_r": -0.22266647131037987,
+      "tie_win_mean_r": 0.2685064452118356,
+      "tie_split_mean_r": 0.022919986950549184,
+      "non_ambiguous_mean_r": 0.03038119768942351,
+      "sign_flips": true
+    },
+    "funded_subset_selection": {
+      "funded_gross_r_raw_denominator": -0.06645663917372951,
+      "funded_resolved_gross_r_raw_denominator": -0.07716289945440374,
+      "full_resolved_signal_gross_r": -0.22266647131037987,
+      "note": "The feasibility filter selects a subpopulation with a much less negative gross edge than the full signal. The portfolio is therefore not a direct application of the signal expectancy; costs then turn the funded gross edge into a large net loss."
+    }
+  },
+  "independent_reconstruction": {
+    "script": "stage6_acceptance_audit/independent_portfolio_audit.py",
+    "imports_stage6_v2_modules": false,
+    "decimal_arithmetic_for_prices_and_cash": true,
+    "checks_total": 46,
+    "checks_passed": 46,
+    "checks_failed": [],
+    "totals": {
+      "initial_capital": "10000",
+      "final_equity": "4.9820390088998833598",
+      "net_pnl": "-9995.017960991120222091889",
+      "gross_pnl": "-821.37603300001048524894",
+      "fees": "7055.906353091100103673",
+      "spread_slippage": "2117.7355749000096139892",
+      "total_cost": "9173.641927991109736842949"
+    },
+    "counts": {
+      "primary_trades": 2711,
+      "resolved_trades": 2566,
+      "time_exit_trades": 145,
+      "canonical_trades": 103558,
+      "canonical_resolved": 101789,
+      "canonical_censored_valid": 1769,
+      "canonical_censored_invalid": 0,
+      "baseline_feasible": 14978,
+      "daily_rows": 1277
+    },
+    "reported_final_equity": 4.982039008876792,
+    "reconstructed_final_equity": "4.9820390088998833598",
+    "final_equity_abs_difference": 2.3090862555363856e-11,
+    "reconciled_items": [
+      "final portfolio equity",
+      "gross P&L",
+      "fees",
+      "spread and slippage",
+      "net P&L",
+      "trade counts and censoring partition",
+      "per-row cash chain",
+      "per-row sizing and cash-cap flags",
+      "all ten cost-scenario accounting identities",
+      "independent baseline feasibility count (14,978)",
+      "independent frozen-signal mean R (-0.222666471310813 vs -0.222666471310380)"
+    ],
+    "limitations": [
+      "The scenario trade ledgers are not retained, so scenario cash chains and per-trade selection cannot be independently reconstructed; only summary identities are verified.",
+      "The independent script reads the canonical ledger but does not rebuild it from the 2.5 GB observation ledger, so upstream observation construction is taken as given."
+    ]
+  },
+  "unresolved_risks": [
+    {
+      "risk": "Intrabar path and fill ambiguity",
+      "severity": "high for interpretation",
+      "detail": "38.4% same-bar round trips and 24.6% ambiguous same-bar ties; the signal sign flips between stop-first and tie-win. The true intrabar ordering is not recoverable from 5m OHLC."
+    },
+    {
+      "risk": "Venue transfer to Nobitex is not established",
+      "severity": "high for any live conclusion",
+      "detail": "Binance BTCUSDT spot is a proxy. Nobitex fees, tick/lot/min-notional, liquidity, latency and outages are not modelled or validated."
+    },
+    {
+      "risk": "Cost and slippage constants are unverified",
+      "severity": "material",
+      "detail": "2 bps spread + 1 bps slippage and 0.1% fees are frozen assumptions, not venue measurements."
+    },
+    {
+      "risk": "Path-dependent capital exhaustion makes point performance metrics misleading",
+      "severity": "material",
+      "detail": "Final equity and CAGR are dominated by the min-order floor and the early death of the portfolio; they are not a continuous return series."
+    },
+    {
+      "risk": "Scenario ledgers absent",
+      "severity": "material",
+      "detail": "Per-scenario chronology, selection and cash paths cannot be audited independently."
+    },
+    {
+      "risk": "No portfolio path bootstrap",
+      "severity": "material",
+      "detail": "The reported intervals resample trade statistics without re-simulating capital allocation; path-dependent risk is deferred to Stage 6b."
+    },
+    {
+      "risk": "Funded-subset selection changes the gross edge",
+      "severity": "material",
+      "detail": "The feasibility filter selects a subpopulation with gross R -0.066 versus the full signal -0.223. Portfolio results should not be read as the signal edge applied to a representative sample."
+    }
+  ],
+  "baseline_recommendation": {
+    "freeze_stage6_v1_as_development_baseline": true,
+    "conditions": [
+      "Freeze the accounting implementation and artifacts as the development baseline; do not change Stage 6 v1 rules during validation.",
+      "Before any validation/OOS work, add a short interpretation addendum that states: trading effectively ended 2021-06-19 after 169.4 days; 11,210 later eligible candidates were unfunded; final ~$5 is the min-order residual; CAGR is annualised over the full ~1,276-day window, not the active period; time_in_market uses the same full-window denominator; 38.4% of funded trades are same-bar round trips; 94.4% of entries are cash-cap bound; and scenario ledgers are not retained.",
+      "Do not describe -88.66% CAGR or the ~$5 final equity as a performance estimate; describe the result as capital destruction within roughly six months under the Binance spot proxy.",
+      "Retain the stop-first convention as primary and keep tie-win/split as labelled sensitivities, but state explicitly that the primary sign is not robust to intrabar ambiguity.",
+      "Do not treat scenario final equities as a ranking; they are floor residuals.",
+      "Do not make any Nobitex execution claim from this artifact."
+    ],
+    "validation_or_oos_authorised": false,
+    "next_step": "Wait for explicit authorization before any validation/OOS work."
+  },
+  "read_only_confirmation": {
+    "stage6_rebuild_modified": false,
+    "stage6_rebuild_v2_modified": false,
+    "accepted_artifacts_modified": false,
+    "untracked_work_preserved": true,
+    "audit_outputs_only": [
+      "stage6_acceptance_audit/STAGE6A_FINAL_ACCEPTANCE_AUDIT.md",
+      "stage6_acceptance_audit/acceptance_audit.json",
+      "stage6_acceptance_audit/independent_portfolio_audit.py",
+      "stage6_acceptance_audit/independent_portfolio_audit.json"
+    ],
+    "verification_method": "git status --porcelain shows only ?? stage6_acceptance_audit/; git status for stage6_rebuild_v2 and stage6_rebuild is empty; all 7 generated artifacts read by the audit match their determinism_check.json SHA-256 (the protocol markdown is not a generated artifact)."
+  }
+}

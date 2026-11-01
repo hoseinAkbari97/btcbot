@@ -1,0 +1,707 @@
+{
+  "audit": "Stage 6A final acceptance audit \u2014 independent portfolio reconstruction",
+  "read_only": true,
+  "imports_stage6_v2_modules": false,
+  "passed": true,
+  "failed_checks": [],
+  "checks": {
+    "trade_ids_unique": true,
+    "trade_count_2711": true,
+    "resolved_plus_time_exit_eq_total": true,
+    "time_stop_csv_matches_primary_time_rows": true,
+    "time_stop_csv_field_level_match": true,
+    "rows_sorted_by_exit_index": true,
+    "entry_not_after_exit": true,
+    "exit_reason_partition": true,
+    "time_rows_exit_index_is_entry_plus_11": true,
+    "resolved_rows_have_resolved_exit": true,
+    "per_trade_accounting_reconciles": true,
+    "all_entries_cash_funded": true,
+    "independent_sizing_matches_ledger": true,
+    "scaled_at_entry_never_used": true,
+    "no_feasible_candidate_below_min_notional": true,
+    "cash_chain_reconstructs_every_recorded_cash_field": true,
+    "final_equity_equals_cash_after_last_exit": true,
+    "final_equity_equals_initial_plus_net_pnl": true,
+    "totals_match_summary": true,
+    "total_cost_equals_fees_plus_spread": true,
+    "no_open_positions_at_end": true,
+    "max_concurrent_positions_two": true,
+    "daily_row_count": true,
+    "daily_final_equity_matches": true,
+    "no_negative_daily_cash": true,
+    "no_negative_daily_equity": true,
+    "equity_flat_after_last_exit": true,
+    "canonical_count": true,
+    "canonical_resolved_and_censored": true,
+    "no_lookahead_entry_after_confirmation": true,
+    "independent_feasible_count_14978": true,
+    "every_taken_trade_is_baseline_feasible": true,
+    "terminal_capital_exhaustion_is_min_order_not_halt": true,
+    "independent_frozen_signal_mean_matches": true,
+    "censored_excluded_from_signal": true,
+    "time_stop_contribution_separate": true,
+    "ten_cost_scenarios_present": true,
+    "all_scenario_identities_hold": true,
+    "fixed_universe_constant_candidate_count": true,
+    "refiltered_universe_reapplies_feasibility": true,
+    "fixed_1x_equals_primary_exactly": true,
+    "refiltered_1x_equals_primary_exactly": true,
+    "cost_scale_scales_fee_and_adverse_rate": true,
+    "higher_cost_never_increases_taken_count": true,
+    "all_scenarios_end_near_min_notional_floor": true,
+    "no_material_report_falsehood_detected": true
+  },
+  "evidence": {
+    "trade_ids_unique": {
+      "n": 2711,
+      "unique": 2711
+    },
+    "trade_count_2711": 2711,
+    "resolved_plus_time_exit_eq_total": {
+      "resolved": 2566,
+      "time_exit": 145,
+      "total": 2711
+    },
+    "time_stop_csv_matches_primary_time_rows": {
+      "time_csv": 145,
+      "primary_time": 145
+    },
+    "time_stop_csv_field_level_match": {
+      "field_diffs": 0
+    },
+    "exit_reason_partition": {
+      "stop": 1271,
+      "target": 1184,
+      "time_stop_c1_valid_12th_close": 145,
+      "stop_tie_stop_first": 111
+    },
+    "per_trade_accounting_reconciles": {},
+    "all_entries_cash_funded": {
+      "overdrawn": []
+    },
+    "independent_sizing_matches_ledger": {
+      "mismatches": []
+    },
+    "scaled_at_entry_never_used": 0,
+    "cash_chain_reconstructs_every_recorded_cash_field": {
+      "errors": [],
+      "n_errors": 0
+    },
+    "final_equity_equals_cash_after_last_exit": {
+      "reconstructed": "4.9820390088998833598",
+      "reported": 4.982039008876792
+    },
+    "final_equity_equals_initial_plus_net_pnl": {
+      "initial_plus_net": "4.982039008879777908111",
+      "cash": "4.9820390088998833598"
+    },
+    "totals_match_summary": {
+      "recon": {
+        "net_pnl": "-9995.017960991120222091889",
+        "gross_pnl": "-821.37603300001048524894",
+        "fees": "7055.906353091100103673",
+        "spread_slippage": "2117.7355749000096139892",
+        "total_cost": "9173.641927991109736842949"
+      },
+      "reported": {
+        "net_pnl": -9995.017960991121,
+        "gross_pnl": -821.3760330000105,
+        "fees": 7055.9063530911,
+        "spread_slippage": 2117.7355749000094,
+        "total_cost": 9173.64192799111
+      }
+    },
+    "total_cost_equals_fees_plus_spread": {
+      "total_cost": "9173.641927991109736842949",
+      "fees_plus_spread": "9173.6419279911097176622"
+    },
+    "no_open_positions_at_end": [],
+    "max_concurrent_positions_two": [
+      {
+        "bar": 227,
+        "trade_ids": [
+          25,
+          26
+        ]
+      }
+    ],
+    "daily_row_count": 1277,
+    "no_negative_daily_cash": "0.009289093076798594",
+    "no_negative_daily_equity": "4.982039008876792",
+    "equity_flat_after_last_exit": {
+      "last_change_date": "2021-06-19",
+      "final": "4.982039008876792"
+    },
+    "execution_profile": {
+      "same_bar_round_trips": 1041,
+      "same_bar_share_of_taken": 0.383991147178163,
+      "same_bar_share_of_resolved": 0.40568978955572876,
+      "same_bar_by_exit_reason": {
+        "stop": 485,
+        "target": 465,
+        "stop_tie_stop_first": 91
+      },
+      "same_bar_net_pnl": "-5658.28298848771424666316",
+      "same_bar_share_of_portfolio_net_pnl": 0.566110337227111,
+      "hold_minutes": {
+        "min": 4.999983333333334,
+        "median": 9.999983333333335,
+        "max": 59.99998333333333,
+        "le_5_minutes": 1041,
+        "le_10_minutes": 1592
+      },
+      "spot_cap_binds_entries": 2559,
+      "spot_cap_share": 0.9439321283659167,
+      "actual_over_requested_risk_median": 0.39785554554885516,
+      "entries_actual_risk_below_half_requested": 1864,
+      "mean_actual_risk_usd": "7.391560706713389893028402803",
+      "mean_requested_risk_usd": "13.84324829073300212348358539",
+      "bars_with_multiple_entries": 0,
+      "bars_with_entry_and_other_trade_exit": 8,
+      "entries_whose_funding_would_change_if_same_bar_exits_settled_first": 5,
+      "note": "The production loop processes entries before exits within a bar. Only one bar has an entry plus a different trade's exit, and the pre-exit cash already exceeded that exit's proceeds, so the convention is immaterial for the primary ledger."
+    },
+    "canonical_count": 103558,
+    "canonical_resolved_and_censored": {
+      "resolved": 101789,
+      "censored_valid": 1769,
+      "censored_invalid": 0
+    },
+    "independent_feasible_count_14978": 14978,
+    "every_taken_trade_is_baseline_feasible": {
+      "taken_not_feasible": []
+    },
+    "terminal_capital_exhaustion_is_min_order_not_halt": {
+      "final_equity": "4.9820390088998833598",
+      "min_notional": "5",
+      "unfunded_after_last_exit": 11210
+    },
+    "independent_frozen_signal_mean_matches": {
+      "reconstructed": "-0.2226664713108126465282063621",
+      "reported": "-0.22266647131037987",
+      "n": 101789,
+      "win_rate": 0.388666751810117
+    },
+    "censored_excluded_from_signal": {
+      "n_resolved": 101789,
+      "n_censored_excluded": 1769,
+      "uses_time_stops": false
+    },
+    "time_stop_contribution_separate": {
+      "trades": 145,
+      "net_pnl": -191.0542809521979
+    },
+    "ten_cost_scenarios_present": [
+      "cost_fixed_0.5x",
+      "cost_fixed_1.5x",
+      "cost_fixed_1x",
+      "cost_fixed_2x",
+      "cost_fixed_3x",
+      "cost_refiltered_0.5x",
+      "cost_refiltered_1.5x",
+      "cost_refiltered_1x",
+      "cost_refiltered_2x",
+      "cost_refiltered_3x",
+      "primary"
+    ],
+    "all_scenario_identities_hold": {
+      "primary": [],
+      "cost_refiltered_0.5x": [],
+      "cost_refiltered_1x": [],
+      "cost_refiltered_1.5x": [],
+      "cost_refiltered_2x": [],
+      "cost_refiltered_3x": [],
+      "cost_fixed_0.5x": [],
+      "cost_fixed_1x": [],
+      "cost_fixed_1.5x": [],
+      "cost_fixed_2x": [],
+      "cost_fixed_3x": []
+    },
+    "fixed_universe_constant_candidate_count": {
+      "cost_fixed_0.5x": 14978,
+      "cost_fixed_1x": 14978,
+      "cost_fixed_1.5x": 14978,
+      "cost_fixed_2x": 14978,
+      "cost_fixed_3x": 14978
+    },
+    "refiltered_universe_reapplies_feasibility": {
+      "cost_refiltered_0.5x": 36485,
+      "cost_refiltered_1x": 14978,
+      "cost_refiltered_1.5x": 6719,
+      "cost_refiltered_2x": 3326,
+      "cost_refiltered_3x": 1140
+    },
+    "cost_scale_scales_fee_and_adverse_rate": {
+      "rates_contract": true,
+      "fee_share_by_scenario": {
+        "cost_fixed_0.5x": {
+          "fees": 6359.64298335135,
+          "spread": 1909.544706299968,
+          "fee_share": 0.76907711156566
+        },
+        "cost_fixed_1.5x": {
+          "fees": 7336.067906976,
+          "spread": 2201.4951295999776,
+          "fee_share": 0.7691763481764288
+        },
+        "cost_fixed_1x": {
+          "fees": 7055.9063530911,
+          "spread": 2117.7355749000094,
+          "fee_share": 0.769149963392591
+        },
+        "cost_fixed_2x": {
+          "fees": 7476.1262700108,
+          "spread": 2243.343638999989,
+          "fee_share": 0.7691907418818987
+        },
+        "cost_fixed_3x": {
+          "fees": 7600.9856603472,
+          "spread": 2280.655610199995,
+          "fee_share": 0.7692027520774691
+        },
+        "cost_refiltered_0.5x": {
+          "fees": 6479.19994744465,
+          "spread": 1945.495508700027,
+          "fee_share": 0.7690723042954566
+        },
+        "cost_refiltered_1.5x": {
+          "fees": 7429.0636993503,
+          "spread": 2229.391319099972,
+          "fee_share": 0.7691772322963426
+        },
+        "cost_refiltered_1x": {
+          "fees": 7055.9063530911,
+          "spread": 2117.7355749000094,
+          "fee_share": 0.769149963392591
+        },
+        "cost_refiltered_2x": {
+          "fees": 7218.802588082201,
+          "spread": 2166.1069626999965,
+          "fee_share": 0.7691925584387268
+        },
+        "cost_refiltered_3x": {
+          "fees": 7255.8133406259,
+          "spread": 2177.0622061999834,
+          "fee_share": 0.7692048203760565
+        },
+        "primary": {
+          "fees": 7055.9063530911,
+          "spread": 2117.7355749000094,
+          "fee_share": 0.769149963392591
+        }
+      }
+    },
+    "higher_cost_never_increases_taken_count": {
+      "fixed_taken": {
+        "cost_fixed_0.5x": 5060,
+        "cost_fixed_1x": 2711,
+        "cost_fixed_1.5x": 1885,
+        "cost_fixed_2x": 1434,
+        "cost_fixed_3x": 988
+      },
+      "refiltered_taken": {
+        "cost_refiltered_0.5x": 5105,
+        "cost_refiltered_1x": 2711,
+        "cost_refiltered_1.5x": 1926,
+        "cost_refiltered_2x": 1451,
+        "cost_refiltered_3x": 1054
+      }
+    },
+    "all_scenarios_end_near_min_notional_floor": {
+      "cost_fixed_0.5x": 4.984937948663406,
+      "cost_fixed_1.5x": 4.999014824016776,
+      "cost_fixed_1x": 4.982039008876792,
+      "cost_fixed_2x": 4.974133789203581,
+      "cost_fixed_3x": 4.96631365280205,
+      "cost_refiltered_0.5x": 4.999640655324083,
+      "cost_refiltered_1.5x": 4.987128649719818,
+      "cost_refiltered_1x": 4.982039008876792,
+      "cost_refiltered_2x": 5.001637417795693,
+      "cost_refiltered_3x": 5.082277474112466,
+      "primary": 4.982039008876792
+    },
+    "interpretation": {
+      "reported_cagr": -0.8865907958408427,
+      "active_trading_days_from_first_entry_to_last_exit": 169.42708332175926,
+      "cagr_over_active_period_only": -0.9999999240919313,
+      "reported_time_in_market": 0.016770570003455887,
+      "daily_days_with_open_position": 18,
+      "daily_rows": 1277,
+      "time_in_market_uses_full_window": true,
+      "active_period_share_of_daily_rows": 0.014095536413469069,
+      "report_discloses_binance_proxy": true,
+      "report_discloses_no_nobitex_claim": true,
+      "report_discloses_5m_ohlc_limit": true,
+      "report_discloses_capital_infeasibility": false,
+      "report_states_trading_ended_on_2021_06_19": false,
+      "report_explains_final_equity_is_min_order_residual": false,
+      "report_explains_cagr_window": false,
+      "report_quantifies_same_bar_entry_exit": false,
+      "report_quantifies_spot_cap_share": false,
+      "report_discloses_tie_convention": true,
+      "report_discloses_path_bootstrap_limit": true
+    },
+    "no_material_report_falsehood_detected": {
+      "reported_cagr": -0.8865907958408427,
+      "active_trading_days_from_first_entry_to_last_exit": 169.42708332175926,
+      "cagr_over_active_period_only": -0.9999999240919313,
+      "reported_time_in_market": 0.016770570003455887,
+      "daily_days_with_open_position": 18,
+      "daily_rows": 1277,
+      "time_in_market_uses_full_window": true,
+      "active_period_share_of_daily_rows": 0.014095536413469069,
+      "report_discloses_binance_proxy": true,
+      "report_discloses_no_nobitex_claim": true,
+      "report_discloses_5m_ohlc_limit": true,
+      "report_discloses_capital_infeasibility": false,
+      "report_states_trading_ended_on_2021_06_19": false,
+      "report_explains_final_equity_is_min_order_residual": false,
+      "report_explains_cagr_window": false,
+      "report_quantifies_same_bar_entry_exit": false,
+      "report_quantifies_spot_cap_share": false,
+      "report_discloses_tie_convention": true,
+      "report_discloses_path_bootstrap_limit": true
+    }
+  },
+  "counts": {
+    "primary_trades": 2711,
+    "resolved_trades": 2566,
+    "time_exit_trades": 145,
+    "canonical_trades": 103558,
+    "canonical_resolved": 101789,
+    "canonical_censored_valid": 1769,
+    "canonical_censored_invalid": 0,
+    "baseline_feasible": 14978,
+    "daily_rows": 1277
+  },
+  "totals": {
+    "initial_capital": "10000",
+    "final_equity": "4.9820390088998833598",
+    "net_pnl": "-9995.017960991120222091889",
+    "gross_pnl": "-821.37603300001048524894",
+    "fees": "7055.906353091100103673",
+    "spread_slippage": "2117.7355749000096139892",
+    "total_cost": "9173.641927991109736842949"
+  },
+  "capital_timeline": {
+    "initial_capital": "10000",
+    "final_equity": "4.9820390088998833598",
+    "first_entry": {
+      "trade_id": 0,
+      "entry_time": "2021-01-01T02:50:00+00:00",
+      "risk_sized_notional_at_1pct": "35973.07503678273663560568905",
+      "cash_before_entry": "10000.0",
+      "actual_notional": "9989.8540236",
+      "spot_cap_binds": true
+    },
+    "first_min_order_rejection": {
+      "trade_id": 6,
+      "entry_time": "2021-01-01T07:20:00+00:00",
+      "cash_at_bar_open": "0.056573402899999",
+      "open_positions_at_bar_open": 1
+    },
+    "last_funded_entry": {
+      "trade_id": 10621,
+      "entry_time": "2021-06-19T12:55:00+00:00",
+      "entry_index": 48708,
+      "notional": "5.000394",
+      "cash_before_entry": "5.006892928876791",
+      "cash_before_entry_bar_start": "5.0068929288998833603",
+      "exit_time": "2021-06-19T13:04:59.999000+00:00",
+      "cash_after_exit": "4.982039008876792"
+    },
+    "first_candidate_after_last_funded_entry": {
+      "trade_id": 10622,
+      "entry_index": 48709,
+      "entry_time": "2021-06-19T13:00:00+00:00",
+      "per_unit": "102.23",
+      "notional_at_risk": "34973.83351266751442825002445",
+      "cost_to_risk": "0.9103737650396165509146043236"
+    },
+    "first_candidate_after_last_exit": {
+      "trade_id": 10624,
+      "entry_index": 48722,
+      "entry_time": "2021-06-19T14:05:00+00:00",
+      "per_unit": "115.96",
+      "notional_at_risk": "30943.91169368747844084166954",
+      "cost_to_risk": "0.8056117626767850983097619869"
+    },
+    "candidates_between_last_entry_and_last_exit": 1,
+    "eligible_candidates_after_last_exit": 11210,
+    "eligible_candidates_all_unfunded": 11210,
+    "explicit_halt_flag_present": false,
+    "explicit_halt_note": "No halt state exists.  The event loop keeps scanning to the end of the development window; every later eligible candidate is rejected by the minimum-order/cash-cap check in size_position.",
+    "min_notional_threshold": "5",
+    "residual_cash_below_min_notional": true,
+    "min_order_skips_total": 12267,
+    "min_order_skips_after_last_exit": 11210,
+    "min_order_skips_before_last_exit": 1057
+  },
+  "scenarios": {
+    "primary": {
+      "cost_scale": 1.0,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 14978,
+      "n_taken": 2711,
+      "final_equity": 4.982039008876792,
+      "net_pnl": -9995.017960991121,
+      "total_cost": 9173.64192799111,
+      "fees": 7055.9063530911,
+      "spread_slippage": 2117.7355749000094,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_refiltered_0.5x": {
+      "cost_scale": 0.5,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 36485,
+      "n_taken": 5105,
+      "final_equity": 4.999640655324083,
+      "net_pnl": -9995.000359344676,
+      "total_cost": 8424.695456144678,
+      "fees": 6479.19994744465,
+      "spread_slippage": 1945.495508700027,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_refiltered_1x": {
+      "cost_scale": 1.0,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 14978,
+      "n_taken": 2711,
+      "final_equity": 4.982039008876792,
+      "net_pnl": -9995.017960991121,
+      "total_cost": 9173.64192799111,
+      "fees": 7055.9063530911,
+      "spread_slippage": 2117.7355749000094,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_refiltered_1.5x": {
+      "cost_scale": 1.5,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 6719,
+      "n_taken": 1926,
+      "final_equity": 4.987128649719818,
+      "net_pnl": -9995.01287135028,
+      "total_cost": 9658.455018450271,
+      "fees": 7429.0636993503,
+      "spread_slippage": 2229.391319099972,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_refiltered_2x": {
+      "cost_scale": 2.0,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 3326,
+      "n_taken": 1451,
+      "final_equity": 5.001637417795693,
+      "net_pnl": -9994.998362582202,
+      "total_cost": 9384.909550782197,
+      "fees": 7218.802588082201,
+      "spread_slippage": 2166.1069626999965,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_refiltered_3x": {
+      "cost_scale": 3.0,
+      "fixed_universe": false,
+      "n_candidates": 103558,
+      "n_feasible": 1140,
+      "n_taken": 1054,
+      "final_equity": 5.082277474112466,
+      "net_pnl": -9994.917722525886,
+      "total_cost": 9432.875546825884,
+      "fees": 7255.8133406259,
+      "spread_slippage": 2177.0622061999834,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_fixed_0.5x": {
+      "cost_scale": 0.5,
+      "fixed_universe": true,
+      "n_candidates": 14978,
+      "n_feasible": 14978,
+      "n_taken": 5060,
+      "final_equity": 4.984937948663406,
+      "net_pnl": -9995.01506205133,
+      "total_cost": 8269.187689651319,
+      "fees": 6359.64298335135,
+      "spread_slippage": 1909.544706299968,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_fixed_1x": {
+      "cost_scale": 1.0,
+      "fixed_universe": true,
+      "n_candidates": 14978,
+      "n_feasible": 14978,
+      "n_taken": 2711,
+      "final_equity": 4.982039008876792,
+      "net_pnl": -9995.017960991121,
+      "total_cost": 9173.64192799111,
+      "fees": 7055.9063530911,
+      "spread_slippage": 2117.7355749000094,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_fixed_1.5x": {
+      "cost_scale": 1.5,
+      "fixed_universe": true,
+      "n_candidates": 14978,
+      "n_feasible": 14978,
+      "n_taken": 1885,
+      "final_equity": 4.999014824016776,
+      "net_pnl": -9995.000985175984,
+      "total_cost": 9537.563036575975,
+      "fees": 7336.067906976,
+      "spread_slippage": 2201.4951295999776,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_fixed_2x": {
+      "cost_scale": 2.0,
+      "fixed_universe": true,
+      "n_candidates": 14978,
+      "n_feasible": 14978,
+      "n_taken": 1434,
+      "final_equity": 4.974133789203581,
+      "net_pnl": -9995.025866210795,
+      "total_cost": 9719.46990901079,
+      "fees": 7476.1262700108,
+      "spread_slippage": 2243.343638999989,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    },
+    "cost_fixed_3x": {
+      "cost_scale": 3.0,
+      "fixed_universe": true,
+      "n_candidates": 14978,
+      "n_feasible": 14978,
+      "n_taken": 988,
+      "final_equity": 4.96631365280205,
+      "net_pnl": -9995.033686347198,
+      "total_cost": 9881.641270547194,
+      "fees": 7600.9856603472,
+      "spread_slippage": 2280.655610199995,
+      "identities": {
+        "equity_identity": true,
+        "total_cost_identity": true,
+        "cost_components_identity": true,
+        "taken_plus_skipped_eq_canonical": true,
+        "taken_plus_candidate_skips_eq_candidates": true,
+        "nonnegative_cash_implied": true
+      }
+    }
+  },
+  "reported_signal": {
+    "n_resolved": 101789,
+    "n_censored_excluded": 1769,
+    "primary_mean_r": -0.22266647131037987,
+    "independent_mean_r": -0.22266647131081266,
+    "independent_win_rate": 0.388666751810117,
+    "tie_win_mean_r": 0.2685064452118356,
+    "tie_split_mean_r": 0.022919986950549184,
+    "non_ambiguous_mean_r": 0.03038119768942351
+  },
+  "artifact_hashes": {
+    "primary_portfolio_trades.csv": {
+      "sha256": "3d1b88891b63c8d55aa210154ea4052506659c0dd35ba6eee77887484f530cb5",
+      "bytes": 1237544
+    },
+    "time_stop_trades.csv": {
+      "sha256": "d728177ba72e10c86cc12e474a33fdc2ff0cd2d3bb7335c63d000fcdd6dfee1f",
+      "bytes": 69923
+    },
+    "daily_equity.csv": {
+      "sha256": "255a822f7e77c1d63c340dcfd2b4caff9632e4f5523f777fc65afd38dc8f2d34",
+      "bytes": 66782
+    },
+    "canonical_trades.jsonl.gz": {
+      "sha256": "796d47230b28da858a5d7ac519d31ae81394896aeb09d9c23535f6aef3d5ea91",
+      "bytes": 6365420
+    },
+    "stage6_v2_summary.json": {
+      "sha256": "eb6ffb8eee7b6da2f14d9dfae2cffd756a28d599791247377c4704ab2fc9a46b",
+      "bytes": 80015
+    },
+    "verification_report.json": {
+      "sha256": "948d4089be14888a82b0c8ee4fe64b369df2edddc7cf9f9ca4885f8f4447fd88",
+      "bytes": 43178
+    },
+    "STAGE6_ACCOUNTING_REBUILD_V2.md": {
+      "sha256": "5954bf83994ff4b02b1b21a4e6fdefcdfa1b21ac368b0d6b81a8f37c5e61c7b4",
+      "bytes": 13181
+    },
+    "STAGE6_V2_PROTOCOL.md": {
+      "sha256": "7603680d323e5d31463bb7d98027414892bee0f1133f15b2669fdcb0e1657f08",
+      "bytes": 5175
+    }
+  }
+}
