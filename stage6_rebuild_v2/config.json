@@ -1,0 +1,60 @@
+{
+  "stage": "6 v1",
+  "implementation": "approved rebuild v2",
+  "data_scope": "development split only: 2021-01-01T00:00:00Z inclusive to 2024-07-01T00:00:00Z exclusive",
+  "execution_proxy": "Binance BTCUSDT spot, long-only, no leverage",
+  "nobitex_integration": false,
+  "output_dir": "stage6_rebuild_v2",
+  "barrier_horizon_bars": 12,
+  "target_r": 1.0,
+  "primary_tie_convention": "stop_first",
+  "time_stop_policy": "time_stop_c1_valid_12th_close",
+  "time_stop_validity": "C1-valid 12-candle no-barrier trade; entry inside development, all twelve candles present, no data gap in the window",
+  "entry": "bar open",
+  "barrier_exit": "frozen ledger exit reference at the barrier bar",
+  "time_exit": "close of the 12th candle (entry_index + 11)",
+  "canonical_identity": [
+    "entry_index",
+    "entry_price",
+    "stop_price",
+    "target_r=1"
+  ],
+  "initial_capital": 10000.0,
+  "risk_fraction": 0.01,
+  "tick": 0.01,
+  "lot": 1e-05,
+  "min_notional": 5.0,
+  "fee_rate_per_side": 0.001,
+  "spread_rate_per_side": 0.0002,
+  "slippage_rate_per_side": 0.0001,
+  "adverse_rate_per_side": 0.0003,
+  "max_cost_to_risk": 1.0,
+  "cost_scenarios": [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0
+  ],
+  "cost_scenario_universes": [
+    "refiltered",
+    "fixed_primary"
+  ],
+  "block_days": 14,
+  "block_sensitivities_deferred": [
+    7,
+    28
+  ],
+  "portfolio_path_bootstrap": "deferred to Stage 6b",
+  "bootstrap_resamples": 10000,
+  "seed": 20240101,
+  "expected_stage5_checkpoint": {
+    "rows": 2395528,
+    "unique_entry_candles": 103558,
+    "resolved_trades": 101789,
+    "episodes": 22982,
+    "unique_event_indices": 103558
+  },
+  "dev_end": "2024-07-01T00:00:00+00:00",
+  "hard_abort_on_identity_or_accounting_conflict": true
+}

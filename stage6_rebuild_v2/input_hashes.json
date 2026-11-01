@@ -1,0 +1,27 @@
+{
+  "analysis_setup1_dev/setup1-analysis-ledger.jsonl": {
+    "path": "analysis_setup1_dev/setup1-analysis-ledger.jsonl",
+    "bytes": 2529464418,
+    "sha256": "f7a2d1da209ae31228f2688914a829cdda1edda9dfafce4f74c98388c9ced116"
+  },
+  "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json": {
+    "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+    "bytes": 256461100,
+    "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681"
+  },
+  "backend/data/datasets/manifest.json": {
+    "path": "backend/data/datasets/manifest.json",
+    "bytes": 1484,
+    "sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25"
+  },
+  "backend/data/research/run-setup1-dev-20261027-approved/report.json": {
+    "path": "backend/data/research/run-setup1-dev-20261027-approved/report.json",
+    "bytes": 35038,
+    "sha256": "6e59e50774d01efe346d2a6635699cb2b850e4c26a12180ee993c41fb9fe0481"
+  },
+  "backend/data/research/run-setup1-dev-20261027-approved/setup1-ledger-reconciliation.json": {
+    "path": "backend/data/research/run-setup1-dev-20261027-approved/setup1-ledger-reconciliation.json",
+    "bytes": 1634,
+    "sha256": "3a33f5f9ae956934ee6e751e4a7d3c0973d7469f8da517061f59eac55b38f812"
+  }
+}

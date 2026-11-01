@@ -1,0 +1,13 @@
+{
+  "git_head": "f24af18cd57f6a615160e53b997336ed79e1963e",
+  "git_status_porcelain": "?? stage6_rebuild_v2/",
+  "source_hashes": {
+    "accounting.py": "6899e39578c8f8ae671b7b10f05b025f27745f8e72c15e52824a1d107b128d97",
+    "canonical.py": "0c580381462d6c51cbce4bf24ca864679175eead57a580f5013e6e09d55ba7ed",
+    "frozen_signal.py": "9a2313b3fb06294bb21c9c3ec4edab185723c6972123b6d452119c3654cb9c82",
+    "portfolio.py": "8ada2a2e6ad967e71d9670008c1a3229c3d0a0e9698e08c4009d8d3c06dee176",
+    "rebuild_setup1_accounting.py": "a704ac184e7f69a488387a3fe086321f7afdee018e05a424d6c2dd327eb9e286",
+    "verification.py": "aa6ebcd3cdd0030e0867ef753912d4a41685cedacb56797a118f8b7c00e36d02",
+    "verify_determinism.py": "5531cd0b05174657fd3d7d7a2a489c367d66ffd35dd5622e224d26b6124682e7"
+  }
+}

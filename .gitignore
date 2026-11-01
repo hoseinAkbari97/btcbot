@@ -80,3 +80,14 @@ analysis_setup1_dev/
 stage6_rebuild/canonical_trades.jsonl.gz
 stage6_rebuild/daily_equity.csv
 stage6_rebuild/__pycache__/
+
+# --- Stage 6 v1 v2 generated accounting artifacts ---
+# Same policy as the Stage 6 draft above: the canonical ledger, the equity
+# curve, and the trade-level CSVs are rebuilt from the local Setup 1
+# observation ledger by `python stage6_rebuild_v2/rebuild_setup1_accounting.py`.
+# Keep the scripts, reports, summary, verification, and determinism metadata.
+stage6_rebuild_v2/canonical_trades.jsonl.gz
+stage6_rebuild_v2/daily_equity.csv
+stage6_rebuild_v2/primary_portfolio_trades.csv
+stage6_rebuild_v2/time_stop_trades.csv
+stage6_rebuild_v2/__pycache__/

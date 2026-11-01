@@ -1,0 +1,79 @@
+{
+  "check": "repeated full run produces byte-identical accepted artifacts",
+  "run_a": "stage6_rebuild_v2",
+  "run_b": ".tmp-verify/rerun_b",
+  "artifacts": {
+    "canonical_trades.jsonl.gz": {
+      "a_sha256": "796d47230b28da858a5d7ac519d31ae81394896aeb09d9c23535f6aef3d5ea91",
+      "b_sha256": "796d47230b28da858a5d7ac519d31ae81394896aeb09d9c23535f6aef3d5ea91",
+      "a_bytes": 6365420,
+      "b_bytes": 6365420,
+      "equal": true
+    },
+    "daily_equity.csv": {
+      "a_sha256": "255a822f7e77c1d63c340dcfd2b4caff9632e4f5523f777fc65afd38dc8f2d34",
+      "b_sha256": "255a822f7e77c1d63c340dcfd2b4caff9632e4f5523f777fc65afd38dc8f2d34",
+      "a_bytes": 66782,
+      "b_bytes": 66782,
+      "equal": true
+    },
+    "primary_portfolio_trades.csv": {
+      "a_sha256": "3d1b88891b63c8d55aa210154ea4052506659c0dd35ba6eee77887484f530cb5",
+      "b_sha256": "3d1b88891b63c8d55aa210154ea4052506659c0dd35ba6eee77887484f530cb5",
+      "a_bytes": 1237544,
+      "b_bytes": 1237544,
+      "equal": true
+    },
+    "time_stop_trades.csv": {
+      "a_sha256": "d728177ba72e10c86cc12e474a33fdc2ff0cd2d3bb7335c63d000fcdd6dfee1f",
+      "b_sha256": "d728177ba72e10c86cc12e474a33fdc2ff0cd2d3bb7335c63d000fcdd6dfee1f",
+      "a_bytes": 69923,
+      "b_bytes": 69923,
+      "equal": true
+    },
+    "stage6_v2_summary.json": {
+      "a_sha256": "eb6ffb8eee7b6da2f14d9dfae2cffd756a28d599791247377c4704ab2fc9a46b",
+      "b_sha256": "eb6ffb8eee7b6da2f14d9dfae2cffd756a28d599791247377c4704ab2fc9a46b",
+      "a_bytes": 80015,
+      "b_bytes": 80015,
+      "equal": true
+    },
+    "verification_report.json": {
+      "a_sha256": "948d4089be14888a82b0c8ee4fe64b369df2edddc7cf9f9ca4885f8f4447fd88",
+      "b_sha256": "948d4089be14888a82b0c8ee4fe64b369df2edddc7cf9f9ca4885f8f4447fd88",
+      "a_bytes": 43178,
+      "b_bytes": 43178,
+      "equal": true
+    },
+    "input_hashes.json": {
+      "a_sha256": "f98ff7aa0d9ff369908db456d3b54afc08a37eb1ac00d4a45f9000b36e1860de",
+      "b_sha256": "f98ff7aa0d9ff369908db456d3b54afc08a37eb1ac00d4a45f9000b36e1860de",
+      "a_bytes": 1244,
+      "b_bytes": 1244,
+      "equal": true
+    },
+    "config.json": {
+      "a_sha256": "8c4dfca037a71bcad915f674ce63ff0805df5a76b47d815dcb90be5032a3b1e0",
+      "b_sha256": "8c4dfca037a71bcad915f674ce63ff0805df5a76b47d815dcb90be5032a3b1e0",
+      "a_bytes": 1741,
+      "b_bytes": 1741,
+      "equal": true
+    },
+    "code_version.json": {
+      "a_sha256": "79dfe5bc0b549246acc9d22a96c2b698778f21cea050faee22429966d069ad4f",
+      "b_sha256": "79dfe5bc0b549246acc9d22a96c2b698778f21cea050faee22429966d069ad4f",
+      "a_bytes": 786,
+      "b_bytes": 786,
+      "equal": true
+    },
+    "STAGE6_ACCOUNTING_REBUILD_V2.md": {
+      "a_sha256": "5954bf83994ff4b02b1b21a4e6fdefcdfa1b21ac368b0d6b81a8f37c5e61c7b4",
+      "b_sha256": "5954bf83994ff4b02b1b21a4e6fdefcdfa1b21ac368b0d6b81a8f37c5e61c7b4",
+      "a_bytes": 13181,
+      "b_bytes": 13181,
+      "equal": true
+    }
+  },
+  "compared": 10,
+  "passed": true
+}
