@@ -1,0 +1,813 @@
+{
+  "census": "Stage 2A feasibility census \u2014 counting only, no P&L",
+  "generated_utc": "2026-11-01T12:45:50+03:30",
+  "git_head": "e5f495f0e1fcf1fe5bf2f7f5afbeb8f35aa0e460",
+  "strategy": "SETUP_2_COMPRESSION_BREAKOUT_CONTINUATION",
+  "interval": {
+    "start_inclusive": "2021-01-01 00:00:00+00:00",
+    "end_exclusive": "2024-07-01 00:00:00+00:00",
+    "span_years": 3.496
+  },
+  "datasets": {
+    "5m": {
+      "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "manifest_sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "match": true
+    },
+    "4h": {
+      "path": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+      "manifest_sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+      "match": true
+    },
+    "manifest": {
+      "path": "backend/data/datasets/manifest.json",
+      "sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25"
+    }
+  },
+  "config": {
+    "signal_timeframe": "4h",
+    "execution_timeframe": "5m",
+    "vol_window": 20,
+    "short_window": 5,
+    "max_compression_ratio": "0.60",
+    "volume_window": 20,
+    "max_volume_ratio": "0.80",
+    "min_duration_bars": 6,
+    "target_r_design_only": 2,
+    "max_hold_bars_design_only": 18,
+    "primary_round_trip_bps": "26",
+    "primary_cost_fraction": "0.0026",
+    "gate_cost_r": "0.20",
+    "candidate_a": {
+      "channel": 20,
+      "trend_sma": 200,
+      "atr_window": 20,
+      "atr_multiple": "1.5"
+    },
+    "control_window": 20
+  },
+  "alignment": {
+    "five_min_bars_in_dev": 367563,
+    "five_min_duplicate_timestamps": 0,
+    "five_min_bars_off_grid": 0,
+    "five_min_gaps": 7,
+    "five_min_gap_total_minutes": 1065.0,
+    "five_min_gap_minutes_detail": [
+      80.0,
+      85.0,
+      95.0,
+      125.0,
+      155.0,
+      275.0,
+      285.0
+    ],
+    "four_h_bars_in_dev": 7662,
+    "four_h_bars_off_grid": 0,
+    "four_h_buckets_with_no_5m_data": 0,
+    "four_h_buckets_with_partial_5m": 12,
+    "partial_bucket_keys": [
+      "2021-02-11T0",
+      "2021-02-11T1",
+      "2021-03-06T0",
+      "2021-04-20T0",
+      "2021-04-20T1",
+      "2021-04-25T1",
+      "2021-04-25T2",
+      "2021-08-13T0",
+      "2021-08-13T1",
+      "2021-09-29T1",
+      "2021-09-29T2",
+      "2023-03-24T3"
+    ],
+    "gaps": [
+      {
+        "after": "2021-02-11 03:40:00+00:00",
+        "resumes_at": "2021-02-11 05:00:00+00:00",
+        "missing_minutes": 75.0
+      },
+      {
+        "after": "2021-03-06 01:55:00+00:00",
+        "resumes_at": "2021-03-06 03:30:00+00:00",
+        "missing_minutes": 90.0
+      },
+      {
+        "after": "2021-04-20 01:55:00+00:00",
+        "resumes_at": "2021-04-20 04:30:00+00:00",
+        "missing_minutes": 150.0
+      },
+      {
+        "after": "2021-04-25 04:00:00+00:00",
+        "resumes_at": "2021-04-25 08:45:00+00:00",
+        "missing_minutes": 280.0
+      },
+      {
+        "after": "2021-08-13 01:55:00+00:00",
+        "resumes_at": "2021-08-13 06:30:00+00:00",
+        "missing_minutes": 270.0
+      },
+      {
+        "after": "2021-09-29 06:55:00+00:00",
+        "resumes_at": "2021-09-29 09:00:00+00:00",
+        "missing_minutes": 120.0
+      },
+      {
+        "after": "2023-03-24 12:35:00+00:00",
+        "resumes_at": "2023-03-24 14:00:00+00:00",
+        "missing_minutes": 80.0
+      }
+    ],
+    "five_min_buckets_with_no_4h_bar": 0,
+    "four_h_buckets_exact": 7650,
+    "field_mismatches": {
+      "open": 1,
+      "high": 0,
+      "low": 0,
+      "close": 0,
+      "volume": 0,
+      "quote_volume": 0,
+      "trade_count": 0,
+      "close_time": 0
+    },
+    "mismatch_examples": [
+      {
+        "bucket": "2023-03-24T3",
+        "field": "open",
+        "reconstructed": "28080.00000000",
+        "vendor": "28079.99000000"
+      }
+    ],
+    "alignment_ok": false
+  },
+  "candidate_c": {
+    "stage_counts": {
+      "1_valid_4h_bars": 7662,
+      "2_compression_episodes": 461,
+      "3_episodes_min_duration": 63,
+      "4_confirmed_upside_breakout": 17,
+      "5_valid_positive_stop": 17,
+      "6_passing_cost_r_020": 12,
+      "7_unique_after_dedup": 12,
+      "8_after_cooldown": 12
+    },
+    "gate_counts_primary_stop": {
+      "0.10": 5,
+      "0.20": 12,
+      "0.30": 16,
+      "0.50": 17,
+      "1.00": 17
+    },
+    "stop_pct_distribution": {
+      "n": 17,
+      "median": 0.021047924848205272,
+      "p10": 0.010004152646724973,
+      "p25": 0.011085891382540125,
+      "p75": 0.033078815438567825,
+      "p90": 0.04681777915492741,
+      "min": 0.0054439275462733845,
+      "max": 0.07561272389707765
+    },
+    "cost_r_distribution": {
+      "n": 17,
+      "median": 0.12352761703354802,
+      "p10": 0.057344286341140846,
+      "p25": 0.07860015437458995,
+      "p75": 0.23453233576642335,
+      "p90": 0.2600138395702445,
+      "min": 0.034385747080597995,
+      "max": 0.47759636363636365
+    },
+    "feasible_stop_pct_distribution": {
+      "n": 12,
+      "median": 0.02461589780370946,
+      "p10": 0.016620914601459084,
+      "p25": 0.02072340704730409,
+      "p75": 0.03588097284090415,
+      "p90": 0.055620041495329356,
+      "min": 0.015552392041769015,
+      "max": 0.07561272389707765
+    },
+    "feasible_cost_r_distribution": {
+      "n": 12,
+      "median": 0.10563266893274421,
+      "p10": 0.047317018818921065,
+      "p25": 0.07272819657826339,
+      "p75": 0.125557349068613,
+      "p90": 0.15695887651046223,
+      "min": 0.034385747080597995,
+      "max": 0.1671768556899278
+    },
+    "tight_bars": 1292,
+    "episodes_all": 461,
+    "episodes_duration_ge_6": 63,
+    "episodes_truncated_at_end": 0,
+    "duration_histogram": {
+      "1": 208,
+      "2": 89,
+      "3": 42,
+      "4": 37,
+      "5": 22,
+      "6": 18,
+      "7": 9,
+      "8": 10,
+      "9": 10,
+      "10": 5,
+      "11": 5,
+      "12": 4,
+      "13": 1,
+      "15": 1
+    },
+    "strict_events_affected_by_missing_5m": 0,
+    "strict_events_affected_detail": []
+  },
+  "candidate_c_events": [
+    {
+      "variant": "strict",
+      "episode_start": "2021-10-02 16:00:00+00:00",
+      "episode_end": "2021-10-03 12:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2021-10-03 16:00:00+00:00",
+      "episode_high": "48300.00000000",
+      "episode_low": "47088.00000000",
+      "entry_ref": "48774.76000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "1686.76000000",
+      "stop_pct": 0.03458264069367025,
+      "cost_r": 0.07518222865137897
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2021-12-06 12:00:00+00:00",
+      "episode_end": "2021-12-07 08:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2021-12-07 12:00:00+00:00",
+      "episode_high": "51500.00000000",
+      "episode_low": "47822.39000000",
+      "entry_ref": "51734.15000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "3911.76000000",
+      "stop_pct": 0.07561272389707765,
+      "cost_r": 0.034385747080597995
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2022-03-26 04:00:00+00:00",
+      "episode_end": "2022-03-27 16:00:00+00:00",
+      "duration_bars": 10,
+      "trigger_time": "2022-03-27 20:00:00+00:00",
+      "episode_high": "45036.04000000",
+      "episode_low": "44140.76000000",
+      "entry_ref": "46827.76000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "2687.00000000",
+      "stop_pct": 0.05738049396340974,
+      "cost_r": 0.04531156531447711
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2022-05-21 08:00:00+00:00",
+      "episode_end": "2022-05-22 04:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2022-05-22 08:00:00+00:00",
+      "episode_high": "29656.18000000",
+      "episode_low": "29168.68000000",
+      "entry_ref": "29897.52000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "728.84000000",
+      "stop_pct": 0.024377941715567043,
+      "cost_r": 0.10665379507162066
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2022-10-22 08:00:00+00:00",
+      "episode_end": "2022-10-23 12:00:00+00:00",
+      "duration_bars": 8,
+      "trigger_time": "2022-10-23 16:00:00+00:00",
+      "episode_high": "19257.00000000",
+      "episode_low": "19070.11000000",
+      "entry_ref": "19500.38000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "430.27000000",
+      "stop_pct": 0.022064698226393537,
+      "cost_r": 0.1178352848211588
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-01-14 20:00:00+00:00",
+      "episode_end": "2023-01-15 20:00:00+00:00",
+      "duration_bars": 7,
+      "trigger_time": "2023-01-16 00:00:00+00:00",
+      "episode_high": "21072.27000000",
+      "episode_low": "20551.01000000",
+      "entry_ref": "21074.80000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "523.79000000",
+      "stop_pct": 0.02485385389185188,
+      "cost_r": 0.10461154279386776
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-02-18 00:00:00+00:00",
+      "episode_end": "2023-02-19 08:00:00+00:00",
+      "duration_bars": 9,
+      "trigger_time": "2023-02-19 12:00:00+00:00",
+      "episode_high": "24877.00000000",
+      "episode_low": "24430.00000000",
+      "entry_ref": "24922.21000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "492.21000000",
+      "stop_pct": 0.019749853644600537,
+      "cost_r": 0.13164654517380792
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-02-25 08:00:00+00:00",
+      "episode_end": "2023-02-26 12:00:00+00:00",
+      "duration_bars": 8,
+      "trigger_time": "2023-02-26 16:00:00+00:00",
+      "episode_high": "23331.26000000",
+      "episode_low": "22722.00000000",
+      "entry_ref": "23499.33000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "777.33000000",
+      "stop_pct": 0.033078815438567825,
+      "cost_r": 0.07860015437458995
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-04-28 16:00:00+00:00",
+      "episode_end": "2023-04-30 08:00:00+00:00",
+      "duration_bars": 11,
+      "trigger_time": "2023-04-30 12:00:00+00:00",
+      "episode_high": "29448.88000000",
+      "episode_low": "29031.00000000",
+      "entry_ref": "29655.18000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "624.18000000",
+      "stop_pct": 0.021047924848205272,
+      "cost_r": 0.12352761703354802
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-05-19 16:00:00+00:00",
+      "episode_end": "2023-05-20 12:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2023-05-20 16:00:00+00:00",
+      "episode_high": "26976.00000000",
+      "episode_low": "26780.73000000",
+      "entry_ref": "27063.04000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "282.31000000",
+      "stop_pct": 0.010431570141417964,
+      "cost_r": 0.24924339910027984
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-07-21 20:00:00+00:00",
+      "episode_end": "2023-07-23 12:00:00+00:00",
+      "duration_bars": 11,
+      "trigger_time": "2023-07-23 16:00:00+00:00",
+      "episode_high": "29999.00000000",
+      "episode_low": "29625.10000000",
+      "entry_ref": "30093.12000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "468.02000000",
+      "stop_pct": 0.015552392041769015,
+      "cost_r": 0.1671768556899278
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-09-16 16:00:00+00:00",
+      "episode_end": "2023-09-17 20:00:00+00:00",
+      "duration_bars": 8,
+      "trigger_time": "2023-09-18 00:00:00+00:00",
+      "episode_high": "26623.25000000",
+      "episode_low": "26399.00000000",
+      "entry_ref": "26658.66000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "259.66000000",
+      "stop_pct": 0.00974017448738984,
+      "cost_r": 0.2669356697219441
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-09-30 00:00:00+00:00",
+      "episode_end": "2023-10-01 04:00:00+00:00",
+      "duration_bars": 8,
+      "trigger_time": "2023-10-01 08:00:00+00:00",
+      "episode_high": "27158.59000000",
+      "episode_low": "26886.31000000",
+      "entry_ref": "27187.71000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "301.40000000",
+      "stop_pct": 0.011085891382540125,
+      "cost_r": 0.23453233576642335
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2023-11-18 08:00:00+00:00",
+      "episode_end": "2023-11-19 12:00:00+00:00",
+      "duration_bars": 8,
+      "trigger_time": "2023-11-19 16:00:00+00:00",
+      "episode_high": "36845.49000000",
+      "episode_low": "36347.69000000",
+      "entry_ref": "36948.97000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "601.28000000",
+      "stop_pct": 0.0162732547077767,
+      "cost_r": 0.15977135777009047
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2024-04-20 00:00:00+00:00",
+      "episode_end": "2024-04-21 20:00:00+00:00",
+      "duration_bars": 12,
+      "trigger_time": "2024-04-22 00:00:00+00:00",
+      "episode_high": "65695.56000000",
+      "episode_low": "63090.07000000",
+      "entry_ref": "65703.49000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "2613.42000000",
+      "stop_pct": 0.03977596928260584,
+      "cost_r": 0.06536610035891667
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2024-06-01 08:00:00+00:00",
+      "episode_end": "2024-06-02 04:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2024-06-02 08:00:00+00:00",
+      "episode_high": "67910.55000000",
+      "episode_low": "67556.72000000",
+      "entry_ref": "68251.53000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "694.81000000",
+      "stop_pct": 0.010180138086281728,
+      "cost_r": 0.2553992861357781
+    },
+    {
+      "variant": "strict",
+      "episode_start": "2024-06-08 12:00:00+00:00",
+      "episode_end": "2024-06-09 08:00:00+00:00",
+      "duration_bars": 6,
+      "trigger_time": "2024-06-09 12:00:00+00:00",
+      "episode_high": "69491.36000000",
+      "episode_low": "69130.24000000",
+      "entry_ref": "69508.64000000",
+      "entry_bar_available": true,
+      "entry_bar_is_next_5m": true,
+      "trigger_bucket_partial_5m": false,
+      "stop_distance": "378.40000000",
+      "stop_pct": 0.0054439275462733845,
+      "cost_r": 0.47759636363636365
+    }
+  ],
+  "candidate_c_trigger_variants": {
+    "strict": {
+      "stage_counts": {
+        "1_valid_4h_bars": 7662,
+        "2_compression_episodes": 461,
+        "3_episodes_min_duration": 63,
+        "4_confirmed_upside_breakout": 17,
+        "5_valid_positive_stop": 17,
+        "6_passing_cost_r_020": 12,
+        "7_unique_after_dedup": 12,
+        "8_after_cooldown": 12
+      },
+      "gate_counts": {
+        "0.10": 5,
+        "0.20": 12,
+        "0.30": 16,
+        "0.50": 17,
+        "1.00": 17
+      },
+      "stop_pct_distribution": {
+        "n": 17,
+        "median": 0.021047924848205272,
+        "p10": 0.010004152646724973,
+        "p25": 0.011085891382540125,
+        "p75": 0.033078815438567825,
+        "p90": 0.04681777915492741,
+        "min": 0.0054439275462733845,
+        "max": 0.07561272389707765
+      },
+      "cost_r_distribution": {
+        "n": 17,
+        "median": 0.12352761703354802,
+        "p10": 0.057344286341140846,
+        "p25": 0.07860015437458995,
+        "p75": 0.23453233576642335,
+        "p90": 0.2600138395702445,
+        "min": 0.034385747080597995,
+        "max": 0.47759636363636365
+      }
+    },
+    "extended_6bar": {
+      "stage_counts": {
+        "1_valid_4h_bars": 7662,
+        "2_compression_episodes": 461,
+        "3_episodes_min_duration": 63,
+        "4_confirmed_upside_breakout": 28,
+        "5_valid_positive_stop": 28,
+        "6_passing_cost_r_020": 21,
+        "7_unique_after_dedup": 21,
+        "8_after_cooldown": 21
+      },
+      "gate_counts": {
+        "0.10": 9,
+        "0.20": 21,
+        "0.30": 25,
+        "0.50": 28,
+        "1.00": 28
+      },
+      "stop_pct_distribution": {
+        "n": 28,
+        "median": 0.02342761265596621,
+        "p10": 0.00875320473243113,
+        "p25": 0.013910323582095882,
+        "p75": 0.03220454983796402,
+        "p90": 0.05338884155611891,
+        "min": 0.0054439275462733845,
+        "max": 0.07561272389707765
+      },
+      "cost_r_distribution": {
+        "n": 28,
+        "median": 0.11116306774857629,
+        "p10": 0.04881145989136148,
+        "p25": 0.08075341905093537,
+        "p75": 0.18993029175971513,
+        "p90": 0.3077800399403594,
+        "min": 0.034385747080597995,
+        "max": 0.47759636363636365
+      }
+    },
+    "open_ended": {
+      "stage_counts": {
+        "1_valid_4h_bars": 7662,
+        "2_compression_episodes": 461,
+        "3_episodes_min_duration": 63,
+        "4_confirmed_upside_breakout": 38,
+        "5_valid_positive_stop": 38,
+        "6_passing_cost_r_020": 30,
+        "7_unique_after_dedup": 30,
+        "8_after_cooldown": 30
+      },
+      "gate_counts": {
+        "0.10": 14,
+        "0.20": 30,
+        "0.30": 35,
+        "0.50": 38,
+        "1.00": 38
+      },
+      "stop_pct_distribution": {
+        "n": 38,
+        "median": 0.02342761265596621,
+        "p10": 0.010048149006614162,
+        "p25": 0.015732607708270938,
+        "p75": 0.032787393571699894,
+        "p90": 0.05953515838314384,
+        "min": 0.0054439275462733845,
+        "max": 0.10039636989490255
+      },
+      "cost_r_distribution": {
+        "n": 38,
+        "median": 0.11116306774857629,
+        "p10": 0.04379937322158517,
+        "p25": 0.0793179092667051,
+        "p75": 0.16532548120996846,
+        "p90": 0.25886020121162795,
+        "min": 0.02589735069825478,
+        "max": 0.47759636363636365
+      }
+    }
+  },
+  "candidate_c_event_years": {
+    "2021": 2,
+    "2022": 3,
+    "2023": 9,
+    "2024": 3
+  },
+  "candidate_c_feasible_years": {
+    "2021": 2,
+    "2022": 3,
+    "2023": 6,
+    "2024": 1
+  },
+  "candidate_c_clustering_all": {
+    "n": 17,
+    "median_days_between_events": 56.333333333333336,
+    "p10_days": 7.166666666666667,
+    "p90_days": 154.33333333333334,
+    "gaps_under_3_days": 0,
+    "share_gaps_under_3_days": 0.0,
+    "max_gap_days": 154.33333333333334
+  },
+  "candidate_c_clustering_feasible": {
+    "n": 12,
+    "median_days_between_events": 84.16666666666667,
+    "p10_days": 34.5,
+    "p90_days": 154.33333333333334,
+    "gaps_under_3_days": 0,
+    "share_gaps_under_3_days": 0.0,
+    "max_gap_days": 154.33333333333334
+  },
+  "candidate_c_non_overlapping_feasible": 12,
+  "control_arm": {
+    "raw": 344,
+    "with_valid_stop": 343,
+    "passing_0_20": 343,
+    "unique_consecutive_collapsed": 247,
+    "unique_passing_0_20": 246,
+    "gate_counts": {
+      "0.10": 337,
+      "0.20": 343,
+      "0.30": 343,
+      "0.50": 343,
+      "1.00": 343
+    },
+    "stop_pct_distribution": {
+      "n": 343,
+      "median": 0.08257583755930265,
+      "p10": 0.0440172735001825,
+      "p25": 0.05954269688232163,
+      "p75": 0.11491285877944166,
+      "p90": 0.14154888605970525,
+      "min": 0.016809121621621622,
+      "max": 0.23671435086834472
+    },
+    "cost_r_distribution": {
+      "n": 343,
+      "median": 0.03148620803431494,
+      "p10": 0.018368218902577744,
+      "p25": 0.0226258786321808,
+      "p75": 0.043666184239955205,
+      "p90": 0.05906865709413378,
+      "min": 0.010983702468660476,
+      "max": 0.15467792181690282
+    }
+  },
+  "control_arm_non_overlapping_feasible": 136,
+  "candidate_a_non_overlapping_feasible": 91,
+  "control_arm_years": {
+    "2021": 111,
+    "2022": 77,
+    "2023": 102,
+    "2024": 54
+  },
+  "candidate_a": {
+    "raw": 271,
+    "with_valid_stop": 271,
+    "passing_0_20": 237,
+    "unique_consecutive_collapsed": 192,
+    "unique_passing_0_20": 170,
+    "gate_counts": {
+      "0.10": 100,
+      "0.20": 237,
+      "0.30": 264,
+      "0.50": 271,
+      "1.00": 271
+    },
+    "stop_pct_distribution": {
+      "n": 271,
+      "median": 0.021365319116491005,
+      "p10": 0.012268497740707606,
+      "p25": 0.016470364735415778,
+      "p75": 0.030118148008092947,
+      "p90": 0.037056480647176177,
+      "min": 0.006617344403815311,
+      "max": 0.05703268724743581
+    },
+    "cost_r_distribution": {
+      "n": 271,
+      "median": 0.12169254228424642,
+      "p10": 0.07016316591840538,
+      "p25": 0.08632733702579859,
+      "p75": 0.1578592849668848,
+      "p90": 0.21192488721524927,
+      "min": 0.04558789223309649,
+      "max": 0.3929068583011847
+    }
+  },
+  "candidate_a_years": {
+    "2021": 93,
+    "2022": 52,
+    "2023": 82,
+    "2024": 44
+  },
+  "overlap": {
+    "c_trigger_bars": 17,
+    "control_trigger_bars": 344,
+    "both": 4,
+    "compression_only": 13,
+    "control_only": 340,
+    "control_triggers_not_in_c": 340
+  },
+  "cost_sensitivity": {
+    "10": {
+      "label": "sensitivity",
+      "round_trip_bps": "10",
+      "passing_0_10": 15,
+      "passing_0_20": 17,
+      "passing_0_30": 17,
+      "passing_0_50": 17,
+      "passing_1_00": 17
+    },
+    "26": {
+      "label": "PRIMARY",
+      "round_trip_bps": "26",
+      "passing_0_10": 5,
+      "passing_0_20": 12,
+      "passing_0_30": 16,
+      "passing_0_50": 17,
+      "passing_1_00": 17
+    },
+    "40": {
+      "label": "sensitivity",
+      "round_trip_bps": "40",
+      "passing_0_10": 2,
+      "passing_0_20": 9,
+      "passing_0_30": 12,
+      "passing_0_50": 16,
+      "passing_1_00": 17
+    },
+    "60": {
+      "label": "sensitivity",
+      "round_trip_bps": "60",
+      "passing_0_10": 1,
+      "passing_0_20": 5,
+      "passing_0_30": 9,
+      "passing_0_50": 12,
+      "passing_1_00": 16
+    },
+    "100": {
+      "label": "sensitivity",
+      "round_trip_bps": "100",
+      "passing_0_10": 0,
+      "passing_0_20": 2,
+      "passing_0_30": 4,
+      "passing_0_50": 9,
+      "passing_1_00": 15
+    }
+  },
+  "power_arithmetic": {
+    "delta_r": 0.15,
+    "sigma_r_assumed": 1.0,
+    "required_n_alpha05_power80": 348.8,
+    "required_n_alpha05_power90": 467.0,
+    "required_n_if_sigma_1_3": 589.5,
+    "note": "normal approximation; assumptions stated, not estimated from outcomes"
+  },
+  "ambiguities": [
+    {
+      "id": "control_stop",
+      "issue": "The recommendation defines the control as '20-bar-high breakouts without the compression condition, identical stop/target/time/cost rules', but a control event has no compression episode and therefore no episode low. The stop rule is undefined for the control arm.",
+      "treatment": "Primary count uses the symmetric structural rule: the lowest low of the same 20-bar window whose high was broken. This is reported as a provisional interpretation, not as the design. It is generous relative to C (wider stop, lower cost_R), so the control count is an upper bound.",
+      "status": "UNRESOLVED \u2014 design clarification required"
+    },
+    {
+      "id": "dedup_cooldown",
+      "issue": "The recommendation specifies one position at a time but gives no deduplication or cooldown rule for a second trigger while the 18-bar hold window is open.",
+      "treatment": "One event per compression episode (primary). Stage 7 equals stage 6. Stage 8 is reported as equal to stage 7 because no cooldown exists in the design; a non-overlapping greedy count is reported separately as the independence estimate.",
+      "status": "UNRESOLVED \u2014 no cooldown rule in design"
+    },
+    {
+      "id": "trigger_window",
+      "issue": "Whether the breakout must occur on the bar that ends the compression episode ('has just ended') or at any later bar is ambiguous.",
+      "treatment": "Primary = the resolution bar only. A first-breakout-within-6-bars variant is counted and reported separately as sensitivity.",
+      "status": "AMBIGUOUS \u2014 primary reading documented"
+    }
+  ]
+}
