@@ -1126,14 +1126,15 @@
     "within_limits": true
   },
   "limitations": [
-    "This is a feasibility census, not a backtest. No P&L, expectancy, win rate, or profitability was computed.",
-    "The cost model is a Binance spot proxy (26 bp round trip), not a measured Nobitex execution cost; entry is the next 5m bar open and gap/slippage is not separately modelled.",
-    "Frequency estimates are specific to the frozen 1h/4h definitions and the 2021-2024 development window.",
-    "The non-overlapping count is a greedy equal-window selection, not a portfolio simulation.",
-    "Effective sample size cannot be estimated from outcomes at this stage; the Kish and cluster counts are design diagnostics only.",
-    "The control is a selectivity diagnostic, not an alternative strategy, and is not promoted.",
-    "The 2024 calendar count covers only January-June because the development interval ends 2024-07-01.",
-    "A wide stop can lower cost_R while increasing capital use and adverse price exposure; low cost_R is not evidence of profitability."
+    "This is not a backtest. No trade is entered or resolved. No P&L, expectancy, win rate, drawdown, Sharpe, or profitability figure exists in this stage.",
+    "The cost model is a Binance spot proxy. 26 bp round trip is not a measured Nobitex cost. A Nobitex deployment would need its own fee, spread, slippage, and fill measurements. The entry is the next 5m bar open; a gap between the confirmation close and that open is reflected in the stop distance but is not separately modelled as slippage.",
+    "The definition is one instantiation of Stage 2B. The 1h/4h choice and the 72-bar/15% guards are engineering decisions made before counting. A different defensible instantiation could produce a different count; this census does not search for a more attractive one.",
+    "The 2021-2024 window is one market regime mix. The 2022 bear market contributes relatively few signals. The result is conditional on this window.",
+    "The non-overlapping count is a design count, not a tradable count. It assumes a 120h maximum holding horizon and ignores the actual exit path. It does not model stops, targets, or funding.",
+    "Effective sample size is not identified. The Kish/cluster diagnostics are bounds and design heuristics; an outcome-based dependence estimate is not available at this stage.",
+    "The control is not promoted. Its higher frequency is evidence about the regime filter's selectivity, not evidence that the unconditioned strategy is profitable.",
+    "2024 is a partial year. The development interval ends 2024-07-01, so the 2024 row covers January-June only.",
+    "Wide stops can be misleading. A 13% stop produces a low cost_R but a large position and large adverse exposure. The cost gate alone is not a risk judgement."
   ],
   "confirmations": {
     "pnl_computed": false,
