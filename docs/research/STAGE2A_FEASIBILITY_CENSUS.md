@@ -237,7 +237,7 @@ Definitions from comparison §2.1 A6, unchanged. Counting only.
 | Passing `cost_R ≤ 0.20` | **237** |
 | Unique after collapsing consecutive triggers | 192 |
 | Unique and feasible | **170** |
-| Non-overlapping (3-day hold, greedy) | **91** |
+| Non-overlapping (5-day hold = A's 30-bar exit, greedy) | **76** |
 | Events per year (raw) | 77.5 |
 
 By year (raw): 2021: 93, 2022: 52, 2023: 82, 2024: 44.
@@ -245,8 +245,8 @@ Stop distance median 2.14% of entry (p10 1.23%, p90 3.71%); `cost_R` median 0.12
 
 **Assessment:** A is roughly twenty times more frequent than C and its cost profile is acceptable
 (median `cost_R` 0.12, comparable to C). On raw feasible count it clears the 200 threshold; on
-*unique* (170) and *non-overlapping* (91) counts it does not. A is materially the more viable
-census target — but see §8: 91 independent events only support detecting an edge of ~0.29R, so A
+*unique* (170) and *non-overlapping* (76) counts it does not. A is materially the more viable
+census target — but see §8: 76 independent events only support detecting an edge of ~0.32R, so A
 does not automatically become testable for the 0.15R hypothesis either.
 
 Candidate B was not censused, as instructed.
@@ -343,7 +343,7 @@ Rearranged, at 80% power, σ = 1R:
 |---|---:|---:|
 | C, strict feasible | 12 | **0.81R** |
 | C, most permissive reading | 30 | 0.51R |
-| Candidate A, non-overlapping | 91 | 0.29R |
+| Candidate A, non-overlapping | 76 | 0.32R |
 | Candidate A, unique feasible | 170 | 0.22R |
 | Control, non-overlapping | 136 | 0.24R |
 

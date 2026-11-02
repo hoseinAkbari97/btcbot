@@ -64,6 +64,7 @@ A_CHANNEL = 20
 A_TREND_SMA = 200
 A_ATR_WINDOW = 20
 A_ATR_MULTIPLE = Decimal("1.5")
+A_MAX_HOLD_BARS = 30      # comparison §2.1 A6: 30-bar time exit
 
 CONTROL_WINDOW = 20      # control arm: 20-bar-high breakouts
 
@@ -868,7 +869,8 @@ def main() -> int:
             "gate_cost_r": str(GATE_COST_R),
             "candidate_a": {"channel": A_CHANNEL, "trend_sma": A_TREND_SMA,
                             "atr_window": A_ATR_WINDOW,
-                            "atr_multiple": str(A_ATR_MULTIPLE)},
+                            "atr_multiple": str(A_ATR_MULTIPLE),
+                            "max_hold_bars_design_only": A_MAX_HOLD_BARS},
             "control_window": CONTROL_WINDOW,
         },
         "alignment": alignment,
@@ -889,7 +891,7 @@ def main() -> int:
         "candidate_a_non_overlapping_feasible": non_overlapping_count(
             [r for r in a_rows if r.get("cost_r") is not None
              and r["cost_r"] <= float(GATE_COST_R)],
-            "signal_time", MAX_HOLD_BARS * 4,
+            "signal_time", A_MAX_HOLD_BARS * 4,
         ),
         "control_arm_years": yearly(control_rows),
         "candidate_a": bc["candidate_a"],
