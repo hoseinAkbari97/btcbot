@@ -581,6 +581,11 @@ Let `N = N_nonoverlap` (24h canonical), `M = median cost_R` over S7, `F = feasib
 | **PASS WITH LIMITATIONS** | `150 <= N < 349` and `M <= 0.20`, all compliance checks passed |
 | **PASS** | `N >= 349` and `M <= 0.20`, all compliance checks passed |
 
+The `349` boundary in the top tier is the independent-sample planning reference carried forward from
+Stage 2C, used as a tier label for comparability. It is not a requirement, it does not guarantee
+power, and reaching it does not establish an edge. A `PASS` here means only that the structural count
+clears the larger reference; it says nothing about profitability.
+
 `E` is reported with its assumptions: an **assumed** `0.15R` effect of interest and a Binance-proxy
 cost. It is not net expectancy and not profitability.
 

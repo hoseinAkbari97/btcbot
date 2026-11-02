@@ -90,7 +90,7 @@
     "r2": "P1 / P0 - 1",
     "threshold": "0.5 * ATR1h[q] / P0",
     "threshold_atr_multiple": 0.5,
-    "q_selection": "last closed 1h bar whose close_time is strictly less than the signal instant",
+    "q_selection": "last 1h bar whose close_time is less than or equal to the signal instant (inclusive: the bar opening at 01:00 closes exactly at the 01:59:59.999 signal instant)",
     "require_vwap": true,
     "signals_per_session": 1,
     "signal_instant": "close_time of the eighth measurement bar",
