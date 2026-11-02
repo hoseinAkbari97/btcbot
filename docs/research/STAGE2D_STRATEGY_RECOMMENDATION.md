@@ -244,6 +244,29 @@ No B census may count a single signal until every row below has a sentence in th
 These are not refinements. Each one can change the episode count, so freezing them in the wrong
 order — after seeing counts — would invalidate the census.
 
+### 7.5 Candidate D — mandatory frozen definitions
+
+| item | what the frozen spec must state | ambiguity to resolve now |
+|---|---|---|
+| UTC session boundaries | Exact start/end instants, inclusive/exclusive convention, and which session a boundary bar belongs to | Whether a bar stamped 08:00:00 belongs to Asia or Europe; whether sessions are fixed or DST-shifted |
+| First-two-hour return | The two anchor bars (open of the first, close of the eighth 15m bar) and the behaviour when either is missing | Whether the return uses the session open or the prior close; gap handling at session start |
+| Session VWAP | Reset rule, price input (typical price or close), and whether the first two hours are included | §7.2 allows "session or rolling"; these are different signals and only one may be frozen |
+| Volatility budget | Which series (daily ATR or 4h realized volatility), the percentile window, and the lower/upper bounds | The design offers two alternative definitions joined by "or"; choosing both creates two strategies |
+| Volatility percentile | Percentile method (rank vs interpolation), whether it uses closed bars only, and whether it is trailing-calendar or trailing-bar | Whether the current bar is included in its own percentile, which is a look-ahead risk |
+| Structural stop | ATR timeframe, the bar at which ATR is measured, and the floor interaction | Whether the 1h ATR is from the entry bar or the signal bar |
+| Entry timing | Fill assumption at the next 15m open and behaviour when the open is already beyond the threshold | Whether a gap invalidates the signal or enters at the gapped price |
+| Deduplication | The exact unit — one per session, one per UTC day, or one per cluster | "Deduplicated" is undefined; the choice sets the maximum count |
+| 24h non-overlap policy | Whether non-overlap is a UTC-calendar-day rule or a rolling 24h rule | A day rule and a rolling rule give different counts on the same signals |
+
+### 7.6 Shared rule against discretion
+
+Neither candidate may be counted with discretionary visual interpretation. A signal is a boolean result
+of the frozen rules evaluated on closed bars; no chart review, no "clear expansion" judgement, no
+manual rejection of signals that look like exhaustion, and no manual override of a retest or a VWAP
+breach is permitted. If a condition cannot be expressed as a closed-bar boolean, it is removed from the
+test rather than judged by eye. Any residual ambiguity that survives the freeze must be reported as an
+ambiguity in the census output, with its magnitude, not resolved silently.
+
 ---
 
 ## 8. Alternative ranking if the floor is revised
