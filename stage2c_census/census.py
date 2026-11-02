@@ -1084,6 +1084,8 @@ def build_manifest(result: dict) -> dict:
         "strategy_id": cfg["strategy_id"],
         "generated_at_utc": utc_now(),
         "git_head": git_head(),
+        "git_head_at_run": result["provenance"]["git_head"],
+        "git_head_at_manifest_generation": git_head(),
         "development_interval": {
             "start": cfg["data"]["dev_start"],
             "end": cfg["data"]["dev_end"],
@@ -1143,6 +1145,7 @@ def build_manifest(result: dict) -> dict:
         "notes": [
             "Hashes are byte-level provenance; no validation/OOS observation was parsed or analysed.",
             "The raw census result is stage2c_census/census_result.json; the docs JSON is the curated summary.",
+            "git_head is the repository HEAD when this manifest was regenerated; the census script SHA-256 is the authoritative code version.",
         ],
     }
 
