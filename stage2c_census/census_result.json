@@ -1,7 +1,7 @@
 {
   "stage": "2C",
   "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
-  "generated_at_utc": "2026-11-02T07:13:36Z",
+  "generated_at_utc": "2026-11-02T07:16:13Z",
   "config": {
     "stage": "2C",
     "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
@@ -170,12 +170,12 @@
     }
   },
   "provenance": {
-    "run_started_utc": "2026-11-02T07:13:36Z",
-    "runtime_seconds": 9.711,
-    "peak_rss_mib": 575.3,
+    "run_started_utc": "2026-11-02T07:16:13Z",
+    "runtime_seconds": 10.075,
+    "peak_rss_mib": 575.2,
     "python_version": "3.14.6",
     "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
-    "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf",
+    "git_head": "182397b612b52a1d25582d505100a49825d9cc99",
     "spec_sha256": "8dbf0c8e6246cce17c93670b2e5a4aeebf5d299fe47e81ca5f9d02c0d46a2c2a",
     "config_sha256": "fb11d5be3f98fa19782fb1290fec6810e27f77505d886b90f13232017cbe1b8a",
     "freeze_sha256": "e28e41bcbe58286a7803d751631bb29b88d2fec22105f6532a71abdb6869339a",

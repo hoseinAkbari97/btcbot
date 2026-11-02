@@ -6,8 +6,8 @@
   "verdict_reasons": [
     "non-overlapping feasible events 71 < 150"
   ],
-  "generated_at_utc": "2026-11-02T07:13:36Z",
-  "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf",
+  "generated_at_utc": "2026-11-02T07:16:13Z",
+  "git_head": "182397b612b52a1d25582d505100a49825d9cc99",
   "scope": {
     "instrument": "BTCUSDT spot",
     "side": "long only, no leverage",
@@ -1117,8 +1117,8 @@
     "note": "causal_regime_lookup is asserted in regime_for_1h: the 4h bar must close at or before the 1h open"
   },
   "resource": {
-    "runtime_seconds": 9.711,
-    "peak_rss_mib": 575.3,
+    "runtime_seconds": 10.075,
+    "peak_rss_mib": 575.2,
     "python_version": "3.14.6",
     "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
     "target_ram_mib": 4096,
