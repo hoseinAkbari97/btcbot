@@ -710,4 +710,234 @@ document makes that trade-off explicit and gives the alternative ranking if the 
 
 ---
 
+## 10. Execution, cost, and capital assumptions
+
+### 10.1 The cost model
+
+The programme's cost convention is:
+
+```
+cost_R = 0.0026 * entry_price / stop_distance
+```
+
+where `0.0026` is a **26 basis-point round-trip proxy** and `stop_distance` is the absolute price
+distance from entry to stop. The primary gate is `cost_R <= 0.20`. The equivalent minimum stop is:
+
+```
+stop_distance >= 0.0026 * entry_price / 0.20 = 0.013 * entry_price
+```
+
+so the minimum stop is **1.30% of entry**. This is not weakened anywhere in this document. A
+candidate whose structural stop is tighter than 1.30% must skip the signal; it must not widen the
+stop arbitrarily to pass the gate.
+
+The 26 bp figure is a **Binance proxy**, not a Nobitex measurement. It is a single round-trip number
+that bundles fees, spread, and slippage. It is convenient for comparability but opaque: it cannot be
+decomposed into maker/taker fees, half-spread, and market impact, and it cannot represent
+state-dependent slippage (normal vs expansion vs panic).
+
+### 10.2 What the proxy does and does not cover
+
+| friction | covered by 26 bp? | comment |
+|---|---|---|
+| Exchange fees (round trip) | Partly | A 26 bp round trip is plausible for Binance VIP-0 spot with BNB discounts; it is not a Nobitex quote. |
+| Bid–ask spread | Partly | A single average spread; it does not widen in the states B and D trade. |
+| Market-order slippage | Partly | Average impact at small size; not the tail. |
+| Stop-order slippage | **No** | Stops can fill through the trigger, especially in gaps and expansion bars. |
+| Gap risk | **No** | A stop is a trigger, not a guaranteed price. |
+| Target fill uncertainty | **No** | A limit at 2R may never fill; a market exit at the target may slip. |
+| Retest non-fill (B) | **No** | If the retest never arrives, the signal is not a trade; the census must not count it as one. |
+| Venue outage / API failure | **No** | Operational risk is outside the model. |
+| Minimum notional / lot size | Separate check | Stage 2C checked $5 minimum and `1e-5 BTC` lot; at $10k these did not bind. |
+| Limited spot cash | Separate check | A long-only spot account cannot run notional above equity. |
+
+### 10.3 Illustrative capital arithmetic ($10,000, 1% risk)
+
+This is arithmetic, not a portfolio simulation. It assumes risk-based sizing: risk per trade is $100,
+so `notional = 100 / stop_fraction`. It ignores compounding, concurrent P&L, and cash drag.
+
+| candidate | stop | notional | % of $10,000 | max concurrent by cash | comment |
+|---|---:|---:|---:|---:|---|
+| A | 10% | $1,000 | 10.0% | 10 | Capital mostly idle; concurrency driven by signal scarcity, not cash |
+| A | 15% | $667 | 6.7% | 15 | Even more idle capital |
+| B | 1.5% | $6,667 | 66.7% | 1 | A second position would exceed cash |
+| B | 2.0% | $5,000 | 50.0% | 2 | Two positions exactly exhaust cash |
+| B | 3.0% | $3,333 | 33.3% | 3 | Three positions exhaust cash |
+| C | 5% | $2,000 | 20.0% | 5 | Cash is not the binding constraint; signals are |
+| C | 10% | $1,000 | 10.0% | 10 | Same |
+| D | 1.3% | $7,692 | 76.9% | 1 | A second position would require 154% of equity |
+| D | 1.5% | $6,667 | 66.7% | 1 | Two positions would require 133% |
+| D | 2.0% | $5,000 | 50.0% | 2 | Two positions exactly exhaust cash |
+
+**What this shows.** The tight-stop candidates (B and D) are capital-intensive per signal, while the
+wide-stop candidates (A and C) are capital-light but signal-poor. There is no candidate that is both
+frequent and capital-light. That is a structural property of risk-based sizing, not a modelling
+artefact: `notional = risk_budget / stop_fraction`.
+
+**What it does not show.** It does not model the cash path, concurrent positions, compounding, or the
+opportunity cost of idle capital. It does not assume that a position can be opened at the exact
+notional (lot rounding, minimum notional, and price movement intervene). It does not simulate fills.
+
+### 10.4 Missing Nobitex information
+
+Before any deployment decision, the programme needs the following, none of which exists in the
+repository:
+
+1. **Fee schedule.** Maker/taker fees, VIP tiers, volume thresholds, and any promotional/discount
+   regime. The 26 bp proxy must be replaced by a venue-specific round-trip estimate.
+2. **Spread distribution.** By hour, by volatility state, and by order size. A single average spread
+   is insufficient for B and D, which trade in wide-spread states.
+3. **Slippage and market impact.** Fill data or a calibrated impact model at $1k–$8k notional.
+4. **Order types.** Whether stop-market, stop-limit, and OCO orders are supported, and how they behave
+   in gaps and illiquid periods.
+5. **Lot size and minimum notional.** Tick size, step size, minimum order value, and whether they bind
+   at $10k equity.
+6. **Liquidity by session.** BTCUSDT volume and depth by UTC hour; D's session definition depends on
+   it.
+7. **API limits and reliability.** Rate limits, reconnect behaviour, outage history, and whether a
+   stop is held server-side or must be monitored by the client.
+8. **Fiat/crypto funding.** Deposit/withdrawal rails, settlement time, custody, and whether the
+   account can hold USD or only crypto.
+9. **Regulatory and tax treatment.** Not a research input, but a deployment constraint.
+10. **Historical data alignment.** Whether Nobitex bars use the same UTC boundaries, timestamp
+    convention, and gap treatment as the Binance series. A venue switch can create phantom gaps.
+
+Until these exist, every cost statement in this document is a **Binance-based proxy** and every
+capital statement is **illustrative arithmetic**.
+
+---
+
+## 11. Architecture review: genuine gaps only
+
+This section reviews the existing research and backtest architecture for gaps that would block a
+future census or outcome stage. It does **not** propose implementations, refactors, or changes to
+shared strategy logic. No code was modified.
+
+| area | current state | gap relevant to Stage 2D | action |
+|---|---|---|---|
+| Dataset manifest | 5m, 15m, 1h, 4h BTCUSDT; no daily | A and C are daily-horizon; daily must be aggregated from 4h with explicit UTC day boundaries and partial-day handling | Document the aggregation rule before any census; do not add a dataset |
+| 4h series | Gap-free, 7,662 bars in Stage 2C | Suitable as the daily source and as B's regime timeframe | Reuse; no change |
+| 1h series | 30,634 usable bars, 9 unusable, 8 segments | B's signal timeframe; session logic for D must handle gaps | Reuse with the documented gap policy |
+| 15m/5m series | 5m: 367,563 bars, 7 gaps/213 bars; 15m: present | D's signal/execution timeframes; gap handling at session boundaries | Reuse with explicit gap policy |
+| Event detectors | `events.py` has displacement, volatility, compression, regime, zone detectors; `zones.py` has retest machinery | No exact "expansion + retest + 4h permission + stop floor" detector; no volatility-budget filter | Compose from existing primitives in the census; do not add a production strategy |
+| Backtest engine | One simultaneous position (`RiskLimits.max_simultaneous_positions = 1`) | B may need two concurrent positions; D is cash-limited to one at 1.3% | A future outcome stage for B needs multi-position accounting; that is a genuine gap, not a Stage 2D task |
+| Cost model | `BacktestCosts` with fee/spread/slippage/latency; 26 bp proxy | No venue-specific model; no stop-slippage or gap model; no target-fill uncertainty | Keep the proxy for comparability; add a venue model only when Nobitex data exists |
+| Statistics | Clustered bootstrap, paired difference, BH correction | No multi-view clustering report; no rho-sensitivity; no cost-adjusted edge screen | Add these to the census design, not to shared statistics code |
+| Split/look-ahead | `lookahead.py` and split filters exist | Development interval is 2021-01-01 to 2024-07-01; no OOS access authorized | Keep the boundary; do not read beyond it |
+| Pre-registration | `freeze.json` hashes the spec and config | No independent registration; no rule for changing a threshold after a census | Use a freeze record per census; state that it is not independent pre-registration |
+| Multiplicity | BH exists for p-values | No candidate-level multiplicity budget across four families | State the budget in the recommendation; do not implement a new framework |
+
+**Conclusion.** The platform can support a future census for B and D using existing primitives. The
+genuine blockers are: (a) the missing daily aggregation rule, (b) the single-position engine for B's
+outcome stage, (c) the absent Nobitex venue model, and (d) the missing cost-adjusted edge screen. None
+of these is a reason to modify shared strategy logic now; each is a documented prerequisite for a
+later stage.
+
+---
+
+## 12. Limitations of this document
+
+1. **No market data was processed.** Every frequency statement is a qualitative, unverified prior.
+   No signal was counted, no outcome was computed, and no P&L, expectancy, win rate, bootstrap,
+   Monte Carlo, optimization, or portfolio simulation was run.
+2. **The literature is support, not proof.** A cited paper may use a different asset, sample, venue,
+   cost model, or portfolio construction. The citations establish that a mechanism is plausible; they
+   do not establish that these rules work on BTCUSDT spot in 2021–2024.
+3. **One asset, one cycle, long-only.** The development interval contains roughly one bull phase and
+   one bear phase. Single-asset, long-only results are particularly vulnerable to regime luck, and the
+   short leg that supports much of the momentum and reversal literature is unavailable.
+4. **The 26 bp cost is a Binance proxy.** It is not a Nobitex measurement. The true round-trip cost may
+   be higher, especially in the expansion and panic states that B and D trade.
+5. **Calendar arithmetic assumes a fixed non-overlap horizon.** Actual holding periods vary; a
+   strategy with a 20-day maximum may hold for 3 days or 40. The `floor(1277/H)` bound is an upper
+   bound, not a forecast.
+6. **The 150 floor is a frozen protocol choice, not a pre-registered standard.** The audit in §1
+   documents its provenance. This document does not reinterpret the Stage 2C verdict; it treats the
+   floor as a constraint to design against.
+7. **349 is a planning reference, not a target.** It assumes independence, a 1R outcome standard
+   deviation, and a 0.15R effect. Fat tails and clustering make it optimistic.
+8. **Kish is a diagnostic, not an estimate of dependence.** The frozen specification's bound language
+   is inverted; §1.7 states the correction. No single effective-sample number should drive a decision.
+9. **The candidate definitions are design choices.** The 60/200 TSMOM rule, the 2×ATR expansion, the
+   retest window, the 1.30% stop floor, the session clocks, and the vol-budget percentiles are
+   instantiations, not validated parameters. A future census must freeze them before counting.
+10. **No Nobitex data exists.** Deployment feasibility cannot be assessed from this repository.
+11. **No validation/OOS access was used.** The development interval is the only authorized data, and
+    this document did not read it.
+12. **No fifth candidate was advanced.** The screened alternatives in §8 were rejected for
+    data/instrument constraints, duplication, or weak mechanisms.
+
+---
+
+## 13. References
+
+Only sources with verified bibliographic metadata are listed. A DOI is provided where available. The
+tag **[L]** in the tables refers to these works; it does not imply that they tested this rule.
+
+- Almgren, R., & Chriss, N. (2001). Optimal execution of portfolio transactions. *Journal of Risk*,
+  3(2), 5–39. https://doi.org/10.21314/jor.2001.041
+- Barberis, N., Shleifer, A., & Vishny, R. (1998). A model of investor sentiment. *Journal of
+  Financial Economics*, 49(3), 307–343. https://doi.org/10.1016/S0304-405X(98)00027-0
+- Baur, D. G., & Dimpfl, T. (2018). Asymmetric volatility in cryptocurrencies. *Economics Letters*,
+  173, 148–151. https://doi.org/10.1016/j.econlet.2018.10.008
+- Baur, D. G., Hong, K., & Lee, A. D. (2018). Bitcoin: Medium of exchange or speculative assets?
+  *Journal of International Financial Markets, Institutions and Money*, 54, 177–189.
+  https://doi.org/10.1016/j.intfin.2017.12.004
+- Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of
+  Econometrics*, 31(3), 307–327. https://doi.org/10.1016/0304-4076(86)90063-1
+- Cheah, E.-T., & Fry, J. (2015). Speculative bubbles in Bitcoin markets? An empirical investigation
+  into the fundamental value of Bitcoin. *Economics Letters*, 130, 32–36.
+  https://doi.org/10.1016/j.econlet.2015.02.029
+- Daniel, K., & Moskowitz, T. J. (2016). Momentum crashes. *Journal of Financial Economics*, 122(2),
+  221–247. https://doi.org/10.1016/j.jfineco.2015.12.002
+- De Bondt, W. F. M., & Thaler, R. (1985). Does the stock market overreact? *The Journal of Finance*,
+  40(3), 793–805. https://doi.org/10.1111/j.1540-6261.1985.tb05004.x
+- Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of
+  United Kingdom inflation. *Econometrica*, 50(4), 987–1007. https://doi.org/10.2307/1912773
+- Fry, J., & Cheah, E.-T. (2016). Negative bubbles and shocks in cryptocurrency markets.
+  *International Review of Financial Analysis*, 47, 343–352.
+  https://doi.org/10.1016/j.irfa.2016.02.008
+- Gao, L., Han, Y., Li, S. Z., & Zhou, G. (2018). Market intraday momentum. *Journal of Financial
+  Economics*, 129(2), 394–414. https://doi.org/10.1016/j.jfineco.2018.05.009
+- Grobys, K., & Sapkota, N. (2019). Cryptocurrencies and momentum. *Economics Letters*, 180, 6–10.
+  https://doi.org/10.1016/j.econlet.2019.03.028
+- Hong, H., & Stein, J. C. (1999). A unified theory of underreaction, momentum trading, and
+  overreaction in asset markets. *The Journal of Finance*, 54(6), 2143–2184.
+  https://doi.org/10.1111/0022-1082.00184
+- Hurst, B., Ooi, Y. H., & Pedersen, L. H. (2017). A century of evidence on trend-following investing.
+  *The Journal of Portfolio Management*, 44(1), 15–29. https://doi.org/10.3905/jpm.2017.44.1.015
+- Liu, Y., & Tsyvinski, A. (2021). Risks and returns of cryptocurrency. *The Review of Financial
+  Studies*, 34(6), 2689–2727. https://doi.org/10.1093/rfs/hhaa113
+- Liu, Y., Tsyvinski, A., & Wu, X. (2022). Common risk factors in cryptocurrency. *The Journal of
+  Finance*, 77(2), 1133–1177. https://doi.org/10.1111/jofi.13119
+- Makarov, I., & Schoar, A. (2020). Trading and arbitrage in cryptocurrency markets. *Journal of
+  Financial Economics*, 135(2), 293–319. https://doi.org/10.1016/j.jfineco.2019.07.001
+- Moreira, A., & Muir, T. (2017). Volatility-managed portfolios. *The Journal of Finance*, 72(4),
+  1611–1644. https://doi.org/10.1111/jofi.12513
+- Moskowitz, T. J., Ooi, Y. H., & Pedersen, L. H. (2012). Time series momentum. *Journal of Financial
+  Economics*, 104(2), 228–250. https://doi.org/10.1016/j.jfineco.2011.11.003
+- Scaillet, O., Treccani, A., & Trevisan, C. (2018). High-frequency jump analysis of the Bitcoin
+  market. *Journal of Financial Econometrics*. https://doi.org/10.1093/jjfinec/nby013
+- Tzouvanas, P., Kizys, R., & Tsend-Ayush, B. (2020). Momentum trading in cryptocurrencies: Short-term
+  returns and diversification benefits. *Economics Letters*, 191, 108728.
+  https://doi.org/10.1016/j.econlet.2019.108728
+
+### 13.1 Citation caveats
+
+- The TSMOM evidence (Moskowitz–Ooi–Pedersen; Hurst–Ooi–Pedersen) is multi-asset and includes short
+  legs. It does not test long-only BTC spot.
+- The crypto momentum evidence (Liu–Tsyvinski; Grobys–Sapkota; Tzouvanas et al.) is largely
+  cross-sectional or portfolio-based, not a single-asset long-only rule.
+- The intraday momentum evidence (Gao–Han–Li–Zhou) is US equity-index evidence with a fixed close.
+  BTC trades 24/7, so the session transfer is an analogy.
+- The jump evidence (Scaillet–Treccani–Trevisan) supports the *possibility* that expansions reverse; it
+  does not establish that a retest filter separates continuation from reversal.
+- The volatility-clustering evidence (Engle; Bollerslev) is about the persistence of volatility, not
+  the direction of the next move. B needs the directional link, which is the unverified part.
+- The overreaction/reversal evidence (De Bondt–Thaler; Cheah–Fry; Fry–Cheah) supports a long-horizon
+  mechanism, but BTC's strong momentum is a competing fact. C is a bet against the asset's dominant
+  behaviour.
+
+---
+
 <!-- STAGE2D_APPEND -->
