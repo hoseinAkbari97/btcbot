@@ -1,0 +1,1066 @@
+{
+  "stage": "2C",
+  "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
+  "status": "complete",
+  "verdict": "FAIL",
+  "verdict_reasons": [
+    "non-overlapping feasible events 71 < 150"
+  ],
+  "generated_at_utc": "2026-11-02T07:10:31Z",
+  "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf",
+  "scope": {
+    "instrument": "BTCUSDT spot",
+    "side": "long only, no leverage",
+    "development_interval": {
+      "start": "2021-01-01T00:00:00+00:00",
+      "end": "2024-07-01T00:00:00+00:00",
+      "days": 1277,
+      "years": 3.496
+    },
+    "timeframes": {
+      "regime": "4h",
+      "signal": "1h",
+      "execution": "5m"
+    },
+    "cost_model": {
+      "round_trip_bps_primary": 26,
+      "cost_fraction_primary": 0.0026,
+      "gate_cost_r": 0.2,
+      "sensitivity_bps": [
+        10,
+        26,
+        39,
+        52,
+        78,
+        100
+      ],
+      "venue_proxy": "Binance spot; not a Nobitex execution claim"
+    },
+    "specification": {
+      "path": "stage2c_census/STAGE2C_SIGNAL_SPECIFICATION.md",
+      "sha256": "8dbf0c8e6246cce17c93670b2e5a4aeebf5d299fe47e81ca5f9d02c0d46a2c2a"
+    },
+    "configuration": {
+      "path": "stage2c_census/stage2c_config.json",
+      "sha256": "fb11d5be3f98fa19782fb1290fec6810e27f77505d886b90f13232017cbe1b8a"
+    },
+    "freeze_record": {
+      "path": "stage2c_census/freeze.json",
+      "sha256": "e28e41bcbe58286a7803d751631bb29b88d2fec22105f6532a71abdb6869339a"
+    },
+    "dataset_sha256": {
+      "5m": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "1h": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+      "4h": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa"
+    },
+    "validation_oos_accessed": false,
+    "boundary_handling": "The reader stops immediately after the final development bar and does not decode the first out-of-window observation."
+  },
+  "data_alignment": {
+    "verdict": "PASS_WITH_DOCUMENTED_EXCEPTIONS",
+    "5m": {
+      "bars": 367563,
+      "duplicates": 0,
+      "off_grid": 0,
+      "unclosed": 0,
+      "out_of_order": 0,
+      "nonpositive_prices": 0,
+      "negative_volume": 0,
+      "gaps": {
+        "count": 7,
+        "missing_bars": 213,
+        "missing_minutes": 1065.0,
+        "details": [
+          {
+            "after": "2021-02-11 03:40:00+00:00",
+            "resumes_at": "2021-02-11 05:00:00+00:00",
+            "missing_bars": 15,
+            "missing_minutes": 75.0
+          },
+          {
+            "after": "2021-03-06 01:55:00+00:00",
+            "resumes_at": "2021-03-06 03:30:00+00:00",
+            "missing_bars": 18,
+            "missing_minutes": 90.0
+          },
+          {
+            "after": "2021-04-20 01:55:00+00:00",
+            "resumes_at": "2021-04-20 04:30:00+00:00",
+            "missing_bars": 30,
+            "missing_minutes": 150.0
+          },
+          {
+            "after": "2021-04-25 04:00:00+00:00",
+            "resumes_at": "2021-04-25 08:45:00+00:00",
+            "missing_bars": 56,
+            "missing_minutes": 280.0
+          },
+          {
+            "after": "2021-08-13 01:55:00+00:00",
+            "resumes_at": "2021-08-13 06:30:00+00:00",
+            "missing_bars": 54,
+            "missing_minutes": 270.0
+          },
+          {
+            "after": "2021-09-29 06:55:00+00:00",
+            "resumes_at": "2021-09-29 09:00:00+00:00",
+            "missing_bars": 24,
+            "missing_minutes": 120.0
+          },
+          {
+            "after": "2023-03-24 12:35:00+00:00",
+            "resumes_at": "2023-03-24 14:00:00+00:00",
+            "missing_bars": 16,
+            "missing_minutes": 80.0
+          }
+        ],
+        "step": "5m"
+      },
+      "zero_volume": {
+        "bars": 31,
+        "runs": [
+          {
+            "start": "2021-02-11 02:20:00+00:00",
+            "end": "2021-02-11 03:40:00+00:00",
+            "bars": 17
+          },
+          {
+            "start": "2023-03-24 11:30:00+00:00",
+            "end": "2023-03-24 12:35:00+00:00",
+            "bars": 14
+          }
+        ],
+        "flat_bars": 31
+      }
+    },
+    "1h": {
+      "bars": 30634,
+      "expected_bars": 30648,
+      "missing_bars": 14,
+      "duplicates": 0,
+      "off_grid": 0,
+      "unclosed": 0,
+      "partial_buckets": 7,
+      "exact_complete_buckets": 30627,
+      "field_mismatches": {},
+      "mismatches_on_usable_bars": 0,
+      "unusable_reason_sets": {
+        "last_member_zero_volume": 2,
+        "zero_volume+partial+last_member_zero_volume": 2,
+        "partial": 5
+      },
+      "unusable_bars": 9,
+      "usable_bars": 30625,
+      "alignment_verdict": "PASS_WITH_DOCUMENTED_EXCEPTIONS"
+    },
+    "4h": {
+      "bars": 7662,
+      "expected_bars": 7662,
+      "missing_bars": 0,
+      "duplicates": 0,
+      "off_grid": 0,
+      "unclosed": 0,
+      "partial_buckets": 12,
+      "exact_complete_buckets": 7650,
+      "field_mismatches": {
+        "open": 1
+      },
+      "mismatch_examples": [
+        {
+          "bucket": "2023-03-24T3",
+          "field": "open",
+          "reconstructed": "28080.00000000",
+          "vendor": "28079.99000000",
+          "member_count": 32
+        }
+      ],
+      "mismatches_on_usable_bars": 0,
+      "usable_bars": 7662,
+      "alignment_verdict": "PASS_WITH_DOCUMENTED_EXCEPTIONS"
+    },
+    "warmup": {
+      "regime_first_valid_4h_open": "2021-02-06 12:00:00+00:00",
+      "regime_first_primary_1h_open": "2021-02-06 16:00:00+00:00",
+      "ema_warmup_bars_per_segment": 20,
+      "regime_warmup_bars": 219,
+      "one_h_segments": 8,
+      "segment_lengths": [
+        986,
+        549,
+        1078,
+        119,
+        2633,
+        1128,
+        12986,
+        11146
+      ],
+      "usable_1h_bars": 30625
+    }
+  },
+  "episode_funnel": {
+    "episodes_total": 644,
+    "episodes_by_end_reason": {
+      "confirmed": 445,
+      "max_pullback_depth": 22,
+      "max_pullback_bars": 170,
+      "segment_break": 7
+    },
+    "confirmed_total": 445,
+    "confirmed_regime_unknown": 16,
+    "confirmed_regime_not_up": 224,
+    "confirmed_regime_up": 205,
+    "regime_up_then_flip_before_confirmation": 10,
+    "primary_eligible_triggers": 195,
+    "primary_valid_entry": 195,
+    "primary_valid_stop": 195,
+    "primary_cost_gate_pass": 151,
+    "primary_unique": 151,
+    "primary_non_overlapping": 71,
+    "control_valid_entry": 445,
+    "control_valid_stop": 445,
+    "control_cost_gate_pass": 342,
+    "control_unique": 342,
+    "control_non_overlapping": 156,
+    "control_matched_valid_entry": 429,
+    "control_matched_valid_stop": 429,
+    "control_matched_cost_gate_pass": 327,
+    "control_matched_unique": 327,
+    "control_matched_non_overlapping": 150,
+    "accounting_check": true
+  },
+  "primary": {
+    "pipeline": {
+      "arm": "primary",
+      "raw_triggers": 195,
+      "valid_entry": 195,
+      "valid_stop": 195,
+      "feasible": 151,
+      "unique": 151,
+      "unique_duplicates_removed": 0,
+      "non_overlapping": 71,
+      "feasible_share_of_valid": 0.7743589743589744,
+      "exclusions": {
+        "included": 71,
+        "non_overlap": 80,
+        "cost_gate": 44
+      }
+    },
+    "cost_r_valid": {
+      "n": 195,
+      "mean": 0.16140662443193243,
+      "median": 0.10316662000769464,
+      "p10": 0.04622042237480069,
+      "p25": 0.07003604502430288,
+      "p75": 0.18901228858566876,
+      "p90": 0.3390143026382595,
+      "min": 0.01983972895774418,
+      "max": 1.1508302445516554,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_r_feasible": {
+      "n": 151,
+      "mean": 0.09536454882536252,
+      "median": 0.08984420262369698,
+      "p10": 0.04493769265980357,
+      "p25": 0.06569197966880409,
+      "p75": 0.1202740956138032,
+      "p90": 0.1653587273334075,
+      "min": 0.01983972895774418,
+      "max": 0.1996909533365991,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_buckets_valid": {
+      "counts": {
+        "le_0.10": 93,
+        "gt_0.10_le_0.20": 58,
+        "gt_0.20_le_0.30": 21,
+        "gt_0.30_le_0.50": 14,
+        "gt_0.50": 9
+      },
+      "percentages": {
+        "le_0.10": 47.69230769230769,
+        "gt_0.10_le_0.20": 29.743589743589745,
+        "gt_0.20_le_0.30": 10.76923076923077,
+        "gt_0.30_le_0.50": 7.17948717948718,
+        "gt_0.50": 4.615384615384615
+      },
+      "total": 195
+    },
+    "cost_buckets_feasible": {
+      "counts": {
+        "le_0.10": 93,
+        "gt_0.10_le_0.20": 58,
+        "gt_0.20_le_0.30": 0,
+        "gt_0.30_le_0.50": 0,
+        "gt_0.50": 0
+      },
+      "percentages": {
+        "le_0.10": 61.58940397350993,
+        "gt_0.10_le_0.20": 38.41059602649007,
+        "gt_0.20_le_0.30": 0.0,
+        "gt_0.30_le_0.50": 0.0,
+        "gt_0.50": 0.0
+      },
+      "total": 151
+    },
+    "stop_pct_valid": {
+      "n": 195,
+      "mean": 0.028420024511543993,
+      "median": 0.025201950008695448,
+      "p10": 0.007669292946540648,
+      "p25": 0.013755719373883802,
+      "p75": 0.03712374105502082,
+      "p90": 0.056252190404419936,
+      "min": 0.0022592385039488755,
+      "max": 0.13105017742619532,
+      "percentile_method": "nearest_rank"
+    },
+    "stop_pct_feasible": {
+      "n": 151,
+      "mean": 0.03431773295346989,
+      "median": 0.02893898464311412,
+      "p10": 0.01572339145280009,
+      "p25": 0.021617289963655417,
+      "p75": 0.03957865196190292,
+      "p90": 0.05785788824724596,
+      "min": 0.013020119121858464,
+      "max": 0.13105017742619532,
+      "percentile_method": "nearest_rank"
+    },
+    "stop_distance_usdt_valid": {
+      "n": 195,
+      "mean": 1278.9632307692307,
+      "median": 963.44,
+      "p10": 290.01,
+      "p25": 553.98,
+      "p75": 1773.89,
+      "p90": 2590.0,
+      "min": 60.11,
+      "max": 5633.07,
+      "percentile_method": "nearest_rank"
+    },
+    "stop_distance_usdt_feasible": {
+      "n": 151,
+      "mean": 1546.3403973509933,
+      "median": 1331.53,
+      "p10": 574.84,
+      "p25": 780.01,
+      "p75": 1958.34,
+      "p90": 2804.18,
+      "min": 300.16,
+      "max": 5633.07,
+      "percentile_method": "nearest_rank"
+    },
+    "yearly": {
+      "raw": {
+        "2021": 68,
+        "2022": 20,
+        "2023": 71,
+        "2024": 36
+      },
+      "valid_entry": {
+        "2021": 68,
+        "2022": 20,
+        "2023": 71,
+        "2024": 36
+      },
+      "valid_stop": {
+        "2021": 68,
+        "2022": 20,
+        "2023": 71,
+        "2024": 36
+      },
+      "feasible": {
+        "2021": 61,
+        "2022": 16,
+        "2023": 50,
+        "2024": 24
+      },
+      "unique": {
+        "2021": 61,
+        "2022": 16,
+        "2023": 50,
+        "2024": 24
+      },
+      "non_overlapping": {
+        "2021": 21,
+        "2022": 10,
+        "2023": 27,
+        "2024": 13
+      }
+    },
+    "spacing_feasible": {
+      "n": 151,
+      "median_days": 2.395833333333333,
+      "p10_days": 0.7083333333333334,
+      "p90_days": 11.875,
+      "min_days": 0.2916666666666667,
+      "max_days": 111.33333333333333,
+      "gap_distribution": {
+        "n": 150,
+        "mean": 8.080277777777779,
+        "median": 2.395833333333333,
+        "p10": 0.7083333333333334,
+        "p25": 1.125,
+        "p75": 6.125,
+        "p90": 11.875,
+        "min": 0.2916666666666667,
+        "max": 111.33333333333333,
+        "percentile_method": "nearest_rank"
+      }
+    },
+    "spacing_non_overlapping": {
+      "n": 71,
+      "median_days": 7.958333333333334,
+      "p10_days": 5.375,
+      "p90_days": 42.333333333333336,
+      "min_days": 5.041666666666667,
+      "max_days": 111.33333333333333,
+      "gap_distribution": {
+        "n": 70,
+        "mean": 17.297619047619047,
+        "median": 7.958333333333334,
+        "p10": 5.375,
+        "p25": 6.083333333333333,
+        "p75": 11.083333333333334,
+        "p90": 42.333333333333336,
+        "min": 5.041666666666667,
+        "max": 111.33333333333333,
+        "percentile_method": "nearest_rank"
+      }
+    },
+    "cooldown_counts": {
+      "24": 127,
+      "72": 87,
+      "168": 59
+    },
+    "active_window_start": "2021-02-06 16:00:00+00:00",
+    "active_years": 3.3958475929728493,
+    "feasible_per_active_year": 44.46607094866972,
+    "non_overlapping_per_active_year": 20.907887664606292,
+    "cost_sensitivity": {
+      "10": {
+        "count_pass": 186,
+        "share_pass": 0.9538461538461539,
+        "median_cost_r": 0.03967946923372871
+      },
+      "26": {
+        "count_pass": 151,
+        "share_pass": 0.7743589743589744,
+        "median_cost_r": 0.10316662000769464
+      },
+      "39": {
+        "count_pass": 122,
+        "share_pass": 0.6256410256410256,
+        "median_cost_r": 0.15474993001154197
+      },
+      "52": {
+        "count_pass": 93,
+        "share_pass": 0.47692307692307695,
+        "median_cost_r": 0.20633324001538927
+      },
+      "78": {
+        "count_pass": 40,
+        "share_pass": 0.20512820512820512,
+        "median_cost_r": 0.30949986002308394
+      },
+      "100": {
+        "count_pass": 29,
+        "share_pass": 0.14871794871794872,
+        "median_cost_r": 0.3967946923372871
+      }
+    },
+    "capital": {
+      "assumptions": {
+        "equity_usd": 10000.0,
+        "risk_fraction": 0.01,
+        "risk_usd": 100.0,
+        "formula": "implied_notional_usd = risk_usd / (stop_distance / entry_price)",
+        "lot_step_btc": "0.00001",
+        "min_notional_usd": "5"
+      },
+      "n_feasible": 151,
+      "implied_notional_usd": {
+        "n": 151,
+        "mean": 3667.8672625139425,
+        "median": 3455.546254757576,
+        "p10": 1728.3727946078295,
+        "p25": 2526.6146026463116,
+        "p75": 4625.926754377047,
+        "p90": 6359.951051284904,
+        "min": 763.0664983747762,
+        "max": 7680.421282176888,
+        "percentile_method": "nearest_rank"
+      },
+      "implied_pct_equity": {
+        "n": 151,
+        "mean": 36.67867262513943,
+        "median": 34.555462547575765,
+        "p10": 17.283727946078294,
+        "p25": 25.266146026463115,
+        "p75": 46.25926754377046,
+        "p90": 63.59951051284904,
+        "min": 7.630664983747761,
+        "max": 76.80421282176887,
+        "percentile_method": "nearest_rank"
+      },
+      "implied_position_btc": {
+        "n": 151,
+        "mean": 0.0965835761589404,
+        "median": 0.0751,
+        "p10": 0.03566,
+        "p25": 0.05106,
+        "p75": 0.1282,
+        "p90": 0.17396,
+        "min": 0.01775,
+        "max": 0.33315,
+        "percentile_method": "nearest_rank"
+      },
+      "rounded_notional_usd": {
+        "n": 151,
+        "mean": 3667.659118171523,
+        "median": 3455.2167546,
+        "p10": 1728.3099648,
+        "p25": 2526.579321,
+        "p75": 4625.7653928,
+        "p90": 6359.832152,
+        "min": 762.9672425,
+        "max": 7680.4056602,
+        "percentile_method": "nearest_rank"
+      },
+      "above_100pct_equity": 0,
+      "above_75pct_equity": 3,
+      "above_50pct_equity": 31,
+      "min_notional_failures": 0,
+      "max_concurrent_positions": 6,
+      "signals_within_120h_of_another": 131,
+      "one_position_skips": 80,
+      "gate_min_stop_pct": 0.013,
+      "feasible_below_gate_min_stop": 0
+    }
+  },
+  "control": {
+    "pipeline": {
+      "arm": "control",
+      "raw_triggers": 445,
+      "valid_entry": 445,
+      "valid_stop": 445,
+      "feasible": 342,
+      "unique": 342,
+      "unique_duplicates_removed": 0,
+      "non_overlapping": 156,
+      "feasible_share_of_valid": 0.7685393258426966,
+      "exclusions": {
+        "cost_gate": 103,
+        "included": 156,
+        "non_overlap": 186
+      }
+    },
+    "cost_r_valid": {
+      "n": 445,
+      "mean": 0.1706510988017706,
+      "median": 0.10427487846022646,
+      "p10": 0.04391886969825441,
+      "p25": 0.06847827934992613,
+      "p75": 0.19518302990179853,
+      "p90": 0.35651418702697213,
+      "min": 0.0189261555426226,
+      "max": 1.5314,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_r_feasible": {
+      "n": 342,
+      "mean": 0.09437901609403827,
+      "median": 0.08761582081520627,
+      "p10": 0.03979154814849236,
+      "p25": 0.05811071826138464,
+      "p75": 0.12513431692368526,
+      "p90": 0.16744246720210365,
+      "min": 0.0189261555426226,
+      "max": 0.1996909533365991,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_buckets_valid": {
+      "counts": {
+        "le_0.10": 213,
+        "gt_0.10_le_0.20": 129,
+        "gt_0.20_le_0.30": 40,
+        "gt_0.30_le_0.50": 38,
+        "gt_0.50": 25
+      },
+      "percentages": {
+        "le_0.10": 47.86516853932584,
+        "gt_0.10_le_0.20": 28.98876404494382,
+        "gt_0.20_le_0.30": 8.98876404494382,
+        "gt_0.30_le_0.50": 8.539325842696629,
+        "gt_0.50": 5.617977528089888
+      },
+      "total": 445
+    },
+    "stop_pct_valid": {
+      "n": 445,
+      "mean": 0.029730698306608967,
+      "median": 0.024934097631115603,
+      "p10": 0.007292837409029382,
+      "p25": 0.01332083020387646,
+      "p75": 0.037968243721690484,
+      "p90": 0.05920006634650115,
+      "min": 0.001697792869269949,
+      "max": 0.13737602410297625,
+      "percentile_method": "nearest_rank"
+    },
+    "stop_pct_feasible": {
+      "n": 342,
+      "mean": 0.03634938569189239,
+      "median": 0.02967502220578383,
+      "p10": 0.015527721512021147,
+      "p25": 0.020777673654347295,
+      "p75": 0.04474217627641569,
+      "p90": 0.0653405087506883,
+      "min": 0.013020119121858464,
+      "max": 0.13737602410297625,
+      "percentile_method": "nearest_rank"
+    },
+    "yearly": {
+      "raw": {
+        "2021": 142,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "valid_entry": {
+        "2021": 142,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "valid_stop": {
+        "2021": 142,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "feasible": {
+        "2021": 133,
+        "2022": 84,
+        "2023": 80,
+        "2024": 45
+      },
+      "unique": {
+        "2021": 133,
+        "2022": 84,
+        "2023": 80,
+        "2024": 45
+      },
+      "non_overlapping": {
+        "2021": 49,
+        "2022": 40,
+        "2023": 45,
+        "2024": 22
+      }
+    },
+    "spacing_feasible": {
+      "n": 342,
+      "median_days": 2.5833333333333335,
+      "p10_days": 0.6666666666666666,
+      "p90_days": 7.916666666666667,
+      "min_days": 0.20833333333333334,
+      "max_days": 24.208333333333332,
+      "gap_distribution": {
+        "n": 341,
+        "mean": 3.7410801564027367,
+        "median": 2.5833333333333335,
+        "p10": 0.6666666666666666,
+        "p25": 1.2083333333333333,
+        "p75": 5.25,
+        "p90": 7.916666666666667,
+        "min": 0.20833333333333334,
+        "max": 24.208333333333332,
+        "percentile_method": "nearest_rank"
+      }
+    },
+    "cooldown_counts": {
+      "24": 289,
+      "72": 196,
+      "168": 128
+    },
+    "active_window_start": "2021-01-01 00:00:00+00:00",
+    "active_years": 3.4962354551676933,
+    "cost_sensitivity": {
+      "10": {
+        "count_pass": 420,
+        "share_pass": 0.9438202247191011,
+        "median_cost_r": 0.04010572248470248
+      },
+      "26": {
+        "count_pass": 342,
+        "share_pass": 0.7685393258426966,
+        "median_cost_r": 0.10427487846022646
+      },
+      "39": {
+        "count_pass": 270,
+        "share_pass": 0.6067415730337079,
+        "median_cost_r": 0.15641231769033967
+      },
+      "52": {
+        "count_pass": 213,
+        "share_pass": 0.4786516853932584,
+        "median_cost_r": 0.2085497569204529
+      },
+      "78": {
+        "count_pass": 107,
+        "share_pass": 0.24044943820224718,
+        "median_cost_r": 0.31282463538067934
+      },
+      "100": {
+        "count_pass": 73,
+        "share_pass": 0.16404494382022472,
+        "median_cost_r": 0.40105722484702483
+      }
+    }
+  },
+  "control_matched_window": {
+    "window_start": "2021-02-06 16:00:00+00:00",
+    "pipeline": {
+      "arm": "control",
+      "raw_triggers": 429,
+      "valid_entry": 429,
+      "valid_stop": 429,
+      "feasible": 327,
+      "unique": 327,
+      "unique_duplicates_removed": 0,
+      "non_overlapping": 150,
+      "feasible_share_of_valid": 0.7622377622377622,
+      "exclusions": {
+        "included": 150,
+        "non_overlap": 177,
+        "cost_gate": 102
+      }
+    },
+    "cost_r_valid": {
+      "n": 429,
+      "mean": 0.1740779536972313,
+      "median": 0.10771271986322224,
+      "p10": 0.04509588967839934,
+      "p25": 0.06978624981478737,
+      "p75": 0.19661019896831244,
+      "p90": 0.3571333780160858,
+      "min": 0.0189261555426226,
+      "max": 1.5314,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_r_feasible": {
+      "n": 327,
+      "mean": 0.09588101584778255,
+      "median": 0.08810263840068455,
+      "p10": 0.04104603053311005,
+      "p25": 0.0608322276697872,
+      "p75": 0.12545810383066686,
+      "p90": 0.16744246720210365,
+      "min": 0.0189261555426226,
+      "max": 0.1996909533365991,
+      "percentile_method": "nearest_rank"
+    },
+    "cost_buckets_valid": {
+      "counts": {
+        "le_0.10": 200,
+        "gt_0.10_le_0.20": 127,
+        "gt_0.20_le_0.30": 40,
+        "gt_0.30_le_0.50": 37,
+        "gt_0.50": 25
+      },
+      "percentages": {
+        "le_0.10": 46.62004662004662,
+        "gt_0.10_le_0.20": 29.603729603729604,
+        "gt_0.20_le_0.30": 9.324009324009324,
+        "gt_0.30_le_0.50": 8.624708624708624,
+        "gt_0.50": 5.827505827505828
+      },
+      "total": 429
+    },
+    "stop_pct_valid": {
+      "n": 429,
+      "mean": 0.028695781379277266,
+      "median": 0.02413828193459027,
+      "p10": 0.00728019322764867,
+      "p25": 0.013224135948405404,
+      "p75": 0.037256623000955016,
+      "p90": 0.057654921957230716,
+      "min": 0.001697792869269949,
+      "max": 0.13737602410297625,
+      "percentile_method": "nearest_rank"
+    },
+    "stop_pct_feasible": {
+      "n": 327,
+      "mean": 0.03522802101299723,
+      "median": 0.029511034484295286,
+      "p10": 0.015527721512021147,
+      "p25": 0.020724049866952143,
+      "p75": 0.04274050284848125,
+      "p90": 0.06334351863580798,
+      "min": 0.013020119121858464,
+      "max": 0.13737602410297625,
+      "percentile_method": "nearest_rank"
+    },
+    "yearly": {
+      "raw": {
+        "2021": 126,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "valid_entry": {
+        "2021": 126,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "valid_stop": {
+        "2021": 126,
+        "2022": 109,
+        "2023": 128,
+        "2024": 66
+      },
+      "feasible": {
+        "2021": 118,
+        "2022": 84,
+        "2023": 80,
+        "2024": 45
+      },
+      "unique": {
+        "2021": 118,
+        "2022": 84,
+        "2023": 80,
+        "2024": 45
+      },
+      "non_overlapping": {
+        "2021": 43,
+        "2022": 40,
+        "2023": 45,
+        "2024": 22
+      }
+    },
+    "spacing_feasible": {
+      "n": 327,
+      "median_days": 2.604166666666667,
+      "p10_days": 0.6666666666666666,
+      "p90_days": 8.0,
+      "min_days": 0.20833333333333334,
+      "max_days": 24.208333333333332,
+      "gap_distribution": {
+        "n": 326,
+        "mean": 3.798312883435583,
+        "median": 2.604166666666667,
+        "p10": 0.6666666666666666,
+        "p25": 1.2083333333333333,
+        "p75": 5.416666666666667,
+        "p90": 8.0,
+        "min": 0.20833333333333334,
+        "max": 24.208333333333332,
+        "percentile_method": "nearest_rank"
+      }
+    },
+    "cost_sensitivity": {
+      "10": {
+        "count_pass": 404,
+        "share_pass": 0.9417249417249417,
+        "median_cost_r": 0.041427969178162403
+      },
+      "26": {
+        "count_pass": 327,
+        "share_pass": 0.7622377622377622,
+        "median_cost_r": 0.10771271986322223
+      },
+      "39": {
+        "count_pass": 256,
+        "share_pass": 0.5967365967365967,
+        "median_cost_r": 0.16156907979483334
+      },
+      "52": {
+        "count_pass": 200,
+        "share_pass": 0.4662004662004662,
+        "median_cost_r": 0.21542543972644446
+      },
+      "78": {
+        "count_pass": 97,
+        "share_pass": 0.2261072261072261,
+        "median_cost_r": 0.3231381595896667
+      },
+      "100": {
+        "count_pass": 65,
+        "share_pass": 0.15151515151515152,
+        "median_cost_r": 0.414279691781624
+      }
+    }
+  },
+  "overlap": {
+    "subset_check_primary_in_control": true,
+    "triggers": {
+      "primary": 195,
+      "control": 445,
+      "overlap": 195,
+      "primary_only": 0,
+      "control_only": 250
+    },
+    "valid_stop": {
+      "primary": 195,
+      "control": 445,
+      "overlap": 195,
+      "primary_only": 0,
+      "control_only": 250
+    },
+    "feasible": {
+      "primary": 151,
+      "control": 342,
+      "overlap": 151,
+      "primary_only": 0,
+      "control_only": 191
+    },
+    "non_overlapping": {
+      "primary": 71,
+      "control": 156,
+      "overlap": 56,
+      "primary_only": 15,
+      "control_only": 100
+    },
+    "control_only_feasible_by_regime": {
+      "unknown": 15,
+      "not_up": 168,
+      "flip": 8
+    },
+    "note": "control is the shared LTF stream; primary is its regime-eligible subset"
+  },
+  "clustering": {
+    "regime_episodes_total": 67,
+    "regime_episodes_with_primary_feasible": 24,
+    "regime_episodes_with_any_primary_signal": 24,
+    "regime_episode_duration_days": {
+      "n": 67,
+      "mean": 8.131840796019901,
+      "median": 0.6666666666666666,
+      "p10": 0.16666666666666666,
+      "p25": 0.3333333333333333,
+      "p75": 9.333333333333334,
+      "p90": 24.166666666666668,
+      "min": 0.16666666666666666,
+      "max": 80.0,
+      "percentile_method": "nearest_rank"
+    },
+    "signals_per_signal_producing_episode": {
+      "n": 24,
+      "mean": 6.291666666666667,
+      "median": 3.5,
+      "p10": 1.0,
+      "p25": 2.0,
+      "p75": 9.0,
+      "p90": 17.0,
+      "min": 1.0,
+      "max": 21.0,
+      "percentile_method": "nearest_rank"
+    },
+    "largest_episode_share": 0.1390728476821192,
+    "kish_effective_n": 12.688369504730106,
+    "cluster_count": 24,
+    "design_effect_kish": 11.900662251655628,
+    "time_between_regime_episode_starts_days": {
+      "n": 66,
+      "mean": 18.525252525252526,
+      "median": 5.083333333333334,
+      "p10": 0.5,
+      "p25": 0.8333333333333334,
+      "p75": 23.833333333333332,
+      "p90": 51.5,
+      "min": 0.3333333333333333,
+      "max": 128.5,
+      "percentile_method": "nearest_rank"
+    },
+    "time_between_signal_producing_regime_episode_starts_days": {
+      "n": 23,
+      "mean": 52.05797101449275,
+      "median": 42.333333333333336,
+      "p10": 11.0,
+      "p25": 22.166666666666668,
+      "p75": 76.33333333333333,
+      "p90": 109.0,
+      "min": 6.833333333333333,
+      "max": 128.5,
+      "percentile_method": "nearest_rank"
+    },
+    "unassigned_primary_feasible": 0,
+    "signals_by_regime_episode": {
+      "0": 10,
+      "1": 9,
+      "3": 1,
+      "4": 5,
+      "8": 19,
+      "13": 17,
+      "14": 2,
+      "15": 1,
+      "17": 3,
+      "19": 2,
+      "20": 6,
+      "23": 2,
+      "30": 11,
+      "32": 2,
+      "33": 1,
+      "36": 7,
+      "38": 2,
+      "41": 6,
+      "47": 2,
+      "52": 21,
+      "53": 3,
+      "57": 14,
+      "61": 1,
+      "62": 4
+    }
+  },
+  "effective_sample_size": {
+    "non_overlapping_count": 71,
+    "unique_feasible_count": 151,
+    "raw_feasible_count": 151,
+    "kish_effective_n": 12.688369504730106,
+    "signal_producing_regime_episodes": 24,
+    "detectable_effect_r_80pct": 0.3324869691871027,
+    "required_independent_n_0.15r": 349,
+    "note": "349 is a planning reference for 0.15R at 80% power under independence; the non-overlapping count is used for the verdict and is not assumed independent."
+  },
+  "verification": {
+    "entry_timing_matches_confirmation_close": true,
+    "stop_recomputed_matches_state": true,
+    "cost_formula_recomputes": true,
+    "unique_entry_timestamps": true,
+    "every_entry_on_5m_grid": true,
+    "causal_regime_lookup": true,
+    "note": "causal_regime_lookup is asserted in regime_for_1h: the 4h bar must close at or before the 1h open"
+  },
+  "resource": {
+    "runtime_seconds": 9.316,
+    "peak_rss_mib": 575.3,
+    "python_version": "3.14.6",
+    "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "target_ram_mib": 4096,
+    "ceiling_ram_mib": 6144,
+    "within_limits": true
+  },
+  "limitations": [
+    "This is a feasibility census, not a backtest. No P&L, expectancy, win rate, or profitability was computed.",
+    "The cost model is a Binance spot proxy (26 bp round trip), not a measured Nobitex execution cost.",
+    "Frequency estimates are specific to the frozen 1h/4h definitions and the 2021-2024 development window.",
+    "The non-overlapping count is a greedy equal-window selection, not a portfolio simulation.",
+    "Effective sample size cannot be estimated from outcomes at this stage; the Kish and cluster counts are design diagnostics only.",
+    "The control is a selectivity diagnostic, not an alternative strategy, and is not promoted.",
+    "The 2024 calendar count covers only January-June because the development interval ends 2024-07-01.",
+    "A wide stop can lower cost_R while increasing capital use and adverse price exposure; low cost_R is not evidence of profitability."
+  ],
+  "confirmations": {
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "backtest_run": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false
+  }
+}

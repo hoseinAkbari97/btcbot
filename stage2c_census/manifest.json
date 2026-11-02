@@ -1,0 +1,112 @@
+{
+  "stage": "2C",
+  "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
+  "generated_at_utc": "2026-11-02T07:13:36Z",
+  "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf",
+  "development_interval": {
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2024-07-01T00:00:00+00:00",
+    "days": 1277,
+    "years": 3.496
+  },
+  "timeframes": {
+    "regime": "4h",
+    "signal": "1h",
+    "execution": "5m"
+  },
+  "dataset": {
+    "paths": {
+      "5m": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "1h": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+      "4h": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "manifest": "backend/data/datasets/manifest.json"
+    },
+    "sha256": {
+      "5m": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "15m": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+      "1h": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+      "4h": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa"
+    },
+    "manifest_path": "backend/data/datasets/manifest.json",
+    "manifest_sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25"
+  },
+  "frozen_specification": {
+    "path": "stage2c_census/STAGE2C_SIGNAL_SPECIFICATION.md",
+    "sha256": "8dbf0c8e6246cce17c93670b2e5a4aeebf5d299fe47e81ca5f9d02c0d46a2c2a"
+  },
+  "configuration": {
+    "path": "stage2c_census/stage2c_config.json",
+    "sha256": "fb11d5be3f98fa19782fb1290fec6810e27f77505d886b90f13232017cbe1b8a"
+  },
+  "freeze_record": {
+    "path": "stage2c_census/freeze.json",
+    "sha256": "e28e41bcbe58286a7803d751631bb29b88d2fec22105f6532a71abdb6869339a"
+  },
+  "code": {
+    "path": "stage2c_census/census.py",
+    "sha256": "08714213918cd92e095a57d3a121385d50c3c9681f8ecd55e1460db0378ee593",
+    "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf"
+  },
+  "cost_assumptions": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.2,
+    "sensitivity_bps": [
+      10,
+      26,
+      39,
+      52,
+      78,
+      100
+    ],
+    "venue_proxy": "Binance spot; not a Nobitex execution claim"
+  },
+  "execution_parameters": {
+    "entry": "open of the 5m bar whose open_time == open_time[confirmation] + 1 hour",
+    "stop": "minimum low of the 1h bars from the crossunder bar through the confirmation bar inclusive",
+    "max_pullback_bars": 72,
+    "max_pullback_depth_pct": 0.15,
+    "non_overlap_hold_hours": 120,
+    "cooldown_hours_primary": 0,
+    "verdict_thresholds": {
+      "pass_non_overlapping_feasible": 349,
+      "pass_with_limitations_min_non_overlapping_feasible": 150,
+      "max_median_cost_r": 0.2,
+      "min_feasible_share_for_pass": 0.5,
+      "min_feasible_share_for_pass_with_limitations": 0.25
+    }
+  },
+  "census_execution": {
+    "runtime_seconds": 9.711,
+    "peak_rss_mib": 575.3,
+    "python_version": "3.14.6",
+    "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "deterministic_counts": true
+  },
+  "outputs": {
+    "census_result": "1c1d1314e5d094e7abe3f363b769375e4a9723b2420c42c38454cc74b96dfe5f",
+    "docs_census_md": "f646e15ab6a45032ba3bd55bcafcd72100d237fa6ac2244a99b2546532ae64aa",
+    "docs_census_json": "b72a26e7d93a59b2323c967207b92f548c18fef742eb3dbe875f3498ccd4d08f",
+    "docs_alignment_md": null,
+    "spec": "8dbf0c8e6246cce17c93670b2e5a4aeebf5d299fe47e81ca5f9d02c0d46a2c2a",
+    "config": "fb11d5be3f98fa19782fb1290fec6810e27f77505d886b90f13232017cbe1b8a",
+    "freeze": "e28e41bcbe58286a7803d751631bb29b88d2fec22105f6532a71abdb6869339a",
+    "census_script": "08714213918cd92e095a57d3a121385d50c3c9681f8ecd55e1460db0378ee593"
+  },
+  "validation_oos_accessed": false,
+  "confirmations": {
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "backtest_run": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false
+  },
+  "notes": [
+    "Hashes are byte-level provenance; no validation/OOS observation was parsed or analysed.",
+    "The raw census result is stage2c_census/census_result.json; the docs JSON is the curated summary."
+  ]
+}
