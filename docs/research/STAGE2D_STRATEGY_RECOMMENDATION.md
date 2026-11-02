@@ -20,6 +20,16 @@
    - *Non-overlap horizon:* 24 hours (sensitivities at 12h and 48h)  
    - *Rationale:* The only candidate with a credible path to the 150 floor; tests a genuinely new family (session-relative intraday momentum) not explored in prior stages.
 
+**What this recommendation does not claim.** Neither candidate has demonstrated sufficient independent
+opportunity frequency, and neither has demonstrated profitability. This is a recommendation to *test*,
+not a promotion: it names the two designs worth spending a census on under the existing floor, and
+nothing more. If a pre-count argument shows that a candidate cannot plausibly produce enough
+independent episodes, or that its structural stop cannot clear `cost_R <= 0.20`, the correct output is
+a documented rejection before counting, not a count that fails for reasons already known. If neither
+survives the census, the honest conclusion is that no candidate in this programme is testable on this
+interval, and that must be reported as the result rather than resolved by lowering the floor after
+seeing the counts.
+
 **Do not recommend A or C for a census under the existing floor.** A is the strongest mechanism but cannot reach 150 (20-day cap 63). C is weakest on mechanism and falsifiability and is structurally rare. Both are retained as alternatives if the floor is revised or the interval extended.
 
 ---
