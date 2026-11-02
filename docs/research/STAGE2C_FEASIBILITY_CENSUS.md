@@ -374,7 +374,9 @@ series and the signal lists are small by comparison. No large intermediate dataf
 1. **This is not a backtest.** No trade is entered or resolved. No P&L, expectancy, win rate,
    drawdown, Sharpe, or profitability figure exists in this stage.
 2. **The cost model is a Binance spot proxy.** 26 bp round trip is not a measured Nobitex cost. A
-   Nobitex deployment would need its own fee, spread, slippage, and fill measurements.
+   Nobitex deployment would need its own fee, spread, slippage, and fill measurements. The entry is
+   the next 5m bar open; a gap between the confirmation close and that open is reflected in the stop
+   distance but is not separately modelled as slippage.
 3. **The definition is one instantiation of Stage 2B.** The 1h/4h choice and the 72-bar/15% guards
    are engineering decisions made before counting. A different defensible instantiation could
    produce a different count; this census does not search for a more attractive one.

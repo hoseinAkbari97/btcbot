@@ -1127,7 +1127,7 @@
   },
   "limitations": [
     "This is a feasibility census, not a backtest. No P&L, expectancy, win rate, or profitability was computed.",
-    "The cost model is a Binance spot proxy (26 bp round trip), not a measured Nobitex execution cost.",
+    "The cost model is a Binance spot proxy (26 bp round trip), not a measured Nobitex execution cost; entry is the next 5m bar open and gap/slippage is not separately modelled.",
     "Frequency estimates are specific to the frozen 1h/4h definitions and the 2021-2024 development window.",
     "The non-overlapping count is a greedy equal-window selection, not a portfolio simulation.",
     "Effective sample size cannot be estimated from outcomes at this stage; the Kish and cluster counts are design diagnostics only.",
