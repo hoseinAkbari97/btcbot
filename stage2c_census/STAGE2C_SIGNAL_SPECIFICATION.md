@@ -165,11 +165,13 @@ episode. This is the duplicate-signal rule (§7).
 **Pullback lifecycle:** from bar `i` onward, for each closed 1h bar `j >= i`:
 
 1. update `L = min(L, low[j])`;
-2. if a confirmation condition (§4) is met, emit a signal and close the episode;
-3. otherwise, if an invalidation condition (§5) is met, close the episode without a signal;
+2. if an invalidation condition (§5) is met, close the episode without a signal;
+3. otherwise, if the confirmation condition (§4) is met, emit a signal and close the episode;
 4. otherwise continue.
 
-The episode is closed by the first of confirmation, invalidation, or the end of its 1h segment.
+Invalidation is evaluated **before** confirmation. A bar that both breaches the 15% depth guard and
+closes above `R` is a violent reversal, not a pullback resumption; it is invalidated, not signalled.
+The episode is closed by the first of invalidation, confirmation, or the end of its 1h segment.
 
 **Minimum pullback duration:** a confirmation cannot occur on the crossunder bar itself. The
 earliest confirmation is `j = i+1`. This prevents a same-bar start-and-confirm and guarantees that
@@ -181,6 +183,7 @@ minimum stop distance; the cost gate does that (§6).
 ## 4. Resumption confirmation and signal timestamp
 
 **Confirmation condition:** at the close of 1h bar `j`, with `j > i` and the episode still active,
+and after invalidation checks have passed,
 
 ```
 close[j] > R
@@ -394,7 +397,10 @@ The 1h vendor series has seven registered gaps and fourteen missing bars over th
 - it is not flagged `is_closed`;
 - `volume == 0` or `trade_count == 0` (a placeholder, not a price observation);
 - it is **partial**, meaning its 1h bucket contains fewer than 12 of the 12 expected 5m bars. This
-  is the gap-adjacent case; a partial 1h bar is not a complete hour of price action.
+  is the gap-adjacent case; a partial 1h bar is not a complete hour of price action;
+- its **final 5m member has zero volume**, because the 1h close would then be a placeholder price
+  rather than a traded price. (An earlier zero-volume member inside the hour is flagged but does not
+  by itself make the bar unusable; the design reads the close, not every intrahour print.)
 
 A maximal run of consecutive, usable 1h bars is a **segment**. Segments are separated by any
 unusable or missing bar. The EMA is re-initialised at the start of every segment and needs 20 bars
@@ -448,32 +454,34 @@ by a longer control window.
 
 ## 11. Control arm
 
-**Definition:** the control removes **only** the higher-timeframe directional-regime condition. It
-uses:
+**Definition:** both arms are evaluated on **one shared lower-timeframe episode stream**. That
+stream is generated without any higher-timeframe condition: the same 1h EMA20, crossunder,
+reference high, pullback low, confirmation, entry timing, stop, cost model, and validity rules for
+both arms.
 
-- the same 1h EMA20, crossunder, reference high, pullback low, confirmation, entry timing, stop,
-  cost model, and validity rules;
-- no regime entry filter;
-- no regime-flip invalidation.
+- **Control:** every confirmation on the shared LTF stream.
+- **Primary:** the subset of confirmations for which (a) `regime_up` was `True` at the crossunder
+  bar and (b) `regime_up` was `True` at every 1h bar from the crossunder through the confirmation
+  bar. A regime flip removes primary eligibility; it does not reset or alter the shared LTF stream.
 
-The control's lifecycle is therefore the LTF-only lifecycle. The primary's lifecycle is the same
-LTF lifecycle plus (a) the crossunder must occur while `regime_up` is true, and (b) the episode is
-invalidated if `regime_up` becomes false at any time before confirmation. Everything else is
-identical.
+This is the exact meaning of "remove only the HTF directional-regime condition": the LTF signal
+stream is identical in both arms; only the eligibility filter differs. The primary therefore cannot
+start a different episode count merely because the regime flipped.
 
-**Consequence:** every primary signal is also a control signal, because a primary signal satisfies
-the LTF lifecycle and the control has no additional filter. The run verifies this subset relation
-and reports:
+**Consequence:** every primary signal is also a control signal by construction. The run verifies
+the subset relation and reports:
 
 - primary count;
 - control count, all;
 - control count on the matched (regime-labelled) window;
 - overlap (should equal the primary count);
 - primary-only (should be 0);
-- control-only, split by the regime label at the crossunder (`False` or `Unknown`).
+- control-only, split by the regime label at the crossunder (`False` or `Unknown`) and by
+  `regime_flip` (started up, flipped before confirmation).
 
 The control is **not** an alternative strategy and is **not** promoted if the primary fails. It
-measures the regime filter's contribution to frequency and stop geometry.
+measures the regime filter's contribution to frequency and stop geometry. The contrast is about
+*frequency and geometry*, not profitability; no outcome is computed.
 
 ---
 
@@ -537,6 +545,7 @@ Exclusion reasons:
 | `warmup_ema` | 1h EMA not yet defined |
 | `segment_break` | episode open when its 1h segment ended |
 | `regime_unknown` | primary only: no valid 4h label at the crossunder |
+| `regime_not_up` | primary only: `regime_up` was false at the crossunder |
 | `regime_flip` | primary only: `regime_up` became false before confirmation |
 | `max_pullback_bars` | 72-bar age exceeded |
 | `max_pullback_depth` | 15% depth exceeded |

@@ -38,7 +38,9 @@
     "confirmation": "close[j] > reference_high, j > i",
     "max_pullback_bars": 72,
     "max_pullback_depth_pct": 0.15,
-    "min_bars_before_confirmation": 2
+    "min_bars_before_confirmation": 2,
+    "invalidation_precedence": "invalidation_before_confirmation",
+    "shared_ltf_stream": true
   },
   "entry": {
     "rule": "open of the 5m bar whose open_time == open_time[confirmation] + 1 hour",
@@ -84,6 +86,7 @@
     "partial_1h_threshold_5m_members": 12,
     "exclude_zero_volume_1h": true,
     "exclude_unclosed_1h": true,
+    "require_last_5m_member_traded": true,
     "use_vendor_4h_even_if_partial": true,
     "synthesize_bars": false
   },
