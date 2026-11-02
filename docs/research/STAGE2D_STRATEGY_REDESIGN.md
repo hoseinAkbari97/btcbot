@@ -464,4 +464,140 @@ it may fail on frequency or cost-adjusted edge rather than on mechanism.
 
 ---
 
+## 5. Candidate C — longer-horizon regime-conditioned mean reversion
+
+### 5.1 What it is, and the falling-knife constraint
+
+**Canonical form for a future census.** On the daily close:
+
+1. **Regime permission.** `close > SMA(200, daily)` and the 200-day slope is non-negative, or price is
+   above the 200-day mean and drawdown from the 90-day high is at most 25%. Trailing 30-day realized
+   volatility must be below its 80th percentile over the prior year. The regime filter is the
+   falling-knife guard: no longs in a confirmed downtrend or in a volatility crisis.
+2. **Dislocation signal.** Daily RSI(14) < 30, or close below the lower Bollinger band (20, 2), or a
+   five-day return below `-1.5 x ATR(14, daily)`.
+3. **Stabilization confirmation.** The next daily bar closes above the prior bar's low and back above
+   the lower band, or a higher low forms over two to three bars. Enter long at the next open after
+   confirmation. This is the second falling-knife guard: the rule does not buy a close at the low.
+4. **Stop.** Below the confirmed swing low by `1.0 x ATR(14, daily)`, with a 2.5% floor. Typical stop
+   5–10%.
+5. **Exit.** Reversion to the 20-day mean, 2R, or a 20-day time exit.
+6. **Non-overlap.** 20 days canonical; 10 and 30 days as sensitivity.
+
+The design deliberately gives up the first part of the bounce in exchange for evidence that the
+decline has stopped. That trade-off is the hypothesis: the cost of confirmation is smaller than the
+cost of catching a knife.
+
+### 5.2 The twelve questions
+
+| # | answer | tag |
+|---|---|---|
+| Q1 | Market state: an established non-bear regime, a short-horizon dislocation, and a stabilization bar. Each condition is objective and computed from closed daily bars. | [F] definition |
+| Q2 | Counterparty: panic sellers, forced liquidators, and attention-driven retail flow that overshoots fundamental value. The counterparty is not necessarily wrong about the news; they are constrained to sell at any price. | [L] overreaction, [H] crypto flow |
+| Q3 | Mechanism: long-horizon overreaction and subsequent reversal (De Bondt–Thaler), with short-horizon reversal as a liquidity-provision premium. The regime and stabilization filters are intended to keep the trade out of genuine regime changes. | [L] reversal, [E] filters |
+| Q4 | BTC-specific: BTC exhibits speculative bubble behaviour and negative bubbles (Cheah–Fry; Fry–Cheah), and it is used as a speculative asset rather than a medium of exchange (Baur–Hong–Lee). That supports overreaction, but it also supports strong trends, which is the opposite of mean reversion. | [L] both directions |
+| Q5 | Long-only spot means the strategy can only buy dips. It cannot short euphoria, which is where much of the overreaction evidence is strongest. It is structurally long crash risk: capped upside, fat left tail. | [E] |
+| Q6 | Stop below the confirmed swing low by 1.0×ATR, typically 5–10%. The stop is outside normal daily noise but not outside a regime break; a gap through it is the main tail risk. | [E] |
+| Q7 | Exit at the 20-day mean, 2R, or 20 days. The reversion horizon is days to weeks, consistent with the dislocation being a liquidity/attention event rather than a change in the long-run trend. | [E] |
+| Q8 | Frequency: **low** [H]. The conjunction of a non-bear regime, a dislocation, and a stabilization bar is rare. In a strong bull phase the dislocation may not occur; in a bear phase the regime filter blocks it. A realistic count is 10–30 episodes over 3.5 years, and the 20-day calendar ceiling is 63. | [H] |
+| Q9 | Stop 5–10%, so `cost_R = 0.026–0.052`. It clears the gate comfortably. The binding constraint is not cost; it is episode scarcity and adverse exposure. | [E] arithmetic |
+| Q10 | At 1% risk, an 8% stop implies `$1,250` notional (12.5% of $10,000); a 5% stop implies $2,000 (20%). Concurrency is 1–2. Capital utilisation is low, but the position is exposed to a multi-day drawdown. | [E] arithmetic |
+| Q11 | Buying into a falling market means the entry and stop are both in a high-slippage state. A stabilization bar can fail on the next open; a stop can gap. The 26 bp proxy is unlikely to cover a panic-day fill. | [E], [H] |
+| Q12 | Falsified if the regime filter removes all bear-market signals and the strategy collapses to long beta, if the stabilization filter enters after the bounce is over, or if the drawdown/vol filters are fit to 2022. Strongest objection: long-only mean reversion in an asset with strong momentum and fat left tails is structurally short crash risk, and the filters are a single-cycle fit. | [E], [L] |
+
+### 5.3 Economics and frequency
+
+**Mechanism strength.** Weak-to-moderate for BTC spot. The overreaction literature is real, but it is
+strongest in cross-sectional equity portfolios and in short-horizon liquidity provision. For a single
+long-only crypto asset, the dominant empirical fact is momentum, not reversal. The candidate is
+therefore fighting the asset's own dynamics. The regime and stabilization filters are sensible risk
+controls, but they also make the hypothesis harder to falsify: almost any outcome can be attributed
+to the filter being too tight or too loose.
+
+**The falling-knife problem is not solved by a filter.** A regime filter reduces the probability of
+buying a bear-market decline, but it does not eliminate it: the 2022 bear market had multiple rallies
+above the 200-day mean that failed. The stabilization bar is a one-bar confirmation; it is not
+evidence that the decline has ended. The honest description is "delayed entry into a falling knife,"
+not "avoidance of falling knives."
+
+**Frequency and the floor.** At a 20-day non-overlap the ceiling is 63, and the realistic count is
+lower. C cannot satisfy the 150 floor. It is the least testable of the four candidates under the
+existing protocol.
+
+**Verdict for this stage.** Do not recommend. The mechanism is the weakest for BTC spot, the
+falling-knife risk is the highest, and the frequency is structurally below the floor. Retain only as
+a research question if the programme later obtains a cross-sectional universe or a short leg.
+
+---
+
+## 6. Candidate D — intraday continuation with a higher-timeframe volatility budget
+
+### 6.1 What it is, and why the volatility budget matters
+
+**Canonical form for a future census.** On 15m BTCUSDT, with 1h execution and 4h/daily context:
+
+1. **Volatility budget.** Daily ATR(14) must be between its 25th and 80th percentile over the trailing
+   90 days, or 4h realized volatility must be between 0.5× and 1.5× its 30-day median. This excludes
+   dead markets (no range to continue) and crisis markets (jump risk and whipsaw). The budget is the
+   higher-timeframe conditioner.
+2. **Session definition.** Use UTC sessions: Asia `00:00–08:00`, Europe `08:00–16:00`, US
+   `16:00–00:00`. For each session, compute the first-two-hour return. A long candidate requires that
+   return to exceed `+0.5 x ATR(14, 1h)` and price to be above the session VWAP.
+3. **Entry.** At the end of the first two hours of the session, enter long at the next 15m open.
+4. **Stop.** `1.0 x ATR(14, 1h)` below entry, or a hard 1.30% floor, whichever is farther. The floor
+   is required by `cost_R <= 0.20`. If the structural stop is tighter than 1.30%, skip the signal.
+5. **Exit.** Session end, 2R, or stop. The census uses a 24h non-overlap horizon, i.e. at most one
+   accepted signal per UTC day.
+6. **Sensitivity.** 12h and 48h non-overlap, and a single-session (US only) variant, to test whether
+   the result depends on the session definition.
+
+**Why the volatility budget is not cosmetic.** The documented intraday-momentum effect is strongest in
+normal-volatility conditions and can invert in crisis conditions, when the first move is a liquidity
+shock and the rest of the day mean-reverts. A naive "first two hours predict the rest" rule would be
+tested across both states and would average to nothing. The budget is an attempt to state the
+condition under which the mechanism is supposed to hold. It is also a degrees-of-freedom risk: a
+three-parameter budget can be tuned to the sample.
+
+### 6.2 The twelve questions
+
+| # | answer | tag |
+|---|---|---|
+| Q1 | Market state: a normal-volatility day, a directional first two hours in a UTC session, price above session VWAP, and a session-relative continuation entry. All inputs are closed-bar values. | [F] definition |
+| Q2 | Counterparty: late-informed traders and infrequent rebalancers who trade toward the session close, plus intraday mean-reversion traders who fade the first move too early. | [L] equity evidence, [H] crypto |
+| Q3 | Mechanism: intraday momentum is documented in US equity indices — the first half-hour return predicts the last half-hour return (Gao–Han–Li–Zhou). Proposed drivers are late-informed trading and infrequent rebalancing. The mechanism is session-close-specific; BTC has no close. | [L] equities, [H] BTC |
+| Q4 | BTC-specific: BTC trades 24/7, so the "session" is a convention, not an exchange close. The closest crypto analogue is the dominance of US/Europe flow at certain UTC hours. There is no strong published BTC spot evidence for this exact rule. | [H] |
+| Q5 | Long-only spot excludes the short side of a down-open day. If the effect is symmetric, the long-only version captures only part of it; if it is asymmetric, the long side may be the weaker side. | [E] |
+| Q6 | Stop 1.0×ATR(1h) or 1.30%, whichever is farther. The 1.30% floor is a cost constraint, not a market-structure stop. For BTC, 1.30% is roughly 0.4–0.6 of a daily ATR, so it is not absurdly wide, but it is wider than a typical intraday stop. | [E] |
+| Q7 | Exit at session end, 2R, or stop. The session-end exit is the mechanism's natural horizon: the predicted quantity is the rest of the session. A 24h non-overlap is a census convention to prevent multiple same-day counts. | [E] |
+| Q8 | Frequency: **high** [H]. Three sessions per day for 1,277 days gives up to 3,831 session candidates before filters; after the vol budget and signal threshold, a realistic range is 300–800 raw and 150–300 non-overlapping at 24h. This is the only candidate with a plausible path to 150. | [H] |
+| Q9 | Stop 1.3–2.0% typical, so `cost_R = 0.13–0.20`. The 1.30% floor is exactly the gate boundary. Median may be ~0.17. This is the central tension: the candidate is frequent enough, but cost consumes most of a 0.15R edge. | [E] arithmetic |
+| Q10 | At 1% risk, a 1.3% stop implies `$7,692` notional (77% of $10,000); a 2.0% stop implies $5,000 (50%). One position at a time is the realistic cash constraint; two concurrent 1.3%-stop positions would exceed 100% of spot cash. | [E] arithmetic |
+| Q11 | Intraday market orders cross the spread; stops are close and can be hit by noise; target fills are uncertain; session boundaries are arbitrary; the 26 bp proxy may understate Nobitex spread. At $10k the minimum notional and lot size are unlikely to bind, but the venue is unverified. | [E], [H] |
+| Q12 | Falsified if BTC spot shows no session-relative intraday momentum, if the vol budget selects only noise, or if median `cost_R` exceeds 0.20R. Strongest objection: the evidence is from equity indices with a fixed close; BTC has no close, the session is arbitrary, and the cost gate forces stops so wide that the strategy is only nominally intraday. | [E], [L] equities |
+
+### 6.3 Economics and frequency
+
+**Mechanism strength.** Moderate but fragile. Intraday momentum has credible evidence in equity
+indices, and the "late-informed traders / infrequent rebalancing" explanation is plausible. The
+transfer to 24/7 BTC spot is an analogy, not a result. The higher-timeframe volatility budget is a
+genuine improvement over a naive rule because it states the regime in which the mechanism should
+operate, but it also adds three parameters that can be fitted.
+
+**Frequency versus cost.** D is the only candidate that can plausibly reach 150 non-overlapping
+episodes. It is also the candidate where the cost gate bites hardest: a 1.30% stop is the minimum that
+keeps `cost_R <= 0.20`, and at that minimum the entire round trip consumes the full gate. A future
+census must report the feasible share, the median `cost_R`, and the cost-adjusted edge. A high raw
+count with a 40% feasible share is not a pass.
+
+**Capital.** The tight-stop/large-notional geometry is the opposite of Candidate A's. D uses most of
+the account per position and cannot run two positions without exceeding spot cash. That is a real
+constraint, not a modelling detail: the backtest engine's single-position limit happens to match D's
+cash reality, but B would need multi-position accounting.
+
+**Verdict for this stage.** Recommend for a future feasibility census, primarily because it is the
+only candidate with a credible path to the 150 floor and the best statistical testability. The
+recommendation is conditional on the cost-adjusted screen and on a session-sensitivity test.
+
+---
+
 <!-- STAGE2D_APPEND -->
