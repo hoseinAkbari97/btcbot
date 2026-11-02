@@ -356,7 +356,7 @@ parameter optimization, definition search, or outcome-based filtering was perfor
 
 | item | value |
 |---|---|
-| Wall-clock runtime | 9.3 s |
+| Wall-clock runtime | 9.7 s |
 | Peak RSS | 575 MiB |
 | Target RAM | ≤ 4,096 MiB |
 | Absolute ceiling | 6,144 MiB |
