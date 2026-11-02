@@ -378,4 +378,150 @@ notional per unit of risk, which is an accounting trick, not an improvement.
 **Invalid stop** (`invalid_stop`) if any of: `S <= 0`; `entry_open <= 0`; `D <= 0` (entry at or below
 the setup low).
 
-<!-- PART3 -->
+---
+
+## 6. Episodes, duplicates, and identity
+
+### 6.1 Episode lifecycle
+
+An **episode** is the state machine that begins at an expansion bar and ends at the first of:
+
+| end condition | label | signal emitted? |
+|---|---|---|
+| resumption confirmed and entry/stop valid | `signalled` | yes, exactly one |
+| penetration or structure break | `invalidated` | no |
+| retest window or confirmation window expires | `expired` | no |
+| regime permission lost at confirmation | `regime_lost` | no |
+| 1h segment ends | `segment_break` | no |
+| entry bar or stop invalid | `rejected` | no |
+
+The episode is closed by the **first** of these in evaluation order. Within a bar, the order is:
+penetration/structure checks, then expiry checks, then confirmation, then entry/stop validity. An
+invalidated episode is never re-opened.
+
+**Exactly one active episode at a time.** A new expansion bar while an episode is active does **not**
+start a second episode (§6.2). After an episode ends, the next qualifying expansion bar at a strictly
+later index starts a new episode. There is no cooldown in the primary specification; cooldowns are
+sensitivities only (§7.4).
+
+### 6.2 Multiple expansions in one episode
+
+While an episode is active, an expansion bar at index `x > e` is **absorbed**:
+
+- it does not open a new episode;
+- it does not move `L_e`, `A_e`, or the retest window;
+- it is counted as `expansions_absorbed` and reported.
+
+Reason: the hypothesis is one impulse followed by one retest. Re-anchoring the level on a second
+expansion would let the setup drift toward whatever performed best, and opening a second episode would
+double-count the same market move. The absorbed count makes the choice measurable.
+
+### 6.3 Failed retest
+
+An episode that expires or is invalidated produces **no signal**, and no later bar of that episode can
+revive it. The market can produce a new signal only through a new expansion bar after the episode has
+ended. This is the deterministic answer to the Stage 2D question "can a failed retest produce another
+signal": no.
+
+### 6.4 Regime interaction
+
+A regime change interacts with an episode only at the two evaluation points in §4.3. A transition
+during the retest is not itself an end condition; the confirmation-bar check is. Because the episode
+is closed by the first failing condition, a regime loss at confirmation terminates the episode before
+any further bars are evaluated.
+
+### 6.5 Deterministic identity
+
+Every episode has the key
+
+```
+B:{expansion_open_time in ISO 8601 with +00:00}
+```
+
+e.g. `B:2021-03-01T00:00:00+00:00`. The key depends only on the expansion bar, so it is stable across
+reruns and implementations. Two episodes cannot share a key because a bar can begin at most one
+episode.
+
+**Duplicate rule.** Two signals are duplicates if they share the same `entry_time`. Under the
+one-active-episode rule this cannot occur, but the census verifies it and reports the number of
+duplicates removed. A signal is also rejected if its confirmation bar has already been used by another
+signal; that is impossible for the same reason and is checked anyway.
+
+---
+
+## 7. Non-overlap policy
+
+### 7.1 Canonical 72-hour rule
+
+**Population:** unique cost-feasible signals (one per signalled episode), after the cost gate.
+
+**Algorithm:**
+
+1. Sort the population by `entry_time` ascending; ties broken by episode key ascending
+   (ISO-string comparison).
+2. Accept the first signal.
+3. Accept each subsequent signal whose `entry_time` is **at least** 72 hours after the most recently
+   accepted signal's `entry_time`. Exactly 72 hours qualifies.
+4. Rejected signals are marked `non_overlap` and are retained in the output for audit.
+
+**Timestamp used:** `entry_time`, the open time of the entry bar — not the signal time, not the
+expansion time. Entry time is what determines when capital would be committed.
+
+**Boundary:** inclusive. `entry_time - last_accepted_entry_time >= 72h`.
+
+**Simultaneous signals:** impossible in practice (one active episode), but if two signals ever share
+an `entry_time`, the lexicographically smaller key is retained and the other is labelled
+`duplicate_entry`.
+
+**Order of application:** after deduplication and after the cost gate. Non-overlap never changes
+whether a signal is cost-feasible; it only decides which feasible signals are separated enough to be
+counted as distinct opportunities. Signals rejected here still appear in the cost distribution.
+
+### 7.2 Sensitivities
+
+The 24-hour and 120-hour counts use the identical greedy algorithm over the same population, changing
+only the separation threshold. They are diagnostics. The canonical decision count is the 72-hour
+count, and the sensitivities may not be substituted for it after the fact.
+
+### 7.3 What the count means
+
+`N_nonoverlap` answers: how many cost-feasible signals exist such that no two are less than 72 hours
+apart? It is an interval-selection count, not a portfolio, not a sequence of trades, and not a claim
+of independence. 72 hours is the maximum intended holding horizon, chosen in Stage 2D because it
+leaves 425 calendar slots in a 1,277-day interval; it is a protocol convention, not an estimate of the
+optimal exit.
+
+### 7.4 Cooldown sensitivities
+
+Pre-declared diagnostics only: the same greedy rule at 24h, 72h, and 120h. No other cooldown may be
+tried. These numbers cannot alter the verdict.
+
+---
+
+## 8. Cost model and feasibility gate
+
+**Round-trip cost:** 26 basis points of notional, as a fraction `0.0026`. This is a Binance spot proxy
+for fees plus adverse execution. It is **not** a Nobitex measurement.
+
+For every signal with a valid stop:
+
+```
+cost_R = 0.0026 * entry_open / D
+```
+
+where `D = entry_open - S` (§5.6).
+
+**Primary gate:** `cost_R <= 0.20`.
+
+At 26 bp, `cost_R <= 0.20` is equivalent to `D / entry_open >= 0.013`, i.e. a 1.30% stop. The census
+reports the full stop-distance distribution so the equivalence can be checked independently.
+
+Reported buckets: `cost_R <= 0.10`; `(0.10, 0.20]`; `(0.20, 0.30]`; `(0.30, 0.50]`; `> 0.50`.
+
+Signals failing the gate are counted as `cost_gate` and remain in the cost distribution. They are not
+deleted from the economic evidence.
+
+**Cost sensitivity:** the counts that would pass the same `0.20` gate at 10, 39, and 52 bp round-trip
+are reported. The primary gate is not changed at any of them; only `cost_R` is recomputed.
+
+<!-- PART4 -->
