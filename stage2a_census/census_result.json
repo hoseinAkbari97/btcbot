@@ -1,7 +1,7 @@
 {
   "census": "Stage 2A feasibility census \u2014 counting only, no P&L",
-  "generated_utc": "2026-11-01T12:45:50+03:30",
-  "git_head": "e5f495f0e1fcf1fe5bf2f7f5afbeb8f35aa0e460",
+  "generated_utc": "2026-11-02T10:04:33+03:30",
+  "git_head": "049975f3b9c39947e53c60fde5224db7480f5b4f",
   "strategy": "SETUP_2_COMPRESSION_BREAKOUT_CONTINUATION",
   "interval": {
     "start_inclusive": "2021-01-01 00:00:00+00:00",
@@ -138,7 +138,10 @@
         "vendor": "28079.99000000"
       }
     ],
-    "alignment_ok": false
+    "alignment_ok": false,
+    "alignment_verdict": "PASS_WITH_ONE_DOCUMENTED_EXCEPTION",
+    "fields_used_by_design_exact": true,
+    "alignment_ok_note": "strict flag additionally requires a 48-bar, all-fields-identical match for every bucket; it is false because 12 buckets straddle registered gaps and one 4h open differs by one tick (zero-volume placeholder). See docs/research/STAGE2A_DATA_ALIGNMENT_AUDIT.md."
   },
   "candidate_c": {
     "stage_counts": {
