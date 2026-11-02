@@ -1,0 +1,198 @@
+{
+  "stage": "2E",
+  "protocol_version": "1.0.0",
+  "freeze_timestamp_utc": "2026-11-02T08:40:03Z",
+  "git_head_at_freeze": "f8000e042c5b1238312317bd4decefae4f1c4438",
+  "statement": "No feasibility census has been run for either candidate. No market data has been processed beyond reading the dataset manifest, no signal has been counted, no backtest or performance analysis has been performed, and no validation or out-of-sample data has been accessed. All hashes below were computed before any future counting run; a runner must abort on any mismatch.",
+  "run_order": [
+    "verify dataset sha256",
+    "verify specification, configuration, and protocol sha256",
+    "run the candidate census",
+    "record counts and diagnostics",
+    "record the runner's git HEAD and code sha256 in its output manifest"
+  ],
+  "development_interval": {
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2024-07-01T00:00:00+00:00",
+    "days": 1277,
+    "years": 3.496,
+    "pre_development_data_used": false,
+    "validation_or_oos_accessed": false
+  },
+  "cost_assumptions": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.20,
+    "implied_min_stop_pct": 1.30,
+    "venue": "Binance proxy; not a verified Nobitex measurement",
+    "sensitivity_bps": [10, 26, 39, 52],
+    "gate_changes_with_sensitivity": false
+  },
+  "decision_thresholds": {
+    "project_floor_non_overlapping": 150,
+    "project_floor_status": "project protocol choice first fixed at the Stage 2C freeze; not statistically derived; does not guarantee power",
+    "independent_sample_reference": 349,
+    "independent_sample_status": "planning estimate for a 0.15R effect at 1R outcome SD, 5% two-sided, 80% power, under independence; optimistic under clustering and fat tails",
+    "design_margin": "0.15 - median_cost_r; diagnostic under stated assumptions only; not net expectancy and not profitability",
+    "kish": "concentration diagnostic only; not an estimate of serial dependence"
+  },
+  "documents": {
+    "shared_protocol": {
+      "path": "docs/research/STAGE2E_SHARED_CENSUS_PROTOCOL.md",
+      "sha256": "3afd1e915b3ce27966673d30d25ea59763192b5869e8857712668ec94a7f1f78",
+      "version": "1.0.0"
+    },
+    "independent_review": {
+      "path": "docs/research/STAGE2E_INDEPENDENT_REVIEW.md",
+      "sha256": "3f59a8c2365676fc15b8a069e78600776aa4ecd1a176d3245ca9f1f2c6738cc9",
+      "unresolved_critical_ambiguities": 0
+    }
+  },
+  "candidates": {
+    "B": {
+      "strategy_id": "CANDIDATE_B_VOLATILITY_EXPANSION_RETEST_CONTINUATION",
+      "spec_path": "docs/research/STAGE2E_CANDIDATE_B_SPEC.md",
+      "spec_sha256": "13762985a31ecb3364c4fd7c2c66d1bafdc627d526177fbdb04601ef619c3104",
+      "config_path": "docs/research/STAGE2E_CANDIDATE_B_CONFIG.json",
+      "config_sha256": "4253b32b4305434fec196c6e9c720c144b4572a109958d4bd5f1125f78086574",
+      "spec_version": "1.0.0",
+      "frozen_parameters": {
+        "signal_timeframe": "1h",
+        "regime_timeframe": "4h",
+        "execution_timeframe": "1h",
+        "atr_period": 14,
+        "atr_method": "wilder",
+        "atr_reference_for_expansion": "ATR[t-1]",
+        "expansion_tr_multiple": 2.0,
+        "body_range_min": 0.55,
+        "close_location_min": 0.75,
+        "require_close_above_open": true,
+        "volume_required": false,
+        "regime_sma_window": 50,
+        "regime_slope_lookback_bars": 6,
+        "regime_percentile_window_bars": 540,
+        "regime_percentile_bounds": [20.0, 95.0],
+        "regime_evaluation_points": ["expansion_bar", "confirmation_bar"],
+        "retest_window_bar_offsets": [1, 6],
+        "retest_touch_tolerance_atr": 0.25,
+        "max_penetration_atr": 0.50,
+        "confirmation_window_bars": 3,
+        "stop_rule": "min low from expansion bar through confirmation bar",
+        "stop_floor_pct": null,
+        "entry_rule": "open of the 1h bar at confirmation open_time + 1h",
+        "episode_key": "B:{expansion_open_time_iso8601_utc}",
+        "canonical_non_overlap_hours": 72,
+        "non_overlap_sensitivity_hours": [24, 120],
+        "warmup_1h_bars_per_segment": 14,
+        "warmup_4h_bars": 552
+      },
+      "proposed_thresholds_requiring_approval": {
+        "min_feasible_share": 0.25,
+        "max_median_cost_r_economic": 0.12,
+        "status": "proposed; not part of the primary verdict"
+      }
+    },
+    "D": {
+      "strategy_id": "CANDIDATE_D_INTRADAY_CONTINUATION_VOL_BUDGET",
+      "spec_path": "docs/research/STAGE2E_CANDIDATE_D_SPEC.md",
+      "spec_sha256": "49668b4ff377c913a6c70027813bbbd0b39d57b7eaa94954130e32319a7e7277",
+      "config_path": "docs/research/STAGE2E_CANDIDATE_D_CONFIG.json",
+      "config_sha256": "97dee773afe996dd179f015b9c787db4a5bd578ffaeb6881f5808c5fc92c6765",
+      "spec_version": "1.0.0",
+      "frozen_parameters": {
+        "signal_timeframe": "15m",
+        "volatility_budget_timeframe": "4h",
+        "stop_reference_timeframe": "1h",
+        "execution_timeframe": "15m",
+        "sessions": ["ASIA 00:00-08:00", "EUROPE 08:00-16:00", "US 16:00-24:00"],
+        "session_duration_hours": 8,
+        "measurement_window_bars": 8,
+        "session_bars": 32,
+        "threshold_atr_multiple": 0.5,
+        "atr_1h_reference": "ATR1h[q], last bar with close_time <= signal instant",
+        "vwap_type": "session",
+        "vwap_price_input": "typical (HLC3)",
+        "vwap_volume_field": "volume",
+        "budget_atr_period": 14,
+        "budget_percentile_window_bars": 540,
+        "budget_percentile_bounds": [25.0, 80.0],
+        "budget_reevaluated_intra_session": false,
+        "stop_rule": "entry_open - 1.0 * ATR1h[q]",
+        "stop_floor_pct": null,
+        "entry_rule": "open of the 15m bar at confirmation open_time + 15m",
+        "episode_unit": "session",
+        "episode_key": "D:{session_start_iso8601_utc}|{session_id}",
+        "canonical_non_overlap_hours": 24,
+        "non_overlap_sensitivity_hours": [12, 48],
+        "warmup_1h_bars_per_segment": 14,
+        "warmup_4h_bars": 552
+      },
+      "proposed_thresholds_requiring_approval": {
+        "min_feasible_share": 0.30,
+        "max_median_cost_r_economic": 0.17,
+        "min_design_margin_r": 0.02,
+        "status": "proposed; not part of the primary verdict"
+      }
+    }
+  },
+  "dataset": {
+    "symbol": "BTCUSDT",
+    "market": "spot",
+    "source": "existing Binance BTCUSDT dataset",
+    "manifest_path": "backend/data/datasets/manifest.json",
+    "manifest_sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25",
+    "files": {
+      "15m": {
+        "path": "backend/data/datasets/BTCUSDT-15m-20210101-20260901.json",
+        "sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+        "bars": 198554,
+        "expected_bars": 198624,
+        "gap_count": 7,
+        "gap_bars_total": 70
+      },
+      "1h": {
+        "path": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+        "sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+        "bars": 49642,
+        "expected_bars": 49656,
+        "gap_count": 7,
+        "gap_bars_total": 14
+      },
+      "4h": {
+        "path": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+        "sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+        "bars": 12414,
+        "expected_bars": 12414,
+        "gap_count": 0,
+        "gap_bars_total": 0
+      },
+      "5m": {
+        "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+        "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+        "bars": 595659,
+        "expected_bars": 595872,
+        "gap_count": 7,
+        "gap_bars_total": 213
+      }
+    },
+    "synthesized_bars": false,
+    "forward_filled": false
+  },
+  "confirmations": {
+    "census_run": false,
+    "market_data_rows_processed": false,
+    "signals_counted": false,
+    "backtest_run": false,
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false,
+    "production_logic_modified": false,
+    "frozen_2a_2b_2c_2d_artifacts_modified": false
+  },
+  "note": "This manifest does not contain its own hash. The authoritative freeze identity is the set of document and dataset hashes above plus the recorded freeze timestamp and git HEAD. Any parameter change requires a new specification version, a new configuration, a new manifest, and explicit approval before counting."
+}
