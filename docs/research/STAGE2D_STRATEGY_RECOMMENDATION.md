@@ -134,6 +134,16 @@ For any future feasibility census of B or D, the report must include the followi
 
 **Decision rule:** Both candidates must pass the same structural checks as Stage 2C: alignment passes, `median_cost_r` reasonable, `feasible_share >= 0.25` (or justified), and `nonoverlap_72h >= 150` (B) or `nonoverlap_24h >= 150` (D). But the **cost-adjusted edge screen** must also pass: `0.15 - median_cost_r > 0` with a margin. A candidate can meet the floor numerically but fail the economic screen — that is a failure, not a limitation to overlook.
 
+**What the cost-adjusted screen does and does not mean.** `0.15 - median_cost_r` is a *design-margin
+diagnostic*, not a net expectancy and not a profitability estimate. `0.15R` is an assumed minimum
+effect of interest, not an empirically established gross expectancy for B or D; no outcome is
+observed in a census, so no net edge can be computed. The subtraction is only a conservative statement
+of how much room a design would have if that assumed effect were real. It assumes: `0.15R` is the true
+effect of interest, `cost_R` captures the full round-trip friction, and no other friction matters.
+Every future report must state all three assumptions alongside the number. A positive value does not
+demonstrate viability; a negative value is a genuine warning. Viability itself can only be assessed in
+a later outcome stage, not from signal counts.
+
 ---
 
 ## 7. Future census design per recommended candidate
