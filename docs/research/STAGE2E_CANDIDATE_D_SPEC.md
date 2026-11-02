@@ -183,9 +183,12 @@ overnight-gap effect). Using the session's own first open keeps `r2` a within-se
 
 ### 4.2 Threshold
 
-Let `q` be the **last closed 1h bar whose `close_time` is strictly less than the signal instant**. At
-the ASIA signal instant `01:59:59.999`, `q` is the 1h bar opening at `01:00`; at `EUROPE` it opens at
-`09:00`; at `US` it opens at `17:00`. Define:
+Let `q` be the **last 1h bar whose `close_time` is less than or equal to the signal instant**. The
+comparison is `<=`, not `<`, because on this grid the 1h bar opening at `01:00` closes at exactly
+`01:59:59.999`, which is the signal instant itself. A strict `<` would silently discard the most
+recent completed hour and leave the stop ATR two hours stale. At the ASIA signal instant `q` is
+therefore the 1h bar opening at `01:00`; at `EUROPE` it opens at `09:00`; at `US` it opens at `17:00`.
+No look-ahead is introduced: that bar is complete at the signal instant. Define:
 
 ```
 ATR1h[q]  = Wilder ATR(14) on 1h true range, segment-scoped, same construction as the shared protocol
@@ -294,9 +297,12 @@ current bar participates in its own percentile. This is causal, and it makes the
 as intended: a crisis 4h ATR ranks near the top of its own window. The leading-edge count is an exact
 rational number and is reproducible without interpolation.
 
-**Warm-up.** `ATR4h` first exists at 4h index 13; the 540-value window is fully populated at index
-552, the bar opening `2021-04-03T00:00:00Z`. Sessions whose signal instant precedes the close of that
-bar are excluded as `warmup_budget`. That is 92 days of the 1,277-day interval.
+**Warm-up and incomplete windows.** `ATR4h` first exists at 4h index 13; the 540-value window is
+fully populated at index 552, the bar opening `2021-04-03T00:00:00Z`. Sessions whose signal instant
+precedes the close of that bar are excluded as `warmup_budget`; that is 92 days of the 1,277-day
+interval. If any value inside the window is undefined or missing — which can only happen after a 4h
+gap — the percentile is `Unknown` and the session produces no signal. A percentile computed over a
+truncated window is never reported.
 
 **No intra-session re-evaluation.** The budget is evaluated once, at the signal instant, and is fixed
 for that session's decision. It is not re-checked at entry, because entry follows one 15m bar later
