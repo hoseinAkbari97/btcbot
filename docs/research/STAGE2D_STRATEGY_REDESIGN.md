@@ -969,5 +969,3 @@ tag **[L]** in the tables refers to these works; it does not imply that they tes
   behaviour.
 
 ---
-
-<!-- STAGE2D_APPEND -->
