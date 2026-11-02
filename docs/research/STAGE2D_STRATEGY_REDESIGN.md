@@ -794,6 +794,16 @@ wide-stop candidates (A and C) are capital-light but signal-poor. There is no ca
 frequent and capital-light. That is a structural property of risk-based sizing, not a modelling
 artefact: `notional = risk_budget / stop_fraction`.
 
+**Why a wider stop is not a free fix.** Because `cost_R = 0.0026 * entry / stop_distance`, widening the
+stop mechanically improves both the `0.20R` gate and the cost-adjusted screen. That is an accounting
+result, not an economic improvement. At a fixed risk budget the notional scales up with the stop
+distance: a 3% stop needs twice the notional of a 1.5% stop for the same 1% risk of equity. So a wider
+stop buys a lower `cost_R` by concentrating more of the account in one position, reducing the number
+of positions that fit in spot cash, and lengthening the time and distance a losing trade must travel
+before it is cut. The two effects point in opposite directions: cost per unit of risk falls while
+capital efficiency falls with it. A future census must therefore treat the stop distance as a
+*structural* choice, justified by market structure, and must not widen it merely to clear the gate.
+
 **What it does not show.** It does not model the cash path, concurrent positions, compounding, or the
 opportunity cost of idle capital. It does not assume that a position can be opened at the exact
 notional (lot rounding, minimum notional, and price movement intervene). It does not simulate fills.
