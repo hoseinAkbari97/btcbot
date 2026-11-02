@@ -335,4 +335,8 @@ No market-data processing, signal counting, backtesting, P&L, expectancy, win-ra
 
 ---
 
-**Commit plan followed:** Changes committed in small logical units (audit+AB, CD, comparison/screening, finalization+recommendation) and pushed to `origin/main`.
+**Repository state.** The design work is committed in small logical units on `main`. The earlier
+recommendation that this work had already been pushed was incorrect: at the start of the resumption
+run the redesign's cost/capital, architecture, limitations, and references sections were uncommitted
+and this document was untracked. Both were committed during the resumption, together with the
+methodological corrections recorded in §1, §6, §7.4–7.6, and above.
