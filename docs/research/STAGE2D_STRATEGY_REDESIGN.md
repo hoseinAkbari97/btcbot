@@ -185,6 +185,17 @@ Two consequences follow:
    be positive, preferably with a margin. This does not weaken the gate; it adds a second, stricter
    economic screen.
 
+   **What that screen is and is not.** `0.15 - median_cost_R` is a design-margin diagnostic, not a
+   net expectancy, not a profitability estimate, and not evidence that either candidate has an edge.
+   The `0.15R` term is an assumed minimum effect of interest, not a measured gross expectancy for any
+   candidate. Subtracting an observed median cost from an assumed effect is only meaningful as a
+   conservative statement of how much room a design would have left *if* the assumed effect were real.
+   Its assumptions must be stated wherever it is reported: `0.15R` is an effect-of-interest choice,
+   `cost_R` is a Binance-proxy round-trip cost, and no realised return, fill, or outcome enters the
+   calculation. If the true gross effect is smaller than `0.15R`, the diagnostic is optimistic; if
+   costs are higher than the proxy, it is optimistic for the same reason. A negative value is
+   informative; a positive value is not proof of viability.
+
 ### 1.6 The 120h non-overlap horizon
 
 The 120h (5-day) horizon first appears in the Stage 2C freeze. It has no antecedent: Stage 2B said
