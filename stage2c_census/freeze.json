@@ -1,0 +1,10 @@
+{
+  "stage": "2C",
+  "frozen_at_utc": "2026-11-02T06:58:53Z",
+  "git_head_at_freeze": "de3adb7c90519d5b61354a8a0cc4a140dfe45ff6",
+  "spec_path": "stage2c_census/STAGE2C_SIGNAL_SPECIFICATION.md",
+  "spec_sha256": "d26f563c9d63a8c64fb8b6c6cbcbc42d1304bff4a5ce91a16faed9bbfa3bdbaa",
+  "config_path": "stage2c_census/stage2c_config.json",
+  "config_sha256": "aa20757ca454f252638f8c749dfc08ecb4e545b15b394e9b94e812c9e5ecd0fb",
+  "note": "Hashes computed before the first Stage 2C counting run. census.py aborts if either file changes."
+}

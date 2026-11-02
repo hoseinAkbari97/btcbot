@@ -1,0 +1,148 @@
+{
+  "stage": "2C",
+  "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
+  "spec_version": "1.0.0",
+  "frozen_at_utc": "2026-11-02T07:00:00Z",
+  "spec_path": "stage2c_census/STAGE2C_SIGNAL_SPECIFICATION.md",
+  "data": {
+    "symbol": "BTCUSDT",
+    "paths": {
+      "5m": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "1h": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+      "4h": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "manifest": "backend/data/datasets/manifest.json"
+    },
+    "dev_start": "2021-01-01T00:00:00+00:00",
+    "dev_end": "2024-07-01T00:00:00+00:00",
+    "dev_days": 1277,
+    "dev_years": 3.496
+  },
+  "timeframes": {
+    "regime": "4h",
+    "signal": "1h",
+    "execution": "5m"
+  },
+  "regime": {
+    "sma_window": 200,
+    "slope_lookback": 20,
+    "first_valid_index": 219,
+    "rule": "close[t] > SMA200[t] AND (SMA200[t] - SMA200[t-20]) > 0",
+    "strict_comparisons": true
+  },
+  "pullback": {
+    "ema_window": 20,
+    "ema_alpha": 0.09523809523809523,
+    "ema_initialization": "SMA of the first 20 closes of each contiguous usable 1h segment",
+    "crossunder": "close[i] < EMA20[i] AND close[i-1] >= EMA20[i-1]",
+    "reference_high": "high[i-1]",
+    "confirmation": "close[j] > reference_high, j > i",
+    "max_pullback_bars": 72,
+    "max_pullback_depth_pct": 0.15,
+    "min_bars_before_confirmation": 2
+  },
+  "entry": {
+    "rule": "open of the 5m bar whose open_time == open_time[confirmation] + 1 hour",
+    "reject_if_missing": true,
+    "reject_if_unclosed": true,
+    "reject_if_zero_volume": true,
+    "reject_if_nonpositive_open": true
+  },
+  "stop": {
+    "rule": "minimum low of the 1h bars from the crossunder bar through the confirmation bar inclusive",
+    "invalid_if": "stop <= 0 or entry <= 0 or entry <= stop",
+    "minimum_stop_pct": null,
+    "minimum_stop_note": "no separate floor; the 0.20R cost gate implies stop >= 1.30% at 26 bp"
+  },
+  "costs": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.20,
+    "buckets": [0.10, 0.20, 0.30, 0.50],
+    "sensitivity_bps": [10, 26, 39, 52, 78, 100],
+    "sensitivity_labels": {
+      "10": "venue best case (diagnostic)",
+      "26": "primary Binance proxy",
+      "39": "1.5x primary",
+      "52": "2x primary",
+      "78": "3x primary",
+      "100": "3.85x primary (diagnostic)"
+    }
+  },
+  "holding": {
+    "max_hold_hours": 120,
+    "target_r_recorded_only": 2,
+    "exits_simulated": false
+  },
+  "overlap": {
+    "non_overlap_hold_hours": 120,
+    "cooldown_hours_primary": 0,
+    "cooldown_sensitivity_hours": [24, 72, 168]
+  },
+  "gap_handling": {
+    "treat_missing_1h_as_segment_break": true,
+    "exclude_partial_1h_buckets": true,
+    "partial_1h_threshold_5m_members": 12,
+    "exclude_zero_volume_1h": true,
+    "exclude_unclosed_1h": true,
+    "use_vendor_4h_even_if_partial": true,
+    "synthesize_bars": false
+  },
+  "warmup": {
+    "regime_bars": 219,
+    "ema_bars_per_segment": 20,
+    "no_pre_dev_data": true,
+    "first_regime_label_open_time": "2021-02-06T12:00:00+00:00",
+    "first_primary_1h_open_time": "2021-02-06T16:00:00+00:00"
+  },
+  "clustering": {
+    "regime_episode": "maximal run of consecutive 4h bars with regime_up == true",
+    "primary_view": "regime episode containing the 4h bar used at the crossunder",
+    "conservative_view": "greedy 120h non-overlap",
+    "effective_sample_method": "Kish (sum n)^2 / sum n^2 over signal-producing regime episodes, plus cluster count and non-overlap count"
+  },
+  "capital": {
+    "equity_usd": 10000,
+    "risk_fraction": 0.01,
+    "risk_usd": 100,
+    "min_notional_usd": 5,
+    "lot_step_btc": 0.00001,
+    "tick_size_usd": 0.01,
+    "one_position_at_a_time": true
+  },
+  "power_reference": {
+    "minimum_effect_r": 0.15,
+    "outcome_sd_r": 1.0,
+    "alpha_two_sided": 0.05,
+    "power": 0.80,
+    "z_alpha": 1.959964,
+    "z_power": 0.841621,
+    "required_independent_n": 349
+  },
+  "verdict_thresholds": {
+    "pass_non_overlapping_feasible": 349,
+    "pass_with_limitations_min_non_overlapping_feasible": 150,
+    "max_median_cost_r": 0.20,
+    "min_feasible_share_for_pass": 0.50,
+    "min_feasible_share_for_pass_with_limitations": 0.25
+  },
+  "paths": {
+    "census_dir": "stage2c_census",
+    "raw_result": "stage2c_census/census_result.json",
+    "manifest": "stage2c_census/manifest.json",
+    "freeze": "stage2c_census/freeze.json",
+    "docs_census_md": "docs/research/STAGE2C_FEASIBILITY_CENSUS.md",
+    "docs_census_json": "docs/research/STAGE2C_FEASIBILITY_CENSUS.json",
+    "docs_alignment_md": "docs/research/STAGE2C_DATA_ALIGNMENT_AUDIT.md"
+  },
+  "confirmations": {
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "backtest_run": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false
+  }
+}
