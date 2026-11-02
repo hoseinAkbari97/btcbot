@@ -6,7 +6,7 @@
   "verdict_reasons": [
     "non-overlapping feasible events 71 < 150"
   ],
-  "generated_at_utc": "2026-11-02T07:10:31Z",
+  "generated_at_utc": "2026-11-02T07:13:36Z",
   "git_head": "3f2e74a58d85a7a1df9d62ec9d2ab7c7cc7b99bf",
   "scope": {
     "instrument": "BTCUSDT spot",
@@ -141,6 +141,15 @@
       "off_grid": 0,
       "unclosed": 0,
       "partial_buckets": 7,
+      "partial_bucket_keys": [
+        "2021-02-11 03:00:00+00:00",
+        "2021-03-06 03:00:00+00:00",
+        "2021-04-20 04:00:00+00:00",
+        "2021-04-25 04:00:00+00:00",
+        "2021-04-25 08:00:00+00:00",
+        "2021-08-13 06:00:00+00:00",
+        "2023-03-24 12:00:00+00:00"
+      ],
       "exact_complete_buckets": 30627,
       "field_mismatches": {},
       "mismatches_on_usable_bars": 0,
@@ -149,6 +158,66 @@
         "zero_volume+partial+last_member_zero_volume": 2,
         "partial": 5
       },
+      "unusable_bar_keys": [
+        {
+          "open_time": "2021-02-11 02:00:00+00:00",
+          "reasons": [
+            "last_member_zero_volume"
+          ]
+        },
+        {
+          "open_time": "2021-02-11 03:00:00+00:00",
+          "reasons": [
+            "zero_volume",
+            "partial",
+            "last_member_zero_volume"
+          ]
+        },
+        {
+          "open_time": "2021-03-06 03:00:00+00:00",
+          "reasons": [
+            "partial"
+          ]
+        },
+        {
+          "open_time": "2021-04-20 04:00:00+00:00",
+          "reasons": [
+            "partial"
+          ]
+        },
+        {
+          "open_time": "2021-04-25 04:00:00+00:00",
+          "reasons": [
+            "partial"
+          ]
+        },
+        {
+          "open_time": "2021-04-25 08:00:00+00:00",
+          "reasons": [
+            "partial"
+          ]
+        },
+        {
+          "open_time": "2021-08-13 06:00:00+00:00",
+          "reasons": [
+            "partial"
+          ]
+        },
+        {
+          "open_time": "2023-03-24 11:00:00+00:00",
+          "reasons": [
+            "last_member_zero_volume"
+          ]
+        },
+        {
+          "open_time": "2023-03-24 12:00:00+00:00",
+          "reasons": [
+            "zero_volume",
+            "partial",
+            "last_member_zero_volume"
+          ]
+        }
+      ],
       "unusable_bars": 9,
       "usable_bars": 30625,
       "alignment_verdict": "PASS_WITH_DOCUMENTED_EXCEPTIONS"
@@ -161,6 +230,20 @@
       "off_grid": 0,
       "unclosed": 0,
       "partial_buckets": 12,
+      "partial_bucket_keys": [
+        "2021-02-11 00:00:00+00:00",
+        "2021-02-11 04:00:00+00:00",
+        "2021-03-06 00:00:00+00:00",
+        "2021-04-20 00:00:00+00:00",
+        "2021-04-20 04:00:00+00:00",
+        "2021-04-25 04:00:00+00:00",
+        "2021-04-25 08:00:00+00:00",
+        "2021-08-13 00:00:00+00:00",
+        "2021-08-13 04:00:00+00:00",
+        "2021-09-29 04:00:00+00:00",
+        "2021-09-29 08:00:00+00:00",
+        "2023-03-24 12:00:00+00:00"
+      ],
       "exact_complete_buckets": 7650,
       "field_mismatches": {
         "open": 1
@@ -1034,7 +1117,7 @@
     "note": "causal_regime_lookup is asserted in regime_for_1h: the 4h bar must close at or before the 1h open"
   },
   "resource": {
-    "runtime_seconds": 9.316,
+    "runtime_seconds": 9.711,
     "peak_rss_mib": 575.3,
     "python_version": "3.14.6",
     "platform": "Linux-6.6.114.1-microsoft-standard-WSL2-x86_64-with-glibc2.43",

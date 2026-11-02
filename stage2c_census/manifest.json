@@ -1,8 +1,8 @@
 {
   "stage": "2C",
   "strategy_id": "CANDIDATE_A_MTF_TREND_PULLBACK_CONTINUATION",
-  "generated_at_utc": "2026-11-02T07:15:01Z",
-  "git_head": "cd161e47e1b4d402d17e224df1ac59f99c91609e",
+  "generated_at_utc": "2026-11-02T07:15:43Z",
+  "git_head": "df96efea98c1b069cc52ad10844313ba21fba2cf",
   "development_interval": {
     "start": "2021-01-01T00:00:00+00:00",
     "end": "2024-07-01T00:00:00+00:00",
@@ -45,7 +45,7 @@
   "code": {
     "path": "stage2c_census/census.py",
     "sha256": "08714213918cd92e095a57d3a121385d50c3c9681f8ecd55e1460db0378ee593",
-    "git_head": "cd161e47e1b4d402d17e224df1ac59f99c91609e"
+    "git_head": "df96efea98c1b069cc52ad10844313ba21fba2cf"
   },
   "cost_assumptions": {
     "round_trip_bps_primary": 26,
@@ -86,7 +86,7 @@
   "outputs": {
     "census_result": "1c1d1314e5d094e7abe3f363b769375e4a9723b2420c42c38454cc74b96dfe5f",
     "docs_census_md": "f646e15ab6a45032ba3bd55bcafcd72100d237fa6ac2244a99b2546532ae64aa",
-    "docs_census_json": "b72a26e7d93a59b2323c967207b92f548c18fef742eb3dbe875f3498ccd4d08f",
+    "docs_census_json": "2fdba846226f0b0a33f1ba66dd622a9a757f334a27b4781fff78a0067af485a0",
     "docs_alignment_md": "f9d8d36dba6091e6856979e5a847cae6ed2022fc2525eb7dde24789a81c80aaf",
     "spec": "8dbf0c8e6246cce17c93670b2e5a4aeebf5d299fe47e81ca5f9d02c0d46a2c2a",
     "config": "fb11d5be3f98fa19782fb1290fec6810e27f77505d886b90f13232017cbe1b8a",
