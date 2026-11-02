@@ -1,7 +1,15 @@
 {
   "census": "Stage 2A feasibility census \u2014 counting only, no P&L",
-  "generated_utc": "2026-11-02T10:07:16+03:30",
-  "git_head": "9c9c2a36248d0ae28f2ca2db09b7d3a1a1659c90",
+  "generated_utc": "2026-11-02T06:38:17+00:00",
+  "git_head": "f7f58c106ff7fa981369297635134d936f78253f",
+  "script": {
+    "path": "stage2a_census/census.py",
+    "sha256": "36474d505651ebc9c435a0544bbb7286a8733f15e3ad4175532b76fd069e0182"
+  },
+  "runtime_seconds": 8.5,
+  "peak_rss_mib": 642.3,
+  "python": "3.14.6",
+  "numpy": "2.5.3",
   "strategy": "SETUP_2_COMPRESSION_BREAKOUT_CONTINUATION",
   "interval": {
     "start_inclusive": "2021-01-01 00:00:00+00:00",

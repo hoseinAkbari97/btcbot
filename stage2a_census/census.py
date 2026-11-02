@@ -26,8 +26,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import resource
 import sys
-from datetime import datetime, timedelta
+import time
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 
@@ -739,6 +741,7 @@ def non_overlapping_count(rows: list[dict], key: str, hold_hours: int) -> int:
 # main
 # ---------------------------------------------------------------------------
 def main() -> int:
+    started = time.perf_counter()
     manifest = json.loads(MANIFEST.read_text())
     entry_five = next(m for m in manifest if m["timeframe"] == "5m")
     entry_four = next(m for m in manifest if m["timeframe"] == "4h")
@@ -839,8 +842,18 @@ def main() -> int:
 
     result = {
         "census": "Stage 2A feasibility census — counting only, no P&L",
-        "generated_utc": datetime.now(tz=None).astimezone().isoformat(timespec="seconds"),
+        "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "git_head": os.popen("git rev-parse HEAD").read().strip(),
+        "script": {
+            "path": str(Path(__file__).resolve().relative_to(ROOT)),
+            "sha256": sha256_file(Path(__file__).resolve()),
+        },
+        "runtime_seconds": round(time.perf_counter() - started, 2),
+        "peak_rss_mib": round(
+            resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0, 1
+        ),
+        "python": sys.version.split()[0],
+        "numpy": np.__version__,
         "strategy": "SETUP_2_COMPRESSION_BREAKOUT_CONTINUATION",
         "interval": {"start_inclusive": DEV_START, "end_exclusive": DEV_END,
                      "span_years": round(years_span, 3)},

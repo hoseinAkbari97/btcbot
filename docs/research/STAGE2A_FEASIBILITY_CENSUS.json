@@ -1,7 +1,15 @@
 {
   "census": "Stage 2A feasibility census \u2014 counting only, no P&L",
-  "generated_utc": "2026-11-01T12:45:50+03:30",
-  "git_head": "e5f495f0e1fcf1fe5bf2f7f5afbeb8f35aa0e460",
+  "generated_utc": "2026-11-02T06:38:17+00:00",
+  "git_head": "f7f58c106ff7fa981369297635134d936f78253f",
+  "script": {
+    "path": "stage2a_census/census.py",
+    "sha256": "36474d505651ebc9c435a0544bbb7286a8733f15e3ad4175532b76fd069e0182"
+  },
+  "runtime_seconds": 8.5,
+  "peak_rss_mib": 642.3,
+  "python": "3.14.6",
+  "numpy": "2.5.3",
   "strategy": "SETUP_2_COMPRESSION_BREAKOUT_CONTINUATION",
   "interval": {
     "start_inclusive": "2021-01-01 00:00:00+00:00",
@@ -44,7 +52,8 @@
       "channel": 20,
       "trend_sma": 200,
       "atr_window": 20,
-      "atr_multiple": "1.5"
+      "atr_multiple": "1.5",
+      "max_hold_bars_design_only": 30
     },
     "control_window": 20
   },
@@ -52,6 +61,7 @@
     "five_min_bars_in_dev": 367563,
     "five_min_duplicate_timestamps": 0,
     "five_min_bars_off_grid": 0,
+    "five_min_unclosed": 0,
     "five_min_gaps": 7,
     "five_min_gap_total_minutes": 1065.0,
     "five_min_gap_minutes_detail": [
@@ -64,6 +74,10 @@
       285.0
     ],
     "four_h_bars_in_dev": 7662,
+    "four_h_expected_buckets": 7662,
+    "four_h_missing_buckets": 0,
+    "four_h_duplicate_timestamps": 0,
+    "four_h_unclosed": 0,
     "four_h_bars_off_grid": 0,
     "four_h_buckets_with_no_5m_data": 0,
     "four_h_buckets_with_partial_5m": 12,
@@ -138,7 +152,11 @@
         "vendor": "28079.99000000"
       }
     ],
-    "alignment_ok": false
+    "alignment_ok": false,
+    "alignment_verdict": "PASS_WITH_ONE_DOCUMENTED_EXCEPTION",
+    "fields_used_by_design_exact": true,
+    "all_ohlcv_aggregates_exact": false,
+    "alignment_ok_note": "strict flag additionally requires a 48-bar, all-fields-identical match for every bucket; it is false because 12 buckets straddle registered gaps and one 4h open differs by one tick (zero-volume placeholder). See docs/research/STAGE2A_DATA_ALIGNMENT_AUDIT.md."
   },
   "candidate_c": {
     "stage_counts": {
@@ -680,7 +698,7 @@
     }
   },
   "control_arm_non_overlapping_feasible": 136,
-  "candidate_a_non_overlapping_feasible": 91,
+  "candidate_a_non_overlapping_feasible": 76,
   "control_arm_years": {
     "2021": 111,
     "2022": 77,
@@ -819,7 +837,7 @@
       "control_feasible": 98.11,
       "control_non_overlapping": 38.9,
       "candidate_a_feasible_unique": 48.63,
-      "candidate_a_non_overlapping": 26.03
+      "candidate_a_non_overlapping": 21.74
     },
     "duration_sensitivity_episode_counts": {
       "ge_6_design": 63,
@@ -840,19 +858,21 @@
     "detectable_edge_power80_sigma1": {
       "c_strict_feasible_12": 0.809,
       "c_open_ended_feasible_30": 0.511,
-      "candidate_a_non_overlapping_91": 0.294,
+      "candidate_a_non_overlapping_76": 0.321,
       "candidate_a_unique_feasible_170": 0.215,
       "control_non_overlapping_136": 0.24
     }
   },
   "processing": {
     "script": "stage2a_census/census.py",
-    "script_sha256": "db117bae057c2d7ee50a78ff2f153a00785e4d2245d5628578bd47046ad28348",
-    "runtime_seconds": 8.56,
-    "peak_rss_mb": 585.4,
+    "script_sha256": "36474d505651ebc9c435a0544bbb7286a8733f15e3ad4175532b76fd069e0182",
+    "runtime_seconds": 8.5,
+    "peak_rss_mb": 642.3,
     "ram_target_gb": 4.0,
     "streaming": "chunked raw_decode over a 32 MiB buffer; only dev-window bars retained",
-    "pipeline_or_backtest_invoked": false
+    "pipeline_or_backtest_invoked": false,
+    "python": "3.14.6",
+    "numpy": "2.5.3"
   },
   "decision": {
     "gate": "C",
@@ -867,8 +887,8 @@
     "candidate_a_evaluated_independently": {
       "feasible_raw": 237,
       "feasible_unique": 170,
-      "feasible_non_overlapping": 91,
-      "verdict": "closer but still short: 170 unique and 91 non-overlapping events, detectable edge ~0.29R at 80% power; not promoted automatically"
+      "feasible_non_overlapping": 76,
+      "verdict": "closer but still short: 170 unique and 76 non-overlapping events, detectable edge ~0.32R at 80% power; not promoted automatically"
     },
     "resolvable_by_definition_change": false,
     "gate_0_20_relaxed": false

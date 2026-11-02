@@ -65,9 +65,10 @@ development series and not a re-download.
 | item | value |
 |---|---|
 | Script | `stage2a_census/census.py` |
-| Script SHA-256 | `db117bae057c2d7ee50a78ff2f153a00785e4d2245d5628578bd47046ad28348` |
-| Runtime | 8.56 s wall clock |
-| Peak RSS | **585 MiB** (target 4 GB, ceiling 6 GB) |
+| Script SHA-256 | `36474d505651ebc9c435a0544bbb7286a8733f15e3ad4175532b76fd069e0182` |
+| Runtime | 8.5 s wall clock |
+| Peak RSS | **642 MiB** (target 4 GB, ceiling 6 GB) |
+| Runtime versions | Python 3.14.6, NumPy 2.5.3 |
 | Reading strategy | chunked `json.JSONDecoder.raw_decode` over a 32 MiB buffer; only dev-window bars retained; no full-file object graph |
 | Resumability | not required: single pass, 8.6 s, no intermediate state |
 | Randomness | none (no bootstrap, no sampling) |
@@ -444,4 +445,4 @@ Even the most permissive reading yields 30 — 15% of the gate.
   Stage 6 module and reimplemented only the two indicator formulas it needed, matching the
   platform definitions exactly (verified by independent recomputation of one event).
 - Nothing was committed or pushed.
-- Peak memory 585 MiB, runtime 8.6 s, single pass, no resumability required.
+- Peak memory 642 MiB, runtime 8.5 s, single pass, no resumability required.
