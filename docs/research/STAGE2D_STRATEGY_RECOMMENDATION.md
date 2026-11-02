@@ -223,6 +223,27 @@ a later outcome stage, not from signal counts.
 - **Report honestly:** If neither reaches 150 or both fail the cost-adjusted screen, recommend further research, not a pick.
 - **Architecture:** Review gaps but do not implement; note multi-position need for B outcome stage if pursued later.
 
+### 7.4 Candidate B — mandatory frozen definitions
+
+No B census may count a single signal until every row below has a sentence in the frozen spec.
+"Objective" means computable from closed OHLC bars with no chart reading and no analyst judgement.
+
+| item | what the frozen spec must state | ambiguity to resolve now |
+|---|---|---|
+| Volatility expansion | ATR construction (Wilder or simple), ATR period, multiple, and the exact bar-level test | Whether "true range" includes the prior close; how zero-range or gap bars are handled |
+| Directional confirmation | The body fraction formula and the close-location formula, with the denominator defined | Whether the bar's range is `high - low` or includes the prior close; whether body is `abs(close - open)` |
+| 4h regime permission | Exact 4h bar used at each 1h decision (strictly the last **closed** 4h bar), SMA period, ATR percentile window, and whether conditions are AND or OR | The design text uses "or" for close-above-SMA / positive-return; AND vs OR changes the count materially |
+| Retest window | The bar index at which the window opens and closes, relative to the expansion bar | Whether the expansion bar itself is bar 0; whether a new expansion restarts the window |
+| Retest tolerance | Which bar's ATR the tolerance uses, and whether a touch or a close inside the band is required | Whether touching the level intra-bar suffices, and whether the tolerance is measured from the expansion close or the expansion high |
+| Resumption confirmation | The exact close-based condition and whether the retest bar can also be the confirmation bar | Whether a single bar may satisfy retest and resumption, which would make the retest meaningless |
+| Structural stop | Which ATR, measured at which bar, and how "farther" is resolved after an entry gap | Whether the stop is anchored to the expansion low only, or also to the confirmation bar's low |
+| Entry timing | Fill assumption (next-bar open, market order) and behaviour when the next bar opens through the level | Whether a gap beyond the retest band cancels the signal |
+| Episode definition | What separates one episode from a second expansion inside the same move | Undefined in the design; without it, deduplication and non-overlap are not reproducible |
+| 72h non-overlap policy | Greedy earliest-first acceptance, measured entry-to-entry or entry-to-exit, and what happens to skipped signals | Whether a skipped signal is re-eligible after 72h or discarded permanently |
+
+These are not refinements. Each one can change the episode count, so freezing them in the wrong
+order — after seeing counts — would invalidate the census.
+
 ---
 
 ## 8. Alternative ranking if the floor is revised
