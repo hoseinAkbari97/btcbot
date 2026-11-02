@@ -153,6 +153,15 @@ at most `1277 / 349 = 3.66` days. A strategy that intends to hold for 10–30 da
 this interval. It cannot even reach 150 if its horizon exceeds 8.51 days. This is calendar arithmetic,
 not a market-data result, and it is the single most important constraint on candidate selection.
 
+**Why 349 is a planning estimate, not a trading threshold.** The formula assumes independent
+observations. Trading observations are not independent: signals arrive in clusters, concurrent
+positions share market shocks, and adjacent episodes overlap in time. A count of clustered signals
+therefore does not deliver the number of independent observations the formula requires, and a census
+that counts signals cannot establish the dependence structure of their future outcomes, because no
+outcome is observed. Any honest use of 349 in this programme is as a planning reference for the
+*order of magnitude* of a well-powered sample, not as a pass mark that a raw event count can satisfy
+on its own.
+
 ### 1.5 The 0.15R minimum effect
 
 `0.15R` first appears in the Strategy 2 comparison (`e5f495f`) on 2026-11-01, before Stage 2A, 2B, and
