@@ -131,14 +131,19 @@ def parse_time(value: str) -> datetime:
 # ---------------------------------------------------------------------------
 # load
 # ---------------------------------------------------------------------------
-def load_4h() -> dict[str, dict]:
+def load_4h() -> tuple[dict[str, dict], dict]:
     bars: dict[str, dict] = {}
-    order: list[str] = []
+    duplicates = 0
+    unclosed = 0
     for row in iter_json_array(DATA_4H):
         t = row["open_time"]
         if not (DEV_START <= t < DEV_END):
             continue
         key = bucket_key(t)
+        if key in bars:
+            duplicates += 1
+        if str(row.get("is_closed")) != "True":
+            unclosed += 1
         bars[key] = {
             "open_time": t,
             "close_time": row["close_time"],
@@ -150,16 +155,18 @@ def load_4h() -> dict[str, dict]:
             "quote_volume": Decimal(row["quote_volume"]),
             "trade_count": int(row["trade_count"]),
         }
-        order.append(key)
-    return bars
+    return bars, {"duplicate_timestamps": duplicates, "unclosed": unclosed}
 
 
-def load_5m() -> list[dict]:
+def load_5m() -> tuple[list[dict], dict]:
     out: list[dict] = []
+    unclosed = 0
     for row in iter_json_array(DATA_5M):
         t = row["open_time"]
         if not (DEV_START <= t < DEV_END):
             continue
+        if str(row.get("is_closed")) != "True":
+            unclosed += 1
         out.append(
             {
                 "open_time": t,
@@ -169,15 +176,22 @@ def load_5m() -> list[dict]:
                 "low": Decimal(row["low"]),
                 "close": Decimal(row["close"]),
                 "volume": Decimal(row["volume"]),
+                "quote_volume": Decimal(row["quote_volume"]),
+                "trade_count": int(row["trade_count"]),
             }
         )
-    return out
+    return out, {"unclosed": unclosed}
 
 
 # ---------------------------------------------------------------------------
 # alignment audit
 # ---------------------------------------------------------------------------
-def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
+def audit_alignment(
+    bars4h: dict[str, dict],
+    bars5m: list[dict],
+    stats4h: dict,
+    stats5m: dict,
+) -> dict:
     duplicates_5m = 0
     seen: set[str] = set()
     gap_minutes: list[float] = []
@@ -233,6 +247,8 @@ def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
         high = max(b["high"] for b in members)
         low = min(b["low"] for b in members)
         vol = sum((b["volume"] for b in members), Decimal(0))
+        quote_vol = sum((b["quote_volume"] for b in members), Decimal(0))
+        trades = sum(b["trade_count"] for b in members)
         issues = []
         if first["open"] != bars4["open"]:
             issues.append("open")
@@ -244,6 +260,10 @@ def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
             issues.append("close")
         if vol != bars4["volume"]:
             issues.append("volume")
+        if quote_vol != bars4["quote_volume"]:
+            issues.append("quote_volume")
+        if trades != bars4["trade_count"]:
+            issues.append("trade_count")
         if last["close_time"] != bars4["close_time"]:
             issues.append("close_time")
         for issue in issues:
@@ -254,6 +274,7 @@ def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
                      "reconstructed": str(
                          {"open": first["open"], "high": high, "low": low,
                           "close": last["close"], "volume": vol,
+                          "quote_volume": quote_vol, "trade_count": trades,
                           "close_time": last["close_time"]}.get(issue)),
                      "vendor": str(bars4.get(issue, ""))}
                 )
@@ -275,14 +296,23 @@ def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
                                    "missing_minutes": delta - 5})
         prev = t
 
+    expected_4h_buckets = int(
+        (parse_time(DEV_END) - parse_time(DEV_START)).total_seconds() // (4 * 3600)
+    )
+
     return {
         "five_min_bars_in_dev": len(bars5m),
         "five_min_duplicate_timestamps": duplicates_5m,
         "five_min_bars_off_grid": malformed_boundary,
+        "five_min_unclosed": stats5m["unclosed"],
         "five_min_gaps": len(gap_minutes),
         "five_min_gap_total_minutes": float(sum(g - 5 for g in gap_minutes)),
         "five_min_gap_minutes_detail": sorted(float(g) for g in gap_minutes)[:20],
         "four_h_bars_in_dev": len(bars4h),
+        "four_h_expected_buckets": expected_4h_buckets,
+        "four_h_missing_buckets": expected_4h_buckets - len(bars4h),
+        "four_h_duplicate_timestamps": stats4h["duplicate_timestamps"],
+        "four_h_unclosed": stats4h["unclosed"],
         "four_h_bars_off_grid": len(four_h_bad_boundary),
         "four_h_buckets_with_no_5m_data": missing_interval_buckets,
         "four_h_buckets_with_partial_5m": incomplete_buckets,
@@ -302,13 +332,15 @@ def audit_alignment(bars4h: dict[str, dict], bars5m: list[dict]) -> dict:
             if (duplicates_5m == 0 and malformed_boundary == 0
                 and len(four_h_bad_boundary) == 0 and missing_interval_buckets == 0
                 and mismatch["high"] == 0 and mismatch["low"] == 0
-                and mismatch["close"] == 0 and mismatch["volume"] == 0)
+                and mismatch["close"] == 0 and mismatch["volume"] == 0
+                and mismatch["quote_volume"] == 0 and mismatch["trade_count"] == 0)
             else "FAIL"
         ),
         "fields_used_by_design_exact": (
             mismatch["high"] == 0 and mismatch["low"] == 0
             and mismatch["close"] == 0 and mismatch["volume"] == 0
         ),
+        "all_ohlcv_aggregates_exact": sum(mismatch.values()) == 0,
         "alignment_ok_note": (
             "strict flag additionally requires a 48-bar, all-fields-identical match for every "
             "bucket; it is false because 12 buckets straddle registered gaps and one 4h open "
@@ -717,14 +749,14 @@ def main() -> int:
         "manifest": sha256_file(MANIFEST),
     }
     print("loading 4h ...", flush=True)
-    bars4h = load_4h()
+    bars4h, stats4h = load_4h()
     print(f"4h bars: {len(bars4h)}", flush=True)
     print("loading 5m ...", flush=True)
-    bars5m = load_5m()
+    bars5m, stats5m = load_5m()
     print(f"5m bars: {len(bars5m)}", flush=True)
 
     print("auditing alignment ...", flush=True)
-    alignment = audit_alignment(bars4h, bars5m)
+    alignment = audit_alignment(bars4h, bars5m, stats4h, stats5m)
 
     entry_lookup = {b["open_time"]: b["open"] for b in bars5m}
 

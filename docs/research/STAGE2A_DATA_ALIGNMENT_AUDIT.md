@@ -67,7 +67,11 @@ A failure in any of these would mean the census counted events on a timeline tha
 | Expected 4h bars (1,277 days × 6) | 7,662 — exact match |
 | 5m duplicate timestamps | **0** |
 | 5m bars off the 5-minute grid | **0** |
+| 5m bars not flagged `is_closed` | **0** |
 | 4h bars off the 4-hour grid | **0** |
+| 4h duplicate timestamps | **0** |
+| 4h bars not flagged `is_closed` | **0** |
+| 4h missing buckets vs. expected calendar | **0** |
 | 4h buckets with no 5m data at all | **0** |
 | 5m buckets with no 4h bar | **0** |
 | 4h bars exactly reconstructed (48/48 bars, all fields equal) | **7,650 / 7,662 (99.84%)** |
