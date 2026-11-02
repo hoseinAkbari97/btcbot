@@ -182,7 +182,7 @@ a later outcome stage, not from signal counts.
 - Feasible share and median `cost_R`.
 - **Cost-adjusted edge:** `0.15 - median_cost_r`; require > 0 with margin, else FAIL on economics.
 
-**Rejection criteria (pre-registered):**
+**Rejection criteria (to be frozen before counting):**
 - `nonoverlap_72h < 150` → FAIL (frequency)
 - `median_cost_r > 0.12` → FAIL (economics, even if gate passes; can be adjusted if justified before counting, but must be stated)
 - `feasible_share < 0.25` → FAIL or serious limitation
@@ -213,7 +213,7 @@ a later outcome stage, not from signal counts.
 - **Cost-adjusted edge:** critical here because margin is thinnest.
 - Session sensitivity (drop Asia, different session lengths).
 
-**Rejection criteria (pre-registered):**
+**Rejection criteria (to be frozen before counting):**
 - `nonoverlap_24h < 150` → FAIL
 - `median_cost_r > 0.15` is dangerous; require `median_cost_r <= 0.17` at most with justification, and `0.15 - median_cost_r > 0` → prefer `> 0.02` margin
 - `feasible_share < 0.30` → concerning (tight stops mean most signals may fail gate)
