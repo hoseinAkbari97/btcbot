@@ -151,6 +151,9 @@ ATR[t] = (ATR[t-1] * 13 + TR[t]) / 14                         if t > 13
 segment; no state is carried across a segment break. The first bar of a segment uses `high - low`
 because its previous close belongs to the previous segment and would misstate a gap as volatility.
 
+Because the expansion test reads `ATR[t-1]`, the first bar at which an expansion can be tested is
+**local index 14**, the fifteenth bar of the segment. Bars at local index 0–13 are warm-up.
+
 **Why the ATR excludes the expansion bar.** The expansion test compares a bar's true range with
 `ATR[t-1]`, not `ATR[t]`. Including the bar in its own denominator would make the test partly
 self-referential and would understate the ratio for exactly the bars the rule is looking for.
@@ -187,6 +190,10 @@ Relative volume is recorded as a diagnostic only and cannot change any count.
 expansion. A bar whose `ATR[t-1]` is undefined (fewer than 14 bars into its segment) is not testable
 and is excluded under `warmup_atr`. There is no rounding tolerance: all comparisons are on the
 stored floating-point values, with strict `>=` as written.
+
+**Division ordering.** `range[t] > 0` is tested before `body[t] / range[t]` and `close_location` are
+formed. An implementation that divides first and handles infinity afterwards is not compliant with
+this specification.
 
 **One definition only.** No alternative expansion measure (realised volatility, Bollinger width,
 percentile-of-range) is permitted in the primary specification. Sensitivities may vary the ATR
@@ -244,6 +251,9 @@ current bar participates in its own percentile. This is causal (the bar is close
 reads it) and it is the definition that makes the upper bound behave as intended: a crisis 4h ATR
 lands near the top of its own window. A leading-edge count `(count strictly less than x) / 540` is
 used rather than interpolation, so the value is an exact rational number reproducible in any language.
+
+If **any** value in the window is undefined or missing, `pct[q]` is `Unknown` and permission is
+`Unknown`; a percentile over a truncated window is never substituted.
 
 **Warm-up.** `SMA50` first exists at 4h index 49; `slope24` at index 55; `ATR4h` at index 13, so the
 540-value window is fully populated at index 552. The first computable permission is therefore at 4h
@@ -356,6 +366,10 @@ The entry bar must be usable under §2.1. Failure labels:
 A missing entry bar **rejects the signal**; the run does not skip forward to the next available bar.
 Skipping forward would price the trade at a moment that is not the first moment after the signal and
 would make the fill assumption unauditable. Rejections are counted.
+
+A confirmation bar that is the last bar of its 1h segment necessarily has no next bar in that
+segment; the signal is then rejected as `no_entry_bar`, even if a bar exists after the gap. A new
+segment after a gap is a different price history and is not a valid continuation of the setup.
 
 ### 5.6 Structural stop
 
