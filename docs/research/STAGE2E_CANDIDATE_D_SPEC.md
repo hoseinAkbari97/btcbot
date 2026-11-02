@@ -245,4 +245,197 @@ verify `quote_volume` on the 15m series. Typical-price VWAP needs only `volume`,
 approximation, and is reproducible from the documented schema. The exact variant is recorded as a
 diagnostic so the approximation is measurable.
 
-<!-- D_PART2 -->
+---
+
+## 6. Higher-timeframe volatility budget
+
+### 6.1 Which 4h bar a session may read
+
+A session whose signal instant is `T` reads the **most recent 4h bar whose `close_time` is strictly
+less than `T`**. At the ASIA signal instant `01:59:59.999` that is the 4h bar opening at `20:00` on
+the previous day; at `EUROPE` (`09:59:59.999`) it is the bar opening at `04:00`; at `US`
+(`17:59:59.999`) it is the bar opening at `12:00`. An unfinished 4h candle is never read. If the
+required 4h bar is missing or unclosed, the budget is `Unknown` and the session produces no signal.
+
+### 6.2 Formula
+
+Using closed 4h bars, at 4h bar `q`:
+
+```
+ATR4h[.] = Wilder ATR(14) on 4h true range, same construction rules as the shared protocol
+pct[q]   = 100 * (count of ATR4h values in the 540-bar window [q-539 .. q]
+                  that are strictly less than ATR4h[q]) / 540
+
+budget_ok[q] = (25.0 <= pct[q] <= 80.0)
+```
+
+All comparisons are inclusive exactly as written. `budget_ok` is `True`, `False`, or `Unknown`
+(before the first computable value, or on a missing/unclosed 4h bar).
+
+**The two Stage 2D formulations are resolved in favour of one.** Stage 2D offered (a) daily ATR(14)
+inside its trailing-90-day percentile band and (b) 4h realised volatility between 0.5× and 1.5× its
+30-day median. Option (b) is rejected here: a ratio band around a median can be satisfied in both a
+dead market and a crisis market if the median itself has moved, it adds a second lookback, and it
+does not say where the current regime sits in its own distribution. Option (a) is adopted in
+**4h** form rather than daily, because daily bars are not in the dataset and aggregating them would
+introduce a new synthetic series that the architecture review flagged as an open gap. The 4h ATR
+percentile is causal, uses a supplied timeframe, and is the same construction the B regime filter
+uses, so the two candidates share one volatility definition.
+
+**Why this band.** The lower bound (25th percentile) removes dead markets where a two-hour move
+cannot clear costs. The upper bound (80th percentile) removes crisis states in which the first move
+is a liquidity shock and the remainder of the session tends to revert — the failure mode the
+volatility budget exists to address. The band is a design choice, not a fitted parameter. It is
+wider at the bottom and tighter at the top than B's band because D trades a shorter horizon and is
+more exposed to whipsaw.
+
+**Percentile construction.** The window is 540 consecutive 4h bars ending at `q` inclusive, so the
+current bar participates in its own percentile. This is causal, and it makes the upper bound behave
+as intended: a crisis 4h ATR ranks near the top of its own window. The leading-edge count is an exact
+rational number and is reproducible without interpolation.
+
+**Warm-up.** `ATR4h` first exists at 4h index 13; the 540-value window is fully populated at index
+552, the bar opening `2021-04-03T00:00:00Z`. Sessions whose signal instant precedes the close of that
+bar are excluded as `warmup_budget`. That is 92 days of the 1,277-day interval.
+
+**No intra-session re-evaluation.** The budget is evaluated once, at the signal instant, and is fixed
+for that session's decision. It is not re-checked at entry, because entry follows one 15m bar later
+and a second evaluation would be a second, undefined decision point.
+
+---
+
+## 7. Entry, stop, and cost
+
+### 7.1 Entry
+
+**Entry bar:** the 15m bar whose `open_time` equals `open_time[b7] + 15m`.
+**Entry price:** that bar's `open`.
+
+The entry bar must be usable under §2.1. Failure labels:
+
+| failure | label |
+|---|---|
+| bar absent | `no_entry_bar` |
+| not closed | `unclosed_entry_bar` |
+| zero volume / no trades | `zero_volume_entry` |
+| partial bucket | `partial_entry_bar` |
+| invalid or non-positive open | `invalid_entry_price` |
+
+A missing entry bar **rejects the signal**; the run never skips forward. Skipping would price the
+trade at a moment that is not the first moment after the signal.
+
+### 7.2 Structural stop
+
+```
+S      = entry_open - 1.0 * ATR1h[q]
+D      = entry_open - S = ATR1h[q]
+stop_pct = D / entry_open
+```
+
+`ATR1h[q]` is the value fixed at the signal instant (§4.2) and is **not** recomputed at entry. The
+resulting stop is the only structural stop in the specification; there is no session low, VWAP, or
+swing-low variant.
+
+**No artificial minimum stop and no widening.** The Stage 2D text proposed "or a hard 1.30% floor,
+whichever is farther", which would widen a tight stop to clear the cost gate. That is rejected: it
+lowers `cost_R` arithmetically while increasing notional per unit of risk, and it turns an execution
+constraint into a parameter. A stop tighter than 1.30% is counted and fails the gate as `cost_gate`.
+
+**Invalid stop** (`invalid_stop`) if `ATR1h[q] <= 0`, `stop <= 0`, `entry_open <= 0`, or `D <= 0`.
+
+### 7.3 Cost
+
+```
+cost_R = 0.0026 * entry_open / D
+```
+
+**Primary gate:** `cost_R <= 0.20`, equivalent at 26 bp to `stop_pct >= 1.30%`. Buckets and cost
+sensitivities are identical to the shared protocol: `<=0.10`, `(0.10,0.20]`, `(0.20,0.30]`,
+`(0.30,0.50]`, `>0.50`, recomputed at 10, 26, 39, and 52 bp with the gate unchanged.
+
+Because `D = ATR1h[q]`, D's `cost_R` is determined almost entirely by the 1h ATR relative to price.
+At a 1.30% stop the gate is exactly at its boundary, which is the central economic tension of this
+candidate and must be reported, not smoothed: the median `cost_R` is expected to sit near the gate
+rather than comfortably below it.
+
+---
+
+## 8. Deduplication and episode identity
+
+### 8.1 The session is the episode
+
+Candidate D has **one opportunity per session**, by construction:
+
+- the measurement window is fixed at the first two hours, so there is exactly one signal instant;
+- no second measurement window exists inside a session;
+- a session that fails any filter produces no signal and is not retried later in the same session.
+
+Therefore "deduplication" for D is not a selection among competing signals; it is the assertion that
+the session key is unique and that each key appears at most once. The census verifies it and reports
+`duplicate_session` removals, which must be zero.
+
+### 8.2 Adjacent sessions and midnight
+
+Adjacent sessions are **distinct opportunities**, not duplicates. A `EUROPE` signal is six hours after
+an `ASIA` signal and both are valid pre-non-overlap; the 24h non-overlap rule (§9), not deduplication,
+decides which survives. The same applies across midnight: a `US` signal at 18:00 and the next day's
+`ASIA` signal at 02:00 are eight hours apart and both are counted before non-overlap.
+
+A signal never straddles midnight: the measurement window is the first two hours of its session, and
+the `US` session ends at `24:00` with its signal at `18:00`.
+
+### 8.3 Deterministic identity
+
+```
+D:{session_start_iso8601_utc}|{session_id}
+```
+
+e.g. `D:2021-06-01T00:00:00+00:00|ASIA`. The key depends only on the session start and its id, so it
+is stable across reruns and implementations. Because sessions partition the day and ids are unique
+within a day, no two sessions can share a key.
+
+**Conflict resolution** is therefore only needed for the hypothetical case of two signals sharing an
+`entry_time`; the lexicographically smaller key is retained and the other is labelled
+`duplicate_entry`. Under the one-signal-per-session rule this cannot occur.
+
+---
+
+## 9. Non-overlap policy
+
+### 9.1 Canonical 24-hour rule
+
+**Population:** unique cost-feasible signals after the cost gate and deduplication.
+
+**Algorithm:**
+
+1. Sort by `entry_time` ascending; ties broken by session key ascending (ISO string, then session id
+   in the order `ASIA < EUROPE < US`).
+2. Accept the first signal.
+3. Accept each subsequent signal whose `entry_time` is **at least** 24 hours after the most recently
+   accepted signal's `entry_time`. Exactly 24 hours qualifies.
+4. Rejected signals are labelled `non_overlap` and retained for audit.
+
+**Timestamp used:** `entry_time`, not the signal instant and not the session start. Entry time is
+what determines when capital would be committed.
+
+**Boundary:** inclusive.
+
+**Order of application:** after cost feasibility. Non-overlap never changes whether a signal is
+cost-feasible; rejected signals remain in the cost distribution.
+
+### 9.2 Why 24 hours, and what it costs
+
+The maximum intended holding period is the session, at most eight hours, so a 24-hour separation is
+stricter than the holding period requires. It is retained because the candidate's claim is
+"intraday continuation", and counting three signals in one day as three independent opportunities
+would overstate frequency in exactly the dimension the census is trying to measure. The rule is a
+frequency-conservatism choice, not an exit rule, and it is frozen before counting.
+
+### 9.3 Sensitivities
+
+The 12-hour and 48-hour counts use the identical greedy algorithm over the same population, changing
+only the threshold. They are diagnostics; the canonical decision count is the 24-hour count. A
+48-hour count that falls below the project floor while the canonical count passes does **not**
+rescue or condemn the candidate by itself; both are reported, and the canonical number governs.
+
+<!-- D_PART3 -->
