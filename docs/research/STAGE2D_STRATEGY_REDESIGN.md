@@ -600,4 +600,114 @@ recommendation is conditional on the cost-adjusted screen and on a session-sensi
 
 ---
 
+## 7. Fourteen-dimension comparison
+
+The assessments are qualitative. There are no scores, weights, or aggregate rankings in this table;
+the ranking discussion in §9 is explicit about which criterion is being prioritised.
+
+| # | dimension | A — multi-day TSMOM | B — volatility expansion + retest | C — regime mean reversion | D — intraday continuation + vol budget |
+|---|---|---|---|---|---|
+| 1 | **Mechanism and economic rationale** | Strong: multi-asset, multi-decade TSMOM evidence; behavioural and risk-premium channels; documented crypto time-series momentum | Moderate: volatility clustering is robust; directional continuation after expansion is plausible but unverified; jump reversal is a serious competing mechanism | Weak–moderate: overreaction/reversal evidence exists, but BTC's dominant behaviour is momentum, and long-only removes the short leg | Moderate but fragile: intraday momentum is documented in equity indices; the 24/7 BTC session analogue is an unverified transfer |
+| 2 | **Distinctness from prior experiments** | Overlaps the trend family with Stage 2C but differs in timeframe, entry logic, and holding period; not a renamed pullback | Distinct from Strategy 2 C: expansion-after-event with retest vs compression-before-breakout; different state and failure mode | Distinct from Setup 1 and Strategy 2 C, but shares the "buy a dislocation" logic with Setup 1's low-side rejection | Distinct from all prior experiments: no prior intraday/session hypothesis was censused |
+| 3 | **Signal objectivity and reproducibility** | High: daily close, 60-day return, 200-day mean, 3×ATR stop; all bars closed | Moderate–high: ATR multiple, body/range, close location, 4h permission, retest window; objective but several parameters | Moderate: RSI/Bollinger/ATR dislocation plus a multi-bar stabilization rule; confirmation is objective but parameter-sensitive | Moderate: session clocks, first-two-hour return, VWAP, ATR threshold, vol-budget percentiles; many parameters and a convention-dependent session |
+| 4 | **Data availability and alignment risk** | Low risk: daily can be aggregated from the gap-free 4h series; no new dataset needed | Low–moderate: 1h and 4h exist; 5m/15m available for execution checks; 1h has documented gaps | Low: daily aggregation; 4h available | Moderate: 15m and 1h exist but both have documented gaps; session boundaries need explicit UTC handling |
+| 5 | **Expected frequency (unverified)** | **Low** [H]: few regime transitions; realistic <63 at 20-day non-overlap | **Moderate** [H]: common expansions, but permission + retest + 1.30% stop floor remove most; 60–150 non-overlap at 72h | **Low** [H]: non-bear regime + dislocation + stabilization is rare; 10–30 episodes | **High** [H]: three sessions/day; 150–300 non-overlap at 24h after filters |
+| 6 | **Non-overlap feasibility under the 150 floor** | Fails structurally: 20-day horizon caps at 63; 30-day caps at 42 | Marginal: 72h horizon caps at 425; feasible only if the conjunction yields ≥150 | Fails structurally: 20-day horizon caps at 63; realistic count far lower | Passes structurally: 24h horizon caps at 1,277; the only candidate with a clear path to 150 |
+| 7 | **Typical stop distance** | Wide: 10–15% (3×ATR daily disaster stop) | 1.5–3.0% (expansion low or 1×ATR, floored at 1.30%) | 5–10% (swing low + 1×ATR daily) | 1.3–2.0% (1×ATR 1h, floored at 1.30%) |
+| 8 | **`cost_R` and gate margin** | Very comfortable: ~0.017–0.026; gate is not binding | Passes but thin: ~0.087–0.173; median ~0.12 | Comfortable: ~0.026–0.052; gate is not binding | At the boundary: ~0.13–0.20; median ~0.17; many signals fail |
+| 9 | **Cost-adjusted edge vs 0.15R** | Comfortable: ~0.12–0.13R remains | Thin: ~0.03R at median; fails the economic screen if median >0.12R | Comfortable: ~0.10–0.12R remains | Very thin: ~-0.02 to +0.02R; the target edge is largely consumed |
+| 10 | **Capital efficiency at $10,000** | Low utilisation: $667–$1,000 notional (7–10%) | Moderate: $5,000–$6,667 (50–67%) | Low: $1,250–$2,000 (12.5–20%) | High utilisation: $5,000–$7,692 (50–77%) |
+| 11 | **Concurrency and cash constraint** | Effectively one; idle capital | One to two; two positions can exhaust cash | One to two; idle capital | One at 1.3% stop; two would exceed spot cash |
+| 12 | **Execution and adverse-selection risk** | Low–moderate: daily close, 24/7, but stop gaps and venue slippage | High: expansion-state spreads, retest may not fill, stop gaps | High: panic-state fills, stabilization can fail, stop gaps | High: tight stops hit by noise, session convention, spread/slippage at entries and stops |
+| 13 | **Statistical testability / detectable effect** | Poor: <63 episodes; detectable effect likely >0.4R; cannot test 0.15R | Marginal: 60–150 episodes; detectable effect ~0.23–0.36R; may still miss 0.15R | Poor: <30 episodes; detectable effect >0.6R; untestable at 0.15R | Best: 150–300 episodes; detectable effect ~0.16–0.23R; closest to the target, but clustering may erode it |
+| 14 | **Falsifiability and overfit risk** | Clear falsification (no risk-adjusted edge over buy-and-hold), but high regime-luck risk on one cycle | Clear falsification (expansion reverses; cost_R too high), but retest/vol-budget parameters can be overfit | Weak falsifiability: filters can explain any failure; high single-cycle overfit risk | Clear falsification (no session momentum; cost_R too high), but session/vol-budget choices invite overfitting |
+
+### 7.1 What the matrix shows
+
+- **No candidate dominates on every dimension.** A wins on mechanism and cost; D wins on frequency and
+  testability; B is the only candidate that is both genuinely distinct from Strategy 2 C and
+  potentially frequent enough; C loses on mechanism, frequency, and testability.
+- **The ranking depends on the decision criterion.** If the criterion is "can the programme test a
+  0.15R effect under the existing floor," D is first and B second; A and C are ineligible on calendar
+  arithmetic alone. If the criterion is "which mechanism is most likely to be real," A is first and
+  B second. The recommendation document states both rankings and explains which one drives the
+  recommendation.
+- **Cost and frequency trade off directly.** A and C are cheap per trade but too rare. D is frequent
+  but expensive per trade. B is the intermediate case, which is why it is the most uncertain
+  recommendation.
+
+---
+
+## 8. Screened alternatives considered and not advanced
+
+The task allows one additional genuinely different candidate if it has a stronger economic rationale.
+No fifth candidate is advanced. The alternatives below were screened and rejected; none is a renamed
+version of a failed strategy.
+
+| alternative | mechanism | why not advanced |
+|---|---|---|
+| **Cross-sectional crypto momentum** | Long winners / short losers across a crypto universe; supported by Liu–Tsyvinski–Wu (2022) | Requires multiple assets and a short leg. The environment is BTCUSDT spot, long-only, no leverage. Not implementable as specified. |
+| **Funding-rate / basis carry** | Collect the perpetual funding or futures basis premium | Requires perpetual futures or dated futures. Spot-only, no leverage. Data and venue model absent. |
+| **On-chain exchange netflow / stablecoin supply** | Flow imbalances predict returns | Data is not in the platform. Historical coverage and revision risk are high. Unverified. |
+| **Options volatility risk premium** | Sell implied volatility / collect the variance premium | No options data, no options venue, no margin model. Out of scope. |
+| **Market making / liquidity provision** | Earn the spread and rebate by posting liquidity | Requires L2 order-book data, latency infrastructure, inventory management, and a venue API. The platform has none of these. Not a census candidate. |
+| **Prior-day high/low breakout** | Break of yesterday's range continues | Duplicates the breakout/trend family and is close to Strategy 2 C. It is not a genuinely different mechanism. |
+| **Opening-range breakout** | The first N minutes' range predicts the session | A subset of D. Advancing both would double-count the same mechanism. |
+| **BTC/ETH pairs trading** | Cointegration / relative-value reversion | Requires a second asset and a short leg. Out of scope. |
+| **Calendar / day-of-week seasonality** | Recurring flow patterns by time | Weak mechanism and high data-mining risk. No credible economic channel for BTC spot. |
+| **News / sentiment** | Text or social sentiment predicts returns | No reliable historical feed, no timestamp discipline, and a high risk of look-ahead. Unverified and not reproducible here. |
+| **Volatility-targeted buy-and-hold** | Risk management overlay on BTC beta | Not a distinct edge; it is a sizing rule. It belongs as a baseline for A, not as a candidate. |
+| **Simple buy-and-hold / DCA** | BTC beta | Not a strategy hypothesis; it is the benchmark that any candidate must beat. |
+
+**Why no fifth candidate.** The remaining ideas either require data or instruments the environment
+does not have (cross-section, derivatives, options, L2, on-chain), duplicate an existing family, or
+have no credible mechanism. Adding one would create the appearance of breadth without adding a
+genuinely different test.
+
+---
+
+## 9. Cross-candidate synthesis
+
+### 9.1 Rankings under different criteria
+
+| criterion | ranking | reason |
+|---|---|---|
+| **Mechanism strength** | A > B > D > C | A has the deepest and broadest evidence; C fights BTC's dominant momentum |
+| **Distinctness from prior failures** | D > B > C > A | D is a new family; B is a genuine inversion of Strategy 2 C; A overlaps the trend family |
+| **Frequency under the 150 floor** | D > B > A ≈ C | Only D is structurally capable of 150; B is marginal; A and C are capped below 63 |
+| **Cost efficiency per trade** | A > C > B > D | Wide stops make `cost_R` small; D's tight stops make it large |
+| **Cost-adjusted edge at 0.15R** | A > C > B > D | The same ordering, because `cost_R` is the dominant term |
+| **Capital efficiency** | D > B > C > A | D uses the most capital per signal; A uses the least |
+| **Statistical testability** | D > B > A > C | D can produce the most independent episodes; C the fewest |
+| **Falsifiability** | A ≈ B ≈ D > C | C's filters can explain any failure; the others have clearer kill conditions |
+
+### 9.2 The central conflict
+
+The candidate with the best mechanism (A) is the least testable under the existing protocol. The
+candidate with the best testability (D) has the thinnest cost-adjusted edge. B is the compromise: it
+is genuinely distinct, its mechanism is plausible, and its 72h horizon leaves room for 150 episodes if
+the conjunction is not too restrictive. C is dominated: it has the weakest mechanism, the lowest
+frequency, and the worst falsifiability.
+
+The recommendation therefore cannot be "pick the best mechanism." It must be "pick the candidates
+that the programme can actually test, while stating what is lost by not testing A." The companion
+document makes that trade-off explicit and gives the alternative ranking if the floor is revised.
+
+### 9.3 What would change the ranking
+
+- **If the 150 floor is revised downward or the development interval is extended:** A becomes the
+  first candidate, because its mechanism is the strongest and its cost is the lowest. B remains
+  second. D's cost disadvantage becomes more important, not less.
+- **If a multi-asset universe becomes available:** cross-sectional momentum and pairs trading become
+  viable, and the single-asset constraint that dominates this analysis disappears. That is a
+  different programme, not a Stage 2D variant.
+- **If Nobitex execution data shows materially worse costs than the 26 bp proxy:** D is hit hardest,
+  because its stops are tightest. B is next. A and C are largely unaffected.
+- **If a daily dataset or a longer history becomes available:** the calendar constraint relaxes for A
+  and C, but the mechanism's horizon still limits the count. A 10-year interval would raise A's
+  20-day ceiling from 63 to ~180, which is the first interval length at which A could plausibly clear
+  150.
+
+---
+
 <!-- STAGE2D_APPEND -->
