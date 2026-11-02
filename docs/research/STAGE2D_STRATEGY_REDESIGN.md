@@ -967,5 +967,3 @@ tag **[L]** in the tables refers to these works; it does not imply that they tes
 - The overreaction/reversal evidence (De Bondt–Thaler; Cheah–Fry; Fry–Cheah) supports a long-horizon
   mechanism, but BTC's strong momentum is a competing fact. C is a bet against the asset's dominant
   behaviour.
-
----
