@@ -524,4 +524,189 @@ deleted from the economic evidence.
 **Cost sensitivity:** the counts that would pass the same `0.20` gate at 10, 39, and 52 bp round-trip
 are reported. The primary gate is not changed at any of them; only `cost_R` is recomputed.
 
-<!-- PART4 -->
+---
+
+## 9. Counting pipeline and exclusion accounting
+
+Every stage is counted. Each rejection has exactly one **primary** reason, assigned in the order
+below; the run also records secondary reasons and reports both.
+
+```
+S1  usable 1h bars in the development interval
+S2  1h bars with ATR(14) defined
+S3  expansion bars
+S4  episodes started (raw expansion episodes)
+S5  regime-qualified episodes            permission == True at e
+S6  structurally valid episodes          retest touch + resumption confirmed
+S7  valid entry and stop                 entry bar usable, D > 0
+S8  cost-feasible signals                cost_R <= 0.20
+S9  deduplicated signals                 one per episode (verified)
+S10 non-overlapping signals              72h greedy, canonical
+```
+
+Exclusion labels:
+
+| label | stage |
+|---|---|
+| `warmup_atr` | S2: fewer than 14 bars into the segment |
+| `warmup_regime` | S5: no computable 4h permission at `e` |
+| `regime_not_permitted` | S5: permission `False` |
+| `retest_timeout` | S6: no touch within `e+1 .. e+6` |
+| `retest_too_deep` | S6: touch penetration > 0.50 ATR |
+| `structure_broken` | S6: close below `L_e - 0.50*A_e` before confirmation |
+| `resumption_timeout` | S6: no confirmation within 3 bars of the touch |
+| `regime_lost` | S6: permission fails at the confirmation bar |
+| `segment_break` | S6: 1h segment ended mid-episode |
+| `no_entry_bar` | S7: entry bar absent |
+| `unclosed_entry_bar` | S7: entry bar not closed |
+| `zero_volume_entry` | S7: entry bar has no trades |
+| `partial_entry_bar` | S7: entry bar is a partial bucket |
+| `invalid_entry_price` | S7: entry open <= 0 |
+| `invalid_stop` | S7: `S <= 0`, `D <= 0` |
+| `cost_gate` | S8: `cost_R > 0.20` |
+| `duplicate_entry` | S9: entry timestamp already used (expected 0) |
+| `non_overlap` | S10: within 72h of an accepted signal |
+
+### 9.1 Denominator definitions
+
+Ambiguous denominators are the commonest way two implementations diverge. These are frozen:
+
+| reported quantity | numerator | denominator |
+|---|---|---|
+| `expansion_test_share` | S3 expansion bars | S2 bars with ATR defined |
+| `permission_share` | S5 regime-qualified episodes | S4 raw expansion episodes |
+| `retest_conversion` | S6 structurally valid episodes | S5 regime-qualified episodes |
+| `entry_validity_share` | S7 valid entry/stop signals | S6 structurally valid episodes |
+| `feasible_share` | S8 cost-feasible | S7 valid entry/stop |
+| `unique_share` | S9 unique signals | S8 cost-feasible |
+| `nonoverlap_share` | S10 at 72h | S9 unique |
+
+`feasible_share` is the share that matters economically, and it is always measured against S7, never
+against S3. A high expansion count with a low feasible share is a rejected design, not a large sample.
+
+---
+
+## 10. Required diagnostics
+
+Every future B census must report, at minimum:
+
+1. **Pipeline counts** S1–S10 with all exclusion labels, primary and secondary.
+2. **Cost_R distribution** of all S7 signals: count and percentage in each bucket, median, mean, p25,
+   p75, p90, min, max, plus the count passing at 10, 26, 39, and 52 bp.
+3. **Stop-distance distribution** in USDT and as a percentage of entry: median, p25, p75, p90, min,
+   max, and the share below 1.30%.
+4. **Non-overlap counts** at 24h, 72h (canonical), and 120h, with the spacing distribution.
+5. **Calendar counts** by year and by month, for S8 and S10.
+6. **Regime counts** by 4h permission state at `e`, by `pct[q]` decile, and by `regime_blip` status.
+7. **Cluster concentration**: the distribution of S8 signals across signal-producing 4h regime
+   episodes (count, median, p90, maximum, share in the largest episode), and across calendar months.
+8. **Kish diagnostic** `n_eff = (Σ n_k)^2 / Σ n_k^2` over signal-producing 4h permission episodes,
+   reported with the cluster count, the design effect, and an `n_eff` sensitivity to assumed
+   `rho` in {0.25, 0.50, 0.75, 1.00}. It is a concentration diagnostic, not a dependence estimate.
+9. **Detectable-effect reference** `2.801585 / sqrt(N_nonoverlap)` in R, labelled as a planning
+   calculation under independence.
+10. **Capital geometry** at $10,000 equity and 1% risk: implied notional `100 / stop_pct` per signal,
+    its distribution and percentage of equity, the maximum number of concurrently open 72h windows,
+    and the count of signals whose implied notional exceeds equity.
+11. **Data-alignment audit** and **resource usage** per the shared protocol.
+
+No outcome-based metric is reported.
+
+### 10.1 Worked synthetic example (arithmetic check only)
+
+The numbers below are **invented** to make the rules checkable; they are not market data.
+
+| bar | open | high | low | close | note |
+|---|---:|---:|---:|---:|---|
+| `e-1` | 100.0 | 100.4 | 99.9 | 100.2 | ATR[e-1] = 2.0000 |
+| `e` | 100.0 | 104.0 | 99.5 | 103.5 | expansion |
+| `e+1` | 103.5 | 103.8 | 102.9 | 103.0 | retest touch |
+| `e+2` | 103.0 | 104.2 | 103.0 | 103.9 | resumption |
+| `e+3` | 104.0 | — | — | — | entry at open |
+
+Checks: range 4.5 > 0; TR 4.5 ≥ 2.0 × 2.0; body/range = 3.5/4.5 = 0.7778 ≥ 0.55; close location
+(103.5 − 99.5)/4.5 = 0.8889 ≥ 0.75; close > open. `L_e = 103.5`;
+`ATR[e] = (2.0 × 13 + 4.5)/14 = 2.178571`; touch bound `= 103.5 + 0.25 × 2.178571 = 104.044643`, and
+`low[e+1] = 102.9` qualifies; penetration `= (103.5 − 102.9)/2.178571 = 0.2754 ≤ 0.50`; confirmation at
+`e+2` because `103.9 > 103.5` and `103.9 > 103.0`. Stop `= min(99.5, 102.9, 103.0) = 99.5`;
+`D = 104.0 − 99.5 = 4.5`; `stop_pct = 4.33%`; `cost_R = 0.0026 × 104.0/4.5 = 0.06009` (passes).
+Key: `B:{open_time[e]}`.
+
+---
+
+## 11. Acceptance criteria and decision rule
+
+Three concepts are kept separate and must be reported separately:
+
+1. **Protocol compliance** — did the census execute this specification exactly? Hash match, alignment
+   pass, duplicate/unusable-bar accounting reconciled, causal-timing checks passed.
+2. **Structural feasibility** — does the candidate produce enough cost-feasible, non-overlapping,
+   deduplicated opportunities?
+3. **Economic viability** — has a positive net edge been demonstrated? **A census cannot answer this.**
+   It observes no outcome. It must never be reported as evidence of profitability.
+
+### 11.1 Verdicts
+
+Let `N = N_nonoverlap` (72h canonical), `M = median cost_R` over S8, `F = feasible_share`, and
+`E = 0.15 − M` (the design-margin diagnostic).
+
+| verdict | condition |
+|---|---|
+| **INCONCLUSIVE** | hash mismatch; dataset hash mismatch; alignment failure in a field the design reads; a causality check fails; or S9 ≠ S8 for an unexplained reason |
+| **FAIL** | `N < 150`; or `M > 0.20`; or a capital-geometry result that makes the design impracticable under spot cash |
+| **PASS WITH LIMITATIONS** | `150 <= N < 349` and `M <= 0.20`, all compliance checks passed |
+| **PASS** | `N >= 349` and `M <= 0.20`, all compliance checks passed |
+
+`E` is reported alongside every verdict, with its assumptions: it uses an **assumed** `0.15R` effect
+of interest and a Binance-proxy cost. It is not a net expectancy and not a profitability estimate. A
+negative `E` is a warning that the design has no room left under the assumption; a positive `E` is not
+proof of viability.
+
+### 11.2 Proposed additional thresholds (require approval before counting)
+
+These come from Stage 2D and are **not** yet approved protocol:
+
+| proposed threshold | rationale | status |
+|---|---|---|
+| `F >= 0.25` | below this, the survivors are a selected minority of structurally valid signals and the median can be unrepresentative | **proposed, requires approval** |
+| `M <= 0.12` | keeps at least `0.03R` of the assumed `0.15R` effect before other friction | **proposed, requires approval** |
+
+Neither is part of the primary verdict above. If either is adopted, it must be written into a new
+version of this specification and frozen **before** counting. No threshold may be added after seeing
+counts.
+
+### 11.3 What 150 and 349 do and do not mean
+
+150 is the project's frozen protocol threshold, introduced at the Stage 2C freeze with no
+statistical derivation; it is not a universal requirement and does not guarantee power. 349 is an
+independent-observation planning estimate and is optimistic under clustering and fat tails. Neither
+number converts a census count into evidence of an edge.
+
+---
+
+## 12. What this census does not do
+
+- No trade is entered, resolved, or marked to market.
+- No P&L, return, expectancy, win rate, drawdown, Sharpe, CAGR, or profitability figure is computed.
+- No backtest, portfolio simulation, bootstrap, or Monte Carlo is run.
+- No parameter is optimized or swept in the decision path; the ATR multiple, tolerance, and windows
+  are frozen here and may not be tuned.
+- No validation or out-of-sample observation is read, parsed, summarised, or used.
+- No frozen Stage 2A, 2B, 2C, 2D, Stage 6, Stage 6A, or Setup 1 artifact is modified.
+- No discretionary visual interpretation is permitted at any stage.
+
+---
+
+## 13. Freeze record
+
+**Spec version:** `1.0.0`.
+**Frozen artefact:** `docs/research/STAGE2E_CANDIDATE_B_SPEC.md`.
+**Configuration:** `docs/research/STAGE2E_CANDIDATE_B_CONFIG.json` (values here and in the JSON are
+identical; the JSON is the machine-readable source for the runner).
+**Manifest:** `docs/research/STAGE2E_FREEZE_MANIFEST.json` records the SHA256 of this file, the
+configuration, the shared protocol, and the dataset files, together with the development interval,
+cost assumptions, protocol version, freeze timestamp, and an explicit statement that no census has
+been run.
+
+Any change to any parameter requires a new spec version, a new configuration, a new manifest, and
+explicit approval. A runner must abort when the file hashes do not match the manifest.
