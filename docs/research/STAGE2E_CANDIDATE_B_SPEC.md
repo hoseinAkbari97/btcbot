@@ -192,4 +192,190 @@ stored floating-point values, with strict `>=` as written.
 percentile-of-range) is permitted in the primary specification. Sensitivities may vary the ATR
 multiple only as a pre-declared diagnostic, and never in the decision count.
 
-<!-- PART2 -->
+---
+
+## 4. 4h regime permission
+
+### 4.1 Which 4h bar a 1h bar may read
+
+A 1h bar opening at `T` reads the **most recent 4h bar whose `close_time` is strictly less than `T`**.
+Because the 4h grid is aligned to the 1h grid, that bar is the one opening at
+`floor(T, 4h) - 4h`. For example, a 1h bar opening at `04:00` reads the 4h bar that opened at `00:00`
+and closed at `03:59:59.999`. A 1h bar opening at `03:00` reads the 4h bar that opened at `20:00` on
+the previous day.
+
+**No unfinished 4h candle is ever read.** There is no partial-bar fallback. If the required 4h bar is
+missing or unclosed, the label is `Unknown` and no signal may be emitted on that 1h bar.
+
+### 4.2 Permission formula
+
+Using closed 4h bars only, at 4h bar `q`:
+
+```
+SMA50[q]   = mean(close[q-49 .. q])
+slope24[q] = SMA50[q] - SMA50[q-6]
+ATR4h[.]   = Wilder ATR(14) on 4h true range
+pct[q]     = 100 * (count of ATR4h values in the 540-bar window [q-539 .. q]
+                    that are strictly less than ATR4h[q]) / 540
+
+permission[q] = (close[q] > SMA50[q])
+                AND (slope24[q] > 0)
+                AND (20.0 <= pct[q] <= 95.0)
+```
+
+All comparisons are strict where written strict. `permission` is three-valued: `True`, `False`, or
+`Unknown` (before the first computable value, or on a missing/unclosed 4h bar).
+
+**Why SMA50 and a 24-hour slope.** Fifty 4h bars is about 8.3 days: slow enough not to flip on one
+4h bar, fast enough to react within the 72h horizon the candidate trades. The slope over 6 bars is
+exactly 24 hours, which is a single day's change in the mean. The Stage 2D design proposed
+"`close > SMA50` **or** `10-bar return > 0`"; that disjunction is rejected because it would count an
+upward 40-hour return as permission even while price sits below its mean, and because an OR is harder
+to audit than a conjunction. Both conditions are now required.
+
+**Why the ATR percentile band.** The lower bound (20th percentile) excludes dead markets where an
+"expansion" is a rounding artefact. The upper bound (95th) excludes crisis states where a large 1h
+bar is more likely a jump than a tradable impulse, which is the failure mode Stage 2D identified.
+The band is a design choice, not a fitted parameter; it is the same kind of ex ante conditioning the
+Stage 2D candidate D budget proposed.
+
+**Percentile construction.** The window is 540 consecutive 4h bars ending at `q` **inclusive**, so the
+current bar participates in its own percentile. This is causal (the bar is closed before any 1h bar
+reads it) and it is the definition that makes the upper bound behave as intended: a crisis 4h ATR
+lands near the top of its own window. A leading-edge count `(count strictly less than x) / 540` is
+used rather than interpolation, so the value is an exact rational number reproducible in any language.
+
+**Warm-up.** `SMA50` first exists at 4h index 49; `slope24` at index 55; `ATR4h` at index 13, so the
+540-value window is fully populated at index 552. The first computable permission is therefore at 4h
+index 552, which opens at `2021-04-03T00:00:00Z`. The first 1h bar permitted to read it opens at
+`2021-04-03T04:00:00Z`. The 552 preceding 4h bars are a warm-up exclusion and are reported as such.
+
+### 4.3 Permission is evaluated twice
+
+Permission is evaluated at exactly two 1h bars:
+
+1. the **expansion bar** `e` — the setup must exist in a permitted regime;
+2. the **confirmation bar** `c` — the regime must still permit the trade when it is taken.
+
+Rules:
+
+| case | outcome |
+|---|---|
+| `Unknown` or `False` at `e` | episode never starts; counted `regime_not_permitted` |
+| `True` at `e`, `Unknown` or `False` at `c` | episode ends without a signal; counted `regime_lost` |
+| `True` at both | eligible, subject to §5 |
+| transient failure between `e` and `c` only | does **not** invalidate; counted as `regime_blip` diagnostic |
+
+A transient regime failure between the two evaluation points is treated as noise rather than as
+evidence, because permission is a state filter and a one-bar dip inside an eight-hour setup is not a
+different market. The `regime_blip` count is reported so the choice is visible and can be challenged.
+
+---
+
+## 5. Retest, resumption, entry, and stop
+
+### 5.1 Levels fixed at the expansion bar
+
+At expansion bar `e`:
+
+```
+L_e  = close[e]            (retest reference level)
+A_e  = ATR[e]              (tolerance unit)
+```
+
+`L_e` and `A_e` are fixed when the episode begins. They are never updated by later bars, including by
+a second expansion bar absorbed into the same episode (§6.2).
+
+### 5.2 Retest window and touch
+
+The retest window is the six 1h bars `e+1 .. e+6` inclusive. A bar `r` in that window is a **retest
+touch** if:
+
+```
+low[r] <= L_e + 0.25 * A_e
+```
+
+The first qualifying bar is taken; later bars are not searched. The window is frozen as indices
+`1..6`, which is the Stage 2D proposal "1–6 bars" made explicit: the expansion bar itself cannot be
+the retest (`r >= e+1`), and a seventh bar is a new day of price action, not a pullback of the same
+impulse. Six bars and a 0.25× ATR tolerance are design values, not optimized ones.
+
+### 5.3 Penetration limits
+
+```
+penetration[r] = (L_e - low[r]) / A_e
+```
+
+| condition | outcome |
+|---|---|
+| `penetration[r] <= 0.50` (equivalently `low[r] >= L_e - 0.50*A_e`) | valid touch |
+| `penetration[r] > 0.50` | episode invalidated, `retest_too_deep` |
+| any bar `x` in `e+1 .. r-1` has `close[x] < L_e - 0.50*A_e` | episode invalidated, `structure_broken` |
+| no touch in `e+1 .. e+6` | episode expires, `retest_timeout` |
+
+The asymmetry is intentional: price may trade **above** the level by the full tolerance (the touch
+condition), but may only breach **below** it by half an ATR before the expansion is treated as failed.
+A retest that gives back more than half the impulse's ATR is not a retest, it is a reversal.
+
+### 5.4 Resumption confirmation
+
+After a touch at `r`, let `c` be the first 1h bar with
+
+```
+r < c <= r + 3    and    close[c] > L_e    and    close[c] > open[c]
+```
+
+| condition | outcome |
+|---|---|
+| such a `c` exists | signal candidate at `c` |
+| any bar `x` with `r < x < c` has `close[x] < L_e - 0.50*A_e` | invalidated, `structure_broken` |
+| no such `c` within 3 bars | episode expires, `resumption_timeout` |
+
+The confirmation bar is strictly after the retest bar, so a single bar can never be both the touch and
+the resumption. That is the rule Stage 2D left open, resolved here in the conservative direction: a
+bar that dips to the level and closes green is a wick, not a confirmed retest.
+
+**The signal timestamp is `close_time[c]`.** Nothing about the signal uses information from bar
+`c+1` or later. Entry is at the next bar's open (§5.5).
+
+### 5.5 Entry
+
+**Entry bar:** the 1h bar whose `open_time` equals `open_time[c] + 1h`.
+**Entry price:** that bar's `open`.
+
+The entry bar must be usable under §2.1. Failure labels:
+
+| failure | label |
+|---|---|
+| bar absent | `no_entry_bar` |
+| bar not closed | `unclosed_entry_bar` |
+| zero volume / no trades | `zero_volume_entry` |
+| partial bucket | `partial_entry_bar` |
+| invalid or non-positive open | `invalid_entry_price` |
+
+A missing entry bar **rejects the signal**; the run does not skip forward to the next available bar.
+Skipping forward would price the trade at a moment that is not the first moment after the signal and
+would make the fill assumption unauditable. Rejections are counted.
+
+### 5.6 Structural stop
+
+```
+S = min(low[x]) for x in e .. c inclusive
+D = entry_open - S
+stop_pct = D / entry_open
+```
+
+The stop is the lowest low of the setup, from the expansion bar through the confirmation bar. It is
+fixed at entry and never widened, trailed, or rounded.
+
+**No artificial minimum stop.** The Stage 2D text proposed skipping signals whose stop was tighter
+than 1.30%. That rule is not adopted as a separate filter: `1.30%` is exactly what
+`cost_R <= 0.20` at 26 bp implies, so the cost gate performs the same exclusion and the pipeline
+reports it as `cost_gate` rather than as a hidden stop adjustment. In particular the stop is **never
+widened** to reach 1.30%; widening a stop would lower `cost_R` arithmetically while increasing
+notional per unit of risk, which is an accounting trick, not an improvement.
+
+**Invalid stop** (`invalid_stop`) if any of: `S <= 0`; `entry_open <= 0`; `D <= 0` (entry at or below
+the setup low).
+
+<!-- PART3 -->
