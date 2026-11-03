@@ -187,7 +187,8 @@ The run must verify, and report, each of the following:
 3. Entry occurs strictly after the signal instant, at the next bar's open.
 4. No computation reads a row whose decision-relevant information is later than the decision instant.
 5. The percentile window for a 4h decision ends at the 4h bar being used, inclusive; that bar is
-   available because its `close_time_ms < decision_instant_ms` in the candidate selection rule.
+   available under `close_time_ms <= decision_instant_ms`, and both candidates' 4h selection rules
+   are stricter, requiring the bar to close before the decision instant.
 
 A failed causality check yields **INCONCLUSIVE**, not a warning.
 
