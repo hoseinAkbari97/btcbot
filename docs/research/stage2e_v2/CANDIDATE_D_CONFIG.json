@@ -169,7 +169,9 @@
     "rejected_alternative": "4h realised volatility between 0.5x and 1.5x its 30-day median",
     "first_valid_index": 552,
     "first_valid_open_time": "2021-04-03T00:00:00+00:00",
-    "first_eligible_signal_instant": "2021-04-03T04:00:00+00:00"
+    "first_eligible_signal_instant_at_or_after": "2021-04-03T04:00:00+00:00",
+    "first_eligible_session": "EUROPE 2021-04-03 signal instant 2021-04-03T09:59:59.999+00:00",
+    "boundary_semantics": "2021-04-03T04:00:00Z is a threshold, not an actual session signal instant; ASIA on 2021-04-03 is still excluded as warmup_budget"
   },
   "atr_1h": {
     "period": 14,
@@ -272,7 +274,8 @@
     "atr_1h_first_testable_local_index": 13,
     "budget_4h_bars": 552,
     "no_pre_dev_data": true,
-    "first_session_signal_at_or_after": "2021-04-03T04:00:00+00:00"
+    "first_session_signal_instant_at_or_after": "2021-04-03T04:00:00+00:00",
+    "first_actual_eligible_session": "EUROPE 2021-04-03 signal instant 2021-04-03T09:59:59.999+00:00"
   },
   "clustering": {
     "primary_view": "Kish clusters: maximal runs of consecutive usable 4h bars with budget_ok == True",
