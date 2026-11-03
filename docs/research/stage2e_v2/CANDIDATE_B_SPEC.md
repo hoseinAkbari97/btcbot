@@ -723,7 +723,7 @@ Every future B census must report, at minimum:
 6. **Regime counts** by 4h permission state at `e`, by 4h permission state at `c`, and by `pct[q]`
    decile. No `regime_blip` diagnostic is computed (m11).
 7. **Cluster concentration**: the distribution of S8 signals across **Kish clusters** as defined in
-   the shared protocol §3.2 (maximal runs of consecutive usable 4h bars with `permission == True`),
+   the shared protocol §3.1 (maximal runs of consecutive usable 4h bars with `permission == True`),
    reporting count, median, p90, maximum, and share in the largest cluster; plus calendar-month and
    calendar-quarter views.
 8. **Kish diagnostic** `n_eff = (Σ n_k)^2 / Σ n_k^2` over the same `permission == True` clusters,
