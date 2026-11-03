@@ -305,3 +305,58 @@ and signal confirmation. Both candidates' 4h selection rules are stricter (close
 decision instant), which the protocol explicitly permits as a candidate-specific tightening; no
 consumer is looser than the rule, so no candle is unavailable in one section and available in another.
 **RESOLVED.**
+
+---
+
+## 6. Independent assessment of the 28 remediation records
+
+Statuses used: **RESOLVED** (defect eliminated, rule deterministic, evidence present); **RESOLVED
+WITH LIMITATIONS** (defect eliminated but a documented judgement or unverified derivation remains);
+**NOT RESOLVED**; **UNVERIFIABLE**. No author status was accepted without checking the rule itself.
+
+### 6.1 Critical
+
+| Finding | Author | Independent | Evidence | Remaining concern |
+|---|---|---|---|---|
+| C1 | resolved | **RESOLVED** | D §2.2; D config `bar_rules.measurement_window_bars: 8`, `session_full_data_is_selector: false`; protocol §1.4; §5.1 walkthrough above | none |
+| C2 | resolved | **RESOLVED** | B §9.1/§11.1; D §10.1/§12; protocol §2 third-denominator rule, §3, §4, §6.2; configs `median_population_verdict` = S7/S6, `empty_population_policy`; vacuity test §5.2 | none |
+| C3 | resolved | **RESOLVED** | B §1, D §1, protocol §1.2 boundary table, config `dev_start_ms`/`dev_end_ms`/`assert_*`; numeric examples §5.3 | none |
+| C4 | resolved | **RESOLVED** | Protocol §1.5 and its table; D §1/§4.2 (`close_time_ms[q] == T`); B §1; configs `candle_availability.same_bar_close_equality_allowed: true` | none |
+
+### 6.2 Major
+
+| Finding | Author | Independent | Evidence | Remaining concern |
+|---|---|---|---|---|
+| M1 | resolved | **RESOLVED** | Protocol §1.7 fixes first TR, seed, recursion, index 13, reset, supplied-bars-only, 540-value admission; repeated in B §3.1/§4.2 and D §6.2; configs `atr_4h`; arithmetic re-derived (`ATR[13]=2.0`, `ATR[14]=2.178571`) | none |
+| M2 | resolved | **RESOLVED** | B §5.5, D §7.1 open-time-only tables; configs `entry.validate_only_open_time_known_properties: true` and four named close-time diagnostics; protocol §1.5 | label precedence for the dev-end guard, N1 |
+| M3 | resolved (choice) | **RESOLVED WITH LIMITATIONS** | Protocol §1.3 exemption; B §2.3, D §2.3; configs `four_hour_supplied_bar_exemption`; manifest lists the twelve buckets; sensitivity is non-decision | deterministic but not owner-ratified; see §7 |
+| M4 | resolved | **RESOLVED** | Protocol §1.6 classifies complete vs gap-affected, compares complete buckets only, excludes gap-affected from the tolerance denominator, reports counts; matches the twelve known buckets | none |
+| M5 | resolved | **RESOLVED** | B §5.5 "Development-end guard", D §7.1; configs `reject_if_entry_open_time_at_or_after_dev_end: true`, `skip_forward: false`; protocol §1.2 | entry-label ambiguity N1 |
+| M6 | resolved | **RESOLVED** | D §4.2 warm-up; D config `atr_1h.first_defined_local_index: 13`, `warmup_local_indices: [0,12]`, `first_testable_local_index: 13`; first defined value needs `TR[0..13]`, consistent | none |
+| M7 | resolved | **RESOLVED** | B §4.3 table (`warmup_regime` vs `regime_not_permitted`, `regime_lost` at `c`); B §9 label table; config `regime_4h.evaluation_points` | none |
+| M8 | resolved | **RESOLVED** | B §9 S4/S5 definitions and "Stage labels are explicit"; config `pipeline` S4 = episode attempts, S5 = regime-qualified; `permission_share = S5/S4` has a real denominator | none |
+| M9 | resolved | **RESOLVED** | B §9 S6 structural (touch + resumption), S7 confirmation regime + entry/stop; `regime_lost` at S7; S7 is the C2 pre-gate population | none |
+| M10 | resolved | **RESOLVED** | Protocol §5 `stop_fraction = D / entry_open`, `notional_pct > 1.00` with equality fundable; both specs §10/§11 worked examples re-checked (`0.043269 → 2,311.11 → 0.2311`; `0.032669 → 3,060.99 → 0.3061`) | none |
+| M11 | resolved | **RESOLVED** | Protocol §3.1 cluster = maximal run of usable 4h bars with `permission`/`budget_ok == True`, broken by `False`/`Unknown`/missing; `n_k > 0`; independent of emitted signals | D does not name the signal population, N2 |
+| M12 | resolved | **RESOLVED** | Manifest `no_zero_critical_claim.claims_zero_critical_ambiguities: false`; 28 `finding_resolutions` entries; `open_process_steps` names the missing independent audit; self-review states no audit pass | none |
+| M13 | resolved | **RESOLVED** | Manifest `artifact_commit: 40e8097…`, `manifest_commit: cada12d…`, `self_hash_algorithm`, `self_hash`; all verified against git trees and recomputed hash (§2–§3) | two committed manifest blobs; HEAD's is authoritative (§2.2) |
+
+### 6.3 Minor
+
+| Finding | Author | Independent | Evidence | Remaining concern |
+|---|---|---|---|---|
+| m1 | resolved | **RESOLVED** | B §3.1 "first bar at which an expansion can be tested is local index 14"; B §9 S2 label; config `atr_1h.first_expansion_testable_local_index: 14`, `warmup.atr_1h_first_testable_local_index: 14` | none |
+| m2 | resolved | **RESOLVED** | B §8 table with explicit endpoint columns; D §7.3; configs `costs.buckets[].lower_inclusive/upper_inclusive` (upper endpoint belongs to the lower bucket) | none |
+| m3 | resolved | **RESOLVED WITH LIMITATIONS** | Manifest `dataset_identity.gap_locations` lists the seven intervals with derived missing 5m/15m/1h counts and totals 213/70/14; I re-derived the totals from the endpoints and they reconcile | per-timeframe distribution is derived, not row-verified (row parsing is prohibited in this stage) |
+| m4 | resolved | **RESOLVED** | D §6.2 threshold `2021-04-03T04:00:00Z`, first actual session `EUROPE 2021-04-03 09:59:59.999Z`; config `first_eligible_signal_instant_at_or_after`, `first_actual_eligible_session`, `boundary_semantics`; index 552 arithmetic confirmed | none |
+| m5 | resolved | **RESOLVED** | Protocol §1.4 lists only B's 14 1h/552 4h and D's 13 1h/552 4h warm-ups, and states the 32-bar rule is not a warm-up allowance; D §2.2 | none |
+| m6 | resolved | **RESOLVED** | B §3.2 "ATR multiple is fixed at 2.0 … no ATR-multiple sensitivity"; B config `expansion.atr_multiple_tunable: false`, `single_primary_definition: true` | none |
+| m7 | resolved | **RESOLVED** | B §7.1/§7.4 use spacing language; config `overlap` has `canonical_hours: 72` and no `cooldown_primary_hours` (key absence verified by script) | none |
+| m8 | resolved | **RESOLVED** | D §10.1 `session_completeness = S2/S0` with `S0` defined as sessions whose signal instant is inside the interval; config `denominators.session_completeness` | none |
+| m9 | resolved | **RESOLVED** | D §4.2 expected `q` at `s+1h`, no fallback; D §10 label `stop_atr_unavailable`; config `signal.q_selection`, `q_missing_or_unusable_label` | none |
+| m10 | resolved | **RESOLVED WITH LIMITATIONS** | Protocol §1.1 typed-loader requirement; `backend/app/schemas/market_data.py` defines `CandleData` with `Decimal` prices, `datetime` times, `bool is_closed`, `int` trade count, and pydantic coercion | `is_closed: bool = True` defaults a *missing* field to closed rather than aborting, N4 |
+| m11 | resolved | **RESOLVED** | B §4.3 "no intermediate regime evaluation … no `regime_blip` diagnostic"; config `regime_4h.intermediate_regime_evaluation: false`, `regime_blip_diagnostic: false`; §10 item 6 repeats it | none |
+
+**Tally:** 4/4 critical RESOLVED; 12/13 major RESOLVED, 1 RESOLVED WITH LIMITATIONS (M3, owner
+ratification); 9/11 minor RESOLVED, 2 RESOLVED WITH LIMITATIONS (m3 derivation, m10 loader default).
+No finding is NOT RESOLVED or UNVERIFIABLE, and no correction was found to be cosmetic only.
