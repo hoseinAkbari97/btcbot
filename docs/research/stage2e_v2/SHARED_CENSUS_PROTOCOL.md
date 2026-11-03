@@ -486,7 +486,8 @@ Stage 2F finding's resolution status, and an explicit statement that no census h
 
 - `artifact_commit` — the git commit that introduced the frozen v2 artifacts;
 - `manifest_commit` — the git commit that introduced this manifest;
-- `artifact_hashes` — SHA256 of each of the six documented files other than the manifest;
+- `artifact_hashes` — SHA256 of each documented artifact other than the manifest: the two candidate
+  specs, the two candidate configs, this protocol, the remediation matrix, and the independent review;
 - `dataset_identity` — the dataset hashes and row counts from `backend/data/datasets/manifest.json`;
 - `finding_resolutions` — one entry per Stage 2F finding, with status and where it was corrected;
 - `no_census_statement` — explicit text that no census, backtest, or outcome computation was run;
