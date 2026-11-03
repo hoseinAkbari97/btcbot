@@ -505,3 +505,198 @@ rule against same-bar confirmation and entry (a bar cannot both close an episode
 because a new episode requires a strictly later index); D's session boundary ownership against VWAP and
 session VWAP accumulation; both candidates' development-end guards against their entry tables; and the
 pipeline-stage mapping in protocol §2 against both specs.
+
+---
+
+## 10. Implementation-readiness test
+
+Two engineers working only from the eight frozen files: would they produce identical numbers?
+
+| step | frozen rule | identical? | note |
+|---|---|---|---|
+| row admission | epoch ms, `[dev_start_ms, dev_end_ms)` on `open_time_ms` | yes | assertions make a wrong read abort |
+| input typing | `CandleData` or equivalent; `Decimal`/`bool`/`int` | yes | N4 caveat on a missing `is_closed` |
+| bar usability | present, closed, on grid, volume > 0, trade count > 0, bucket members, OHLC | yes | same list at both candidates' timeframes |
+| duplicate rows | keep first in file order | yes | |
+| ATR | TR first/recursive, seed mean of 14, defined at 13, segment reset | yes | shared §1.7 |
+| SMA / slope | `SMA50[q]`, `SMA50[q] - SMA50[q-6]` | yes | B only |
+| percentile | leading-edge count / 540, window `[q-539, q]`, `Unknown` if incomplete | yes | both candidates |
+| warm-up | B: testable at 1h index 14, 4h index 552; D: 1h index 13, 4h index 552 | yes | arithmetic re-derived |
+| candle availability | `close_time_ms <= T` | yes | applied to every consumer |
+| signal instant | B `close[c]`; D `close[b7]` | yes | |
+| entry price | open of the next bar on the entry grid | yes | open-time-only validation |
+| stop | B `min low(e..c)`; D `entry_open - ATR1h[q]` | yes | fixed at entry, never widened |
+| cost | `0.0026 * entry_open / D` | yes | same gate 0.20 |
+| episode identity | `B:{expansion_open}`; `D:{session_start}\|{session_id}` | yes | stable keys |
+| dedup | after the gate, by key/`entry_time` | yes | asserted, expected zero removals |
+| sorting | `entry_time` asc, then key asc | yes | |
+| non-overlap | greedy, inclusive `>=` horizon | yes | 72h / 24h canonical |
+| missing data | segment/session break, no synthesis, no fallback | yes | |
+| segment boundaries | reset state; episode terminated as `segment_break` | yes | |
+| denominators | explicit tables in B §9.1, D §10.1 | yes | |
+| empty population | `M_all` undefined ⇒ `INCONCLUSIVE` | yes | |
+| rejection labels | one primary reason, stage order | **partially** | N1: within-stage precedence implied, not stated |
+| D cluster diagnostic | cluster definition fixed | **partially** | N2: signal population unnamed |
+
+Every **population that feeds the verdict** is deterministic. The two non-identical items are a label
+split and a cluster diagnostic; neither changes S-counts, the median population, the gate, or the
+verdict. This is the factual basis for CONDITIONAL rather than PASS.
+
+---
+
+## 11. Statistical and economic interpretation audit
+
+| distinction | independently confirmed | evidence |
+|---|---|---|
+| raw signal count | separate stage | protocol §2 stages 1–2; B S4; D S3 |
+| structurally valid count | separate stage | B S6; D S5 |
+| cost-feasible count | separate stage | B S8; D S7 |
+| unique episode count | separate stage, asserted | B S9; D S8 |
+| non-overlapping count | separate stage, canonical horizon | B S10; D S9 |
+| cluster concentration | reported as a distribution, not a sample size | protocol §3, §3.1 |
+| Kish effective sample size | labelled a concentration diagnostic | protocol §3.1 explicitly bounds its meaning in both directions |
+| statistical power | 349 is a planning reference only | protocol §6.2; B §11.3; D §12.2 |
+| economic expectancy | not computed anywhere | B §12; D §13; protocol §8 |
+| executable portfolio performance | expressly out of scope | protocol §5, §8 |
+
+Specific claims checked:
+
+- 150 remains "a project protocol choice first fixed at the Stage 2C freeze; not statistically
+  derived" (protocol §6.2, both specs, both configs). No document calls it a requirement.
+- 349 remains an independent-observation planning estimate and is described as optimistic under
+  clustering and fat tails. Its use as a **tier label** in the verdict is explicitly stated to be for
+  comparability, not a power guarantee (B §11.1, D §12).
+- Non-overlap is never equated with independence. B §7.3: "an interval-selection count, not a
+  portfolio … and not a claim of independence."
+- Kish is not presented as a serial-dependence estimator; the rho sensitivity is labelled an assumed
+  design-effect adjustment.
+- Cost feasibility is not profitability; median cost is never expectancy; the design margin is
+  repeatedly labelled an assumption-based diagnostic.
+- Binance 26 bp is never presented as verified Nobitex execution cost.
+- No census result is pre-interpreted as a positive net edge; the verdict vocabulary is structural only.
+
+The statistical framing is sound. The only interpretive risk is the word "PASS", which the documents
+define as clearing the larger structural reference, and which a reader could over-read. That risk is
+mitigated in text and does not need a new finding.
+
+---
+
+## 12. Resource-safety assessment
+
+Known files: 5m 256,461,100 B; 15m 86,193,949 B; 1h 21,653,180 B; 4h 5,455,039 B (353 MB total).
+
+| risk | assessment |
+|---|---|
+| full 5m materialisation | The 5m series is needed only for bucket membership (3 per 15m, 12 per 1h) and alignment. A naive `json.load` of 256 MB plus 595,659 parsed objects is the largest memory risk and is not constrained by the frozen text (N5). A streaming or two-pass membership count avoids it. |
+| typed model retention | Building and keeping `CandleData` objects for every timeframe at once multiplies memory; keep only the current window plus 4h history. |
+| percentile computation | A 540-value leading-edge count per 4h bar is ~6.7 M comparisons for 12,414 bars. Trivially bounded; recomputing it per 1h bar would be wasteful (30,648 × 540) but still not a memory risk. Precompute once per 4h bar. |
+| alignment check | Linear in bucket count; no O(n²) step is required by the specified checks. |
+| non-overlap | Sort plus a single pass; no quadratic scan. |
+| episode state machine (B) | Single forward pass with one active episode; bounded by segment length. |
+| checkpointing | Not specified. A single development-interval pass is feasible; no restart requirement is frozen. |
+
+No algorithmic step in the frozen protocol requires quadratic time or unbounded memory. The residual
+risk is implementation style, which K4 makes explicit and measurable. This audit ran no benchmark, as
+required; the memory figure quoted in §4 (16 MB) is the hashing process only.
+
+---
+
+## 13. Final authorization decision
+
+### 13.1 Decision
+
+**CONDITIONAL PASS — limited census authorization recommended**, subject to K1–K4 in §0.
+
+Basis, point by point against the PASS criteria:
+
+| criterion | met? | evidence |
+|---|---|---|
+| no critical findings remain | yes | §5, §6.1 |
+| no unresolved major issue can materially affect results | yes; M3 is resolved with an owner-ratification condition | §6.2, §7 |
+| all 28 findings resolved or demonstrably non-blocking | yes | §6 tally |
+| the five residual issues assessed and non-blocking except M3 | yes | §8 |
+| M3 resolved without outstanding owner approval | **no** | §7; hence conditional |
+| dataset hashes independently verified | yes | §4, streamed |
+| configurations match specifications | yes, 29 key values checked with no mismatch | §14 |
+| manifest and git provenance reproducible | yes | §2, §3 |
+| both candidates independently implementable | yes for every verdict-feeding population; two diagnostics not fully pinned | §10; hence conditional |
+| development-only boundaries enforceable | yes | §5.3 |
+
+### 13.2 Conditions and their consequences
+
+**K1 — owner ratifies the 4h supplied-bar exemption.** Consequence if accepted: the primary path uses
+the twelve buckets as supplied, the excluded variant is reported as a non-decision sensitivity, and no
+count changes. Consequence if refused: D and B must be re-frozen with the excluded variant and
+segment-broken 4h ATR, which changes the regime/budget labels on the affected windows and requires a new
+version and new hashes; the census may not run on the current freeze.
+
+**K2 — interval guard precedes the entry-presence check; primary and secondary labels both recorded.**
+Consequence: rejection-label counts become reproducible across implementations; S-counts and the verdict
+are unchanged either way. If not accepted, the census may still run, but its label table must be
+reported as implementation-dependent and must not be compared across runners.
+
+**K3 — D names the cluster-diagnostic population and reports S6, S7 and S9 per cluster.** Consequence:
+the cluster distribution and `n_eff` become reproducible. No verdict effect. If not accepted, the
+cluster diagnostic must be reported as unspecified and excluded from comparison.
+
+**K4 — bounded-memory execution and reported peak RSS, with the 5m pass streamed or chunked.**
+Consequence: the run stays inside the 4 GB target and the report proves it. If the runner exceeds 4 GB,
+the census is re-run with a streaming pass; the frozen definitions do not change.
+
+**K-note (not a condition).** The proposed economic thresholds (B `F >= 0.25`, `M_all <= 0.12`; D
+`F >= 0.30`, `M_all <= 0.17`, `E >= 0.02`) are not part of the verdict. They may be reported as
+"proposed, not approved" and must not decide PASS or FAIL.
+
+### 13.3 What this audit does not authorize
+
+This document is an audit result, not an execution order. It does not authorize a census by itself; the
+project owner must accept K1–K4. After acceptance, a census may run only if every artifact and dataset
+hash in `FREEZE_MANIFEST.json` still matches, and any mismatch must abort as `INCONCLUSIVE`.
+
+---
+
+## 14. Verification log
+
+### 14.1 Configuration-to-specification cross-check
+
+29 key values were compared by script between the two frozen specifications and their JSON
+configurations. All matched: `dev_start_ms`, `dev_end_ms`, cost fraction, gate, verdict-median
+population (B S7 / D S6), median symbol `M_all`, B expansion-testable index 14, D first testable index
+13, D warm-up `[0,12]`, non-overlap 72h / 24h, both 540-bar windows, both 4h first-valid index 552,
+both development-end entry guards, absence of `cooldown_primary_hours`, D
+`session_full_data_is_selector: false`, B `regime_blip_diagnostic: false`, B
+`atr_multiple_tunable: false`, both empty-population policies, and both bucket endpoint flag sets.
+
+### 14.2 Artifacts inspected in full
+
+1. `docs/research/stage2e_v2/CANDIDATE_B_SPEC.md` (858 lines)
+2. `docs/research/stage2e_v2/CANDIDATE_B_CONFIG.json` (338 lines)
+3. `docs/research/stage2e_v2/CANDIDATE_D_SPEC.md` (766 lines)
+4. `docs/research/stage2e_v2/CANDIDATE_D_CONFIG.json` (398 lines)
+5. `docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md` (541 lines)
+6. `docs/research/stage2e_v2/FREEZE_MANIFEST.json` (652 lines)
+7. `docs/research/stage2e_v2/REMEDIATION_MATRIX.md` (369 lines)
+8. `docs/research/stage2e_v2/INDEPENDENT_REVIEW.md` (251 lines)
+9. `docs/research/STAGE2F_INDEPENDENT_FREEZE_AUDIT.md` (816 lines)
+10. All six original Stage 2E documents and `STAGE2E_FREEZE_MANIFEST.json` (hash and content review)
+11. `docs/research/STAGE2A_DATA_ALIGNMENT_AUDIT.md` §4 (gap intervals)
+12. `docs/research/STAGE2C_DATA_ALIGNMENT_AUDIT.md` §5 (partial buckets)
+13. `backend/data/datasets/manifest.json`
+14. `backend/app/schemas/market_data.py` (`CandleData`)
+
+### 14.3 Non-modification and scope statement
+
+- Only `docs/research/STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md` was created. No other file was modified.
+- The Stage 2E version 1 artifacts, the Stage 2F audit, and the Stage 2E version 2 artifacts were not
+  edited; their hashes are unchanged (§3.2 and §3).
+- Setup 1, Stage 2A/2B/2C/2D, and Stage 6/6A artifacts were not touched.
+- No historical dataset row was parsed or inspected; only streamed bytes were hashed.
+- No signal was counted; no census, backtest, P&L, expectancy, win rate, portfolio simulation,
+  bootstrap, Monte Carlo, or parameter optimisation was run; no validation or out-of-sample data was
+  accessed; no dependency was installed and no data was downloaded.
+- The audit's own commits are additive and change no audited hash. The audited HEAD was
+  `faea05d5dbed5c37b5389a1c7a2f37de760725cb`; the census must be run against the artifact hashes in §3,
+  which are those of that commit.
+
+**Stop.** Stage 2H ends here. Neither census is authorized by this document; Stage 2I, strategy
+implementation, and any census run require explicit owner authorization.
