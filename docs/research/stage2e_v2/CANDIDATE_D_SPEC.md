@@ -374,12 +374,15 @@ rational number and is reproducible without interpolation.
 
 **Warm-up and incomplete windows (m4).** `ATR4h` first exists at 4h index 13; the 540-value window is
 fully populated at index 552, the 4h bar opening `2021-04-03T00:00:00Z` and closing at
-`2021-04-03T03:59:59.999Z`. The first eligible **signal instant** is therefore
-`2021-04-03T04:00:00Z` (strictly after that close). Sessions whose signal instant is earlier than
-`2021-04-03T04:00:00Z` are excluded as `warmup_budget`; the first eligible session is `EUROPE` on
-2021-04-03. This is 92 days of the 1,277-day interval. If any value inside the window is undefined or
-missing — which can only happen after a 4h gap — the percentile is `Unknown` and the session produces
-no signal. A percentile computed over a truncated window is never reported.
+`2021-04-03T03:59:59.999Z`. The eligibility boundary is therefore
+`2021-04-03T04:00:00Z`: a session whose signal instant is **at or after** that instant may read a
+complete window, and a session whose signal instant is earlier is excluded as `warmup_budget`. Because
+D's signal instants are `01:59:59.999`, `09:59:59.999`, and `17:59:59.999`, the first **actual**
+eligible session is `EUROPE` on 2021-04-03 at `09:59:59.999Z`; `ASIA` on the same date (signal instant
+`01:59:59.999Z`) is still excluded. `2021-04-03T04:00:00Z` is a threshold, not a signal instant. This
+is 92 days of the 1,277-day interval. If any value inside the window is undefined or missing — which
+can only happen after a 4h gap — the percentile is `Unknown` and the session produces no signal. A
+percentile computed over a truncated window is never reported.
 
 **No intra-session re-evaluation.** The budget is evaluated once, at the signal instant, and is fixed
 for that session's decision. It is not re-checked at entry, because entry follows one 15m bar later
