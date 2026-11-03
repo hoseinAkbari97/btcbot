@@ -1,0 +1,338 @@
+{
+  "stage": "2G",
+  "strategy_id": "CANDIDATE_B_VOLATILITY_EXPANSION_RETEST_CONTINUATION",
+  "spec_version": "2.0.0",
+  "spec_path": "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md",
+  "protocol_path": "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md",
+  "protocol_version": "2.0.0",
+  "supersedes": {
+    "spec_version": "1.0.0",
+    "spec_path": "docs/research/STAGE2E_CANDIDATE_B_SPEC.md",
+    "config_path": "docs/research/STAGE2E_CANDIDATE_B_CONFIG.json"
+  },
+  "data": {
+    "symbol": "BTCUSDT",
+    "market": "spot",
+    "paths": {
+      "1h": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+      "4h": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "5m": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "manifest": "backend/data/datasets/manifest.json"
+    },
+    "dev_start": "2021-01-01T00:00:00+00:00",
+    "dev_end": "2024-07-01T00:00:00+00:00",
+    "dev_start_ms": 1609459200000,
+    "dev_end_ms": 1719792000000,
+    "interval_semantics": "half-open [dev_start_ms, dev_end_ms) on candle open_time_ms; start included, end excluded",
+    "timestamp_normalization": "parse open_time as aware UTC, convert to integer epoch milliseconds before filtering; never lexicographic string comparison",
+    "dev_days": 1277,
+    "dev_years": 3.496,
+    "assert_min_open_time_ms": 1609459200000,
+    "assert_max_open_time_ms_exclusive": 1719792000000
+  },
+  "timeframes": {
+    "signal": "1h",
+    "regime": "4h",
+    "execution": "1h",
+    "alignment_diagnostic": "5m",
+    "bar_duration_ms": {
+      "1h": 3600000,
+      "4h": 14400000,
+      "5m": 300000
+    }
+  },
+  "candle_availability": {
+    "rule": "a candle is available at decision instant T iff close_time_ms <= T",
+    "same_bar_close_equality_allowed": true,
+    "entry_acts_at_next_open": true,
+    "applies_to": ["atr", "sma", "vwap", "percentile", "regime", "signal_confirmation"]
+  },
+  "bar_rules": {
+    "utc_explicit": true,
+    "require_is_closed": true,
+    "require_volume_gt_zero": true,
+    "require_trade_count_gt_zero": true,
+    "require_full_bucket_5m_members": 12,
+    "skip_partial_check_if_5m_absent": true,
+    "require_valid_ohlc": true,
+    "duplicate_timestamp_policy": "keep_first_in_file_order",
+    "segment_rule": "maximal run of consecutive usable 1h bars exactly 1h apart",
+    "segment_break_ends_episode": true,
+    "synthesize_bars": false,
+    "forward_fill": false,
+    "four_hour_supplied_bar_exemption": {
+      "enabled": true,
+      "exempt_from_5m_membership_check": true,
+      "retain_gap_adjacent_as_supplied": true,
+      "expected_gap_adjacent_buckets": 12,
+      "sensitivity": "exclude the 12 buckets and segment-break the 4h ATR; diagnostic only, never decision"
+    }
+  },
+  "atr_1h": {
+    "period": 14,
+    "method": "wilder",
+    "segment_scoped": true,
+    "first_bar_tr": "high - low",
+    "init": "simple mean of the first 14 true ranges of the segment",
+    "recursion": "ATR[t] = (ATR[t-1]*13 + TR[t]) / 14",
+    "first_defined_local_index": 13,
+    "undefined_before_local_index": 13,
+    "first_expansion_testable_local_index": 14,
+    "missing_or_unusable_bar": "ends the segment and resets the ATR"
+  },
+  "atr_4h": {
+    "period": 14,
+    "method": "wilder",
+    "segment_scoped": true,
+    "first_bar_tr": "high - low",
+    "init": "simple mean of the first 14 true ranges of the 4h segment",
+    "recursion": "ATR[t] = (ATR[t-1]*13 + TR[t]) / 14",
+    "first_defined_local_index": 13,
+    "undefined_before_local_index": 13,
+    "missing_or_unusable_bar": "ends the 4h segment and resets the ATR",
+    "supplied_4h_bars_only": true
+  },
+  "expansion": {
+    "atr_reference": "ATR[t-1]",
+    "tr_multiple_min": 2.0,
+    "body_range_min": 0.55,
+    "close_location_min": 0.75,
+    "close_above_open": true,
+    "range_positive": true,
+    "volume_required": false,
+    "comparison_operator": ">=",
+    "single_primary_definition": true,
+    "atr_multiple_tunable": false
+  },
+  "regime_4h": {
+    "sma_window": 50,
+    "slope_lookback_bars": 6,
+    "rule": "close[q] > SMA50[q] AND (SMA50[q] - SMA50[q-6]) > 0 AND 20.0 <= pct[q] <= 95.0",
+    "atr_period": 14,
+    "atr_method": "wilder",
+    "atr_construction": "shared protocol section 1.7 / atr_4h block",
+    "percentile_window_bars": 540,
+    "percentile_method": "100 * count(values strictly less than ATR[q]) / 540 over window [q-539, q] inclusive",
+    "percentile_bounds": [20.0, 95.0],
+    "current_bar_included_in_window": true,
+    "bar_selection": "most recent 4h bar whose close_time is strictly less than the 1h bar open_time",
+    "allow_unfinished_4h": false,
+    "unknown_policy": "no_signal",
+    "evaluation_points": ["expansion_bar", "confirmation_bar"],
+    "intermediate_regime_evaluation": false,
+    "regime_blip_diagnostic": false,
+    "first_valid_index": 552,
+    "first_valid_open_time": "2021-04-03T00:00:00+00:00",
+    "strict_comparisons": true
+  },
+  "retest": {
+    "reference_level": "close[e]",
+    "tolerance_unit": "ATR[e]",
+    "touch_tolerance_atr_multiple": 0.25,
+    "window_start_offset_bars": 1,
+    "window_end_offset_bars": 6,
+    "max_penetration_atr_multiple": 0.50,
+    "confirmation_window_bars_after_touch": 3,
+    "confirmation_rule": "close[c] > L_e AND close[c] > open[c]",
+    "same_bar_may_touch_and_confirm": false,
+    "invalidating_condition": "close < L_e - 0.50*ATR[e] before confirmation",
+    "first_touch_only": true,
+    "discretion_allowed": false
+  },
+  "entry": {
+    "rule": "open of the 1h bar whose open_time equals open_time[confirmation] + 1h",
+    "validate_only_open_time_known_properties": true,
+    "open_time_known_checks": [
+      "bar_present_at_expected_open_time",
+      "on_grid",
+      "entry_open_positive",
+      "prior_confirmation_bar_closed",
+      "entry_open_time_before_dev_end"
+    ],
+    "reject_if_missing": true,
+    "reject_if_off_grid": true,
+    "reject_if_nonpositive_open": true,
+    "reject_if_entry_open_time_at_or_after_dev_end": true,
+    "skip_forward": false,
+    "close_time_properties_role": "post-count data-quality diagnostics only; cannot remove a signal",
+    "close_time_diagnostics": [
+      "unclosed_entry_bar",
+      "zero_volume_entry",
+      "partial_entry_bar",
+      "invalid_entry_ohlc"
+    ]
+  },
+  "stop": {
+    "rule": "minimum low of the 1h bars from the expansion bar through the confirmation bar inclusive",
+    "floor_pct": null,
+    "floor_note": "no artificial flooring or widening; 1.30% is implied by cost_R <= 0.20 at 26 bp and is enforced only by the cost gate",
+    "invalid_if": "S <= 0 or entry_open <= 0 or D <= 0",
+    "trailing": false
+  },
+  "episodes": {
+    "one_active_at_a_time": true,
+    "absorb_subsequent_expansions": true,
+    "failed_retest_produces_no_signal": true,
+    "new_episode_requires_later_expansion_bar": true,
+    "key_format": "B:{expansion_open_time_iso8601_utc}",
+    "duplicate_definition": "same entry_time or same confirmation bar",
+    "end_conditions": [
+      "signalled",
+      "invalidated",
+      "expired",
+      "regime_lost",
+      "segment_break",
+      "rejected"
+    ]
+  },
+  "overlap": {
+    "canonical_hours": 72,
+    "sensitivity_hours": [24, 120],
+    "timestamp_used": "entry_time",
+    "inclusive_boundary": true,
+    "sort": ["entry_time_asc", "episode_key_asc"],
+    "applied_after": ["deduplicate", "cost_gate"],
+    "simultaneous_signals": "retain lexicographically smaller episode key",
+    "note": "non-overlap spacing on accepted entry times; not a trading cooldown"
+  },
+  "costs": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.20,
+    "implied_min_stop_pct": 1.30,
+    "buckets": [
+      {"label": "(-inf, 0.10]", "lower": null, "upper": 0.10, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.10, 0.20]", "lower": 0.10, "upper": 0.20, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.20, 0.30]", "lower": 0.20, "upper": 0.30, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.30, 0.50]", "lower": 0.30, "upper": 0.50, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.50, +inf)", "lower": 0.50, "upper": null, "lower_inclusive": false, "upper_inclusive": false}
+    ],
+    "sensitivity_bps": [10, 26, 39, 52],
+    "sensitivity_note": "same 0.20 gate recomputed at each cost; the primary gate is never changed",
+    "median_population_verdict": "S7 pre-gate valid entry/stop",
+    "median_population_diagnostic": "S8 post-gate cost-feasible",
+    "empty_population_policy": "if S7 is empty, M_all is undefined and the census is INCONCLUSIVE"
+  },
+  "warmup": {
+    "atr_1h_warmup_bars_per_segment": 14,
+    "atr_1h_first_testable_local_index": 14,
+    "regime_4h_bars": 552,
+    "no_pre_dev_data": true,
+    "first_primary_1h_open_time": "2021-04-03T04:00:00+00:00"
+  },
+  "clustering": {
+    "primary_view": "Kish clusters: maximal runs of consecutive usable 4h bars with permission == True",
+    "cluster_boundary": "permission == False or Unknown breaks the run; missing/unusable 4h bar breaks the run",
+    "additional_views": ["calendar_month", "calendar_quarter", "permission_percentile_decile"],
+    "kish_formula": "(sum n_k)^2 / sum n_k^2",
+    "kish_rho_sensitivity": [0.25, 0.50, 0.75, 1.00],
+    "kish_interpretation": "concentration diagnostic only; not a dependence estimate"
+  },
+  "capital": {
+    "equity_usd": 10000,
+    "risk_fraction": 0.01,
+    "risk_usd": 100,
+    "stop_fraction_definition": "D / entry_open (dimensionless)",
+    "notional_formula": "risk_usd / stop_fraction",
+    "notional_pct_formula": "notional_usd / equity_usd",
+    "impracticability_threshold": "any signal with notional_pct > 1.00",
+    "min_notional_usd": 5,
+    "lot_step_btc": 0.00001,
+    "one_position_at_a_time": true,
+    "simulation": false
+  },
+  "power_reference": {
+    "minimum_effect_r": 0.15,
+    "outcome_sd_r": 1.0,
+    "alpha_two_sided": 0.05,
+    "power": 0.80,
+    "z_alpha": 1.959964,
+    "z_power": 0.841621,
+    "required_independent_n": 349,
+    "status": "planning estimate under independence, not a trading threshold"
+  },
+  "verdict_thresholds": {
+    "project_floor_non_overlapping": 150,
+    "project_floor_status": "project protocol choice from the Stage 2C freeze; not statistically derived; does not guarantee power",
+    "reference_independent_n": 349,
+    "max_median_cost_r": 0.20,
+    "median_population": "S7",
+    "median_symbol": "M_all",
+    "post_gate_median_report_required": "M_feasible over S8",
+    "empty_population_verdict": "INCONCLUSIVE",
+    "proposed_requiring_approval": {
+      "min_feasible_share": 0.25,
+      "max_median_cost_r_economic": 0.12,
+      "median_population": "S7",
+      "status": "proposed; not part of the primary verdict; must be approved and frozen before counting"
+    },
+    "design_margin_diagnostic": "0.15 - M_all; reported with assumptions; not net expectancy"
+  },
+  "pipeline": [
+    "S1_usable_1h_bars",
+    "S2_expansion_testable_bars_atr_t_minus_1_defined",
+    "S3_expansion_bars",
+    "S4_episode_attempts",
+    "S5_regime_qualified_attempts",
+    "S6_structurally_valid_episodes_before_confirmation_regime",
+    "S7_confirmation_regime_and_valid_entry_stop_pregate",
+    "S8_cost_feasible",
+    "S9_deduplicated",
+    "S10_non_overlapping_72h"
+  ],
+  "denominators": {
+    "expansion_test_share": "S3/S2",
+    "permission_share": "S5/S4",
+    "retest_conversion": "S6/S5",
+    "signal_validity_share": "S7/S6",
+    "feasible_share": "S8/S7",
+    "unique_share": "S9/S8",
+    "nonoverlap_share": "S10/S9"
+  },
+  "reporting": {
+    "required": [
+      "pipeline_counts_primary_and_secondary_reasons",
+      "cost_r_distribution_and_buckets",
+      "m_all_over_s7_and_m_feasible_over_s8",
+      "stop_distance_distribution",
+      "nonoverlap_counts_24_72_120",
+      "counts_by_year",
+      "counts_by_month",
+      "regime_state_at_e_and_c_and_percentile_counts",
+      "cluster_concentration_views",
+      "kish_with_rho_sensitivity",
+      "detectable_effect_reference",
+      "capital_geometry_at_10000_usd",
+      "data_alignment_audit_gap_aware",
+      "resource_usage"
+    ],
+    "forbidden": [
+      "pnl",
+      "expectancy",
+      "win_rate",
+      "drawdown",
+      "sharpe",
+      "cagr",
+      "backtest",
+      "portfolio_simulation",
+      "bootstrap",
+      "monte_carlo",
+      "optimization"
+    ]
+  },
+  "confirmations": {
+    "census_run": false,
+    "market_data_processed": false,
+    "signals_counted": false,
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "backtest_run": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false,
+    "production_logic_modified": false
+  }
+}
