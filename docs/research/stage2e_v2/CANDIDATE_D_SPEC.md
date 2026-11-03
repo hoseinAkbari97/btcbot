@@ -628,7 +628,7 @@ Every future D census must report, at minimum:
 5. **Non-overlap counts** at 12h, 24h (canonical), and 48h, with spacing distribution.
 6. **Calendar counts** by year and by month, for S7 and S9.
 7. **Regime counts** by 4h percentile decile, by `budget_ok` state, and by session id.
-8. **Cluster concentration**: signals per **Kish cluster** as defined in shared protocol §3.2
+8. **Cluster concentration**: signals per **Kish cluster** as defined in shared protocol §3.1
    (maximal runs of consecutive usable 4h bars with `budget_ok == True`), reporting count, median,
    p90, maximum, largest-cluster share; plus calendar-month, calendar-quarter, and session-id views.
 9. **Kish diagnostic** over the same `budget_ok == True` clusters, with cluster count, design effect,
