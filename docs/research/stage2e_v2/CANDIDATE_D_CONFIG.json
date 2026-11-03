@@ -1,0 +1,395 @@
+{
+  "stage": "2G",
+  "strategy_id": "CANDIDATE_D_INTRADAY_CONTINUATION_VOL_BUDGET",
+  "spec_version": "2.0.0",
+  "spec_path": "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md",
+  "protocol_path": "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md",
+  "protocol_version": "2.0.0",
+  "supersedes": {
+    "spec_version": "1.0.0",
+    "spec_path": "docs/research/STAGE2E_CANDIDATE_D_SPEC.md",
+    "config_path": "docs/research/STAGE2E_CANDIDATE_D_CONFIG.json"
+  },
+  "data": {
+    "symbol": "BTCUSDT",
+    "market": "spot",
+    "paths": {
+      "15m": "backend/data/datasets/BTCUSDT-15m-20210101-20260901.json",
+      "1h": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+      "4h": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "5m": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "manifest": "backend/data/datasets/manifest.json"
+    },
+    "dev_start": "2021-01-01T00:00:00+00:00",
+    "dev_end": "2024-07-01T00:00:00+00:00",
+    "dev_start_ms": 1609459200000,
+    "dev_end_ms": 1719792000000,
+    "interval_semantics": "half-open [dev_start_ms, dev_end_ms) on candle open_time_ms; start included, end excluded",
+    "timestamp_normalization": "parse open_time as aware UTC, convert to integer epoch milliseconds before filtering; never lexicographic string comparison",
+    "dev_days": 1277,
+    "dev_years": 3.496,
+    "assert_min_open_time_ms": 1609459200000,
+    "assert_max_open_time_ms_exclusive": 1719792000000
+  },
+  "timeframes": {
+    "signal": "15m",
+    "volatility_budget": "4h",
+    "stop_reference": "1h",
+    "execution": "15m",
+    "alignment_diagnostic": "5m",
+    "bar_duration_ms": {
+      "15m": 900000,
+      "1h": 3600000,
+      "4h": 14400000,
+      "5m": 300000
+    }
+  },
+  "candle_availability": {
+    "rule": "a candle is available at decision instant T iff close_time_ms <= T",
+    "same_bar_close_equality_allowed": true,
+    "entry_acts_at_next_open": true,
+    "applies_to": ["atr", "vwap", "percentile", "budget", "signal_confirmation"]
+  },
+  "bar_rules": {
+    "utc_explicit": true,
+    "require_is_closed": true,
+    "require_volume_gt_zero": true,
+    "require_trade_count_gt_zero": true,
+    "require_full_bucket_5m_members": 3,
+    "skip_partial_check_if_5m_absent": true,
+    "require_valid_ohlc": true,
+    "duplicate_timestamp_policy": "keep_first_in_file_order",
+    "measurement_window_bars": 8,
+    "measurement_window_contiguity": "exactly 15 minutes apart",
+    "session_full_bars_diagnostic": 32,
+    "session_full_data_is_selector": false,
+    "synthesize_bars": false,
+    "forward_fill": false,
+    "four_hour_supplied_bar_exemption": {
+      "enabled": true,
+      "exempt_from_5m_membership_check": true,
+      "retain_gap_adjacent_as_supplied": true,
+      "expected_gap_adjacent_buckets": 12,
+      "sensitivity": "exclude the 12 buckets and segment-break the 4h ATR; diagnostic only, never decision"
+    }
+  },
+  "sessions": {
+    "convention": "research convention only; BTC trades continuously",
+    "boundaries": "[start, end) by bar open_time",
+    "offset_utc": "fixed; no daylight-saving shift",
+    "definitions": [
+      {
+        "id": "ASIA",
+        "start": "00:00:00",
+        "end": "08:00:00",
+        "bars": 32,
+        "measurement_bars": 8,
+        "signal_time": "01:59:59.999",
+        "signal_instant_ms_offset": 7199999,
+        "first_bar_offset": "00:00:00",
+        "last_measurement_bar_offset": "01:45:00"
+      },
+      {
+        "id": "EUROPE",
+        "start": "08:00:00",
+        "end": "16:00:00",
+        "bars": 32,
+        "measurement_bars": 8,
+        "signal_time": "09:59:59.999",
+        "signal_instant_ms_offset": 7199999,
+        "first_bar_offset": "08:00:00",
+        "last_measurement_bar_offset": "09:45:00"
+      },
+      {
+        "id": "US",
+        "start": "16:00:00",
+        "end": "24:00:00",
+        "bars": 32,
+        "measurement_bars": 8,
+        "signal_time": "17:59:59.999",
+        "signal_instant_ms_offset": 7199999,
+        "first_bar_offset": "16:00:00",
+        "last_measurement_bar_offset": "17:45:00"
+      }
+    ],
+    "boundary_ownership": "bar at 08:00 belongs to EUROPE; bar at 16:00 belongs to US",
+    "overlapping_sessions": false,
+    "session_crosses_midnight": false,
+    "signal_at_boundary": false,
+    "ordering": ["ASIA", "EUROPE", "US"],
+    "eligibility_uses_measurement_window_only": true,
+    "full_session_is_post_count_diagnostic": true
+  },
+  "signal": {
+    "measurement_window_bars": 8,
+    "p0": "open of the first 15m bar of the session",
+    "p1": "close of the eighth 15m bar of the session",
+    "r2": "P1 / P0 - 1",
+    "threshold": "0.5 * ATR1h[q] / P0",
+    "threshold_atr_multiple": 0.5,
+    "q_selection": "the expected 1h bar opening at session_start + 1h; its close_time equals the signal instant and is admissible by equality; no fallback to an earlier bar",
+    "q_expected_hours_utc": [1, 9, 17],
+    "q_missing_or_unusable_label": "stop_atr_unavailable",
+    "require_vwap": true,
+    "signals_per_session": 1,
+    "signal_instant": "close_time of the eighth measurement bar",
+    "partial_window_allowed": false,
+    "future_bars_in_eligibility": false
+  },
+  "vwap": {
+    "type": "session",
+    "rolling_variant_allowed": false,
+    "price_input": "typical",
+    "hlc3_weights": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+    "formula": "sum(HLC3 * volume) / sum(volume) over the eight measurement bars",
+    "volume_field": "volume",
+    "reset": "accumulator starts at each session start",
+    "initialization": "none; defined from the first window bar",
+    "zero_total_volume": "cannot occur in a signal-evaluable session because every measurement bar requires volume > 0; assert and abort on violation",
+    "quote_volume_role": "alignment diagnostic only",
+    "condition": "P1 > VWAP",
+    "evaluation_point": "confirmation bar only"
+  },
+  "volatility_budget": {
+    "timeframe": "4h",
+    "measure": "ATR",
+    "atr_period": 14,
+    "atr_method": "wilder",
+    "atr_construction": "shared protocol section 1.7 / atr_4h block",
+    "percentile_window_bars": 540,
+    "percentile_method": "100 * count(values strictly less than ATR[q]) / 540 over [q-539, q] inclusive",
+    "percentile_bounds": [25.0, 80.0],
+    "current_bar_included_in_window": true,
+    "window_is_trailing_calendar": false,
+    "strict_comparisons": true,
+    "bar_selection": "most recent 4h bar whose close_time is strictly less than the session signal instant",
+    "allow_unfinished_4h": false,
+    "unknown_policy": "no_signal",
+    "intra_session_reevaluation": false,
+    "rejected_alternative": "4h realised volatility between 0.5x and 1.5x its 30-day median",
+    "first_valid_index": 552,
+    "first_valid_open_time": "2021-04-03T00:00:00+00:00",
+    "first_eligible_signal_instant": "2021-04-03T04:00:00+00:00"
+  },
+  "atr_1h": {
+    "period": 14,
+    "method": "wilder",
+    "segment_scoped": true,
+    "first_bar_tr": "high - low",
+    "init": "simple mean of the first 14 true ranges of the segment",
+    "recursion": "ATR[t] = (ATR[t-1]*13 + TR[t]) / 14",
+    "first_defined_local_index": 13,
+    "undefined_before_local_index": 13,
+    "warmup_local_indices": [0, 12],
+    "first_testable_local_index": 13,
+    "missing_or_unusable_bar": "ends the segment and resets the ATR"
+  },
+  "atr_4h": {
+    "period": 14,
+    "method": "wilder",
+    "segment_scoped": true,
+    "first_bar_tr": "high - low",
+    "init": "simple mean of the first 14 true ranges of the 4h segment",
+    "recursion": "ATR[t] = (ATR[t-1]*13 + TR[t]) / 14",
+    "first_defined_local_index": 13,
+    "undefined_before_local_index": 13,
+    "missing_or_unusable_bar": "ends the 4h segment and resets the ATR",
+    "supplied_4h_bars_only": true
+  },
+  "entry": {
+    "rule": "open of the 15m bar whose open_time equals open_time[confirmation] + 15m",
+    "validate_only_open_time_known_properties": true,
+    "open_time_known_checks": [
+      "bar_present_at_expected_open_time",
+      "on_grid",
+      "entry_open_positive",
+      "measurement_window_fixed",
+      "entry_open_time_before_dev_end"
+    ],
+    "reject_if_missing": true,
+    "reject_if_off_grid": true,
+    "reject_if_nonpositive_open": true,
+    "reject_if_entry_open_time_at_or_after_dev_end": true,
+    "skip_forward": false,
+    "close_time_properties_role": "post-count data-quality diagnostics only; cannot remove a signal",
+    "close_time_diagnostics": [
+      "unclosed_entry_bar",
+      "zero_volume_entry",
+      "partial_entry_bar",
+      "invalid_entry_ohlc"
+    ]
+  },
+  "stop": {
+    "rule": "entry_open - 1.0 * ATR1h[q]",
+    "atr_multiple": 1.0,
+    "atr_fixed_at_signal": true,
+    "floor_pct": null,
+    "widen_to_reach_gate": false,
+    "floor_note": "1.30% is implied by cost_R <= 0.20 at 26 bp and is enforced only by the cost gate",
+    "invalid_if": "ATR1h <= 0 or stop <= 0 or D <= 0 or entry_open <= 0",
+    "trailing": false
+  },
+  "episodes": {
+    "unit": "session",
+    "one_opportunity_per_session": true,
+    "retry_within_session": false,
+    "adjacent_sessions_are_distinct": true,
+    "key_format": "D:{session_start_iso8601_utc}|{session_id}",
+    "duplicate_definition": "repeated session key or same entry_time",
+    "conflict_rule": "retain lexicographically smaller key"
+  },
+  "overlap": {
+    "canonical_hours": 24,
+    "sensitivity_hours": [12, 48],
+    "timestamp_used": "entry_time",
+    "inclusive_boundary": true,
+    "sort": ["entry_time_asc", "session_key_asc"],
+    "calendar_day_rule": false,
+    "rolling_window_rule": true,
+    "applied_after": ["deduplicate", "cost_gate"],
+    "note": "stricter than the maximum 8h hold; a frequency-conservatism choice, not an exit rule"
+  },
+  "costs": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.20,
+    "implied_min_stop_pct": 1.30,
+    "buckets": [
+      {"label": "(-inf, 0.10]", "lower": null, "upper": 0.10, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.10, 0.20]", "lower": 0.10, "upper": 0.20, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.20, 0.30]", "lower": 0.20, "upper": 0.30, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.30, 0.50]", "lower": 0.30, "upper": 0.50, "lower_inclusive": false, "upper_inclusive": true},
+      {"label": "(0.50, +inf)", "lower": 0.50, "upper": null, "lower_inclusive": false, "upper_inclusive": false}
+    ],
+    "sensitivity_bps": [10, 26, 39, 52],
+    "sensitivity_note": "same 0.20 gate recomputed at each cost; the primary gate is never changed",
+    "median_population_verdict": "S6 pre-gate valid entry/stop",
+    "median_population_diagnostic": "S7 post-gate cost-feasible",
+    "empty_population_policy": "if S6 is empty, M_all is undefined and the census is INCONCLUSIVE"
+  },
+  "warmup": {
+    "atr_1h_warmup_bars_per_segment": 13,
+    "atr_1h_first_testable_local_index": 13,
+    "budget_4h_bars": 552,
+    "no_pre_dev_data": true,
+    "first_session_signal_at_or_after": "2021-04-03T04:00:00+00:00"
+  },
+  "clustering": {
+    "primary_view": "Kish clusters: maximal runs of consecutive usable 4h bars with budget_ok == True",
+    "cluster_boundary": "budget_ok == False or Unknown breaks the run; missing/unusable 4h bar breaks the run",
+    "additional_views": ["calendar_month", "calendar_quarter", "session_id"],
+    "kish_formula": "(sum n_k)^2 / sum n_k^2",
+    "kish_rho_sensitivity": [0.25, 0.50, 0.75, 1.00],
+    "kish_interpretation": "concentration diagnostic only; not a dependence estimate"
+  },
+  "capital": {
+    "equity_usd": 10000,
+    "risk_fraction": 0.01,
+    "risk_usd": 100,
+    "stop_fraction_definition": "D / entry_open (dimensionless)",
+    "notional_formula": "risk_usd / stop_fraction",
+    "notional_pct_formula": "notional_usd / equity_usd",
+    "impracticability_threshold": "any signal with notional_pct > 1.00",
+    "min_notional_usd": 5,
+    "lot_step_btc": 0.00001,
+    "one_position_at_a_time": true,
+    "simulation": false
+  },
+  "power_reference": {
+    "minimum_effect_r": 0.15,
+    "outcome_sd_r": 1.0,
+    "alpha_two_sided": 0.05,
+    "power": 0.80,
+    "z_alpha": 1.959964,
+    "z_power": 0.841621,
+    "required_independent_n": 349,
+    "status": "planning estimate under independence, not a trading threshold"
+  },
+  "verdict_thresholds": {
+    "project_floor_non_overlapping": 150,
+    "project_floor_status": "project protocol choice from the Stage 2C freeze; not statistically derived; does not guarantee power",
+    "reference_independent_n": 349,
+    "max_median_cost_r": 0.20,
+    "median_population": "S6",
+    "median_symbol": "M_all",
+    "post_gate_median_report_required": "M_feasible over S7",
+    "empty_population_verdict": "INCONCLUSIVE",
+    "proposed_requiring_approval": {
+      "min_feasible_share": 0.30,
+      "max_median_cost_r_economic": 0.17,
+      "min_design_margin_r": 0.02,
+      "median_population": "S6",
+      "status": "proposed; not part of the primary verdict; must be approved and frozen before counting"
+    },
+    "design_margin_diagnostic": "0.15 - M_all; reported with assumptions; not net expectancy"
+  },
+  "pipeline": [
+    "S1_usable_15m_bars",
+    "S2_measurement_window_evaluable_sessions",
+    "S3_directional_signals",
+    "S4_budget_qualified",
+    "S5_structurally_valid_vwap",
+    "S6_valid_entry_and_stop_pregate",
+    "S7_cost_feasible",
+    "S8_deduplicated",
+    "S9_non_overlapping_24h"
+  ],
+  "denominators": {
+    "session_completeness": "S2/S0 where S0 is all session buckets whose signal instant is in the development interval",
+    "threshold_pass_share": "S3/S2",
+    "budget_pass_share": "S4/S3",
+    "vwap_pass_share": "S5/S4",
+    "entry_validity_share": "S6/S5",
+    "feasible_share": "S7/S6",
+    "unique_share": "S8/S7",
+    "nonoverlap_share": "S9/S8"
+  },
+  "reporting": {
+    "required": [
+      "pipeline_counts_primary_and_secondary_reasons",
+      "session_accounting_and_us_only_variant",
+      "session_full_data_post_count_diagnostic",
+      "cost_r_distribution_and_buckets",
+      "m_all_over_s6_and_m_feasible_over_s7",
+      "stop_distance_distribution",
+      "nonoverlap_counts_12_24_48",
+      "counts_by_year",
+      "counts_by_month",
+      "budget_percentile_deciles",
+      "cluster_concentration_views",
+      "kish_with_rho_sensitivity",
+      "detectable_effect_reference",
+      "capital_geometry_at_10000_usd",
+      "data_alignment_audit_gap_aware",
+      "resource_usage"
+    ],
+    "forbidden": [
+      "pnl",
+      "expectancy",
+      "win_rate",
+      "drawdown",
+      "sharpe",
+      "cagr",
+      "backtest",
+      "portfolio_simulation",
+      "bootstrap",
+      "monte_carlo",
+      "optimization"
+    ]
+  },
+  "confirmations": {
+    "census_run": false,
+    "market_data_processed": false,
+    "signals_counted": false,
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "backtest_run": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false,
+    "production_logic_modified": false
+  }
+}
