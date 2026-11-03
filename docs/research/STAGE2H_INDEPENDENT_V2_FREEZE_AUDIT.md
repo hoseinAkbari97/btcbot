@@ -360,3 +360,148 @@ WITH LIMITATIONS** (defect eliminated but a documented judgement or unverified d
 **Tally:** 4/4 critical RESOLVED; 12/13 major RESOLVED, 1 RESOLVED WITH LIMITATIONS (M3, owner
 ratification); 9/11 minor RESOLVED, 2 RESOLVED WITH LIMITATIONS (m3 derivation, m10 loader default).
 No finding is NOT RESOLVED or UNVERIFIABLE, and no correction was found to be cosmetic only.
+
+---
+
+## 7. M3 — challenge to "resolved (choice)"
+
+| question | independent answer |
+|---|---|
+| 1. Original ambiguity | v1 protocol §1.3 applied one membership rule at every timeframe, making a sub-48-member 4h bucket unusable, while both v1 specs retained the twelve gap-adjacent 4h buckets "as supplied". Nothing said which document governed, so the 4h ATR input was undefined at twelve bars. |
+| 2. Choice made | Explicit, shared exemption (protocol §1.3, B §2.3, D §2.3, config `four_hour_supplied_bar_exemption`): the twelve buckets are used as supplied in the primary path; the count is reported; a non-decision sensitivity excludes them and segment-breaks the 4h ATR. |
+| 3. Deterministic specification | Yes. One rule, one config flag, an enumerated bucket list in the manifest, and a stated treatment of the sensitivity. Two implementations cannot silently diverge. |
+| 4. Internally consistent | Yes. The exemption is stated in the protocol, repeated in both specs, mirrored in both configs, and is the reason protocol §1.6 removes those buckets from the 4h alignment denominator. |
+| 5. Material change to the strategy | Data-handling only: no parameter changed. It touches 12 of 12,414 4h bars (0.097%). Where a 540-value window sits near a band edge, the label on those bars could differ from the excluded variant, so a small number of signals could differ. It is therefore a definition-level choice, not a cosmetic one. |
+| 6. Defensible without outcome tuning | Yes. The gaps are vendor no-trade intervals; the 4h close is a real last-trade price; the bucket is supplied, not synthesised. The excluded variant is equally defensible, so the choice is a judgement rather than a forced conclusion. No outcome was consulted. |
+| 7. Owner approval required | **Yes.** This is a protocol exception that changes the input series at twelve bars. It should be ratified explicitly before counting, and the sensitivity reported alongside. |
+
+**Independent status: RESOLVED WITH LIMITATIONS.** The wording is deterministic, but determinism is
+not methodological endorsement; the classification "resolved (choice)" is accurate only in the sense
+that the ambiguity is closed. It remains an open owner decision, which is condition K1. This is the only
+reason PASS is not available.
+
+---
+
+## 8. The five residual issues in the author's review
+
+The five issues are quoted by topic from `docs/research/stage2e_v2/INDEPENDENT_REVIEW.md` §3.
+
+### 8.1 "No independent audit"
+
+Significance: the remediating author cannot certify their own work. Classification affects
+reproducibility and census validity, not causality or counts. Resolution: **this audit** is the
+independent examination, so the issue is now closed in substance; it was correctly declared rather
+than concealed. Blocking: **no**. Evidence: §2–§6 of this document.
+
+### 8.2 "Proposed economic thresholds are unapproved"
+
+Significance: B `F >= 0.25`, `M_all <= 0.12`; D `F >= 0.30`, `M_all <= 0.17`, `E >= 0.02`. Classification
+is statistical/economic only. Every document states they are excluded from the primary verdict
+(B §11.2, D §12.1, protocol §6.2, both configs `proposed_requiring_approval.status`). Resolution path:
+approval and a new frozen version, or omission. Blocking: **no**, provided the census reports them, if at
+all, only as unapproved proposals and does not use them in the verdict. A conditional note is added to
+the authorization (§13, K-note).
+
+### 8.3 "The 4h supplied-bar exemption is a choice"
+
+Significance: definition-level input choice at twelve bars. It affects signal definition and opportunity
+counts marginally, and reproducibility not at all. Resolution requires an owner decision, not
+documentation. Blocking: **yes, as a condition**, K1.
+
+### 8.4 "`session_full_data` may be unavailable for some sessions"
+
+Significance: the 32-bar diagnostic can be false or unknown because late bars are missing. It does not
+select, remove, or relabel signals (D §2.2), so it cannot bias the counted sample. Classification is
+reporting coverage only. Resolution: report counts of true/false/unknown. Blocking: **no**. A census
+that omits the diagnostic split would be non-compliant with D §11 item 2, not wrong in its counts.
+
+### 8.5 "Venue facts remain unknown"
+
+Significance: 26 bp is a Binance proxy; Nobitex fees, spread, and fills are unmeasured. This bounds the
+economic interpretation, not the structural census. Every document states it (protocol §0, §8; both
+specs §0; manifest `cost_assumptions.venue`). Resolution: external measurement, out of scope here.
+Blocking: **no**, as long as no report claims executable Nobitex economics.
+
+---
+
+## 9. New findings discovered during this audit
+
+These are additional to the 28 Stage 2F findings. None is critical; none changes a signal set, the
+cost gate, the development interval, or the verdict.
+
+### N1 — Within-stage rejection-label precedence is not stated (minor)
+
+**Where.** B §5.5 lines 415–421 table vs line 438 guard; D §7.1 lines 403–409 table vs line 418 guard;
+protocol §2 line 293 ("assigned in stage order").
+
+**Defect.** Each candidate's label table lists several labels at the same stage (D `S3`:
+`stop_atr_unavailable`, `warmup_atr`, `below_threshold`; both candidates' entry stage: `no_entry_bar`,
+`entry_outside_interval`, `invalid_entry_price`, `invalid_stop`). The primary-reason rule orders *stages*,
+not labels within a stage. The visible case is an entry that would open at/after `dev_end_ms`: the table
+checks presence first (which would yield `no_entry_bar`, since the bar may not be read), while the
+dev-end guard requires `entry_outside_interval`. Both choices reject the signal.
+
+**Effect.** `S7`/`S6` (pre-gate) and every downstream population are identical either way; only the
+split of rejection-label counts can differ between two compliant implementations. It is a reproducibility
+defect in reported accounting, not a count defect. **Non-blocking**, addressed by K2.
+
+**Recommendation.** State that the interval guard precedes the presence check, and that the table order
+defines within-stage precedence.
+
+### N2 — D does not name the signal population for cluster concentration (minor)
+
+**Where.** D §11 item 8 (line 631) and item 9; D config `clustering` (no population key). B §10 item 7
+explicitly names `S8` signals.
+
+**Defect.** "Signals per Kish cluster" could be counted over S6, S7, or S9. Cluster *definitions* are
+fixed by protocol §3.1 (maximal `budget_ok == True` run), so `n_eff`'s denominator changes with the
+choice of signal population, and the concentration distribution can differ.
+
+**Effect.** Diagnostic only; no verdict clause uses cluster concentration. **Non-blocking**, addressed by
+K3, which requires all three populations to be reported.
+
+### N3 — Protocol describes the 5m series as diagnostics-only, but D's 15m usability depends on it (minor)
+
+**Where.** Protocol §1.1 line 54 ("bucket-completeness and alignment diagnostics only") vs D §2.1
+complete-bucket check and protocol §1.3 (a partial bucket is unusable, 3 members at 15m).
+
+**Defect.** D's primary bar-validity rule uses 5m membership, so 5m data can remove a 15m bar and hence a
+session; the shared role table implies it cannot. The specific rules (§1.3 and D §2.1) are consistent
+with each other, so the deterministic reading is that membership is a bar-validity test and the role
+description is stale. An implementer reading only the role column could skip the check.
+
+**Effect.** If skipped, D's usable 15m bars differ only inside the seven registered gaps (70 missing 15m
+bars), so the divergence is small but real. The deterministic reading is unambiguous once §1.3 is read.
+**Non-blocking**; worth a one-line wording fix in `2.0.1`.
+
+### N4 — `CandleData` defaults a missing `is_closed` to `True` (minor)
+
+**Where.** `backend/app/schemas/market_data.py` line 42: `is_closed: bool = True`.
+
+**Defect.** Protocol §1.1 requires the typed loader and aborts on `schema_error` when a record cannot be
+coerced. A record that *omits* `is_closed` is not uncoercible; it silently becomes closed. The current
+dataset includes the field, so no measured impact, but the abort guarantee is weaker than the protocol
+text implies.
+
+**Effect.** None on the frozen dataset; a robustness caveat. **Non-blocking**. Recommendation: make the
+field required in the census loader, or validate presence explicitly before coercion.
+
+### N5 — No bounded-memory execution plan is frozen (operational, moderate)
+
+**Where.** Protocol §1.1 (paths), §3 ("resource usage" reporting only). No streaming or chunking
+requirement is stated for the 5m pass, whose file is 256,461,100 bytes with 595,659 bars.
+
+**Defect.** The protocol states a resource *report*, not a resource *method*. A runner that materialises
+the 5m series as Python objects, or builds per-bar typed models for all four timeframes at once, risks
+crossing the 4 GB target. The risk is tractable — the 5m series is needed only for bucket-membership and
+alignment — but it is not constrained by the frozen text.
+
+**Effect.** Operational only; no definitional effect. **Non-blocking**, addressed by K4. This audit did
+not benchmark the census (prohibited), so the risk is assessed from file sizes and the stated rules, not
+measured.
+
+**No other new defect was found.** In particular I checked and found consistent: B's absorbed-expansion
+rule against same-bar confirmation and entry (a bar cannot both close an episode and open a new one,
+because a new episode requires a strictly later index); D's session boundary ownership against VWAP and
+session VWAP accumulation; both candidates' development-end guards against their entry tables; and the
+pipeline-stage mapping in protocol §2 against both specs.
