@@ -5,7 +5,7 @@
   "protocol_version": "2.0.0",
   "freeze_timestamp_utc": "2026-11-03T08:09:00Z",
   "artifact_commit": "40e8097b32d5838e8e7e5939d3d4e95f6eb6838b",
-  "manifest_commit": null,
+  "manifest_commit": "cada12dc1cb256f400ca750f09744e1dfcf1ff23",
   "manifest_commit_note": "Set by the follow-up commit that records the commit introducing this manifest. Integrity rests on self_hash, not on this field (M13).",
   "supersedes": {
     "version": "1.0.0",
@@ -648,5 +648,5 @@
     "setup1_modified": false
   },
   "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
-  "self_hash": "7b3d30b98991de5bd8cf8d926c314752de7fd74f0c9e028a4a5248bfbfa19f9b"
+  "self_hash": "751831e2fed6b406cdaf701d342fe6891eccab337a5e32f6d68e5a279ff13a93"
 }
