@@ -197,3 +197,111 @@ carried into the freeze manifest unchanged (5m 595,659/595,872; 15m 198,554/198,
 registered totals (15+18+30+56+54+24+16 = 213 five-minute bars; 70 and 14 for 15m and 1h), which I
 re-derived independently from the interval endpoints. Those per-timeframe distributions are derived,
 not row-verified, and are marked accordingly under m3 in §8.
+
+---
+
+## 5. Re-audit of the four critical findings
+
+Each correction was checked against the defect, not against the wording change.
+
+### 5.1 C1 — Candidate D look-ahead eligibility
+
+**Original defect.** D required all 32 session bars before a signal fixed at `s+2h` could exist, so
+bars opening from `s+2h` to `s+7h45m` selected the sample.
+
+**Version 2 rule.** D §2.2: a session is signal-evaluable iff `b0..b7` are usable and exactly 15
+minutes apart. The 32-bar test is renamed `session_full_data` and is explicitly post-count; the config
+sets `bar_rules.session_full_data_is_selector: false` and
+`sessions.full_session_is_post_count_diagnostic: true`.
+
+**Symbolic timestamp walkthrough.** Session start `s = 2021-06-01T00:00:00Z`; signal instant
+`T = s + 1h59m59.999s = 2021-06-01T01:59:59.999Z`.
+
+| input | source candle | candle closes | available at `T`? | decision time | earliest permissible use |
+|---|---|---|---|---|---|
+| `P0` | 15m `b0` opening `00:00` | `00:14:59.999` | yes | `T` | signal instant |
+| window bars | 15m `b0..b7` opening `00:00`…`01:45` | `00:14:59.999`…`01:59:59.999` | yes | `T` | signal instant |
+| `P1`, `r2` | 15m `b7` close | `01:59:59.999` | yes, equality | `T` | signal instant |
+| `ATR1h[q]` | 1h `q` opening `01:00` | `01:59:59.999` | yes, equality (C4) | `T` | signal instant |
+| `VWAP` | 15m `b0..b7` HLC3 × volume | at or before `01:59:59.999` | yes | `T` | signal instant |
+| `budget_ok` | 4h bar opening `20:00` on `2021-05-31` | `2021-05-31T23:59:59.999` | yes, strictly before | `T` | signal instant |
+| entry price | 15m `b8` opening `02:00` | — (open only) | open is later than `T` | entry decision | execution, after `T` |
+| `session_full_data` | 15m `b8..b31` | up to `07:59:59.999` | **no** | after counting | **diagnostic only** |
+
+No eligibility input has a close time later than `T`; every one of them is available under
+`close_time_ms <= T`. Bars `b8..b31` open at or after `02:00`, which is strictly after `T`, so they
+cannot enter the predicate by construction. The selector is a pure function of `b0..b7`; the
+32-bar check writes a flag that no branch reads. Removing or adding any bar after `b7` cannot change
+whether the signal exists — only the diagnostic flag.
+
+**Independently confirmed:** session boundaries are fixed UTC offsets with no future dependency;
+`q`, VWAP and the budget are all read at or before `T`; entry is one bar later and only its open is
+used. **RESOLVED.**
+
+### 5.2 C2 — Cost-median population
+
+**Original defect.** The verdict median was taken over the post-gate population, so `M > 0.20` was
+impossible and `M <= 0.20` was vacuous.
+
+**Version 2 rule.** `M_all = median(cost_R)` over the **pre-gate** valid-entry/stop population (B `S7`,
+D `S6`); `M_feasible` over the post-gate population (B `S8`, D `S7`) is a separate diagnostic that
+cannot satisfy or fail the condition. Empty pre-gate population ⇒ `M_all` undefined ⇒ `INCONCLUSIVE`.
+
+**Falsifiability test with invented values.** Let pre-gate `cost_R = [0.05, 0.15, 0.18, 0.25, 0.40]`.
+Then `M_all = 0.18`, `M_feasible = 0.15` over `[0.05, 0.15, 0.18]`. Add one invented record at `0.31`:
+`M_all = 0.195`. Add a second: `M_all = (0.18 + 0.25)/2 = 0.215 > 0.20` → the condition **fails**. The
+verdict is therefore not vacuous and `M > 0.20` is attainable.
+
+**Population audit.** Every statistical consumer names its population: spec cost distributions are
+taken over `S7`/`S6` (pre-gate), not over the feasible set; protocol §4 takes the sensitivity median on
+the same pre-gate population "which does not move with the scenario"; proposed economic thresholds are
+explicitly defined on `M_all`; the design margin is `0.15 - M_all`. No remaining statistic silently
+uses the post-gate population. The median is never described as expectancy or profitability.
+**RESOLVED.**
+
+### 5.3 C3 — Development-interval boundary
+
+**Original defect.** Lexicographic ISO-string comparison against `T`-separated bounds while the dataset
+stores space-separated strings could exclude `2021-01-01` and admit `2024-07-01`.
+
+**Version 2 rule.** Integer UTC epoch milliseconds, half-open on `open_time_ms`; parse to aware UTC
+first; pre-count assertions `min(open_time_ms) >= dev_start_ms` and `max(open_time_ms) < dev_end_ms`.
+
+| stored `open_time` | `open_time_ms` | admitted | reason |
+|---|---:|---|---|
+| `"2021-01-01 00:00:00+00:00"` | `1609459200000` | yes | equals start; start included |
+| `"2021-01-01 00:59:59.999+00:00"` | `1609459199999` | no | before start |
+| `"2021-01-01 03:00:00+03:30"` (same instant as `2020-12-31 23:30Z`) | `1609457400000` | no | normalised to UTC, then excluded |
+| `"2024-06-30 23:00:00+00:00"` | `1719791999999` | yes | one millisecond before end |
+| `"2024-07-01 00:00:00+00:00"` | `1719792000000` | no | equals end; end excluded |
+
+Interval filtering is on **candle open timestamps** in both candidates; a `2024-06-30T23:00`
+confirmation may exist, but its entry at `2024-07-01T00:00` is rejected as `entry_outside_interval`
+rather than completed from a validation bar (B §5.5, D §7.1, protocol §1.2). Warm-up is drawn only
+from rows inside the interval (`no_pre_dev_data: true`), so no 2020 bar can enter an indicator, and no
+validation bar can complete a development event. Timezone offsets cannot alter comparisons because the
+comparison is on integers after normalisation. **RESOLVED.**
+
+### 5.4 C4 — Candle availability
+
+**Original defect.** The protocol required `close_time < decision_instant` while D required a 1h bar
+closing exactly at the signal instant, and the protocol's percentile window was inclusive.
+
+**Version 2 rule.** One rule everywhere: `candle_available(bar, T) ⇔ close_time_ms <= T`; equality is
+permitted; entry acts at the next bar's open, strictly later. The percentile window is inclusive
+because its right-edge 4h bar is **closed** at `T`, not because a different operator is used.
+
+| case | candle close | decision `T` | available | note |
+|---|---|---|---|---|
+| D 1h `q` (opening `01:00`) | `01:59:59.999` | `01:59:59.999` | yes | equality; the C4 case |
+| D 15m `b7` | `01:59:59.999` | `01:59:59.999` | yes | signal bar |
+| D 4h budget bar | `2021-05-31T23:59:59.999` | `2021-06-01T01:59:59.999` | yes | strictly earlier |
+| B 4h regime bar (open `00:00`) | `03:59:59.999` | 1h open `04:00:00.000` | yes | closes before the 1h bar opens |
+| B percentile right edge | `03:59:59.999` | 1h open `04:00:00.000` | yes | same bar as the regime label |
+| any candle closing `T + 1 ms` | `T + 1` | `T` | **no** | excluded consistently |
+
+The same rule is applied to ATR, SMA, the slope, VWAP, the percentile, the regime and budget labels,
+and signal confirmation. Both candidates' 4h selection rules are stricter (close strictly before the
+decision instant), which the protocol explicitly permits as a candidate-specific tightening; no
+consumer is looser than the rule, so no candle is unavailable in one section and available in another.
+**RESOLVED.**
