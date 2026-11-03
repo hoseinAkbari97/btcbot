@@ -4,8 +4,10 @@
 **Audited artifact set:** `docs/research/stage2e_v2/`, version `2.0.0`.
 **Audit basis:** this document was produced without relying on the Stage 2G author's conclusions. Every
 hash, commit relationship, and rule cited below was re-derived from the repository.
-**Auditor role:** independent reviewer. The Stage 2G remediating author did not perform this audit;
-this audit was performed after the remediation freeze and does not modify it.
+**Auditor role:** separate-stage audit pass. **Independence disclosure:** this audit was performed by
+the same assistant that authored the Stage 2G remediation, under a separate stage brief and after the
+freeze. It is therefore a fresh adversarial re-audit, **not** an arms-length third-party review, and no
+organizational independence is claimed. That limitation is carried into the decision as condition K0.
 
 ---
 
@@ -19,22 +21,24 @@ resolved. Dataset identity, artifact identity, the manifest self-hash, and the g
 were verified independently and reproducibly. The frozen configurations agree with the frozen
 specifications on every key value checked.
 
-Authorization is **conditional** on four enforceable items, none of which changes a frozen strategy
+Authorization is **conditional** on five enforceable items, none of which changes a frozen strategy
 definition:
 
 | condition | scope | why it is required |
 |---|---|---|
+| **K0** | The project owner explicitly accepts this audit as the audit of record, or commissions an arms-length audit by a reviewer who did not author Stage 2G | Organizational independence is not established by this document (see the disclosure above and §8.1). The technical findings stand either way, but a governance sign-off is required before authorization. |
 | **K1** | Project owner explicitly ratifies the 4h supplied-bar exemption (finding M3) | The exemption is a defensible methodological choice, not a forced one; the author's own matrix records that an auditor may prefer the excluded variant. It is deterministic but not owner-approved. |
 | **K2** | The runner applies the development-end guard **before** the entry-presence check and records every rejection with both primary and secondary labels | Two frozen documents imply different primary labels for an entry that would open at/after `dev_end_ms` (new finding N1). Counts are unaffected; the reported label split could differ. |
 | **K3** | Candidate D names the signal population used in its cluster-concentration diagnostic and reports it for S6, S7 and S9 | D §11 item 8 does not state whether cluster sizes count S6, S7, or S9 signals (new finding N2). Affects a diagnostic, not the verdict. |
 | **K4** | The runner demonstrates bounded-memory execution and reports peak RSS, with the 5m series processed in a streaming or chunked pass | The 5m file is 256,461,100 bytes; a naive full parse into typed objects is the main identified risk to the 4 GB target (new finding N5). No benchmark is performed here. |
 
 This audit does not itself authorize either census. The census remains unauthorized until the project
-owner accepts K1–K4 explicitly; after that acceptance, the two development-only feasibility censuses
+owner accepts K0–K4 explicitly; after that acceptance, the two development-only feasibility censuses
 may run against the hashes recorded here.
 
 **What would upgrade this to PASS:** a documentation-only version `2.0.1` that fixes N1–N4 and states
-K4's execution requirement, plus owner ratification of M3. No new findings block correctness.
+K4's execution requirement, owner ratification of M3 (K1), and either owner acceptance of this audit
+(K0) or an arms-length audit that reaches the same result. No new finding blocks correctness.
 
 ---
 
@@ -388,10 +392,12 @@ The five issues are quoted by topic from `docs/research/stage2e_v2/INDEPENDENT_R
 
 ### 8.1 "No independent audit"
 
-Significance: the remediating author cannot certify their own work. Classification affects
-reproducibility and census validity, not causality or counts. Resolution: **this audit** is the
-independent examination, so the issue is now closed in substance; it was correctly declared rather
-than concealed. Blocking: **no**. Evidence: §2–§6 of this document.
+Significance: the remediating author cannot certify their own work, so an audit by the author is not
+arms-length evidence of correctness. Classification affects governance and census validity, not
+causality or counts. Resolution: this stage supplies a fresh adversarial re-audit (§2–§6), but the
+same assistant authored Stage 2G, so **the residual issue is only partially closed**: the technical
+examination exists, organizational independence does not. Blocking: **yes, as governance condition
+K0**; not blocking technically. Evidence: header disclosure; §13.
 
 ### 8.2 "Proposed economic thresholds are unapproved"
 
@@ -605,7 +611,7 @@ required; the memory figure quoted in §4 (16 MB) is the hashing process only.
 
 ### 13.1 Decision
 
-**CONDITIONAL PASS — limited census authorization recommended**, subject to K1–K4 in §0.
+**CONDITIONAL PASS — limited census authorization recommended**, subject to K0–K4 in §0.
 
 Basis, point by point against the PASS criteria:
 
@@ -614,7 +620,7 @@ Basis, point by point against the PASS criteria:
 | no critical findings remain | yes | §5, §6.1 |
 | no unresolved major issue can materially affect results | yes; M3 is resolved with an owner-ratification condition | §6.2, §7 |
 | all 28 findings resolved or demonstrably non-blocking | yes | §6 tally |
-| the five residual issues assessed and non-blocking except M3 | yes | §8 |
+| the five residual issues assessed and non-blocking except M3 and the independence gap | yes | §8, K0 |
 | M3 resolved without outstanding owner approval | **no** | §7; hence conditional |
 | dataset hashes independently verified | yes | §4, streamed |
 | configurations match specifications | yes, 29 key values checked with no mismatch | §14 |
@@ -623,6 +629,12 @@ Basis, point by point against the PASS criteria:
 | development-only boundaries enforceable | yes | §5.3 |
 
 ### 13.2 Conditions and their consequences
+
+**K0 — owner accepts this audit as the audit of record, or commissions an arms-length audit.**
+Consequence if accepted: the technical results here stand and satisfy the audit requirement for this
+freeze. Consequence if an arms-length audit is commissioned instead: it must be given the artifact
+hashes in §3 and should reach the same findings; until it reports, the census stays unauthorized. This
+condition adds no technical requirement to the freeze.
 
 **K1 — owner ratifies the 4h supplied-bar exemption.** Consequence if accepted: the primary path uses
 the twelve buckets as supplied, the excluded variant is reported as a non-decision sensitivity, and no
@@ -650,7 +662,7 @@ the census is re-run with a streaming pass; the frozen definitions do not change
 ### 13.3 What this audit does not authorize
 
 This document is an audit result, not an execution order. It does not authorize a census by itself; the
-project owner must accept K1–K4. After acceptance, a census may run only if every artifact and dataset
+project owner must accept K0–K4. After acceptance, a census may run only if every artifact and dataset
 hash in `FREEZE_MANIFEST.json` still matches, and any mismatch must abort as `INCONCLUSIVE`.
 
 ---
@@ -694,6 +706,8 @@ both development-end entry guards, absence of `cooldown_primary_hours`, D
 - No signal was counted; no census, backtest, P&L, expectancy, win rate, portfolio simulation,
   bootstrap, Monte Carlo, or parameter optimisation was run; no validation or out-of-sample data was
   accessed; no dependency was installed and no data was downloaded.
+- This audit was written by the same assistant that authored Stage 2G; its independence limitation is
+disclosed in the header, assessed in §8.1, and carried as condition K0.
 - The audit's own commits are additive and change no audited hash. The audited HEAD was
   `faea05d5dbed5c37b5389a1c7a2f37de760725cb`; the census must be run against the artifact hashes in §3,
   which are those of that commit.
