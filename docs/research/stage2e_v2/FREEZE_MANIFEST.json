@@ -1,0 +1,652 @@
+{
+  "stage": "2G",
+  "artifact_set": "Stage 2E version 2 remediated freeze",
+  "version_identifier": "stage2e_v2/2.0.0",
+  "protocol_version": "2.0.0",
+  "freeze_timestamp_utc": "2026-11-03T08:09:00Z",
+  "artifact_commit": "40e8097b32d5838e8e7e5939d3d4e95f6eb6838b",
+  "manifest_commit": null,
+  "manifest_commit_note": "Set by the follow-up commit that records the commit introducing this manifest. Integrity rests on self_hash, not on this field (M13).",
+  "supersedes": {
+    "version": "1.0.0",
+    "freeze_manifest": "docs/research/STAGE2E_FREEZE_MANIFEST.json",
+    "freeze_manifest_sha256": "b26ef6d56665908aaf74e72e56aff0a6f36fab2a682b5de7926d5fc3385eac65",
+    "git_head_at_v1_freeze": "f8000e042c5b1238312317bd4decefae4f1c4438",
+    "policy": "The version 1.0.0 artifacts are historical and immutable. They are not overwritten, rewritten, or deleted by Stage 2G, and they remain reproducible at their recorded hashes."
+  },
+  "audit_basis": {
+    "stage": "2F",
+    "path": "docs/research/STAGE2F_INDEPENDENT_FREEZE_AUDIT.md",
+    "sha256": "082e8ae56e4ce86c21ba1f66698597d7f9167eb5aeeea4488dbfe0fb1d8cc9c2",
+    "commit": "7ee325f",
+    "verdict": "FAIL - census not authorized",
+    "findings": {
+      "critical": 4,
+      "major": 13,
+      "minor": 11
+    }
+  },
+  "development_interval": {
+    "start": "2021-01-01T00:00:00+00:00",
+    "end": "2024-07-01T00:00:00+00:00",
+    "start_ms": 1609459200000,
+    "end_ms": 1719792000000,
+    "semantics": "half-open [start_ms, end_ms) on candle open_time_ms; start included, end excluded",
+    "timestamp_normalization": "parse open_time as aware UTC, convert to integer epoch milliseconds before filtering; never lexicographic string comparison",
+    "days": 1277,
+    "years": 3.496,
+    "pre_development_data_used": false,
+    "validation_or_oos_accessed": false
+  },
+  "cost_assumptions": {
+    "round_trip_bps_primary": 26,
+    "cost_fraction_primary": 0.0026,
+    "gate_cost_r": 0.2,
+    "gate_formula": "cost_R = 0.0026 * entry_price / stop_distance",
+    "implied_min_stop_pct": 1.3,
+    "gate_weakens": false,
+    "venue": "Binance spot proxy; not a verified Nobitex execution cost",
+    "sensitivity_bps": [
+      10,
+      26,
+      39,
+      52
+    ],
+    "gate_changes_with_sensitivity": false,
+    "verdict_median_population": "pre-gate valid entry/stop population (B S7, D S6)",
+    "verdict_median_symbol": "M_all",
+    "post_gate_median": "M_feasible, reported separately as a bounded diagnostic; cannot satisfy or fail the median condition"
+  },
+  "decision_thresholds": {
+    "project_floor_non_overlapping": 150,
+    "project_floor_status": "project protocol choice first fixed at the Stage 2C freeze; not statistically derived; does not guarantee power",
+    "independent_sample_reference": 349,
+    "independent_sample_status": "planning estimate for a 0.15R effect at 1R outcome SD, 5% two-sided, 80% power, under independence; optimistic under clustering and fat tails",
+    "design_margin": "0.15 - M_all; diagnostic under stated assumptions only; not net expectancy and not profitability",
+    "non_overlap_is_not_independence": true,
+    "kish": "concentration diagnostic only; not an estimate of serial dependence"
+  },
+  "artifact_hashes": {
+    "CANDIDATE_B_SPEC.md": {
+      "path": "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md",
+      "sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41",
+      "version": "2.0.0"
+    },
+    "CANDIDATE_B_CONFIG.json": {
+      "path": "docs/research/stage2e_v2/CANDIDATE_B_CONFIG.json",
+      "sha256": "cd333fd2ff771d92e929de3d6ef0108b4cfb035617aa1f0744d632402b3176da",
+      "version": "2.0.0"
+    },
+    "CANDIDATE_D_SPEC.md": {
+      "path": "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md",
+      "sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+      "version": "2.0.0"
+    },
+    "CANDIDATE_D_CONFIG.json": {
+      "path": "docs/research/stage2e_v2/CANDIDATE_D_CONFIG.json",
+      "sha256": "e2dc0ef3bd627c839a35b338c220bb0fcc6bca3789036c79370c0f6c4c429639",
+      "version": "2.0.0"
+    },
+    "SHARED_CENSUS_PROTOCOL.md": {
+      "path": "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md",
+      "sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c",
+      "version": "2.0.0"
+    },
+    "REMEDIATION_MATRIX.md": {
+      "path": "docs/research/stage2e_v2/REMEDIATION_MATRIX.md",
+      "sha256": "821ffa861acc1559c29cef08b74ba90dcfdb533906fedee255ff300ee65e32c0",
+      "version": "2.0.0"
+    },
+    "INDEPENDENT_REVIEW.md": {
+      "path": "docs/research/stage2e_v2/INDEPENDENT_REVIEW.md",
+      "sha256": "d6699e55cccb1d3d215806de1e569d9e929a5bd78ad12908e48e57ea91e77367",
+      "version": "2.0.0",
+      "review_type": "author self-review; not an independent audit"
+    }
+  },
+  "artifact_hashes_note": "This manifest is not listed because it cannot contain its own hash. A runner must recompute self_hash and compare it with the file on disk.",
+  "frozen_parameters": {
+    "authoritative_source": [
+      "docs/research/stage2e_v2/CANDIDATE_B_CONFIG.json",
+      "docs/research/stage2e_v2/CANDIDATE_D_CONFIG.json"
+    ],
+    "shared": {
+      "instrument": "BTCUSDT spot",
+      "direction": "long only",
+      "leverage": 0,
+      "dataset_source": "existing Binance BTCUSDT dataset",
+      "candle_availability_rule": "close_time_ms <= T",
+      "same_bar_close_equality_allowed": true,
+      "atr_4h": {
+        "period": 14,
+        "method": "wilder",
+        "seed": "simple mean of first 14 true ranges of the segment",
+        "first_defined_local_index": 13
+      },
+      "non_overlap_timestamp": "entry_time",
+      "non_overlap_inclusive_boundary": true
+    },
+    "B": {
+      "signal_timeframe": "1h",
+      "regime_timeframe": "4h",
+      "execution_timeframe": "1h",
+      "atr_period": 14,
+      "atr_reference_for_expansion": "ATR[t-1]",
+      "first_expansion_testable_local_index": 14,
+      "expansion_tr_multiple": 2.0,
+      "body_range_min": 0.55,
+      "close_location_min": 0.75,
+      "regime_sma_window": 50,
+      "regime_slope_lookback_bars": 6,
+      "regime_percentile_window_bars": 540,
+      "regime_percentile_bounds": [
+        20.0,
+        95.0
+      ],
+      "retest_window_bar_offsets": [
+        1,
+        6
+      ],
+      "retest_touch_tolerance_atr": 0.25,
+      "max_penetration_atr": 0.5,
+      "confirmation_window_bars": 3,
+      "warmup_4h_bars": 552,
+      "first_primary_1h_open_time": "2021-04-03T04:00:00+00:00",
+      "canonical_non_overlap_hours": 72,
+      "non_overlap_sensitivity_hours": [
+        24,
+        120
+      ],
+      "episode_key": "B:{expansion_open_time_iso8601_utc}",
+      "verdict_pregate_population": "S7",
+      "proposed_thresholds_requiring_approval": {
+        "min_feasible_share": 0.25,
+        "max_median_cost_r_economic": 0.12
+      }
+    },
+    "D": {
+      "signal_timeframe": "15m",
+      "volatility_budget_timeframe": "4h",
+      "stop_reference_timeframe": "1h",
+      "execution_timeframe": "15m",
+      "sessions": [
+        "ASIA 00:00-08:00",
+        "EUROPE 08:00-16:00",
+        "US 16:00-24:00"
+      ],
+      "measurement_window_bars": 8,
+      "session_full_bars_diagnostic": 32,
+      "session_full_data_is_selector": false,
+      "threshold_atr_multiple": 0.5,
+      "atr_1h_warmup_bars_per_segment": 13,
+      "atr_1h_first_testable_local_index": 13,
+      "budget_atr_period": 14,
+      "budget_percentile_window_bars": 540,
+      "budget_percentile_bounds": [
+        25.0,
+        80.0
+      ],
+      "budget_reevaluated_intra_session": false,
+      "warmup_4h_bars": 552,
+      "first_eligible_signal_instant_at_or_after": "2021-04-03T04:00:00+00:00",
+      "first_actual_eligible_session": "EUROPE 2021-04-03 signal instant 2021-04-03T09:59:59.999+00:00",
+      "stop_rule": "entry_open - 1.0 * ATR1h[q]",
+      "entry_rule": "open of the 15m bar at confirmation open_time + 15m",
+      "canonical_non_overlap_hours": 24,
+      "non_overlap_sensitivity_hours": [
+        12,
+        48
+      ],
+      "episode_key": "D:{session_start_iso8601_utc}|{session_id}",
+      "verdict_pregate_population": "S6",
+      "proposed_thresholds_requiring_approval": {
+        "min_feasible_share": 0.3,
+        "max_median_cost_r_economic": 0.17,
+        "min_design_margin_r": 0.02
+      }
+    }
+  },
+  "dataset_identity": {
+    "symbol": "BTCUSDT",
+    "market": "spot",
+    "source": "existing Binance BTCUSDT dataset",
+    "manifest_path": "backend/data/datasets/manifest.json",
+    "manifest_sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25",
+    "files": {
+      "15m": {
+        "path": "backend/data/datasets/BTCUSDT-15m-20210101-20260901.json",
+        "sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+        "bars": 198554,
+        "expected_bars": 198624,
+        "gap_count": 7,
+        "gap_bars_total": 70
+      },
+      "1h": {
+        "path": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+        "sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+        "bars": 49642,
+        "expected_bars": 49656,
+        "gap_count": 7,
+        "gap_bars_total": 14
+      },
+      "4h": {
+        "path": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+        "sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+        "bars": 12414,
+        "expected_bars": 12414,
+        "gap_count": 0,
+        "gap_bars_total": 0
+      },
+      "5m": {
+        "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+        "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+        "bars": 595659,
+        "expected_bars": 595872,
+        "gap_count": 7,
+        "gap_bars_total": 213
+      }
+    },
+    "gap_locations": {
+      "source": "docs/research/STAGE2A_DATA_ALIGNMENT_AUDIT.md section 4; per-timeframe missing-bar counts derived from the gap table and the bar grid, and reconciled with the dataset manifest totals (5m 213, 15m 70, 1h 14).",
+      "policy": "No row of any dataset file was read to produce this table. A runner must verify the derived counts against the files before counting.",
+      "gaps": [
+        {
+          "id": 1,
+          "last_bar_before_gap_utc": "2021-02-11T03:40:00Z",
+          "resumes_at_utc": "2021-02-11T05:00:00Z",
+          "missing_5m_bars": 15,
+          "missing_15m_bars": 5,
+          "missing_1h_bars": 1
+        },
+        {
+          "id": 2,
+          "last_bar_before_gap_utc": "2021-03-06T01:55:00Z",
+          "resumes_at_utc": "2021-03-06T03:30:00Z",
+          "missing_5m_bars": 18,
+          "missing_15m_bars": 6,
+          "missing_1h_bars": 1
+        },
+        {
+          "id": 3,
+          "last_bar_before_gap_utc": "2021-04-20T01:55:00Z",
+          "resumes_at_utc": "2021-04-20T04:30:00Z",
+          "missing_5m_bars": 30,
+          "missing_15m_bars": 10,
+          "missing_1h_bars": 2
+        },
+        {
+          "id": 4,
+          "last_bar_before_gap_utc": "2021-04-25T04:00:00Z",
+          "resumes_at_utc": "2021-04-25T08:45:00Z",
+          "missing_5m_bars": 56,
+          "missing_15m_bars": 18,
+          "missing_1h_bars": 3
+        },
+        {
+          "id": 5,
+          "last_bar_before_gap_utc": "2021-08-13T01:55:00Z",
+          "resumes_at_utc": "2021-08-13T06:30:00Z",
+          "missing_5m_bars": 54,
+          "missing_15m_bars": 18,
+          "missing_1h_bars": 4
+        },
+        {
+          "id": 6,
+          "last_bar_before_gap_utc": "2021-09-29T06:55:00Z",
+          "resumes_at_utc": "2021-09-29T09:00:00Z",
+          "missing_5m_bars": 24,
+          "missing_15m_bars": 8,
+          "missing_1h_bars": 2
+        },
+        {
+          "id": 7,
+          "last_bar_before_gap_utc": "2023-03-24T12:35:00Z",
+          "resumes_at_utc": "2023-03-24T14:00:00Z",
+          "missing_5m_bars": 16,
+          "missing_15m_bars": 5,
+          "missing_1h_bars": 1
+        }
+      ],
+      "totals": {
+        "missing_5m_bars": 213,
+        "missing_15m_bars": 70,
+        "missing_1h_bars": 14
+      }
+    },
+    "gap_adjacent_4h_buckets": {
+      "count": 12,
+      "open_times_utc": [
+        "2021-02-11T00:00:00Z",
+        "2021-02-11T04:00:00Z",
+        "2021-03-06T00:00:00Z",
+        "2021-04-20T00:00:00Z",
+        "2021-04-20T04:00:00Z",
+        "2021-04-25T04:00:00Z",
+        "2021-04-25T08:00:00Z",
+        "2021-08-13T00:00:00Z",
+        "2021-08-13T04:00:00Z",
+        "2021-09-29T04:00:00Z",
+        "2021-09-29T08:00:00Z",
+        "2023-03-24T12:00:00Z"
+      ],
+      "handling": "retained as supplied under the shared four_hour_supplied_bar_exemption; excluded from the 4h-from-1h alignment denominator and reported separately; non-decision sensitivity excludes them and segment-breaks the 4h ATR"
+    },
+    "synthesized_bars": false,
+    "forward_filled": false
+  },
+  "finding_resolutions": [
+    {
+      "id": "C1",
+      "severity": "critical",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_D_SPEC.md section 2.2",
+        "CANDIDATE_D_CONFIG.json bar_rules/sessions",
+        "SHARED_CENSUS_PROTOCOL.md section 1.4"
+      ]
+    },
+    {
+      "id": "C2",
+      "severity": "critical",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 9.1/11.1",
+        "CANDIDATE_D_SPEC.md section 10.1/12",
+        "SHARED_CENSUS_PROTOCOL.md sections 2-4, 6",
+        "both configs costs/verdict_thresholds"
+      ]
+    },
+    {
+      "id": "C3",
+      "severity": "critical",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 1",
+        "CANDIDATE_D_SPEC.md section 1",
+        "SHARED_CENSUS_PROTOCOL.md section 1.2",
+        "both configs data"
+      ]
+    },
+    {
+      "id": "C4",
+      "severity": "critical",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.5",
+        "CANDIDATE_B_SPEC.md section 2/5.5",
+        "CANDIDATE_D_SPEC.md section 4.2",
+        "both configs candle_availability"
+      ]
+    },
+    {
+      "id": "M1",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.7",
+        "both configs atr_4h"
+      ]
+    },
+    {
+      "id": "M2",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 5.5",
+        "CANDIDATE_D_SPEC.md section 7.1",
+        "both configs entry"
+      ]
+    },
+    {
+      "id": "M3",
+      "severity": "major",
+      "status": "resolved (choice)",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.3",
+        "both configs four_hour_supplied_bar_exemption"
+      ]
+    },
+    {
+      "id": "M4",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.6"
+      ]
+    },
+    {
+      "id": "M5",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 5.5",
+        "CANDIDATE_D_SPEC.md section 7.1",
+        "SHARED_CENSUS_PROTOCOL.md section 1.2",
+        "both configs entry"
+      ]
+    },
+    {
+      "id": "M6",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_D_SPEC.md section 4.2",
+        "CANDIDATE_D_CONFIG.json atr_1h/warmup"
+      ]
+    },
+    {
+      "id": "M7",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 4.3/9",
+        "CANDIDATE_B_CONFIG.json regime_4h/pipeline"
+      ]
+    },
+    {
+      "id": "M8",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 9/9.1",
+        "CANDIDATE_B_CONFIG.json pipeline/denominators"
+      ]
+    },
+    {
+      "id": "M9",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 9/9.1",
+        "CANDIDATE_B_CONFIG.json pipeline"
+      ]
+    },
+    {
+      "id": "M10",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 5",
+        "both configs capital"
+      ]
+    },
+    {
+      "id": "M11",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 3.1",
+        "both configs clustering"
+      ]
+    },
+    {
+      "id": "M12",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 7",
+        "FREEZE_MANIFEST.json no_zero_critical_claim/finding_resolutions"
+      ]
+    },
+    {
+      "id": "M13",
+      "severity": "major",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 7",
+        "FREEZE_MANIFEST.json artifact_commit/manifest_commit/self_hash"
+      ]
+    },
+    {
+      "id": "m1",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 9",
+        "CANDIDATE_B_CONFIG.json atr_1h/pipeline"
+      ]
+    },
+    {
+      "id": "m2",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 8",
+        "CANDIDATE_D_SPEC.md section 7.3",
+        "both configs costs.buckets"
+      ]
+    },
+    {
+      "id": "m3",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "FREEZE_MANIFEST.json dataset_identity.gap_locations",
+        "SHARED_CENSUS_PROTOCOL.md section 1.6"
+      ]
+    },
+    {
+      "id": "m4",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_D_SPEC.md section 6.2",
+        "CANDIDATE_D_CONFIG.json volatility_budget/warmup"
+      ]
+    },
+    {
+      "id": "m5",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.4",
+        "CANDIDATE_D_SPEC.md section 2.2"
+      ]
+    },
+    {
+      "id": "m6",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 3.2",
+        "CANDIDATE_B_CONFIG.json expansion"
+      ]
+    },
+    {
+      "id": "m7",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 7.3-7.4",
+        "CANDIDATE_B_CONFIG.json overlap"
+      ]
+    },
+    {
+      "id": "m8",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_D_SPEC.md section 10.1",
+        "CANDIDATE_D_CONFIG.json denominators"
+      ]
+    },
+    {
+      "id": "m9",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_D_SPEC.md section 4.2",
+        "CANDIDATE_D_CONFIG.json signal"
+      ]
+    },
+    {
+      "id": "m10",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "SHARED_CENSUS_PROTOCOL.md section 1.1"
+      ]
+    },
+    {
+      "id": "m11",
+      "severity": "minor",
+      "status": "resolved",
+      "corrected_in": [
+        "CANDIDATE_B_SPEC.md section 4.3",
+        "CANDIDATE_B_CONFIG.json regime_4h"
+      ]
+    }
+  ],
+  "finding_resolution_summary": {
+    "critical": {
+      "total": 4,
+      "resolved": 4
+    },
+    "major": {
+      "total": 13,
+      "resolved": 13
+    },
+    "minor": {
+      "total": 11,
+      "resolved": 11
+    },
+    "open_process_steps": 1
+  },
+  "open_process_steps": [
+    "A fresh independent audit of version 2.0.0 has not been performed. Remediation is complete; the Stage 2F FAIL decision stands and the census remains unauthorized."
+  ],
+  "no_zero_critical_claim": {
+    "claims_zero_critical_ambiguities": false,
+    "statement": "This manifest does not claim that zero critical issues remain. It records the resolution status of the Stage 2F findings that were known, and it states that a fresh independent audit of version 2.0.0 has not been performed."
+  },
+  "self_review": {
+    "path": "docs/research/stage2e_v2/INDEPENDENT_REVIEW.md",
+    "sha256": "d6699e55cccb1d3d215806de1e569d9e929a5bd78ad12908e48e57ea91e77367",
+    "performed_by": "the remediating author",
+    "independent_audit_performed": false,
+    "residual_issues": 5
+  },
+  "no_census_statement": "No feasibility census has been run for Candidate B or Candidate D. No historical dataset row was read, no signal was counted, and no backtest, P&L, expectancy, win rate, portfolio simulation, bootstrap, Monte Carlo, or parameter optimisation was performed. No validation or out-of-sample data was accessed. Version 2.0.0 is a remediated specification freeze awaiting independent audit, not a result.",
+  "confirmations": {
+    "census_run": false,
+    "market_data_rows_processed": false,
+    "signals_counted": false,
+    "backtest_run": false,
+    "pnl_computed": false,
+    "win_rate_computed": false,
+    "expectancy_computed": false,
+    "portfolio_simulation_run": false,
+    "bootstrap_run": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "validation_or_oos_accessed": false,
+    "production_logic_modified": false,
+    "stage2e_v1_artifacts_modified": false,
+    "stage2f_audit_modified": false,
+    "stage2a_2b_2c_2d_artifacts_modified": false,
+    "stage6_6a_artifacts_modified": false,
+    "setup1_modified": false
+  },
+  "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
+  "self_hash": "7b3d30b98991de5bd8cf8d926c314752de7fd74f0c9e028a4a5248bfbfa19f9b"
+}
