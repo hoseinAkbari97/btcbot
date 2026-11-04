@@ -48,6 +48,12 @@ def _missing_runs(present: Sequence[bool], timeframe: str) -> list[dict[str, Any
     return runs
 
 
+def _expected_resume_open_ms(resume_ms: int, timeframe: str) -> int:
+    """Floor a 5m-grid resume time to the containing slot of another grid."""
+    tf_ms = TIMEFRAME_MS[timeframe]
+    return resume_ms - ((resume_ms - DEV_START_MS) % tf_ms)
+
+
 def _within_volume_tolerance(left: float, right: float, tolerance: float = 1e-9) -> bool:
     if left == right:
         return True
@@ -339,13 +345,10 @@ def build_alignment_report(
             ("15m", "missing_15m_bars"),
             ("1h", "missing_1h_bars"),
         ):
-            tf_ms = TIMEFRAME_MS[timeframe]
             # The frozen manifest records one resume timestamp on the 5m grid.
             # A coarser grid resumes at the containing slot, so the expected
             # per-timeframe resume is the floor of that timestamp to the grid.
-            expected_resume_ms = gap_resume_ms - (
-                (gap_resume_ms - DEV_START_MS) % tf_ms
-            )
+            expected_resume_ms = _expected_resume_open_ms(gap_resume_ms, timeframe)
             match = next(
                 (
                     run
