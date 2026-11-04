@@ -256,10 +256,18 @@ validity) are **not** selection criteria; they are recorded as post-count diagno
 exists at the expected time but is unusable for a close-time reason is still a valid entry bar under
 M2.
 
-If the confirmation bar is the last bar of its 1h segment, or no record exists at the expected next
-open, the signal is rejected as `no_entry_bar`; the runner never skips forward. If the expected entry
-open is at or after `dev_end_ms`, the signal is rejected as `entry_outside_interval` and the
-interval guard is evaluated before the presence check, following K2.
+If no record exists at the expected next open, or a record exists there but is off-grid, the signal
+is rejected as `no_entry_bar`; the runner never skips forward. If the expected entry open is at or
+after `dev_end_ms`, the signal is rejected as `entry_outside_interval` and the interval guard is
+evaluated before the presence check, following K2.
+
+*Clarification added before counting.* The phrase "the confirmation bar is the last bar of its 1h
+segment" is implemented as **no record exists at the expected next open**. A record that exists at
+the exact expected open but is unusable for a close-time reason (unclosed, zero-volume, partial 5m
+bucket, invalid full-bar OHLC) remains a valid entry bar under M2, and those conditions are recorded
+only as the post-count diagnostics listed above. This reading preserves both the explicit M2 rule
+("close-time properties are not selection criteria") and the no-skip rule, which forbids moving past
+a missing bar to a later bar. No count had been produced when this clarification was written.
 
 ### 4.5 Stop and cost
 
