@@ -1,0 +1,59 @@
+{
+  "stage": "2I",
+  "artifact_set": "Stage 2I owner ratification and runner readiness",
+  "version_identifier": "stage2i/1.0.0",
+  "created_utc": "2026-11-04T00:00:00Z",
+  "baseline": {
+    "frozen_artifact_set": "docs/research/stage2e_v2/",
+    "frozen_version": "2.0.0",
+    "freeze_manifest": "docs/research/stage2e_v2/FREEZE_MANIFEST.json",
+    "freeze_manifest_sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7",
+    "audit_of_record": "docs/research/STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md",
+    "audit_of_record_sha256": "c91a3486e26f06af7523d47aacfe4ee56ee6e88a12b6d2262aea191f5a3feddf",
+    "audit_independence": "adversarial self-audit by the Stage 2G author; accepted by the owner as audit of record; not a third-party independent audit"
+  },
+  "commit_provenance": {
+    "parent_commit": "99aee37163e54cb8e9224b1259292b6e715978ce",
+    "artifact_commit": "bfa531bd7c1f79b84d85f37634b73ac4b93e974b",
+    "note": "artifact_commit is the commit that introduced the five hashed Stage 2I reports; this manifest is committed immediately after it. This manifest deliberately has no self_hash: the artifact hashes below cover the five Stage 2I reports, not this file."
+  },
+  "artifact_hashes": {
+    "OWNER_RATIFICATION.md": {
+      "path": "docs/research/stage2i/OWNER_RATIFICATION.md",
+      "sha256": "39ca94cbcf452d0db2f0768256fe4ff3360b9902c410777a7e99708b8ddcf75b",
+      "bytes": 8650
+    },
+    "RUNNER_READINESS_SPEC.md": {
+      "path": "docs/research/stage2i/RUNNER_READINESS_SPEC.md",
+      "sha256": "d9bde4444e6dfa07676a31990cce9f1df290990d428f5edf7b16906f71327b7f",
+      "bytes": 12072
+    },
+    "RUNNER_READINESS_TEST_REPORT.md": {
+      "path": "docs/research/stage2i/RUNNER_READINESS_TEST_REPORT.md",
+      "sha256": "cdeed8f1082cd36a6f7369992fc35bc269a1806e6037fc5e87c5f2c911dfcd01",
+      "bytes": 13900
+    },
+    "CHANGE_PROPOSALS.md": {
+      "path": "docs/research/stage2i/CHANGE_PROPOSALS.md",
+      "sha256": "768c5ffaacaaa930ab965c9f2cbec7d9f54ec2f7e80667fe6dc85853cc775e0d",
+      "bytes": 6017
+    },
+    "STAGE2I_FINAL_READINESS_DECISION.md": {
+      "path": "docs/research/stage2i/STAGE2I_FINAL_READINESS_DECISION.md",
+      "sha256": "ff8a7c7b4cdb2c4ac2d3c694143941009baea3ed91149a84c5703b349eb720fd",
+      "bytes": 5236
+    }
+  },
+  "supporting_files": {
+    "stage2i_readiness/__init__.py": "e2dc23047fb81ba4894fb77e2d466f6c31b10804ab1c56985d0cb76d7a7b8fc7",
+    "stage2i_readiness/entry_guard.py": "491c00593d48e0a24d3afcb8f6f55f206584a5e58ee821349ccc5b73ef941a8c",
+    "stage2i_readiness/loader.py": "df3424fdbf696007b72f404e9f05b3974bab03416b9e84c501bd0df427007c2c",
+    "stage2i_readiness/run_loader_test.py": "8d58d0b3ef20bad03ffaf80f8b961318189ee8cab5dfc8860ff5af01d7c08baa",
+    "stage2i_readiness/tests/test_candle_completeness.py": "bad88e086d2358d9a852503b126a1c0fcf5e315b532cac5bcb81a13442c2f717",
+    "stage2i_readiness/tests/test_entry_guard.py": "5405e5a1937cae1010564b0abfb1d1c051b699662de43a292aa3c6985500b151",
+    "stage2i_readiness/tests/test_loader.py": "81e17f9cb9aeb962b876d3eaa56c595a45be085bc721fe98f40d0d8f8a40d223"
+  },
+  "final_readiness_decision": "READY FOR SEPARATE CENSUS AUTHORIZATION",
+  "census_authorized_by_this_manifest": false,
+  "no_census_statement": "No Candidate B or D signal was counted, no feasibility census was run, no cost-feasible opportunity count or non-overlap selection over signals was produced, and no return, expectancy, P&L, drawdown, Monte Carlo, or other performance statistic was calculated. Only loader-only parsing of the actual datasets was performed for Stage 2I data-contract and bounded-memory tests."
+}
