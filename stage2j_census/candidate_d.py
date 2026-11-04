@@ -65,7 +65,8 @@ def run_candidate_d(
     secondary: Counter[str] = Counter()
     diagnostics: Counter[str] = Counter()
     per_session: dict[str, Counter[str]] = {
-        session_id: Counter() for session_id, _ in SESSION_OFFSETS
+        session_id: Counter({f"S{index}": 0 for index in range(10)})
+        for session_id, _ in SESSION_OFFSETS
     }
     full_data_true = 0
     full_data_false = 0
