@@ -269,10 +269,11 @@ def run_candidate_b(
                     ended_this_bar = True
 
             if episode_was_active and expansion:
-                # The episode was active when this bar opened; the expansion is absorbed.
+                # The episode was active when this bar opened; the expansion is
+                # absorbed even if the episode itself ends on this bar.
+                diagnostics["expansions_absorbed"] += 1
                 if active is not None:
                     active.absorbed += 1
-                diagnostics["expansions_absorbed"] += 1
             if ended_this_bar and active is not None:  # pragma: no cover - defensive
                 raise AssertionError("episode state machine ended without clearing active")
 
@@ -329,6 +330,9 @@ def run_candidate_b(
         }
     )
     reconciliation = {
+        "S3_equals_S4_plus_expansions_absorbed": (
+            counts["S3"] == counts["S4"] + diagnostics["expansions_absorbed"]
+        ),
         "S4_equals_rejected_attempts_plus_S7": (
             counts["S4"] == rejected_attempts + counts["S7"]
         ),
