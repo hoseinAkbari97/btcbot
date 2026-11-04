@@ -103,7 +103,7 @@ def run_candidate_b(
     dev_end_ms: int = DEV_END_MS,
 ) -> dict[str, Any]:
     """Run the full B pipeline and return counts, labels, and signal metadata."""
-    counts: Counter[str] = Counter()
+    counts: Counter[str] = Counter({f"S{index}": 0 for index in range(1, 11)})
     primary: Counter[str] = Counter()
     secondary: Counter[str] = Counter()
     diagnostics: Counter[str] = Counter()
