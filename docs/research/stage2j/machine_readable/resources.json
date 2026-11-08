@@ -1,0 +1,43 @@
+{
+  "ceiling_rss_bytes": 6442450944,
+  "code_sha256": "1a482033996496ad3629b68e2ff7b39d2c78ae0cc100e3d1d72282ec53dce221",
+  "dataset_hashes": {
+    "15m": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+    "1h": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+    "4h": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+    "5m": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681"
+  },
+  "git_head": "bc1285c8277c37c93b76addfe83dcb50267c1f35",
+  "max_raw_object_chars": 444,
+  "max_typed_records_held_per_stream": 1,
+  "note": "Timing and RSS are measurements and are excluded from deterministic output identity. No temporary spill file was used.",
+  "peak_rss_bytes": 578596864,
+  "peak_rss_mib": 551.793,
+  "phase_peak_rss_bytes": {
+    "alignment": 578596864,
+    "analysis": 578596864,
+    "candidates": 578596864,
+    "candidates_4h_exemption_sensitivity": 578596864,
+    "five_minute_support": 578596864,
+    "preflight": 578596864,
+    "regime_4h": 578596864,
+    "series": 578596864
+  },
+  "phase_seconds": {
+    "alignment": 0.349,
+    "analysis": 0.016,
+    "candidates": 0.107,
+    "candidates_4h_exemption_sensitivity": 0.288,
+    "five_minute_support": 35.033,
+    "preflight": 46.267,
+    "regime_4h": 1.92,
+    "series": 15.119
+  },
+  "read_buffer_bytes": 1048576,
+  "stage": "2J",
+  "target_rss_bytes": 4294967296,
+  "temporary_disk_bytes": 0,
+  "wall_clock_seconds": 99.137,
+  "within_ceiling": true,
+  "within_target": true
+}

@@ -1,0 +1,553 @@
+{
+  "15m_from_5m": {
+    "close_mismatches": 0,
+    "complete_buckets": 122510,
+    "examples": [],
+    "gap_affected_buckets": 82,
+    "high_mismatches": 0,
+    "hlc_mismatch_buckets": 0,
+    "hlc_mismatch_share_of_complete": 0.0,
+    "low_mismatches": 0,
+    "max_missing_members": 3,
+    "member_timeframe": "5m",
+    "members_per_bucket": 3,
+    "missing_members_total": 244,
+    "missing_upper_buckets": 0,
+    "open_mismatches_diagnostic": 0,
+    "passes_0_1_percent_price_tolerance": true,
+    "upper_timeframe": "15m",
+    "volume_mismatches": 0,
+    "volume_relative_tolerance": 1e-09
+  },
+  "four_hour_exemption": {
+    "excluded_from_4h_from_1h_denominator": 12,
+    "note": "The twelve registered supplied 4h buckets are retained in the primary series and excluded from the 4h-from-1h tolerance denominator, as M3 requires.",
+    "registered_buckets": 12,
+    "supplied_buckets_present_and_usable": 12
+  },
+  "four_hour_from_one_hour": {
+    "close_mismatches": 0,
+    "complete_buckets": 7649,
+    "examples": [],
+    "exempt_buckets": 12,
+    "exempt_gap_affected_buckets": 12,
+    "gap_affected_buckets": 1,
+    "high_mismatches": 0,
+    "low_mismatches": 0,
+    "max_missing_members": 1,
+    "member_timeframe": "1h",
+    "members_per_bucket": 4,
+    "missing_members_total": 1,
+    "missing_upper_buckets": 0,
+    "ohlc_mismatch_buckets": 0,
+    "ohlc_mismatch_share_of_complete": 0.0,
+    "open_mismatches": 0,
+    "passes_0_1_percent_price_tolerance": true,
+    "upper_timeframe": "4h",
+    "volume_mismatches": 0,
+    "volume_relative_tolerance": 1e-09
+  },
+  "grid_checks": [
+    {
+      "four_hour_boundary_hours_ok": null,
+      "off_grid_present": 0,
+      "present_bars": 122522,
+      "timeframe": "15m"
+    },
+    {
+      "four_hour_boundary_hours_ok": null,
+      "off_grid_present": 0,
+      "present_bars": 30634,
+      "timeframe": "1h"
+    },
+    {
+      "four_hour_boundary_hours_ok": true,
+      "off_grid_present": 0,
+      "present_bars": 7662,
+      "timeframe": "4h"
+    }
+  ],
+  "one_hour_from_15m": {
+    "close_mismatches": 0,
+    "complete_buckets": 30625,
+    "examples": [],
+    "exempt_buckets": 0,
+    "exempt_gap_affected_buckets": 0,
+    "gap_affected_buckets": 23,
+    "high_mismatches": 0,
+    "low_mismatches": 0,
+    "max_missing_members": 4,
+    "member_timeframe": "15m",
+    "members_per_bucket": 4,
+    "missing_members_total": 82,
+    "missing_upper_buckets": 0,
+    "ohlc_mismatch_buckets": 0,
+    "ohlc_mismatch_share_of_complete": 0.0,
+    "open_mismatches": 0,
+    "passes_0_1_percent_price_tolerance": true,
+    "upper_timeframe": "1h",
+    "volume_mismatches": 0,
+    "volume_relative_tolerance": 1e-09
+  },
+  "partial_bucket_counts": {
+    "15m_below_3_members": 82,
+    "1h_below_12_members": 23,
+    "4h_exempt_buckets": 12
+  },
+  "registered_gaps": {
+    "all_per_gap_match": true,
+    "counts_match": {
+      "15m": true,
+      "1h": true,
+      "4h": true,
+      "5m": true
+    },
+    "detected_gap_count": {
+      "15m": 7,
+      "1h": 7,
+      "4h": 0,
+      "5m": 7
+    },
+    "detected_runs": {
+      "15m": [
+        {
+          "first_missing_open_utc": "2021-02-11T03:45:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:30:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:45:00+00:00",
+          "missing_bars": 5,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:45:00+00:00",
+          "last_missing_open_utc": "2021-03-06T03:15:00+00:00",
+          "missing_bars": 6,
+          "resumes_at_utc": "2021-03-06T03:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:45:00+00:00",
+          "last_missing_open_utc": "2021-04-20T04:15:00+00:00",
+          "missing_bars": 10,
+          "resumes_at_utc": "2021-04-20T04:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-25T04:15:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T08:30:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-04-25T08:45:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:45:00+00:00",
+          "last_missing_open_utc": "2021-08-13T06:15:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-08-13T06:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:45:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:45:00+00:00",
+          "missing_bars": 8,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2023-03-24T12:45:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:30:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:45:00+00:00",
+          "missing_bars": 5,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        }
+      ],
+      "1h": [
+        {
+          "first_missing_open_utc": "2021-02-11T04:00:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:00:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:00:00+00:00",
+          "last_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2021-03-06T03:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:00:00+00:00",
+          "last_missing_open_utc": "2021-04-20T03:00:00+00:00",
+          "missing_bars": 2,
+          "resumes_at_utc": "2021-04-20T04:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-25T05:00:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T07:00:00+00:00",
+          "missing_bars": 3,
+          "resumes_at_utc": "2021-04-25T08:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:00:00+00:00",
+          "last_missing_open_utc": "2021-08-13T05:00:00+00:00",
+          "missing_bars": 4,
+          "resumes_at_utc": "2021-08-13T06:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:00:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:00:00+00:00",
+          "missing_bars": 2,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2023-03-24T13:00:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:00:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        }
+      ],
+      "4h": [],
+      "5m": [
+        {
+          "first_missing_open_utc": "2021-02-11T03:45:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:40:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:55:00+00:00",
+          "missing_bars": 15,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:55:00+00:00",
+          "last_missing_open_utc": "2021-03-06T03:25:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-03-06T03:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:55:00+00:00",
+          "last_missing_open_utc": "2021-04-20T04:25:00+00:00",
+          "missing_bars": 30,
+          "resumes_at_utc": "2021-04-20T04:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-04-25T04:05:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T08:40:00+00:00",
+          "missing_bars": 56,
+          "resumes_at_utc": "2021-04-25T08:45:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:55:00+00:00",
+          "last_missing_open_utc": "2021-08-13T06:25:00+00:00",
+          "missing_bars": 54,
+          "resumes_at_utc": "2021-08-13T06:30:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:55:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:55:00+00:00",
+          "missing_bars": 24,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        {
+          "first_missing_open_utc": "2023-03-24T12:40:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:35:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:55:00+00:00",
+          "missing_bars": 16,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        }
+      ]
+    },
+    "detected_totals": {
+      "15m": 70,
+      "1h": 14,
+      "4h": 0,
+      "5m": 213
+    },
+    "expected_gap_count": 7,
+    "expected_totals": {
+      "15m": 70,
+      "1h": 14,
+      "4h": 0,
+      "5m": 213
+    },
+    "per_gap": [
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-02-11T03:45:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:30:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:45:00+00:00",
+          "missing_bars": 5,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        "15m_expected_missing": 5,
+        "15m_expected_resume_utc": "2021-02-11T05:00:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-02-11T04:00:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:00:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        "1h_expected_missing": 1,
+        "1h_expected_resume_utc": "2021-02-11T05:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-02-11T03:45:00+00:00",
+          "last_bar_before_utc": "2021-02-11T03:40:00+00:00",
+          "last_missing_open_utc": "2021-02-11T04:55:00+00:00",
+          "missing_bars": 15,
+          "resumes_at_utc": "2021-02-11T05:00:00+00:00"
+        },
+        "5m_expected_missing": 15,
+        "5m_expected_resume_utc": "2021-02-11T05:00:00+00:00",
+        "5m_match": true,
+        "id": 1,
+        "last_bar_before_utc": "2021-02-11T03:40:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-02-11T05:00:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:45:00+00:00",
+          "last_missing_open_utc": "2021-03-06T03:15:00+00:00",
+          "missing_bars": 6,
+          "resumes_at_utc": "2021-03-06T03:30:00+00:00"
+        },
+        "15m_expected_missing": 6,
+        "15m_expected_resume_utc": "2021-03-06T03:30:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:00:00+00:00",
+          "last_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2021-03-06T03:00:00+00:00"
+        },
+        "1h_expected_missing": 1,
+        "1h_expected_resume_utc": "2021-03-06T03:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-03-06T02:00:00+00:00",
+          "last_bar_before_utc": "2021-03-06T01:55:00+00:00",
+          "last_missing_open_utc": "2021-03-06T03:25:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-03-06T03:30:00+00:00"
+        },
+        "5m_expected_missing": 18,
+        "5m_expected_resume_utc": "2021-03-06T03:30:00+00:00",
+        "5m_match": true,
+        "id": 2,
+        "last_bar_before_utc": "2021-03-06T01:55:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-03-06T03:30:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:45:00+00:00",
+          "last_missing_open_utc": "2021-04-20T04:15:00+00:00",
+          "missing_bars": 10,
+          "resumes_at_utc": "2021-04-20T04:30:00+00:00"
+        },
+        "15m_expected_missing": 10,
+        "15m_expected_resume_utc": "2021-04-20T04:30:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:00:00+00:00",
+          "last_missing_open_utc": "2021-04-20T03:00:00+00:00",
+          "missing_bars": 2,
+          "resumes_at_utc": "2021-04-20T04:00:00+00:00"
+        },
+        "1h_expected_missing": 2,
+        "1h_expected_resume_utc": "2021-04-20T04:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-04-20T02:00:00+00:00",
+          "last_bar_before_utc": "2021-04-20T01:55:00+00:00",
+          "last_missing_open_utc": "2021-04-20T04:25:00+00:00",
+          "missing_bars": 30,
+          "resumes_at_utc": "2021-04-20T04:30:00+00:00"
+        },
+        "5m_expected_missing": 30,
+        "5m_expected_resume_utc": "2021-04-20T04:30:00+00:00",
+        "5m_match": true,
+        "id": 3,
+        "last_bar_before_utc": "2021-04-20T01:55:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-04-20T04:30:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-04-25T04:15:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T08:30:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-04-25T08:45:00+00:00"
+        },
+        "15m_expected_missing": 18,
+        "15m_expected_resume_utc": "2021-04-25T08:45:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-04-25T05:00:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T07:00:00+00:00",
+          "missing_bars": 3,
+          "resumes_at_utc": "2021-04-25T08:00:00+00:00"
+        },
+        "1h_expected_missing": 3,
+        "1h_expected_resume_utc": "2021-04-25T08:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-04-25T04:05:00+00:00",
+          "last_bar_before_utc": "2021-04-25T04:00:00+00:00",
+          "last_missing_open_utc": "2021-04-25T08:40:00+00:00",
+          "missing_bars": 56,
+          "resumes_at_utc": "2021-04-25T08:45:00+00:00"
+        },
+        "5m_expected_missing": 56,
+        "5m_expected_resume_utc": "2021-04-25T08:45:00+00:00",
+        "5m_match": true,
+        "id": 4,
+        "last_bar_before_utc": "2021-04-25T04:00:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-04-25T08:45:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:45:00+00:00",
+          "last_missing_open_utc": "2021-08-13T06:15:00+00:00",
+          "missing_bars": 18,
+          "resumes_at_utc": "2021-08-13T06:30:00+00:00"
+        },
+        "15m_expected_missing": 18,
+        "15m_expected_resume_utc": "2021-08-13T06:30:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:00:00+00:00",
+          "last_missing_open_utc": "2021-08-13T05:00:00+00:00",
+          "missing_bars": 4,
+          "resumes_at_utc": "2021-08-13T06:00:00+00:00"
+        },
+        "1h_expected_missing": 4,
+        "1h_expected_resume_utc": "2021-08-13T06:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-08-13T02:00:00+00:00",
+          "last_bar_before_utc": "2021-08-13T01:55:00+00:00",
+          "last_missing_open_utc": "2021-08-13T06:25:00+00:00",
+          "missing_bars": 54,
+          "resumes_at_utc": "2021-08-13T06:30:00+00:00"
+        },
+        "5m_expected_missing": 54,
+        "5m_expected_resume_utc": "2021-08-13T06:30:00+00:00",
+        "5m_match": true,
+        "id": 5,
+        "last_bar_before_utc": "2021-08-13T01:55:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-08-13T06:30:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:45:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:45:00+00:00",
+          "missing_bars": 8,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        "15m_expected_missing": 8,
+        "15m_expected_resume_utc": "2021-09-29T09:00:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:00:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:00:00+00:00",
+          "missing_bars": 2,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        "1h_expected_missing": 2,
+        "1h_expected_resume_utc": "2021-09-29T09:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2021-09-29T07:00:00+00:00",
+          "last_bar_before_utc": "2021-09-29T06:55:00+00:00",
+          "last_missing_open_utc": "2021-09-29T08:55:00+00:00",
+          "missing_bars": 24,
+          "resumes_at_utc": "2021-09-29T09:00:00+00:00"
+        },
+        "5m_expected_missing": 24,
+        "5m_expected_resume_utc": "2021-09-29T09:00:00+00:00",
+        "5m_match": true,
+        "id": 6,
+        "last_bar_before_utc": "2021-09-29T06:55:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2021-09-29T09:00:00Z",
+        "matches": true
+      },
+      {
+        "15m_detected": {
+          "first_missing_open_utc": "2023-03-24T12:45:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:30:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:45:00+00:00",
+          "missing_bars": 5,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        },
+        "15m_expected_missing": 5,
+        "15m_expected_resume_utc": "2023-03-24T14:00:00+00:00",
+        "15m_match": true,
+        "1h_detected": {
+          "first_missing_open_utc": "2023-03-24T13:00:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:00:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:00:00+00:00",
+          "missing_bars": 1,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        },
+        "1h_expected_missing": 1,
+        "1h_expected_resume_utc": "2023-03-24T14:00:00+00:00",
+        "1h_match": true,
+        "5m_detected": {
+          "first_missing_open_utc": "2023-03-24T12:40:00+00:00",
+          "last_bar_before_utc": "2023-03-24T12:35:00+00:00",
+          "last_missing_open_utc": "2023-03-24T13:55:00+00:00",
+          "missing_bars": 16,
+          "resumes_at_utc": "2023-03-24T14:00:00+00:00"
+        },
+        "5m_expected_missing": 16,
+        "5m_expected_resume_utc": "2023-03-24T14:00:00+00:00",
+        "5m_match": true,
+        "id": 7,
+        "last_bar_before_utc": "2023-03-24T12:35:00Z",
+        "manifest_resume_grid": "5m",
+        "manifest_resumes_at_utc": "2023-03-24T14:00:00Z",
+        "matches": true
+      }
+    ],
+    "totals_match": true
+  },
+  "summary": {
+    "alignment_fail": false,
+    "any_price_mismatch": false,
+    "any_volume_mismatch": false,
+    "four_hour_boundary_hours_ok": true,
+    "grid_checks_pass": true,
+    "missing_bar_totals_match_freeze": true,
+    "price_tolerance_checks_pass": true,
+    "registered_gap_locations_match": true
+  }
+}

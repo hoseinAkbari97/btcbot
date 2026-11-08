@@ -1,0 +1,607 @@
+{
+  "alignment_summary": {
+    "alignment_fail": false,
+    "any_price_mismatch": false,
+    "any_volume_mismatch": false,
+    "four_hour_boundary_hours_ok": true,
+    "grid_checks_pass": true,
+    "missing_bar_totals_match_freeze": true,
+    "price_tolerance_checks_pass": true,
+    "registered_gap_locations_match": true
+  },
+  "candidate_scope": [
+    "B",
+    "D"
+  ],
+  "code": {
+    "files": [
+      {
+        "bytes": 303,
+        "path": "stage2j_census/__init__.py",
+        "sha256": "0841172d6d14fda4f125662f8b9e61cb6b1e5d2b34ddca3e648e91e585304dc1"
+      },
+      {
+        "bytes": 17120,
+        "path": "stage2j_census/series.py",
+        "sha256": "62faa06d83d18a89fd995173246af14d9929872410765ad023af728ed2a2ed98"
+      },
+      {
+        "bytes": 17390,
+        "path": "stage2j_census/stats.py",
+        "sha256": "7cd2d72b8f5371ea1e11bbeec894b853a8d073c992e1644e19703c4a842e9b23"
+      },
+      {
+        "bytes": 16339,
+        "path": "stage2j_census/candidate_b.py",
+        "sha256": "d76bdc7c14a27d7dc66f42083eeb52d83c4c2c32599d433e3d72974d143bc00a"
+      },
+      {
+        "bytes": 11708,
+        "path": "stage2j_census/candidate_d.py",
+        "sha256": "6d7bb61baeee8ae9162012bae0dcf0a9d82c09a4f859d906d60ff6d7941678a1"
+      },
+      {
+        "bytes": 16800,
+        "path": "stage2j_census/alignment.py",
+        "sha256": "3ba64c0958791700ec300ef1f4d67e3c158a1f37a5f316e510fb05beffd175e5"
+      },
+      {
+        "bytes": 40711,
+        "path": "stage2j_census/analysis.py",
+        "sha256": "07274e450166aa072be72506e1fe4629d16ed0b28b42482b02ecfcda977c9cb9"
+      },
+      {
+        "bytes": 20109,
+        "path": "stage2j_census/run_census.py",
+        "sha256": "f1917f5654c0be53ef95d5deb5531436c72ce9644746c5dbe6982c7ab67de226"
+      },
+      {
+        "bytes": 14510,
+        "path": "stage2i_readiness/loader.py",
+        "sha256": "df3424fdbf696007b72f404e9f05b3974bab03416b9e84c501bd0df427007c2c"
+      }
+    ],
+    "sha256": "1a482033996496ad3629b68e2ff7b39d2c78ae0cc100e3d1d72282ec53dce221"
+  },
+  "confirmations": {
+    "drawdown_computed": false,
+    "expectancy_computed": false,
+    "monte_carlo_run": false,
+    "oos_payloads_decoded": 0,
+    "optimization_run": false,
+    "paper_or_live_trading_started": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "returns_computed": false,
+    "sharpe_or_sortino_computed": false,
+    "signals_counted": true,
+    "validation_or_oos_accessed": false
+  },
+  "datasets": {
+    "all_dataset_hashes_match": true,
+    "dataset_manifest_hash_match": true,
+    "dataset_manifest_sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25",
+    "expected_dataset_manifest_sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25",
+    "files": [
+      {
+        "actual_sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+        "dataset_manifest_bars": 595659,
+        "dataset_manifest_expected_bars": 595872,
+        "dataset_manifest_match": true,
+        "dataset_manifest_sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+        "frozen_bars": 595659,
+        "frozen_expected_bars": 595872,
+        "frozen_sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+        "hash_match": true,
+        "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+        "timeframe": "5m"
+      },
+      {
+        "actual_sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+        "dataset_manifest_bars": 198554,
+        "dataset_manifest_expected_bars": 198624,
+        "dataset_manifest_match": true,
+        "dataset_manifest_sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+        "frozen_bars": 198554,
+        "frozen_expected_bars": 198624,
+        "frozen_sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+        "hash_match": true,
+        "path": "backend/data/datasets/BTCUSDT-15m-20210101-20260901.json",
+        "timeframe": "15m"
+      },
+      {
+        "actual_sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+        "dataset_manifest_bars": 49642,
+        "dataset_manifest_expected_bars": 49656,
+        "dataset_manifest_match": true,
+        "dataset_manifest_sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+        "frozen_bars": 49642,
+        "frozen_expected_bars": 49656,
+        "frozen_sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+        "hash_match": true,
+        "path": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+        "timeframe": "1h"
+      },
+      {
+        "actual_sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+        "dataset_manifest_bars": 12414,
+        "dataset_manifest_expected_bars": 12414,
+        "dataset_manifest_match": true,
+        "dataset_manifest_sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+        "frozen_bars": 12414,
+        "frozen_expected_bars": 12414,
+        "frozen_sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+        "hash_match": true,
+        "path": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+        "timeframe": "4h"
+      }
+    ],
+    "gap_adjacent_4h_buckets": {
+      "count": 12,
+      "handling": "retained as supplied under the shared four_hour_supplied_bar_exemption; excluded from the 4h-from-1h alignment denominator and reported separately; non-decision sensitivity excludes them and segment-breaks the 4h ATR",
+      "open_times_utc": [
+        "2021-02-11T00:00:00Z",
+        "2021-02-11T04:00:00Z",
+        "2021-03-06T00:00:00Z",
+        "2021-04-20T00:00:00Z",
+        "2021-04-20T04:00:00Z",
+        "2021-04-25T04:00:00Z",
+        "2021-04-25T08:00:00Z",
+        "2021-08-13T00:00:00Z",
+        "2021-08-13T04:00:00Z",
+        "2021-09-29T04:00:00Z",
+        "2021-09-29T08:00:00Z",
+        "2023-03-24T12:00:00Z"
+      ]
+    },
+    "gap_locations": {
+      "gaps": [
+        {
+          "id": 1,
+          "last_bar_before_gap_utc": "2021-02-11T03:40:00Z",
+          "missing_15m_bars": 5,
+          "missing_1h_bars": 1,
+          "missing_5m_bars": 15,
+          "resumes_at_utc": "2021-02-11T05:00:00Z"
+        },
+        {
+          "id": 2,
+          "last_bar_before_gap_utc": "2021-03-06T01:55:00Z",
+          "missing_15m_bars": 6,
+          "missing_1h_bars": 1,
+          "missing_5m_bars": 18,
+          "resumes_at_utc": "2021-03-06T03:30:00Z"
+        },
+        {
+          "id": 3,
+          "last_bar_before_gap_utc": "2021-04-20T01:55:00Z",
+          "missing_15m_bars": 10,
+          "missing_1h_bars": 2,
+          "missing_5m_bars": 30,
+          "resumes_at_utc": "2021-04-20T04:30:00Z"
+        },
+        {
+          "id": 4,
+          "last_bar_before_gap_utc": "2021-04-25T04:00:00Z",
+          "missing_15m_bars": 18,
+          "missing_1h_bars": 3,
+          "missing_5m_bars": 56,
+          "resumes_at_utc": "2021-04-25T08:45:00Z"
+        },
+        {
+          "id": 5,
+          "last_bar_before_gap_utc": "2021-08-13T01:55:00Z",
+          "missing_15m_bars": 18,
+          "missing_1h_bars": 4,
+          "missing_5m_bars": 54,
+          "resumes_at_utc": "2021-08-13T06:30:00Z"
+        },
+        {
+          "id": 6,
+          "last_bar_before_gap_utc": "2021-09-29T06:55:00Z",
+          "missing_15m_bars": 8,
+          "missing_1h_bars": 2,
+          "missing_5m_bars": 24,
+          "resumes_at_utc": "2021-09-29T09:00:00Z"
+        },
+        {
+          "id": 7,
+          "last_bar_before_gap_utc": "2023-03-24T12:35:00Z",
+          "missing_15m_bars": 5,
+          "missing_1h_bars": 1,
+          "missing_5m_bars": 16,
+          "resumes_at_utc": "2023-03-24T14:00:00Z"
+        }
+      ],
+      "policy": "No row of any dataset file was read to produce this table. A runner must verify the derived counts against the files before counting.",
+      "source": "docs/research/STAGE2A_DATA_ALIGNMENT_AUDIT.md section 4; per-timeframe missing-bar counts derived from the gap table and the bar grid, and reconciled with the dataset manifest totals (5m 213, 15m 70, 1h 14).",
+      "totals": {
+        "missing_15m_bars": 70,
+        "missing_1h_bars": 14,
+        "missing_5m_bars": 213
+      }
+    }
+  },
+  "deterministic_serialization": {
+    "allow_nan": false,
+    "excluded_from_identity": [
+      "resources.json"
+    ],
+    "indent": 2,
+    "sort_keys": true
+  },
+  "frozen_inputs": {
+    "change_proposals_applied": false,
+    "frozen_artifacts": [
+      {
+        "actual_sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41",
+        "match": true,
+        "name": "CANDIDATE_B_SPEC.md",
+        "path": "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md",
+        "recorded_sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41"
+      },
+      {
+        "actual_sha256": "cd333fd2ff771d92e929de3d6ef0108b4cfb035617aa1f0744d632402b3176da",
+        "match": true,
+        "name": "CANDIDATE_B_CONFIG.json",
+        "path": "docs/research/stage2e_v2/CANDIDATE_B_CONFIG.json",
+        "recorded_sha256": "cd333fd2ff771d92e929de3d6ef0108b4cfb035617aa1f0744d632402b3176da"
+      },
+      {
+        "actual_sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+        "match": true,
+        "name": "CANDIDATE_D_SPEC.md",
+        "path": "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md",
+        "recorded_sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa"
+      },
+      {
+        "actual_sha256": "e2dc0ef3bd627c839a35b338c220bb0fcc6bca3789036c79370c0f6c4c429639",
+        "match": true,
+        "name": "CANDIDATE_D_CONFIG.json",
+        "path": "docs/research/stage2e_v2/CANDIDATE_D_CONFIG.json",
+        "recorded_sha256": "e2dc0ef3bd627c839a35b338c220bb0fcc6bca3789036c79370c0f6c4c429639"
+      },
+      {
+        "actual_sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c",
+        "match": true,
+        "name": "SHARED_CENSUS_PROTOCOL.md",
+        "path": "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md",
+        "recorded_sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c"
+      },
+      {
+        "actual_sha256": "821ffa861acc1559c29cef08b74ba90dcfdb533906fedee255ff300ee65e32c0",
+        "match": true,
+        "name": "REMEDIATION_MATRIX.md",
+        "path": "docs/research/stage2e_v2/REMEDIATION_MATRIX.md",
+        "recorded_sha256": "821ffa861acc1559c29cef08b74ba90dcfdb533906fedee255ff300ee65e32c0"
+      },
+      {
+        "actual_sha256": "d6699e55cccb1d3d215806de1e569d9e929a5bd78ad12908e48e57ea91e77367",
+        "match": true,
+        "name": "INDEPENDENT_REVIEW.md",
+        "path": "docs/research/stage2e_v2/INDEPENDENT_REVIEW.md",
+        "recorded_sha256": "d6699e55cccb1d3d215806de1e569d9e929a5bd78ad12908e48e57ea91e77367"
+      }
+    ],
+    "frozen_manifest_self_hash": "751831e2fed6b406cdaf701d342fe6891eccab337a5e32f6d68e5a279ff13a93",
+    "frozen_manifest_sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7",
+    "stage2h_audit_sha256": "c91a3486e26f06af7523d47aacfe4ee56ee6e88a12b6d2262aea191f5a3feddf",
+    "stage2i_manifest_sha256": "a7a7df57ea19b550804f91767338902091826c0646277352a5d7bfbd3c81b294"
+  },
+  "git": {
+    "branch": "main",
+    "head": "bc1285c8277c37c93b76addfe83dcb50267c1f35",
+    "origin_main": "bc1285c8277c37c93b76addfe83dcb50267c1f35"
+  },
+  "interval": {
+    "dev_end_ms": 1719792000000,
+    "dev_start_ms": 1609459200000,
+    "semantics": "half-open [dev_start_ms, dev_end_ms) on candle open_time_ms",
+    "timeframe_ms": {
+      "15m": 900000,
+      "1h": 3600000,
+      "4h": 14400000,
+      "5m": 300000
+    }
+  },
+  "isolation": {
+    "checks": {
+      "at_most_one_boundary_open_time_inspected_per_stream": true,
+      "development_interval_max": true,
+      "development_interval_min": true,
+      "every_stream_stopped_at_the_boundary": true,
+      "no_oos_payload_decoded": true,
+      "no_oos_records_yielded": true
+    },
+    "note": "The bounded loader inspects only the first record at or after dev_end_ms, decodes zero out-of-sample payloads, and yields only development rows.",
+    "pass": true,
+    "streams": [
+      {
+        "boundary_open_time_inspected": 1,
+        "boundary_payload_decoded": 0,
+        "duplicate_timestamps": 0,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719791100000,
+        "max_object_chars": 440,
+        "missing_slots": 70,
+        "n_slots": 122592,
+        "partial_bars": 12,
+        "present_bars": 122522,
+        "records_before_interval": 0,
+        "records_seen": 122523,
+        "records_yielded": 122522,
+        "segments": 8,
+        "stopped_at_boundary": true,
+        "timeframe": "15m",
+        "usable_bars": 122510
+      },
+      {
+        "boundary_open_time_inspected": 1,
+        "boundary_payload_decoded": 0,
+        "duplicate_timestamps": 0,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719788400000,
+        "max_object_chars": 442,
+        "missing_slots": 14,
+        "n_slots": 30648,
+        "partial_bars": 9,
+        "present_bars": 30634,
+        "records_before_interval": 0,
+        "records_seen": 30635,
+        "records_yielded": 30634,
+        "segments": 8,
+        "stopped_at_boundary": true,
+        "timeframe": "1h",
+        "usable_bars": 30625
+      },
+      {
+        "boundary_open_time_inspected": 1,
+        "boundary_payload_decoded": 0,
+        "duplicate_timestamps": 0,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719777600000,
+        "max_object_chars": 444,
+        "missing_slots": 0,
+        "n_slots": 7662,
+        "partial_bars": 0,
+        "present_bars": 7662,
+        "records_before_interval": 0,
+        "records_seen": 7663,
+        "records_yielded": 7662,
+        "segments": 1,
+        "stopped_at_boundary": true,
+        "timeframe": "4h",
+        "usable_bars": 7662
+      },
+      {
+        "boundary_open_time_inspected": 1,
+        "boundary_payload_decoded": 0,
+        "duplicate_timestamps": 0,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719791700000,
+        "max_object_chars": 438,
+        "records_before_interval": 0,
+        "records_seen": 367564,
+        "records_yielded": 367563,
+        "stopped_at_boundary": true,
+        "timeframe": "5m"
+      }
+    ]
+  },
+  "kind": "census_execution",
+  "preflight_recheck": {
+    "all_checks_pass": true,
+    "checks": {
+      "dataset_files": true,
+      "dataset_manifest_sha256": true,
+      "development_interval_max": true,
+      "development_interval_min": true,
+      "frozen_artifacts": true,
+      "frozen_manifest_sha256": true,
+      "frozen_self_hash": true,
+      "stage2h_audit_sha256": true,
+      "stage2i_artifacts": true,
+      "stage2i_manifest_sha256": true
+    },
+    "development_record_counts": {
+      "15m": {
+        "dev_records": 122522,
+        "duplicate_adjacent_records": 0,
+        "expected_dev_slots": 122592,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719791100000,
+        "max_in_interval": true,
+        "min_in_interval": true,
+        "missing_dev_slots": 70
+      },
+      "1h": {
+        "dev_records": 30634,
+        "duplicate_adjacent_records": 0,
+        "expected_dev_slots": 30648,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719788400000,
+        "max_in_interval": true,
+        "min_in_interval": true,
+        "missing_dev_slots": 14
+      },
+      "4h": {
+        "dev_records": 7662,
+        "duplicate_adjacent_records": 0,
+        "expected_dev_slots": 7662,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719777600000,
+        "max_in_interval": true,
+        "min_in_interval": true,
+        "missing_dev_slots": 0
+      },
+      "5m": {
+        "dev_records": 367563,
+        "duplicate_adjacent_records": 0,
+        "expected_dev_slots": 367776,
+        "first_open_time_ms": 1609459200000,
+        "last_open_time_ms": 1719791700000,
+        "max_in_interval": true,
+        "min_in_interval": true,
+        "missing_dev_slots": 213
+      },
+      "dev_end_ms": 1719792000000,
+      "dev_start_ms": 1609459200000
+    }
+  },
+  "reconciliation": {
+    "B": {
+      "S3_equals_S4_plus_expansions_absorbed": true,
+      "S4_equals_rejected_attempts_plus_S7": true,
+      "S7_equals_cost_gate_plus_S8": true,
+      "S8_equals_S9_plus_duplicate_entry": true
+    },
+    "D": {
+      "S7_equals_S8_plus_duplicate_session": true,
+      "S8_equals_S9_plus_non_overlap": true
+    }
+  },
+  "regime_series": {
+    "B": {
+      "maximal_true_runs": 171,
+      "permission_false_bars": 5284,
+      "permission_true_bars": 1826,
+      "permission_unknown_bars": 552,
+      "state_key": "permission"
+    },
+    "D": {
+      "budget_false_bars": 4247,
+      "budget_true_bars": 2863,
+      "budget_unknown_bars": 552,
+      "maximal_true_runs": 212,
+      "state_key": "budget_ok"
+    }
+  },
+  "sensitivity_4h_exemption": {
+    "basis": "plan section 3.8 and the ratified M3 supplied-bar exemption",
+    "exempt_slot_count": 12,
+    "exempt_slot_indices": [
+      246,
+      247,
+      384,
+      654,
+      655,
+      685,
+      686,
+      1344,
+      1345,
+      1627,
+      1628,
+      4875
+    ],
+    "exempt_slot_open_times_utc": [
+      "2021-02-11T00:00:00Z",
+      "2021-02-11T04:00:00Z",
+      "2021-03-06T00:00:00Z",
+      "2021-04-20T00:00:00Z",
+      "2021-04-20T04:00:00Z",
+      "2021-04-25T04:00:00Z",
+      "2021-04-25T08:00:00Z",
+      "2021-08-13T00:00:00Z",
+      "2021-08-13T04:00:00Z",
+      "2021-09-29T04:00:00Z",
+      "2021-09-29T08:00:00Z",
+      "2023-03-24T12:00:00Z"
+    ],
+    "never_changes_primary_signal_set_denominator_or_verdict": true,
+    "reconciliation": {
+      "B": {
+        "S3_equals_S4_plus_expansions_absorbed": true,
+        "S4_equals_rejected_attempts_plus_S7": true,
+        "S7_equals_cost_gate_plus_S8": true,
+        "S8_equals_S9_plus_duplicate_entry": true
+      },
+      "D": {
+        "S7_equals_S8_plus_duplicate_session": true,
+        "S8_equals_S9_plus_non_overlap": true
+      }
+    },
+    "regime_series": {
+      "B": {
+        "maximal_true_runs": 108,
+        "permission_false_bars": 3733,
+        "permission_true_bars": 1300,
+        "permission_unknown_bars": 2629
+      },
+      "D": {
+        "budget_false_bars": 3125,
+        "budget_true_bars": 1908,
+        "budget_unknown_bars": 2629,
+        "maximal_true_runs": 144
+      }
+    },
+    "role": "non-decision diagnostic"
+  },
+  "series": {
+    "15m": {
+      "boundary_open_time_inspected": 1,
+      "boundary_payload_decoded": 0,
+      "duplicate_timestamps": 0,
+      "first_open_time_ms": 1609459200000,
+      "last_open_time_ms": 1719791100000,
+      "max_object_chars": 440,
+      "missing_slots": 70,
+      "n_slots": 122592,
+      "partial_bars": 12,
+      "present_bars": 122522,
+      "records_before_interval": 0,
+      "records_seen": 122523,
+      "records_yielded": 122522,
+      "segments": 8,
+      "stopped_at_boundary": true,
+      "timeframe": "15m",
+      "usable_bars": 122510
+    },
+    "1h": {
+      "boundary_open_time_inspected": 1,
+      "boundary_payload_decoded": 0,
+      "duplicate_timestamps": 0,
+      "first_open_time_ms": 1609459200000,
+      "last_open_time_ms": 1719788400000,
+      "max_object_chars": 442,
+      "missing_slots": 14,
+      "n_slots": 30648,
+      "partial_bars": 9,
+      "present_bars": 30634,
+      "records_before_interval": 0,
+      "records_seen": 30635,
+      "records_yielded": 30634,
+      "segments": 8,
+      "stopped_at_boundary": true,
+      "timeframe": "1h",
+      "usable_bars": 30625
+    },
+    "4h": {
+      "boundary_open_time_inspected": 1,
+      "boundary_payload_decoded": 0,
+      "duplicate_timestamps": 0,
+      "first_open_time_ms": 1609459200000,
+      "last_open_time_ms": 1719777600000,
+      "max_object_chars": 444,
+      "missing_slots": 0,
+      "n_slots": 7662,
+      "partial_bars": 0,
+      "present_bars": 7662,
+      "records_before_interval": 0,
+      "records_seen": 7663,
+      "records_yielded": 7662,
+      "segments": 1,
+      "stopped_at_boundary": true,
+      "timeframe": "4h",
+      "usable_bars": 7662
+    },
+    "5m": {
+      "invalid_ohlc": 0,
+      "offgrid": 0,
+      "records": 367563,
+      "unclosed": 0,
+      "usable_members": 367532,
+      "zero_volume": 31
+    }
+  },
+  "stage": "2J"
+}

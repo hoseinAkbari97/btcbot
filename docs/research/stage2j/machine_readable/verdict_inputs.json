@@ -1,0 +1,58 @@
+{
+  "candidates": [
+    {
+      "M_all": 0.086505387877563,
+      "M_feasible": 0.07480838117382954,
+      "N_nonoverlap": 24,
+      "candidate": "B",
+      "capital_violation": false,
+      "compliance_passed": true,
+      "design_effect": 1.6896551724137934,
+      "feasible_share": 0.90625,
+      "insufficient_subconditions": [
+        "N_nonoverlap 24 < project floor 150"
+      ],
+      "largest_cluster_share": 0.10344827586206896,
+      "tier_label": "FAIL",
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    },
+    {
+      "M_all": 0.32255940800148175,
+      "M_feasible": 0.16508519719805634,
+      "N_nonoverlap": 34,
+      "candidate": "D",
+      "capital_violation": false,
+      "compliance_passed": true,
+      "design_effect": 3.933333333333333,
+      "feasible_share": 0.15254237288135594,
+      "insufficient_subconditions": [
+        "N_nonoverlap 34 < project floor 150",
+        "M_all 0.32255940800148175 > 0.2"
+      ],
+      "largest_cluster_share": 0.17777777777777778,
+      "tier_label": "FAIL",
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    }
+  ],
+  "cost_proxy": {
+    "fraction": 0.0026,
+    "gate_cost_R": 0.2,
+    "implied_min_stop_fraction": 0.013,
+    "note": "Binance proxy; not a verified Nobitex execution cost.",
+    "round_trip_bps": 26
+  },
+  "no_profitability_claim": true,
+  "non_overlap_is_not_independence": true,
+  "precedence": "INCONCLUSIVE, then INSUFFICIENT OPPORTUNITIES, then EXCESSIVE CONCENTRATION, then FEASIBILITY PASS",
+  "project_floor": 150,
+  "project_floor_status": "project protocol choice from the Stage 2C freeze; not statistically derived and not a universal requirement",
+  "reference_independent_n": 349,
+  "reference_status": "planning reference under independence; not a requirement and not a power result for this design",
+  "stage": "2J",
+  "verdict_vocabulary": [
+    "FEASIBILITY PASS",
+    "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES",
+    "FEASIBILITY FAIL — EXCESSIVE CONCENTRATION",
+    "INCONCLUSIVE — IMPLEMENTATION OR DATA LIMITATION"
+  ]
+}
