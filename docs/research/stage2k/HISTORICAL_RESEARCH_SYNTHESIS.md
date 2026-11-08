@@ -294,3 +294,155 @@ observable; it was not observable often enough to support inference.
 The Stage 2A gate required ≥ 200 economically feasible unique events and `median cost_R ≤ 0.20`. The
 cost condition passed (0.124) and the count failed by a factor of about 17 (12 vs 200). The recorded
 verdict is **FAIL — insufficient economic or statistical feasibility** (Stage 2A §1).
+
+---
+
+## 6. Candidate B — expansion / displacement and retest
+
+### 6.1 What the hypothesis intended to capture
+
+A large directional 1h expansion, taken only when a 4h regime permits it, continues after a shallow
+retest. The mechanism proposed was that fades of the first expansion and late entrants create
+continuation, while a retest filters for confirmation (`STAGE2D_STRATEGY_RECOMMENDATION.md` §3). It
+was deliberately the inverse state of Candidate C: expansion-after-event rather than
+compression-before-breakout.
+
+### 6.2 What the frozen rules actually required
+
+From `docs/research/stage2e_v2/CANDIDATE_B_SPEC.md`:
+
+- Expansion bar: `TR[t] ≥ 2.0 × ATR(14)[t-1]`, `body/range ≥ 0.55`, close location ≥ 0.75, close > open.
+- 4h permission at the expansion bar and again at confirmation: `close > SMA50`, `SMA50[q] − SMA50[q−6] > 0`,
+  and 4h ATR percentile in `[20, 95]` over a 540-bar window.
+- Retest: first bar in `e+1 … e+6` with `low ≤ L_e + 0.25 × A_e`; penetration limited to `0.50 × A_e`.
+- Resumption: first bar `c` with `r < c ≤ r+3`, `close > L_e`, `close > open`.
+- Stop: lowest low from `e` through `c`; entry at the next 1h open.
+- Cost gate `cost_R ≤ 0.20` at 26 bp; canonical non-overlap **72h**.
+- One active episode at a time; a permission failure at `e` still occupies the slot (implementation
+  choice B-1, recorded before counting in `stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md`).
+
+### 6.3 What the research measured
+
+| quantity | value | source |
+|---|---:|---|
+| usable 1h bars / expansion-testable | 30,625 / 30,513 | Stage 2J B report §2 |
+| expansion bars / episode attempts | 503 / 458 | Stage 2J B report §2 |
+| regime-qualified attempts | 117 | Stage 2J B report §2 |
+| structurally valid episodes / pre-gate | 34 / 32 | Stage 2J B report §2 |
+| cost-feasible / deduplicated | 29 / 29 | Stage 2J B report §2 |
+| canonical 72h non-overlapping | **24** | Stage 2J B report §2 |
+| `M_all` (pre-gate median `cost_R`, n=32) | 0.086505 | Stage 2J B report §4 |
+| `M_feasible` (n=29) | 0.074808 | Stage 2J B report §4 |
+| feasible share | 0.906250 | Stage 2J B report §4 |
+| largest cluster share / design effect | 0.103448 / 1.689655 | Stage 2J B report §6 |
+| max notional on verdict population | 0.696012 (69.60% of equity) | Stage 2J B report §7 |
+
+### 6.4 What the evidence demonstrated
+
+**Verified fact:** the candidate produced 24 canonical non-overlapping opportunities, below the 150
+floor on every pre-registered non-overlap variant (24h: 29; 72h: 24; 120h: 23).
+
+**Verified fact:** cost was not the binding constraint. `M_all = 0.086505` is comfortably below 0.20,
+the feasible share is 0.906, and at 10 bp all 32 pre-gate signals would pass.
+
+**Verified fact:** the conjunction, not the overlap rule, removed most of the population. Of 458
+episode attempts, 341 were rejected by the 4h regime condition at the expansion bar; of the 117
+regime-qualified attempts, 83 failed structural validation (Stage 2J B report §3).
+
+**Verified fact:** protocol compliance passed, no capital-geometry violation was found on the
+cost-feasible population, and the concentration screen was not met (largest share 10.34%, design
+effect 1.69). The non-decision 4h supplied-bar sensitivity reduced the canonical count to 18 without
+changing the verdict direction (Stage 2J B report §9).
+
+### 6.5 What the evidence did not demonstrate
+
+- It did not show that expansion continuation is unprofitable or has no edge.
+- It did not show that a different ATR multiple, retest window, percentile band, or 4h permission
+  rule would pass. No such variant was counted in the decision path; a variant search after seeing
+  24 would be a new, post-hoc hypothesis.
+- It did not establish independence between the 24 opportunities. They are non-overlapping by
+  construction, not independent.
+- It did not validate the 26 bp cost against any venue.
+
+### 6.6 Why the candidate failed its applicable criteria
+
+`N_nonoverlap = 24 < 150`, so the frozen decision rule returns `FAIL`; the tier label is `FAIL`
+because `N < 349`. The recorded Stage 2J verdict is **FEASIBILITY FAIL — INSUFFICIENT
+OPPORTUNITIES** (`stage2j/STAGE2J_FINAL_DECISION.md` §1).
+
+---
+
+## 7. Candidate D — session-based momentum
+
+### 7.1 What the hypothesis intended to capture
+
+BTC shows session-relative intraday continuation in normal-volatility conditions: a strong first two
+hours of a UTC session predicts the remainder of that session. The design was explicitly a
+**research convention**, not a claim that the equity-index intraday-momentum result transfers to BTC
+(`stage2e_v2/CANDIDATE_D_SPEC.md` §0.1). A 4h volatility budget was added to exclude crisis and dead
+states.
+
+### 7.2 What the frozen rules actually required
+
+From `docs/research/stage2e_v2/CANDIDATE_D_SPEC.md`:
+
+- Three fixed UTC sessions of eight hours: ASIA `[00:00, 08:00)`, EUROPE `[08:00, 16:00)`, US
+  `[16:00, 24:00)`.
+- Measurement window: the first eight 15m bars. `r2 = open[b0] → close[b7]`.
+- Threshold: `r2 ≥ 0.5 × ATR1h(14)[q] / P0`, where `q` is the 1h bar closing at the signal instant.
+- Direction filter: `P1 > session VWAP`, VWAP from HLC3 and volume over the same eight bars.
+- Volatility budget: 4h ATR percentile in `[25, 80]` over a 540-bar window.
+- Entry: next 15m open. Stop: `entry − 1.0 × ATR1h[q]`.
+- Cost gate `cost_R ≤ 0.20` at 26 bp; canonical non-overlap **24h**; one signal per session.
+
+### 7.3 What the research measured
+
+| quantity | value | source |
+|---|---:|---|
+| session buckets / signal-evaluable | 3,831 / 3,829 | Stage 2J D report §2 |
+| directional signals | 927 | Stage 2J D report §2 |
+| volatility-budget-qualified | 332 | Stage 2J D report §2 |
+| VWAP-valid / pre-gate valid entry-stop | 296 / 295 | Stage 2J D report §2 |
+| cost-feasible | **45** (250 rejected by the gate) | Stage 2J D report §2–§4 |
+| canonical 24h non-overlapping | **34** | Stage 2J D report §2 |
+| `M_all` (pre-gate, n=295) | 0.322559 | Stage 2J D report §4 |
+| `M_feasible` (n=45) | 0.165085 | Stage 2J D report §4 |
+| feasible share | 0.152542 | Stage 2J D report §4 |
+| largest cluster share / design effect | 0.177778 / 3.933333 | Stage 2J D report §6 |
+| canonical signals by year | 2021: 18, 2022: 16, then none | Stage 2J D report §6 |
+| max notional on verdict population | 0.760891 (76.09% of equity) | Stage 2J D report §7 |
+
+### 7.4 What the evidence demonstrated
+
+**Verified fact:** the candidate failed two independent insufficient-opportunity sub-conditions:
+`N = 34 < 150`, and `M_all = 0.322559 > 0.20`. The cost gate rejected 250 of 295 pre-gate sessions.
+
+**Verified fact:** the concentration criterion was also met on the primary S7 population (design
+effect 3.93 ≥ 2.00), although the largest-cluster share was 17.78%, below the 50% component. Because
+`INSUFFICIENT OPPORTUNITIES` has higher pre-declared precedence, that is the recorded verdict.
+
+**Verified fact:** the canonical signal set is concentrated in 2021–2022; no cost-feasible signal
+occurs after 2022-09 under the frozen rules. The additional views are also concentrated: session id
+largest share 35.6% (design effect 15.13), calendar quarter 37.8% (design effect 11.62).
+
+**Verified fact:** protocol compliance passed, the capital-geometry check passed on the cost-feasible
+population (the pre-gate diagnostic shows 208 of 295 above 100% notional), and the 4h supplied-bar
+sensitivity preserved both failure directions (22 canonical, `M_all` 0.356311, design effect 3.43).
+
+### 7.5 What the evidence did not demonstrate
+
+- It did not show that session-relative continuation is absent in BTC.
+- It did not show that a cheaper venue would make D testable. The 10 bp sensitivity shows 253 of 295
+  pre-gate sessions would pass the gate, but the non-overlap count at that cost was not computed, so
+  the opportunity consequence is **Unknown**.
+- It did not show that the 1h-ATR stop is the wrong stop. It shows that at 26 bp the stop is too
+  tight for the gate in 84.7% of pre-gate sessions.
+- It did not establish independence among the 34 canonical signals, and the concentration diagnostics
+  suggest the opposite risk.
+
+### 7.6 Why the candidate failed its applicable criteria
+
+The Stage 2J decision rule fails a candidate if `N < 150` **or** `M_all > 0.20`. D satisfies both. The
+recorded verdict is **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES**; the concentration criterion is
+reported but does not change the verdict because of precedence (`stage2j/STAGE2J_SUMMARY_AND_VERDICT.md`
+§1–§2).
