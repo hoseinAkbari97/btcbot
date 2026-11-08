@@ -14,10 +14,10 @@
       "sha256": "d6672879111e8fabd95c2a0ccfc22c7ffa390e60b320a96d555621d3e7de8d90"
     },
     "RESEARCH_DIRECTION_COMPARISON.md": {
-      "bytes": 27612,
+      "bytes": 27894,
       "path": "docs/research/stage2k/RESEARCH_DIRECTION_COMPARISON.md",
       "role": "Five-direction comparison with ordinal scores and dominance relations",
-      "sha256": "af334accdbff05f51b455e4f183f985c4c3b483a8cfcdf1b9ed3112aeb49e76f"
+      "sha256": "653aa30f9dd91614699fc86c1717473c0caa4f866ac10da561d4f60fb41d459b"
     },
     "STAGE2K_FINAL_RECOMMENDATION.md": {
       "bytes": 20188,
@@ -73,8 +73,8 @@
     "validation_or_oos_accessed": false,
     "win_rate_computed": false
   },
-  "created_utc": "2026-11-08T08:48:15Z",
-  "git_head": "7d0aba2e91c9cc8f53c91213a0c54a2bb38078cb",
+  "created_utc": "2026-11-08T08:56:04Z",
+  "git_head": "39668f926542c7786013ca4871da178abdf34c48",
   "git_head_note": "HEAD after the four review documents were committed and before this manifest. Final HEAD is the commit that introduces this file; the manifest cannot contain its own commit.",
   "hashing_procedure": {
     "algorithm": "SHA256 over raw file bytes for artifact_hashes and source_artifacts.",
@@ -144,7 +144,7 @@
       "Stage 2L"
     ]
   },
-  "self_hash": "06277b9c033f5da04cfd59883558f50e6ea617d711a9c5187a638b6336631eee",
+  "self_hash": "4946a0c4fb7cb404490c7494b78e7a269734b66fae1954a1e9f34eb14ed5a0eb",
   "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
   "source_artifacts": {
     "docs/research/STAGE2A_FEASIBILITY_CENSUS.md": {
