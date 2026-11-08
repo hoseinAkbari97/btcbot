@@ -91,3 +91,10 @@ stage6_rebuild_v2/daily_equity.csv
 stage6_rebuild_v2/primary_portfolio_trades.csv
 stage6_rebuild_v2/time_stop_trades.csv
 stage6_rebuild_v2/__pycache__/
+
+# --- Local agent state ---
+# Machine-local settings and scratch directories. These are not part of the
+# source tree and may contain session-specific data.
+.freebuff/
+.claude/settings.local.json
+.opencode/
