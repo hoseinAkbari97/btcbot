@@ -124,3 +124,94 @@ loses money" are different findings, and this recommendation depends only on the
 
 What is also not claimed: that BTC lacks these opportunities, that the family has no edge, that the
 26 bp proxy is wrong, or that the v2 freeze is unsound. Each of those is **Unknown** on this record.
+
+---
+
+## 2. What would have to be true to reverse the decision
+
+Each item below would require **new, separately authorized work**. None can be established by
+re-reading this record, and none is claimed to be likely.
+
+| # | condition | what it would change | status |
+|---|---|---|---|
+| R1 | A verified all-in venue cost of about 10 bp **and** a computed D canonical non-overlap count at that cost that meets the derived requirement | D becomes a live candidate instead of an untested one | **Unmeasured and uncomputed** |
+| R2 | A pre-registered A-family variant, frozen before counting, reaches the derived requirement with a design effect of 2.00 or less | D3 becomes admissible | **Not attempted** |
+| R3 | The owner declares a minimum effect of 0.48R or larger as the effect actually of interest | D1b becomes an informative in-sample test, though still not a test of the 0.15R premise | **Undecided** |
+| R4 | An arms-length audit finds a **material counting error** — not a disagreement about thresholds — large enough to move a canonical count above the derived requirement | The affected verdict would need re-examination | **No such error is known:** the v2 counters were remediated after Stage 2F, and Stage 2H found no reopened critical |
+| R5 | A repaired framework's derived rule is met by an already-frozen population without re-counting | The stage could proceed on existing objects | **Implausible:** all four canonical counts are below even the 0.23R requirement of 150 |
+
+**Verified fact:** no item in this table is satisfied by evidence currently in the repository. The
+recommendation is therefore not conditional on a judgement call; it is conditional on work that has
+not been done and is not authorized.
+
+**Interpretation:** R1 is the only reversal that could plausibly arrive through measurement rather
+than through a new hypothesis. That is why the conditional path in §3 puts cost verification first.
+
+---
+
+## 3. If the project continues: the conditional path
+
+This section describes what a defensible continuation would look like. It is **not** a plan, an
+authorization, or a prediction that it would succeed.
+
+### 3.1 Required order
+
+| step | output | who decides |
+|---|---|---|
+| 1. Declare the minimum economic effect δ in R | A written number with a rationale | **Owner only** |
+| 2. Measure the venue cost | Fee schedule, measured spread, realised slippage, depth, minimum notional, outage record | New authorized work |
+| 3. Derive the sufficiency rule | `N_required` from δ, α, power, σ and a declared dependence allowance | New authorized work, pre-declared |
+| 4. Re-freeze the framework | A new framework version; no candidate yet | New freeze |
+| 5. Audit it | An arms-length review, not a self-audit | Governance |
+| 6. Decide on a candidate | Only now, and only against the derived rule | Owner |
+
+Steps 1–5 are D2. Step 6 is where D3 would be considered.
+
+### 3.2 Why only A could survive step 6
+
+| candidate | absolute ceiling before costs and overlap | can a derived requirement of roughly 126–349 be met? |
+|---|---:|---|
+| A primary | 195 valid triggers | Possibly not at 71 canonical; the control arm at 150 is the only object near any plausible requirement |
+| A control | 445 confirmed triggers; 342 feasible; 150 matched-window canonical | The only arm recorded at the old floor |
+| B | 32 pre-gate | **No** — the ceiling is 32 under any cost assumption |
+| C | 17 triggers | **No** — the ceiling is 17 under any cost assumption |
+| D | 295 pre-gate | **Unknown** — depends on cost and on the uncomputed canonical count |
+
+**Verified fact:** B and C cannot be rescued by any rule that requires more than 32 or 17. This is
+arithmetic on their funnel end-points, not a judgement.
+
+### 3.3 What an A-family variant would have to contain to avoid being gate-fitting
+
+1. A new name and a new specification; no edits to the frozen Stage 2C artifact.
+2. Named differences from A, each with a rationale that does not refer to the observed counts.
+3. The same development interval, the same data, the same cost and overlap conventions unless a
+   change is pre-declared and justified by step 2.
+4. The frozen A result (71) and the control result (150) reported beside the new count.
+5. A pre-declared success and failure condition, written before the census runs.
+6. No validation or out-of-sample rows.
+
+**Interpretation:** without items 2 and 5, the variant is indistinguishable from lowering the bar
+until something passes, which is the failure mode the project's own change control was built to
+prevent.
+
+### 3.4 A legitimate negative outcome of D2
+
+If the derived rule requires more independent opportunities than any plausible variant of A can
+produce, then the correct conclusion is that **this design cannot be tested on this interval** — not
+that the rule should be relaxed again. That outcome would make D2 the final step of the programme
+rather than a prelude to D3.
+
+---
+
+## 4. Rejected alternatives
+
+| alternative | reason for rejection |
+|---|---|
+| **Proceed to Stage 2L on D or A (D1)** | Dominated by stopping on every criterion; detectable effect 0.480R / 0.332R against a 0.15R premise; a null would be uninformative |
+| **Lower the floor to 71 or 34** | Changes the decision rule after seeing counts, with no derivation; makes the next stage unfalsifiable |
+| **Relax the cost gate to 10 bp on the proxy's authority** | Substitutes an unmeasured assumption for a measurement; even at 10 bp, B is 32 and C is 17 |
+| **Re-census B with a relaxed definition** | Ceiling of 32 before costs; a relaxed definition would be a different hypothesis with no evidential support |
+| **Re-census D with a wider stop** | Would convert a stop-geometry failure into an accounting change; the frozen spec expressly forbids tuning the stop to pass the gate |
+| **Change family now (D4)** | No evidence in the record about other families; would inherit the same framework defects |
+| **Extend the development interval** | Consumes validation/OOS data; requires separate governance authorization; not a Stage 2K action |
+| **Run Stage 2L on A's control because it reaches 150** | The control was defined as a selectivity diagnostic and explicitly not promoted; 150 is underived and sufficient only for 0.229R |
