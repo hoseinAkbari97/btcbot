@@ -2893,6 +2893,47 @@ The user must approve or reject `theta=0.50`, `phi=0.50`, `+1R`,
 Setup 1 run may be executed and read. Until then the smallest next step is that
 approval decision, not another run.
 
+## Stage 2J — Candidate B and D feasibility census (2026-11-08)
+
+Stage 2J is complete. Both candidates were counted under the frozen Stage 2E v2
+rules (`docs/research/stage2e_v2/`, version `2.0.0`) on the development interval
+`[2021-01-01T00:00:00Z, 2024-07-01T00:00:00Z)` with the 26 bp round-trip cost
+proxy and the `cost_R <= 0.20` gate. No validation or out-of-sample row was
+read, decoded, sliced, or summarised.
+
+| candidate | canonical horizon | `N` | `M_all` | largest cluster share | design effect | Stage 2J verdict |
+|---|---:|---:|---:|---:|---:|---|
+| B | 72 h | 24 | 0.086505 | 0.103448 | 1.689655 | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** |
+| D | 24 h | 34 | 0.322559 | 0.177778 | 3.933333 | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** |
+
+Both candidates are below the 150-opportunity project floor. D also fails the
+frozen `M_all <= 0.20` condition. D's concentration screen is met (design effect
+3.93), but `INSUFFICIENT OPPORTUNITIES` has higher pre-declared precedence. The
+frozen candidate-specification tier label is `FAIL` for both and is reported
+separately from the Stage 2J verdict.
+
+Non-overlap sensitivities: B 24 h 29, 72 h 24, 120 h 23; D 12 h 36, 24 h 34,
+48 h 27. Non-overlapping observations are not independent observations.
+
+The non-decision 4 h supplied-bar exemption sensitivity excludes the twelve
+registered gap-adjacent buckets and breaks the 4 h ATR at them. It leaves both
+verdict directions unchanged: B 18 canonical signals, D 22.
+
+Alignment reconciled the seven registered gaps exactly (5m 213 missing, 15m 70,
+1h 14), found zero high/low/close or volume mismatches in complete buckets, and
+confirmed all twelve exempt 4 h buckets present and usable. All stage
+identities and causality checks pass.
+
+Artifacts are under `docs/research/stage2j/`; the census code is at commit
+`bc1285c`, and the frozen artifact manifest is commit `03191ba` with self-hash
+`d12de357a8032a123bd0efaea156f26aa71c707061204cc058011bbc4e5df96a`. The
+recorded run used 551.793 MiB peak RSS and 99.137 s wall clock; two runs produced
+byte-identical analytical JSON. Stage 2J and Stage 2I tests: 105 passed.
+
+No P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity
+curve, bootstrap, Monte Carlo, optimisation, backtest, paper trade, or live
+trade was produced. **Stage 2K was not started.**
+
 ## Project Philosophy
 
 ### Research-First Approach
