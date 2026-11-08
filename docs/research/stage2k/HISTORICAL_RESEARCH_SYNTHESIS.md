@@ -122,8 +122,32 @@ the project's history. Any comparison that ignores this will misattribute result
 **Verified fact:** Strategy 2 Candidate A's fallback check is reported in
 `docs/research/STAGE2A_FEASIBILITY_CENSUS.md` §5: 271 raw, 237 cost-feasible, 170 unique, **76
 non-overlapping** at a 5-day hold, median `cost_R` 0.122. It is a different hypothesis from the
-Stage 2C Candidate A (71 non-overlapping at 120h), and the two must not be combined.
-
-**Interpretation:** the relabelling is a documentation hazard, not a computational error. It does,
+Stage 2C Candidate A (71 non-overlapping at 120h), and the two must not be combined.**Interpretation:** the relabelling is a documentation hazard, not a computational error. It does,
 however, mean that statements such as "Candidate B was tested" are only meaningful when the stage is
 named. Stage 2K therefore always cites the stage together with the label.
+
+---
+
+## 3. Historical candidate comparison
+
+Every row below is a **structural feasibility** result. None is a profitability result.
+
+| Candidate | Original hypothesis | Research stage | Main feasibility result | Principal failure or limitation | Final status |
+|---|---|---|---|---|---|
+| **A** | In a higher-timeframe uptrend, price pulls back to a lower-timeframe reference and resumes; enter on resumption with a structural stop | specified Stage 2B, censused Stage 2C | 644 crossunder episodes → 445 confirmed → 195 regime-eligible → 151 cost-feasible unique → **71 non-overlapping (120h)**; median `cost_R` 0.1032 pre-gate / 0.0898 feasible; feasible share 0.774 | Frequency. 71 is below the 150 floor and far below 349; the 4h regime filter removes 250 of 445 confirmed triggers and the 120h overlap rule removes 80 of 151 feasible signals | **FAIL — insufficient non-overlapping opportunity frequency** |
+| **B** | A directional volatility expansion continues after a shallow retest, permitted only in a qualified 4h regime | Stage 2D design; Stage 2E v1 freeze → 2F audit FAIL → 2G v2; Stage 2J census | 30,625 usable 1h bars → 503 expansions → 458 episode attempts → 117 regime-qualified → 34 structurally valid → 32 pre-gate → 29 cost-feasible → **24 non-overlapping (72h)**; `M_all` 0.086505; feasible share 0.906 | Frequency, not cost. Only 24 canonical opportunities; the regime gate removes 341 of 458 attempts and structural validation removes 83 of 117 regime-qualified attempts | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** |
+| **C** | A sustained volatility and volume compression resolves with a confirmed breakout that continues | Strategy 2 selection; censused Stage 2A | 7,662 4h bars → 461 compression episodes → **63** with duration ≥ 6 bars → 17 breakouts → **12 cost-feasible unique**; median `cost_R` 0.124; 3.4 events/year | Frequency, and it is structural: the 63-episode duration floor is below the 200 gate even before breakout and cost rejection | **FAIL — insufficient economic or statistical feasibility** |
+| **D** | BTC shows session-relative intraday continuation in normal-volatility conditions; the first two hours of a UTC session predict the rest of the session | Stage 2D design; frozen in `stage2e_v2/` v2; Stage 2J census | 3,829 evaluable sessions → 927 directional → 332 budget-qualified → 296 above VWAP → 295 pre-gate → **45 cost-feasible** → **34 non-overlapping (24h)**; `M_all` 0.322559; feasible share 0.153 | Two independent failures: frequency (34 < 150) and cost geometry (`M_all` 0.3226 > 0.20). 250 of 295 pre-gate sessions fail the 26 bp gate; no cost-feasible signal occurs after 2022-09 | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** (concentration criterion also met, lower precedence) |
+
+**Verified fact — threshold drift across stages.** Stage 2A gated Candidate C on **≥ 200** economically
+feasible unique events (`STAGE2A_FEASIBILITY_CENSUS.md` §1). Stage 2C onwards used **150** as the
+project floor (`STAGE2C_FEASIBILITY_CENSUS.md` §13; `stage2e_v2/CANDIDATE_B_SPEC.md` §11.1). The
+Stage 2D provenance audit records 150 as first appearing in the Stage 2C freeze, with no statistical
+derivation (`STAGE2D_STRATEGY_RECOMMENDATION.md` §9 item 1). The two floors are not interchangeable
+and Stage 2K does not reinterpret either.
+
+**Verified fact — calendar ceilings were not the binding limit for B, C or D.** The development
+interval is 1,277 days (`STAGE2C_FEASIBILITY_CENSUS.md` §2.1). At the frozen horizons the maximum
+numbers of non-overlapping windows are 425 (72h), 1,277 (24h) and 255 (120h). B reached 24 of 425
+(5.6%), D 34 of 1,277 (2.7%), C 12 of an episode ceiling of 63, and A 71 of 255 (27.8%). Only A loses
+a large share of its feasible population to the overlap rule (80 of 151).
