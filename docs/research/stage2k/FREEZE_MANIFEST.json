@@ -1,0 +1,268 @@
+{
+  "artifact_commit_note": "Per-section commits: the four documents were written in small commits between review-start HEAD 3db4a7e86ba1cbaf872e83bbf2c745090d823352 and the git_head above. Integrity rests on self_hash, not on these fields.",
+  "artifact_hashes": {
+    "FAILURE_MODE_ANALYSIS.md": {
+      "bytes": 38983,
+      "path": "docs/research/stage2k/FAILURE_MODE_ANALYSIS.md",
+      "role": "Failure-mode taxonomy, attribution and structural-versus-project analysis",
+      "sha256": "b7ac79915a8d4821591d73e729e2b8044d41f451dce74911450fd14585b5a53a"
+    },
+    "HISTORICAL_RESEARCH_SYNTHESIS.md": {
+      "bytes": 36261,
+      "path": "docs/research/stage2k/HISTORICAL_RESEARCH_SYNTHESIS.md",
+      "role": "Historical research synthesis: provenance, label audit, candidate record",
+      "sha256": "d6672879111e8fabd95c2a0ccfc22c7ffa390e60b320a96d555621d3e7de8d90"
+    },
+    "RESEARCH_DIRECTION_COMPARISON.md": {
+      "bytes": 27612,
+      "path": "docs/research/stage2k/RESEARCH_DIRECTION_COMPARISON.md",
+      "role": "Five-direction comparison with ordinal scores and dominance relations",
+      "sha256": "af334accdbff05f51b455e4f183f985c4c3b483a8cfcdf1b9ed3112aeb49e76f"
+    },
+    "STAGE2K_FINAL_RECOMMENDATION.md": {
+      "bytes": 20188,
+      "path": "docs/research/stage2k/STAGE2K_FINAL_RECOMMENDATION.md",
+      "role": "Stage 2K decision, reversal conditions, authorization record",
+      "sha256": "e992910641e96f0bd0be5d6e30ba3bce1daf376e7bd6cf4515669f8210ee237e"
+    }
+  },
+  "artifact_set": "Stage 2K independent historical research review of the four-candidate feasibility programme",
+  "baseline": {
+    "cost_proxy": {
+      "cost_fraction_primary": 0.0026,
+      "gate_cost_r": 0.2,
+      "round_trip_bps_primary": 26,
+      "venue": "Binance spot proxy; not a verified Nobitex execution cost"
+    },
+    "decision_thresholds": {
+      "concentration_design_effect_ceiling": 2.0,
+      "concentration_largest_share_ceiling": 0.5,
+      "independent_sample_reference": 349,
+      "independent_sample_status": "planning reference under independence at 0.15R, sigma=1R, 5% two-sided, 80% power; not a requirement and not a power result for this design",
+      "minimum_effect_assumption_r": 0.15,
+      "non_overlap_is_not_independence": true,
+      "project_floor_non_overlapping": 150,
+      "project_floor_status": "project protocol choice from the Stage 2C freeze; not statistically derived; Stage 2A used 200"
+    },
+    "development_interval": {
+      "end": "2024-07-01T00:00:00Z",
+      "semantics": "half-open [start, end) on candle open time",
+      "start": "2021-01-01T00:00:00Z"
+    }
+  },
+  "branch": "main",
+  "confirmations": {
+    "backtest_run": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "change_proposals_applied": false,
+    "drawdown_computed": false,
+    "expectancy_computed": false,
+    "frozen_artifacts_modified": false,
+    "historical_verdicts_preserved": true,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "recount_run": false,
+    "returns_computed": false,
+    "sharpe_or_sortino_computed": false,
+    "signals_counted": false,
+    "stage2l_started": false,
+    "validation_or_oos_accessed": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-08T08:48:15Z",
+  "git_head": "7d0aba2e91c9cc8f53c91213a0c54a2bb38078cb",
+  "git_head_note": "HEAD after the four review documents were committed and before this manifest. Final HEAD is the commit that introduces this file; the manifest cannot contain its own commit.",
+  "hashing_procedure": {
+    "algorithm": "SHA256 over raw file bytes for artifact_hashes and source_artifacts.",
+    "bytes_field": "os.path.getsize at manifest creation time.",
+    "reproduce": [
+      "cd <repository root>",
+      "python3 -c \"import hashlib,json;d=json.load(open('docs/research/stage2k/FREEZE_MANIFEST.json'));from pathlib import Path;print('artifact_hashes');[print(v['sha256'],v['path']) for v in d['artifact_hashes'].values()];print('source_artifacts');[print(h,p) for p,v in d['source_artifacts'].items() for h in [v['sha256']]]\"",
+      "verify with sha256sum against the printed hashes"
+    ]
+  },
+  "manifest_commit_note": "This manifest cannot contain its own commit or hash. A verifier must recompute self_hash after removing the self_hash field.",
+  "no_performance_claim": "This manifest records a review of structural feasibility and research design only. It contains no P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity curve, bootstrap, Monte Carlo, optimisation, backtest, paper-trade or live-trade result. No outcome was observed at any stage of the reviewed programme. Non-overlapping observations are not independent observations. No candidate is shown to be profitable or unprofitable, and feasibility failure is not a profitability finding.",
+  "quoted_counts": {
+    "A": {
+      "control_matched_nonoverlap": 150,
+      "feasible": 151,
+      "gate": 150,
+      "horizon_hours": 120,
+      "nonoverlap": 71,
+      "source": "docs/research/STAGE2C_FEASIBILITY_CENSUS.md"
+    },
+    "B": {
+      "feasible": 29,
+      "gate": 150,
+      "horizon_hours": 72,
+      "nonoverlap": 24,
+      "pregate": 32,
+      "source": "docs/research/stage2j/CANDIDATE_B_CENSUS_REPORT.md"
+    },
+    "C": {
+      "feasible": 12,
+      "gate": 200,
+      "horizon_hours": 72,
+      "nonoverlap": 12,
+      "source": "docs/research/STAGE2A_FEASIBILITY_CENSUS.md",
+      "triggers": 17
+    },
+    "D": {
+      "feasible": 45,
+      "gate": 150,
+      "horizon_hours": 24,
+      "nonoverlap": 34,
+      "pregate": 295,
+      "source": "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md"
+    }
+  },
+  "recommendation": {
+    "conditional_alternative": "D2 framework repair (owner-declared minimum effect, verified venue cost, derived dependence-aware sufficiency rule, arms-length audit), followed only then by a single pre-registered A-family variant (D3)",
+    "not_recommended": "Stage 2L on A, B, C or D; lowering the 150 floor; relaxing the 26 bp cost gate",
+    "only_object_at_the_floor": "Candidate A unconditioned control arm, 150 matched-window non-overlapping events, explicitly not promoted",
+    "primary": "STOP the current strategy family under the current research framework",
+    "reversal_requires": "new separately authorized work: verified cost plus computed D canonical count, or a pre-registered A-family variant meeting a derived rule, or an owner declaration of a much larger minimum effect"
+  },
+  "review_scope": {
+    "authorized": [
+      "read Stage 2A-2J documentation and machine-readable artifacts",
+      "write the four Stage 2K review documents",
+      "generate and verify this manifest"
+    ],
+    "prohibited": [
+      "new candidate specification",
+      "census or re-count",
+      "market-data processing",
+      "backtest, P&L, expectancy, optimisation",
+      "validation or out-of-sample access",
+      "modification of any frozen artifact",
+      "Stage 2L"
+    ]
+  },
+  "self_hash": "06277b9c033f5da04cfd59883558f50e6ea617d711a9c5187a638b6336631eee",
+  "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
+  "source_artifacts": {
+    "docs/research/STAGE2A_FEASIBILITY_CENSUS.md": {
+      "bytes": 20407,
+      "role": "Candidate C compressed-volatility breakout census",
+      "sha256": "ce37b63979d6e68e2f6e8971d5b13669152885101ed4485f26fcb9c74fc8ca7a"
+    },
+    "docs/research/STAGE2B_STRATEGY_DISCOVERY.md": {
+      "bytes": 9416,
+      "role": "Stage 2B strategy discovery and label definitions",
+      "sha256": "53b83b9165f7361d840f9b34f30876cfac168e0616cb7fdecddc1e406b96a9fe"
+    },
+    "docs/research/STAGE2B_STRATEGY_RECOMMENDATION.md": {
+      "bytes": 7839,
+      "role": "Stage 2B recommendation and screened candidates",
+      "sha256": "1410d60ec228545a79e9aae0818f7e314cb74f78fa1f948aa7884a607b7ec71e"
+    },
+    "docs/research/STAGE2C_FEASIBILITY_CENSUS.md": {
+      "bytes": 21863,
+      "role": "Candidate A multi-timeframe pullback census, control arm, clusters",
+      "sha256": "b5487bfaf996363d441bb310ee3536807cdc58619c92bc0060a762e2c5975051"
+    },
+    "docs/research/STAGE2D_STRATEGY_RECOMMENDATION.md": {
+      "bytes": 27367,
+      "role": "Stage 2D recommendation and threshold provenance audit",
+      "sha256": "639172439c8c9a608630df3dd857f0d2d36a3959ee6cf7e8c5c07178e50adfb9"
+    },
+    "docs/research/STAGE2D_STRATEGY_REDESIGN.md": {
+      "bytes": 81249,
+      "role": "Stage 2D redesign: 150, 349, 0.15R and overlap audits",
+      "sha256": "fc713b3c9311a24e2aef3c4938adc54d457b17feb3e619c9711a2f850527eb58"
+    },
+    "docs/research/STAGE2F_INDEPENDENT_FREEZE_AUDIT.md": {
+      "bytes": 77063,
+      "role": "Stage 2E v1 independent freeze audit (four criticals)",
+      "sha256": "082e8ae56e4ce86c21ba1f66698597d7f9167eb5aeeea4488dbfe0fb1d8cc9c2"
+    },
+    "docs/research/STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md": {
+      "bytes": 50070,
+      "role": "Stage 2E v2 adversarial self-audit",
+      "sha256": "c91a3486e26f06af7523d47aacfe4ee56ee6e88a12b6d2262aea191f5a3feddf"
+    },
+    "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md": {
+      "bytes": 45246,
+      "role": "Frozen Candidate B specification 2.0.0",
+      "sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41"
+    },
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": {
+      "bytes": 41652,
+      "role": "Frozen Candidate D specification 2.0.0",
+      "sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa"
+    },
+    "docs/research/stage2e_v2/FREEZE_MANIFEST.json": {
+      "bytes": 21715,
+      "role": "Stage 2E v2 freeze manifest",
+      "sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7"
+    },
+    "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md": {
+      "bytes": 30579,
+      "role": "Shared census protocol, thresholds and Kish diagnostics",
+      "sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c"
+    },
+    "docs/research/stage2i/CHANGE_PROPOSALS.md": {
+      "bytes": 6017,
+      "role": "Stage 2I change proposals CP-1 to CP-5 (unapplied)",
+      "sha256": "768c5ffaacaaa930ab965c9f2cbec7d9f54ec2f7e80667fe6dc85853cc775e0d"
+    },
+    "docs/research/stage2i/OWNER_RATIFICATION.md": {
+      "bytes": 8650,
+      "role": "Stage 2I owner ratification (K0-K4)",
+      "sha256": "39ca94cbcf452d0db2f0768256fe4ff3360b9902c410777a7e99708b8ddcf75b"
+    },
+    "docs/research/stage2i/STAGE2I_FINAL_READINESS_DECISION.md": {
+      "bytes": 5236,
+      "role": "Stage 2I readiness decision",
+      "sha256": "ff8a7c7b4cdb2c4ac2d3c694143941009baea3ed91149a84c5703b349eb720fd"
+    },
+    "docs/research/stage2j/CANDIDATE_B_CENSUS_REPORT.md": {
+      "bytes": 9793,
+      "role": "Candidate B census report",
+      "sha256": "e987e27ae6815f86d0ce0ac921b08e9ec8a0a12df9282a51ee780a40edd6a7f1"
+    },
+    "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md": {
+      "bytes": 11217,
+      "role": "Candidate D census report",
+      "sha256": "07291ef379746a435eb05ec4dcc43252807287d2b29092135ded04c381188251"
+    },
+    "docs/research/stage2j/CENSUS_METHODOLOGY_AND_EXECUTION.md": {
+      "bytes": 11513,
+      "role": "Stage 2J methodology, resources and determinism",
+      "sha256": "ed47df1c426727eeaf57789565af072010afde1e61fe89d2100b1bf6e0867a61"
+    },
+    "docs/research/stage2j/FREEZE_MANIFEST.json": {
+      "bytes": 10955,
+      "role": "Stage 2J freeze manifest",
+      "sha256": "6b16da91d64a9fe7e64e03edf9547dbe96e3e6eacb61a973c72d030fa2c8c842"
+    },
+    "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md": {
+      "bytes": 29918,
+      "role": "Stage 2J pre-registered analysis plan",
+      "sha256": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e"
+    },
+    "docs/research/stage2j/STAGE2J_FINAL_DECISION.md": {
+      "bytes": 4677,
+      "role": "Stage 2J final decision",
+      "sha256": "12d37bec9baa2e242103da1b0f30c38a6f4874e5127eb989e4d88d416397864d"
+    },
+    "docs/research/stage2j/STAGE2J_SUMMARY_AND_VERDICT.md": {
+      "bytes": 6445,
+      "role": "Stage 2J summary and verdict",
+      "sha256": "d1a332a2bef5b299f8cd04797bc623d623a60695ff3d0499928a0d8386e97935"
+    },
+    "docs/research/stage2j/machine_readable/verdict_inputs.json": {
+      "bytes": 2075,
+      "role": "Stage 2J verdict inputs (counts, costs, design effects)",
+      "sha256": "100cfb496739b4610b27f52e20b1dbb000cde4170ba50a952c897e67c39de8f7"
+    }
+  },
+  "stage": "2K",
+  "version_identifier": "stage2k/1.0.0"
+}
