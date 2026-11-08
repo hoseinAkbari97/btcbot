@@ -442,7 +442,120 @@ sensitivity preserved both failure directions (22 canonical, `M_all` 0.356311, d
 
 ### 7.6 Why the candidate failed its applicable criteria
 
-The Stage 2J decision rule fails a candidate if `N < 150` **or** `M_all > 0.20`. D satisfies both. The
-recorded verdict is **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES**; the concentration criterion is
+The Stage 2J decision rule fails a candidate if `N < 150` **or** `M_all > 0.20`. D satisfies both.The recorded verdict is **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES**; the concentration criterion is
 reported but does not change the verdict because of precedence (`stage2j/STAGE2J_SUMMARY_AND_VERDICT.md`
 §1–§2).
+
+---
+
+## 8. Cross-candidate structural comparison
+
+The four censuses counted different objects and must not be read as a leaderboard. The table records
+where each population was lost.
+
+| item | A | B | C | D |
+|---|---|---|---|---|
+| counting unit | 1h pullback episode | 1h expansion episode | 4h compression episode | UTC session |
+| primary population | 644 crossunders | 458 episode attempts | 461 episodes | 3,829 evaluable sessions |
+| dominant loss | 4h regime: 250 of 445 confirmed (56.2%) | 4h regime: 341 of 458 attempts (74.5%) | duration floor: 398 of 461 episodes (86.3%) | cost gate: 250 of 295 pre-gate (84.7%) |
+| second loss | 120h overlap: 80 of 151 feasible (53.0%) | structural validation: 83 of 117 regime-qualified (70.9%) | trigger: 46 of 63 episodes (73.0%) | threshold: 2,902 of 3,829 sessions (75.8%) |
+| canonical `N` | 71 | 24 | 12 | 34 |
+| pre-gate median `cost_R` | 0.1032 (n=195) | 0.086505 (n=32) | 0.124 (n=17) | 0.322559 (n=295) |
+| cost gate binding? | no (44 of 195 failed) | no (3 of 32 failed) | no (5 of 17 failed) | **yes** (250 of 295 failed) |
+| reported rate | 20.9 / active year | ≈ 7.4 / year (derived) | 3.4 / year | ≈ 10.5 / year (derived) |
+| calendar ceiling at frozen horizon | 255 (120h) | 425 (72h) | 63 episodes (state cap) | 1,277 (24h) |
+| verdict | FAIL — frequency | FAIL — insufficient opportunities | FAIL — economic/statistical feasibility | FAIL — insufficient opportunities |
+
+The B and D per-year rates are derived by Stage 2K from the reported canonical counts and the
+92-day 4h warm-up (`stage2e_v2/CANDIDATE_B_SPEC.md` §4.2), not reported by the censuses. They are
+**Interpretation**, not historical fact.
+
+**Interpretation:** the funnels differ in where they lose the population, but all four lose it before
+the opportunity floor. Two candidates (A, B) are throttled mainly by a regime conjunction; one (C)
+by the rarity of the state itself; one (D) by stop geometry against the cost proxy. That pattern is
+more consistent with a family-level opportunity-density problem than with a single faulty rule.
+
+---
+
+## 9. Evidence limitations
+
+1. **No outcome was ever observed.** Every verdict is a structural feasibility verdict. None
+   establishes or refutes an edge, and none is a profitability statement.
+2. **The v2 freeze was self-audited.** Stage 2H was written by the same agent that performed the
+   Stage 2G remediation (`STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md` independence disclosure). Stage 2I
+   accepted it as the audit of record with that limitation explicit; no third-party audit exists
+   (`stage2i/OWNER_RATIFICATION.md` §1).
+3. **Version 1 of the freeze was rejected.** Stage 2F found four critical defects, including future
+   data in D's eligibility rule and a vacuous cost condition (`STAGE2F_INDEPENDENT_FREEZE_AUDIT.md`
+   §0). Version 2 remediated them and was audited at Stage 2H. Version 1 was never counted.
+4. **The cost model is a proxy.** 26 bp round trip is a Binance estimate of fees plus adverse
+   execution, not a measured Nobitex cost (all candidate specs; `stage2j/STAGE2J_SUMMARY_AND_VERDICT.md`
+   §4).
+5. **One development interval, one market path.** `[2021-01-01, 2024-07-01)` covers a bull phase, a
+   bear phase and a recovery, but it is a single realised history and no resampling or outcome-based
+   dependence estimate exists.
+6. **The decision thresholds are project choices.** The 150 floor was fixed at the Stage 2C freeze
+   with no derivation; the 349 figure assumes independent observations at 0.15R, 1R standard
+   deviation, 5% two-sided and 80% power; `cost_R ≤ 0.20` and the concentration screen are protocol
+   choices. None is a market fact (Verified fact: `stage2e_v2/CANDIDATE_B_SPEC.md` §0.1, §11.3;
+   `stage2j/machine_readable/verdict_inputs.json` fields `project_floor_status` and
+   `reference_status`).
+7. **Thresholds drifted between stages.** Stage 2A used ≥ 200; Stage 2C onwards used 150. The two
+   cannot be compared directly, and Stage 2K does not restate either as a standard.
+8. **Labels drifted between stages** (Section 2). Cross-stage summaries that omit the stage name are
+   uninterpretable.
+9. **Implementation choices were made after the freeze but before counting.** B-1 (a regime-failed
+   episode still occupies the active slot), C-1 (capital geometry evaluated on the cost-feasible
+   population), and M3 (twelve gap-adjacent 4h buckets retained as supplied) are recorded in
+   `stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md` and the Stage 2I ratification. They are legitimate
+   because they preceded counting, but they are choices, not forced readings.
+10. **The data is not perfectly contiguous.** There are 7 registered gaps (213 5m bars, 70 15m bars,
+    14 1h bars), 31 zero-volume 5m placeholders, and one extra non-exempt 4h bucket caused by those
+    placeholders (`stage2j/DATA_ALIGNMENT_AND_METHOD_AUDIT.md` §3–§5). The handling is documented and
+    the alignment audit is clean, but the gaps are real.
+11. **The diagnostics are descriptive.** Kish `n_eff` assumes perfect within-cluster dependence; the
+    design-effect screen is not a statistical test; non-overlap is a construction rule, not an
+    independence claim (`stage2e_v2/SHARED_CENSUS_PROTOCOL.md` §3.1;
+    `stage2j/CANDIDATE_COMPARISON.md` §7).
+12. **Two hypotheses were compared with controls; two were not.** A and C have unconditioned control
+    arms, and neither control was promoted. B and D have no outcome control arm.
+13. **Several designed hypotheses were never measured** (Section 1.3). Absence of a census is not
+    evidence against them.
+
+---
+
+## 10. What the historical record does not say
+
+- It does not say that any of the four strategies is unprofitable.
+- It does not say that any of the four has no edge.
+- It does not say that BTC offers too few opportunities in general; it says these frozen
+  conjunctions, on this interval, under this cost proxy, produced too few.
+- It does not say that the 26 bp cost is wrong, only that it is unverified and that it dominates D.
+- It does not say that 150 is the right or wrong number; it says 150 is an undelivered project
+  choice that no candidate met.
+- It does not say that a different venue, timeframe or filter would pass. Those are untested
+  hypotheses.
+- It does not say that the frozen rules were implemented incorrectly. Compliance and alignment
+  passed for B and D, and Stage 2C's alignment audit passed for A; C's look-ahead status is a
+  structural argument, not a harness run.
+
+---
+
+## 11. Verified-fact index
+
+| claim | artifact |
+|---|---|
+| A: 71 non-overlapping, 151 feasible, median `cost_R` 0.0898 feasible | `STAGE2C_FEASIBILITY_CENSUS.md` §1, §5, §13 |
+| A: regime removes 250 of 445; overlap removes 80 of 151 | `STAGE2C_FEASIBILITY_CENSUS.md` §4, §7 |
+| B: 24 canonical 72h; `M_all` 0.086505; feasible share 0.90625 | `stage2j/CANDIDATE_B_CENSUS_REPORT.md` §2, §4 |
+| B: 341 of 458 attempts fail regime at `e`; 83 of 117 fail structure | `stage2j/CANDIDATE_B_CENSUS_REPORT.md` §3 |
+| C: 63 episodes ≥ 6 bars; 17 breakouts; 12 feasible | `STAGE2A_FEASIBILITY_CENSUS.md` §3.1, §7 |
+| C: 10 bp yields at most 17 events; 1.00R gate yields 17 | `STAGE2A_FEASIBILITY_CENSUS.md` §3.3, §6.1 |
+| D: 34 canonical 24h; `M_all` 0.322559; 250 of 295 fail cost | `stage2j/CANDIDATE_D_CENSUS_REPORT.md` §2, §4 |
+| D: no cost-feasible signal after 2022-09; design effect 3.93 | `stage2j/CANDIDATE_D_CENSUS_REPORT.md` §6 |
+| 26 bp is a Binance proxy, not a Nobitex measurement | `stage2j/STAGE2J_SUMMARY_AND_VERDICT.md` §4 |
+| 150 is a project choice; 349 is a planning reference | `stage2j/machine_readable/verdict_inputs.json` |
+| Stage 2H self-audit limitation; K0 accepted with disclosure | `stage2i/OWNER_RATIFICATION.md` §1 |
+| Stage 2F rejected v1 on four critical defects | `STAGE2F_INDEPENDENT_FREEZE_AUDIT.md` §0 |
+| Stage 2J census code commit and determinism | `stage2j/CENSUS_METHODOLOGY_AND_EXECUTION.md` §7 |
+| Stage 2K not started as of Stage 2J | `stage2j/FREEZE_MANIFEST.json` tail |
