@@ -151,3 +151,146 @@ interval is 1,277 days (`STAGE2C_FEASIBILITY_CENSUS.md` §2.1). At the frozen ho
 numbers of non-overlapping windows are 425 (72h), 1,277 (24h) and 255 (120h). B reached 24 of 425
 (5.6%), D 34 of 1,277 (2.7%), C 12 of an episode ceiling of 63, and A 71 of 255 (27.8%). Only A loses
 a large share of its feasible population to the overlap rule (80 of 151).
+
+---
+
+## 4. Candidate A — multi-timeframe trend pullback continuation
+
+### 4.1 What the hypothesis intended to capture
+
+A higher-timeframe uptrend offers continuation entries on a lower-timeframe pullback that resumes in
+the trend direction, with a structural stop beyond the pullback extreme. The proposed economic
+mechanism was gradual information diffusion and risk-management flows producing shallow pullbacks
+inside trends (`STAGE2B_STRATEGY_DISCOVERY.md` §2.1; `STAGE2B_STRATEGY_RECOMMENDATION.md` §2). The
+design deliberately differed from Setup 1 (a sweep-and-rejection reversal) and from a pure breakout.
+
+### 4.2 What the frozen rules actually required
+
+From `docs/research/STAGE2C_FEASIBILITY_CENSUS.md` §2:
+
+- 4h regime: `close > SMA200` **and** `SMA200[t] > SMA200[t-20]`, read from the most recent 4h bar
+  closing before the 1h bar opens.
+- Pullback: 1h close crosses below EMA20; reference high `R` is the last 1h high at or above the EMA.
+- Resumption: strict 1h close above `R`, strictly after the crossunder.
+- Invalidation: regime flip before confirmation, 72-bar pullback age, or 15% pullback depth.
+- Entry: open of the 5m bar one hour after the confirmation bar.
+- Stop: the pullback low `L`; `cost_R = 0.0026 × entry / (entry − L) ≤ 0.20`.
+- Deduplication: one signal per pullback episode; canonical overlap rule 120h (24h and 168h as
+  diagnostics).
+
+### 4.3 What the research measured
+
+| quantity | value | source |
+|---|---:|---|
+| crossunder episodes / confirmed triggers | 644 / 445 | Stage 2C §4 |
+| primary-eligible triggers after the 4h regime filter | 195 | Stage 2C §4 |
+| cost-feasible unique signals | 151 | Stage 2C §4 |
+| canonical non-overlapping (120h) | **71** | Stage 2C §13 |
+| per active year | 20.9 | Stage 2C §6 |
+| median `cost_R`, valid triggers (n=195) | 0.1032 | Stage 2C §5.1 |
+| median `cost_R`, feasible only (n=151) | 0.0898 | Stage 2C §5.1 |
+| feasible share | 0.774 | Stage 2C §1 |
+| median stop, valid triggers | 2.520% | Stage 2C §5.2 |
+| largest regime-episode share | 13.9% | Stage 2C §8.1 |
+| Kish `n_eff` / design effect | 12.69 / 11.9 | Stage 2C §8.1 |
+
+### 4.4 What the evidence demonstrated
+
+**Verified fact:** this frozen instantiation produced 71 non-overlapping cost-feasible opportunities
+over 3.396 active years. That is below the 150 floor on every pre-registered view: 151 raw feasible
+signals, 71 non-overlapping at 120h, 24 signal-producing regime episodes, and a Kish effective size
+of 12.69. Even the most generous count implies a smallest detectable effect of 0.228R at 80% power,
+above the 0.15R target (Stage 2C §8.3).
+
+**Verified fact:** cost geometry was not the binding failure. The feasible share was 0.774 and the
+feasible median `cost_R` was 0.0898.
+
+**Verified fact:** the 4h regime filter roughly halved frequency (445 → 195 confirmed triggers;
+342 → 151 feasible; 156 → 71 non-overlapping in the control comparison), and the 120h non-overlap
+rule removed 80 of 151 feasible signals (Stage 2C §7).
+
+### 4.5 What the evidence did not demonstrate
+
+- It did not show that trend pullbacks fail to continue. No outcome was observed.
+- It did not show the control (unconditioned 1h pullback stream) is profitable. The control reached
+  150 non-overlapping signals on the matched window, but the report explicitly states it is **not
+  promoted** and is a selectivity diagnostic, not an alternative strategy (Stage 2C §1, §7).
+- It did not identify the dependence structure of outcomes, because no outcome was computed.
+- It did not establish that a different 4h regime definition, pullback definition, or 120h horizon
+  would produce more opportunities. Those variants were not counted.
+
+### 4.6 Why the candidate failed its applicable criteria
+
+The decision rule required `N_non_overlapping ≥ 150`. The measured count was 71. Median `cost_R`
+and feasible share both passed. The recorded verdict is therefore **FAIL — insufficient
+non-overlapping opportunity frequency** (Stage 2C §13), and the stated next action was a new
+hypothesis selection, not a gate relaxation or a pullback parameter search.
+
+---
+
+## 5. Candidate C — compression breakout
+
+### 5.1 What the hypothesis intended to capture
+
+A sustained contraction in realised volatility and volume identifies a coiled state whose upward
+resolution continues. The registered claim had two parts: the breakout must be profitable after the
+frozen cost model, **and** it must beat unconditioned 20-bar-high breakouts, so that the compression
+state is doing identifiable work (`STRATEGY_2_RECOMMENDATION.md` §1).
+
+### 5.2 What the frozen rules actually required
+
+From `STAGE2A_FEASIBILITY_CENSUS.md` §2.4:
+
+- 4h closed bars only.
+- `compression_ratio = RV5 / RV20 ≤ 0.60`, using the platform's realised-volatility definition
+  (sample standard deviation of trailing price differences).
+- `volume_ratio = volume / mean(volume, 20) ≤ 0.80`, mean over the 20 bars strictly before the bar.
+- A compression episode is a maximal run of tight bars; eligible only if `duration_bars ≥ 6`.
+- Trigger: at the bar the episode ends, `close > max(high)` over the episode.
+- Entry: open of the first 5m bar after the trigger bar closes.
+- Stop: the episode's `min(low)`.
+- Cost gate: `cost_R ≤ 0.20` at 26 bp.
+- Target 2R and an 18-bar (72h) maximum hold were recorded but never simulated.
+
+### 5.3 What the research measured
+
+| quantity | value | source |
+|---|---:|---|
+| valid 4h bars | 7,662 | Stage 2A §3.1 |
+| compression episodes | 461 | Stage 2A §3.1 |
+| episodes with duration ≥ 6 bars | **63** | Stage 2A §3.1 |
+| confirmed upside breakouts | 17 | Stage 2A §3.1 |
+| cost-feasible unique events | **12** | Stage 2A §3.1 |
+| events per year (feasible) | 3.4 | Stage 2A §3.2 |
+| median `cost_R`, all triggers | 0.124 | Stage 2A §3.3 |
+| median stop, all triggers | 2.10% | Stage 2A §3.3 |
+| control non-overlapping (3-day hold) | 136 | Stage 2A §4.2 |
+
+### 5.4 What the evidence demonstrated
+
+**Verified fact:** the sample ceiling is 63, because only 63 episodes in 3.5 years clear the six-bar
+duration floor. Even a 100% breakout rate with no cost rejection could not reach 200 (Stage 2A §7).
+
+**Verified fact:** the failure is not an artifact of the cost assumption. At 10 bp all 17 triggers
+pass the 0.20 gate; the best case is still 17 events. Relaxing the gate to 1.00R also yields 17
+(Stage 2A §3.3, §6.1).
+
+**Verified fact:** the conditioning does select a different event set from unconditioned 20-bar-high
+breakouts: 13 of 17 triggers were not 20-bar-high breakouts (Stage 2A §4.3). The mechanism was
+observable; it was not observable often enough to support inference.
+
+### 5.5 What the evidence did not demonstrate
+
+- It did not show that compression breakouts are unprofitable.
+- It did not establish a clean comparison with the control: the control arm's structural stop was
+  undefined in the design and a provisional 20-bar-low stop was substituted, which is generous to
+  the control because its stops are about four times wider (Stage 2A §4.1).
+- It did not measure the 4h-signal / 5m-execution machinery under an outcome experiment; causality
+  was argued structurally, and the look-ahead harness was not run (Stage 2A §9).
+- It did not characterise regime composition; with 12 events that analysis would be meaningless.
+
+### 5.6 Why the candidate failed its applicable criteria
+
+The Stage 2A gate required ≥ 200 economically feasible unique events and `median cost_R ≤ 0.20`. The
+cost condition passed (0.124) and the count failed by a factor of about 17 (12 vs 200). The recorded
+verdict is **FAIL — insufficient economic or statistical feasibility** (Stage 2A §1).
