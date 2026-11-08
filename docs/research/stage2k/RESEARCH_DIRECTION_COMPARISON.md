@@ -215,3 +215,111 @@ arithmetic: the 150 floor is sufficient only for an effect near 0.23R, not the s
 
 **Decisive consideration.** It is the only direction that removes both known framework defects
 without altering a frozen artifact, consuming OOS data, or prejudging any candidate.
+
+---
+
+### D3 — Revisit the trend-pullback family through a pre-registered variant of Candidate A
+
+**What it is.** Open one new, pre-registered specification in A's family — not an edit to A — and
+census it under the framework repaired by D2. The record points at A for four reasons:
+
+1. **Highest canonical count:** 71, against 34 (D), 24 (B) and 12 (C).
+2. **Smallest detectable effect:** 0.332R at 71, against 0.480R, 0.572R and 0.809R.
+3. **No cost-geometry collapse:** feasible share 0.774, and 186 of 195 valid triggers pass even at
+   10 bp.
+4. **The largest identified removable loss:** the 120h overlap rule discards 80 of 151 feasible
+   signals (53%).
+
+Crucially, A's design already contains an unconditioned control arm that removes only the 4h regime
+condition, and **its matched-window non-overlapping count is exactly 150**
+(`STAGE2C_FEASIBILITY_CENSUS.md` §7, table). That is the only object anywhere in the record that
+reaches the frozen floor. It is also explicitly **not promoted**: the report calls its higher
+frequency "evidence about the regime filter's selectivity, not evidence that the unconditioned
+strategy is profitable" (§7, closing paragraph).
+
+**Output.** A new frozen specification, a new pre-declared count, and an explicit statement of
+whether the regime condition or the overlap rule is what kept A at 71.
+
+**What it requires.** A D2 framework first (otherwise the new count has no meaning); a written new
+specification that differs from A in named, pre-declared ways; a new freeze; a new census; and — if
+the count is to be believed — an arms-length audit. It does not require OOS data.
+
+**What it can establish.** Whether a less-conditioned member of A's family is dense enough to be
+testable at all, and how much of A's scarcity was the regime filter versus the overlap rule.
+
+**What it cannot establish.** That the variant has an edge. It also cannot make the frozen A result
+admissible retroactively: 71 stays 71, and the control's 150 was never a candidate.
+
+**Main risk.** Promoting a diagnostic control after seeing that it reaches the floor is the clearest
+possible case of post-hoc gate-fitting. The control was defined as a selectivity check, not as a
+strategy; Stage 2C anticipated exactly this move and refused it. A variant is defensible only if it
+is written and frozen as a *new hypothesis* with its own rationale, and if the frozen A and control
+results are reported beside it.
+
+**Secondary risk.** Even at 150, the smallest detectable effect is 0.229R, not the stated 0.15R. A
+variant that lands at the floor would still be underpowered for the project's own target.
+
+**Scores.** E 2 · I 3 · C 2 · R 2 · G 3 · V 3
+
+**Decisive consideration.** It has the highest information gain per unit of work of any candidate
+direction, and it also carries the highest inference risk, because the one object at the floor is a
+diagnostic that was designed not to be promoted.
+
+---
+
+### D4 — Change the strategy family or the instrument
+
+**What it is.** Abandon the trend-continuation / breakout / intraday-momentum family and pre-register
+a different hypothesis class, or move to a different instrument or venue. Candidate families that
+were screened and not advanced in Stage 2D §8 would be the natural starting list; new ones would need
+their own rationale.
+
+**Output.** A new research object with no inheritance from the four censuses.
+
+**What it requires.** A family-level economic rationale, a data-availability check, a new freeze and a
+new census. Some families need data outside the current boundary (funding rates, other pairs, order
+book, on-chain), which raises a separate authorization question even when it is not OOS data.
+
+**What it can establish.** Whether a different premise is dense enough to test.
+
+**What it cannot establish.** Anything about the four failed candidates, and nothing that transfers
+from their verdicts.
+
+**Main risk.** Restart cost with no evidential support from this record. The record is silent on other
+families; the four failures are weak evidence about the family and no evidence about the market. If
+the framework defects are not repaired first, the new family inherits the underived floor, the
+unverified cost proxy and the 0.15R mismatch, and is likely to fail for the same framework reasons.
+
+**Scores.** E 1 · I 2 · C 0 · R 2 · G 2 · V 2
+
+**Decisive consideration.** The highest ceiling and the weakest current support; it is the natural
+successor to D2, not an alternative to it.
+
+---
+
+### D5 — Stop the current strategy family under the current framework
+
+**What it is.** Close the four-candidate programme as a **negative feasibility result**. Record that
+under the frozen framework no candidate was admissible; preserve every artifact; authorize no further
+census and no Stage 2L. Framework repair, if wanted, becomes a separate later decision rather than a
+continuation of this programme.
+
+**Output.** A closure decision and a preserved, auditable negative result. No new count, no new
+specification.
+
+**What it requires.** An owner decision and a closure record — this stage supplies the latter.
+
+**What it can establish.** Only what is already established: that these four frozen designs produced
+too few opportunities under the frozen rules, and that the causes differ by candidate.
+
+**What it cannot establish.** That the market lacks the opportunities, that the family has no edge, or
+that a repaired framework would fail. D5 is a decision about research allocation, not a market claim.
+
+**Main risk.** Forgoing the unmeasured possibility that A's family, or D under a verified lower cost,
+is admissible. Sunk-cost pressure to continue will be real, and a stop can be read as a verdict on the
+market rather than on the framework — which is why the closure record must state its scope precisely.
+
+**Scores.** E 4 · I 2 · C 4 · R 4 · G 4 · V 3
+
+**Decisive consideration.** It is the only direction whose premise the record fully establishes, and
+the only one that requires no assumption the record cannot support.
