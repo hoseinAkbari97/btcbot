@@ -323,3 +323,177 @@ market rather than on the framework — which is why the closure record must sta
 
 **Decisive consideration.** It is the only direction whose premise the record fully establishes, and
 the only one that requires no assumption the record cannot support.
+
+---
+
+## 4. Comparison
+
+### 4.1 Scores
+
+| direction | E | I | C | R | G | V | what would have to be true for it to work |
+|---|---:|---:|---:|---:|---:|---:|---|
+| D1 — proceed by amending the gate | 0 | 1 | 2 | 0 | 2 | 2 | The frozen sets carry an effect of at least 0.48R (D) or 0.33R (A) that is not selection artefact |
+| D2 — repair the framework | 3 | 2 | 2 | 4 | 4 | 4 | The owner can declare a minimum effect, and venue cost is measurable |
+| D3 — pre-registered A-family variant | 2 | 3 | 2 | 2 | 3 | 3 | A pre-declared variant is denser than 71 and the gain survives a dependence allowance |
+| D4 — change family or instrument | 1 | 2 | 0 | 2 | 2 | 2 | Another family is denser, and the framework defects are fixed first |
+| D5 — stop the current family | 4 | 2 | 4 | 4 | 4 | 3 | Nothing further can be learned without new authorization — true by construction of the mandate |
+
+### 4.2 The partial order
+
+No composite score is computed (§2.3), so the ranking is stated as dominance relations among the six
+criteria.
+
+**Verified by inspection of the table:**
+
+- **D1 is dominated by D5.** D5 scores at least as high on every criterion and strictly higher on E
+  (4 vs 0), C (4 vs 2), R (4 vs 0) and G (4 vs 2). There is no criterion on which D1 is preferable.
+  This is the cleanest result in the comparison.
+- **D2 and D5 are not ordered.** D5 is better supported and cheaper; D2 is more reversible and
+  produces a reusable framework. The choice between them is a choice about whether the project wants
+to keep the option to test a candidate later.
+- **D3 trades against D2.** D3 has the highest information gain (3) but is materially weaker on
+  evidential support (2 vs 3) and pre-registration safety (2 vs 4). It cannot be undertaken before D2
+  without inheriting the defects it is meant to address.
+- **D4 is the weakest on support and effort.** It is the only direction scoring 0 on effort, and its
+  evidence score of 1 reflects that the record says nothing about other families.
+
+**Ranking as three tiers:**
+
+| tier | directions | meaning |
+|---|---|---|
+| directly supported, low risk | **D5** | Premise established; no new assumption |
+| conditionally strong | **D2**, then **D3** | D2 creates the conditions under which D3 could mean something |
+| not supported by this record | **D4** | Rationale must come from outside the record |
+| dominated | **D1** | Strictly worse than stopping |
+
+### 4.3 The single most decision-relevant missing number
+
+**Verified fact:** D has 253 of 295 sessions passing the cost gate at 10 bp and 45 at 26 bp. The
+**canonical non-overlap count at 10 bp was never computed**; only the gate-pass count was reported
+(Stage 2J D report §4). Everything else about D is known.
+
+**Interpretation:** if a verified venue cost were low enough, D's canonical count would be the one
+number that could plausibly exceed 150 — or it might not, because the 24h overlap rule could still
+collapse 253 sessions. Until it is computed, no direction can claim D is rescuable, and D1b's premise
+remains untested rather than refuted.
+
+---
+
+## 5. What would change the ranking
+
+These are the conditions under which the comparison in §4 would have to be rewritten. None is
+satisfied by the current record.
+
+| condition | effect on the ranking | status |
+|---|---|---|
+| Verified all-in cost ≤ 10 bp | D's feasible share rises from 0.153 to 0.858; D2 and D3 rise; D1b still cannot detect 0.15R | **Unmeasured** |
+| Verified all-in cost ≥ 39 bp | D falls to 8 feasible, A to 122, B to 25, C to 9; every candidate closes; D5 strengthens | **Unmeasured** |
+| Owner declares δ = 0.15R | No count in the record is sufficient (best case 150 → 0.229R); D1 collapses entirely; D2 must produce a dependence-aware requirement near 349 or larger | **Undecided** |
+| Owner declares δ ≈ 0.23R | The 150 floor becomes approximately consistent with the target, but A's 71 and D's 34 still fail; D3's relevance rises | **Undecided** |
+| Owner declares δ = 0.25R | The independent requirement falls to about 126, so A's control at 150 would clear a nominal count — but not a dependence-adjusted one | **Undecided** |
+| An A-family variant yields ≥ 200 canonical with design effect ≤ 2 | D3 becomes genuinely admissible and would justify an outcome study | **Not tested** |
+| A third-party audit is required before any new count | D2 must precede D3 and D4; D5 unaffected | **Governance question** |
+| The owner will not declare a minimum effect | D2 and D3 cannot be completed; the choice reduces to D5 | **Owner decision** |
+
+**Verified arithmetic for the δ rows:** `N = (2.801585 / δ)²` under the project's independence
+assumptions. At δ = 0.25R this gives 125.6, so 126; at δ = 0.23R it gives 148.4, close to 150; at
+δ = 0.15R it gives 348.8, the recorded 349 reference.
+
+**Interpretation:** the floor and the target are consistent only if the target is about 0.23R. The
+project has never said that is the effect it cares about.
+
+---
+
+## 6. Challenge of the seven source possibilities
+
+Each possibility is stated in its strongest form before its disposition is recorded, so that the
+consolidation in §1.2 can be checked rather than trusted.
+
+### P1 — Proceed to an outcome study despite the floor
+
+*Strongest form:* the 150 floor is underived, so treating it as binding has no statistical authority;
+a 34- or 71-event study could still detect a large edge, and a large edge is what would matter
+economically.
+
+*Disposition:* kept as D1, and dominated. The argument succeeds only if the effect is large; the
+record's own design margin assumes 0.15R, at which neither count is informative. A direction that
+works only under an assumption the project has rejected is not a direction.
+
+### P2 — Lower the floor to fit the observed counts
+
+*Strongest form:* since 150 was never derived, replacing it with a number the data can meet is not
+obviously worse than keeping it.
+
+*Disposition:* merged into D1 and not separately scored. Lowering a threshold after seeing the counts,
+without a rule that says what the new number must satisfy, is gate-fitting. The legitimate version of
+this idea is D2: derive the number from a declared effect before counting again.
+
+### P3 — Relax the cost gate
+
+*Strongest form:* 26 bp is a Binance proxy; if the real Nobitex cost is 10 bp, D's feasible population
+is 8.6 times larger and the cost gate is doing most of the damage.
+
+*Disposition:* merged into D2, not kept as a direction. Relaxing an unmeasured input is an assumption
+change, not evidence. D2 measures the input; only then can the gate be re-set, and only with a
+pre-declared rule.
+
+### P4 — Re-run a censused candidate under a modified definition
+
+*Strongest form:* A is the closest object to the floor and its control arm already reaches 150; a
+variant that removes one condition might be admissible.
+
+*Disposition:* narrowed to A and kept as D3. It does not generalise: B's pre-gate ceiling is 32 and
+C's is 17, so no definition change can rescue them without replacing the hypothesis, and D's problem
+is stop geometry rather than definition. Re-running with a modified definition is a new hypothesis,
+so the direction is only defensible as a new pre-registration.
+
+### P5 — Repair the framework first
+
+*Strongest form:* both known defects — the underived floor and the unverified cost — are framework
+defects, not market findings, and every candidate direction inherits them.
+
+*Disposition:* kept as D2 and made the precondition for D3 and D4. This is the only possibility that
+addresses a verified defect without a new market claim.
+
+### P6 — Change the strategy family or instrument
+
+*Strongest form:* four within-family attempts have failed; the family may be the problem.
+
+*Disposition:* kept as D4. Its support is weak because the record contains no census of another
+family, and the four failures are equally consistent with a framework problem. It is the natural
+successor to D2, not a substitute for it.
+
+### P7 — Stop and preserve the record
+
+*Strongest form:* every direction except D2 and D5 depends on an assumption the record cannot support;
+stopping is the only choice that adds no unsupported premise.
+
+*Disposition:* kept as D5, the primary direction of the final recommendation.
+
+### 6.1 Possibilities not considered, and why
+
+| excluded possibility | reason |
+|---|---|
+| Extend the development interval | Would consume validation/OOS data; prohibited in Stage 2K and a separate governance decision |
+| Add leverage or a short leg | Changes the hypothesis and the mandate, not the sample; every prior verdict would cease to apply |
+| Tune candidate parameters | Prohibited by every frozen specification and by Stage 2I change control |
+| Combine candidates into a portfolio | Introduces multiplicity and dependence problems on top of populations that individually fail |
+| Change the data vendor | Addresses none of F1–F5; the seven gaps were already handled and no gap explains the counts |
+
+The five directions are therefore **not claimed to be exhaustive**. They are the set that survives
+the constraints in §1.1 and the generation rule in §1.2.
+
+---
+
+## 7. What this comparison does not decide
+
+It does not decide what the project should do. It establishes that:
+
+1. D1 is dominated by D5 and cannot be recommended on this record;
+2. D2 is the only direction that repairs verified framework defects without a new market claim;
+3. D3 has the highest information gain and the highest inference risk, and depends on D2;
+4. D4 has the highest ceiling and no support from this record;
+5. D5 is the only direction whose premise the record fully establishes.
+
+The choice between D5 and D2 — and whether D3 should follow either — is made in
+`STAGE2K_FINAL_RECOMMENDATION.md`, with its reasoning and its authorization limits stated there.
