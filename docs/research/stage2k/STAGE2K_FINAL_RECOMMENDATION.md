@@ -215,3 +215,101 @@ rather than a prelude to D3.
 | **Change family now (D4)** | No evidence in the record about other families; would inherit the same framework defects |
 | **Extend the development interval** | Consumes validation/OOS data; requires separate governance authorization; not a Stage 2K action |
 | **Run Stage 2L on A's control because it reaches 150** | The control was defined as a selectivity diagnostic and explicitly not promoted; 150 is underived and sufficient only for 0.229R |
+
+---
+
+## 5. What this recommendation does not claim
+
+The brief for Stage 2K requires the historical verdicts to be preserved and the failure to be
+characterised correctly. These are the claims this document deliberately does **not** make.
+
+| not claimed | actual position |
+|---|---|
+| That any candidate is unprofitable | **Unknown.** No outcome was ever observed; feasibility failure is not a return finding |
+| That BTC lacks these opportunities | **Unknown.** The counts describe frozen definitions, not the market |
+| That the 26 bp cost is wrong, or that Nobitex is cheaper | **Unknown.** 26 bp is an unverified Binance proxy; Stage 2K asserts nothing about the true level |
+| That 150 is a universal standard | **False.** It is an underived project threshold, and Stage 2A used 200 |
+| That 349 is a requirement | **False.** It is an independence-based planning reference under 0.15R, σ=1R, 5% and 80% |
+| That 0.15R is the correct minimum effect | **Undecided.** It is a design assumption; only the owner can declare the economic effect of interest |
+| That the strategy family is invalid | **Unknown.** The four failures are consistent with a family problem and with a framework problem |
+| That D3 or D2 would succeed | **Unknown.** They are described as conditions, not forecasts |
+| That the stop is permanent | **False.** It can be reversed by the conditions in §2, on the owner's authority |
+| Anything about other strategy families or instruments | **Out of scope.** The record contains no census of them |
+| An audit opinion on the v2 freeze | **Not given.** Stage 2H was a self-audit; Stage 2K is not an independent audit |
+| That the census code is correct | **Not given.** Determinism and hashes were verified; correctness was reviewed only as far as the artifacts permit |
+
+---
+
+## 6. Authorization record
+
+### 6.1 Work performed
+
+| item | status |
+|---|---|
+| Read Stage 2A–2J documentation and machine-readable artifacts | **Done**, read-only |
+| Write the four Stage 2K review documents | **Done** |
+| Generate and verify `FREEZE_MANIFEST.json` | **Done** |
+| Commit each section separately and push | **Done** |
+
+### 6.2 Work not performed
+
+| prohibition | status | how it can be checked |
+|---|---|---|
+| Create or revise a candidate specification | **Not done** | No file under `stage2e*` or any spec path is modified; the stage's diff touches only `docs/research/stage2k/` |
+| Run a census or re-count | **Not done** | No census script was executed; no count in this document is new except arithmetic on quoted values |
+| Process market data | **Not done** | No file under the data directories was opened or written; no bar, trade or funding series was read |
+| Run a backtest, P&L, expectancy or optimisation | **Not done** | No code was written or executed for this purpose; no outcome is reported anywhere in the stage |
+| Read validation or out-of-sample data | **Not done** | No claim in the stage refers to a date after 2024-07-01 |
+| Modify a frozen artifact or manifest | **Not done** | `git diff --stat` for the stage shows additions only |
+| Begin Stage 2L | **Not done** | The stage explicitly defers it and recommends against it |
+| Apply a Stage 2I change proposal | **Not done** | CP-1 through CP-5 remain unapplied, as Stage 2J left them |
+
+### 6.3 Evidence discipline used
+
+- Every factual statement is labelled **Verified fact**, **Interpretation**, **Hypothesis** or
+  **Unknown**, or is arithmetic marked as Stage 2K arithmetic.
+- Numerical claims cite the artifact and section they come from.
+- Historical verdicts (A, B, C, D failures) are quoted, not revised.
+- The concentration diagnostics are described with their own limitations, and Kish is not presented
+  as a serial-dependence estimator.
+- No number in the stage is presented as a profitability estimate.
+
+---
+
+## 7. Unresolved uncertainties
+
+These are carried forward deliberately. None of them is resolved by this stage, and each would need
+separate authorization to investigate.
+
+| # | uncertainty | why it remains open |
+|---|---|---|
+| U1 | The true all-in venue cost and its components | 26 bp is a proxy; no fee schedule, spread measurement, fill data or depth record exists in the repository |
+| U2 | D's canonical non-overlap count at a verified lower cost | Only gate-pass counts were reported; the overlap step at alternative costs was never run |
+| U3 | The dependence structure of outcomes | No outcome was observed; Kish is a bound under an assumed structure, not an estimate |
+| U4 | The correct sufficiency rule | Requires an owner-declared minimum effect, which has never been stated |
+| U5 | Whether A's control arm is a strategy or only a diagnostic | Stage 2C defined it as a selectivity check and declined to promote it; that is a design decision, not a measurement |
+| U6 | Whether 2021–2024 is representative of BTC going forward | A single 1,277-day path; no other period was examined, and extending it would consume OOS data |
+| U7 | Whether the v2 freeze is sound in the absence of an arms-length audit | Stage 2H was a self-audit and says so |
+| U8 | The cause of the seven data gaps | Handled by protocol as exclusions; the underlying cause was never established |
+| U9 | Whether the strategy family has any edge | Untestable at these counts for the stated effect; no outcome data exists |
+| U10 | Whether a condition ablation would materially raise A's density | Never run; Stage 2K is not authorized to count |
+
+---
+
+## 8. Stage record
+
+| item | value |
+|---|---|
+| Branch | `main` |
+| Review-start HEAD | `3db4a7e86ba1cbaf872e83bbf2c745090d823352` |
+| Review-start tree | clean, 0 ahead / 0 behind `origin/main` |
+| Artifacts created | `HISTORICAL_RESEARCH_SYNTHESIS.md`, `FAILURE_MODE_ANALYSIS.md`, `RESEARCH_DIRECTION_COMPARISON.md`, `STAGE2K_FINAL_RECOMMENDATION.md`, `FREEZE_MANIFEST.json` |
+| Commit style | one small commit per section, as instructed |
+| Hash record | `FREEZE_MANIFEST.json` (authoritative for final content hashes and final HEAD) |
+
+**Final statement.** Under the framework the project actually froze, no candidate reached
+admissibility, and the reasons differ by candidate. That is a feasibility result, not a profitability
+result. The recommendation is to stop this family under this framework, preserve the record, and —
+if the owner wants to keep the option — to repair the framework and verify the cost before any further
+candidate work. Candidate A is the only object worth revisiting, and its 150-event control arm is the
+only object recorded at the floor.
