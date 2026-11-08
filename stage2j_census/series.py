@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any
 
 from stage2i_readiness.loader import (
@@ -47,6 +48,14 @@ def slot_open_ms(index: int, timeframe: str) -> int:
 
 def is_on_grid(open_time_ms: int, timeframe: str) -> bool:
     return (open_time_ms - DEV_START_MS) % TIMEFRAME_MS[timeframe] == 0
+
+
+def utc_iso_to_ms(value: str) -> int:
+    """Convert a frozen-manifest UTC timestamp to epoch milliseconds."""
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError("timestamp must carry a UTC offset")
+    return int(parsed.astimezone(UTC).timestamp() * 1000)
 
 
 def candle_is_usable_base(candle: Candle) -> bool:

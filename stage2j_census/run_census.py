@@ -33,6 +33,8 @@ from .series import (
     build_five_minute_support,
     build_series,
     compute_regime_4h,
+    slot_index,
+    utc_iso_to_ms,
 )
 
 TARGET_RSS_BYTES = 4 * 1024**3
@@ -217,16 +219,29 @@ def run(output_dir: Path) -> int:
     mark("series", mark_start)
 
     mark_start = time.perf_counter()
-    regime_b = compute_regime_4h(series_4h, state_key="permission")
-    regime_d = compute_regime_4h(series_4h, state_key="budget_ok")
-    mark("regime_4h", mark_start)
-
-    mark_start = time.perf_counter()
     identity = json.loads(
         (ROOT / "docs/research/stage2e_v2/FREEZE_MANIFEST.json").read_text(
             encoding="utf-8"
         )
     )["dataset_identity"]
+    exempt_open_times = list(identity["gap_adjacent_4h_buckets"]["open_times_utc"])
+    exempt_slots = frozenset(
+        slot_index(utc_iso_to_ms(value), "4h") for value in exempt_open_times
+    )
+    if len(exempt_slots) != identity["gap_adjacent_4h_buckets"]["count"]:
+        raise ValueError("frozen 4h exemption list contains duplicate or off-grid slots")
+
+    regime_b = compute_regime_4h(series_4h, state_key="permission")
+    regime_d = compute_regime_4h(series_4h, state_key="budget_ok")
+    regime_b_sensitivity = compute_regime_4h(
+        series_4h, exempt_slots=exempt_slots, state_key="permission"
+    )
+    regime_d_sensitivity = compute_regime_4h(
+        series_4h, exempt_slots=exempt_slots, state_key="budget_ok"
+    )
+    mark("regime_4h", mark_start)
+
+    mark_start = time.perf_counter()
     alignment = build_alignment_report(
         support=support,
         series_15m=series_15m,
@@ -242,6 +257,13 @@ def run(output_dir: Path) -> int:
     result_d = run_candidate_d(series_15m, series_1h, regime_d)
     mark("candidates", mark_start)
 
+    mark_start = time.perf_counter()
+    result_b_sensitivity = run_candidate_b(series_1h, regime_b_sensitivity)
+    result_d_sensitivity = run_candidate_d(
+        series_15m, series_1h, regime_d_sensitivity
+    )
+    mark("candidates_4h_exemption_sensitivity", mark_start)
+
     isolation = isolation_report([series_15m, series_1h, series_4h], support)
     base_compliance = {
         "preflight_all_checks_pass": bool(preflight["all_checks_pass"]),
@@ -251,9 +273,26 @@ def run(output_dir: Path) -> int:
         "D_reconciliation": all(bool(value) for value in result_d["reconciliation"].values()),
     }
 
+    sensitivity_b = {
+        "result": result_b_sensitivity,
+        "regime": regime_b_sensitivity,
+        "exempt_slot_count": len(exempt_slots),
+        "exempt_slot_open_times_utc": exempt_open_times,
+    }
+    sensitivity_d = {
+        "result": result_d_sensitivity,
+        "regime": regime_d_sensitivity,
+        "exempt_slot_count": len(exempt_slots),
+        "exempt_slot_open_times_utc": exempt_open_times,
+    }
+
     mark_start = time.perf_counter()
-    report_b = analyse_candidate_b(result_b, regime_b, compliance=base_compliance)
-    report_d = analyse_candidate_d(result_d, regime_d, compliance=base_compliance)
+    report_b = analyse_candidate_b(
+        result_b, regime_b, compliance=base_compliance, sensitivity=sensitivity_b
+    )
+    report_d = analyse_candidate_d(
+        result_d, regime_d, compliance=base_compliance, sensitivity=sensitivity_d
+    )
     mark("analysis", mark_start)
 
     code = code_hash()
@@ -326,6 +365,32 @@ def run(output_dir: Path) -> int:
             },
         },
         "alignment_summary": alignment["summary"],
+        "sensitivity_4h_exemption": {
+            "role": "non-decision diagnostic",
+            "basis": "plan section 3.8 and the ratified M3 supplied-bar exemption",
+            "exempt_slot_count": len(exempt_slots),
+            "exempt_slot_indices": sorted(exempt_slots),
+            "exempt_slot_open_times_utc": exempt_open_times,
+            "regime_series": {
+                "B": {
+                    "permission_true_bars": regime_b_sensitivity.permission.count(1),
+                    "permission_false_bars": regime_b_sensitivity.permission.count(0),
+                    "permission_unknown_bars": regime_b_sensitivity.permission.count(-1),
+                    "maximal_true_runs": len(regime_b_sensitivity.runs),
+                },
+                "D": {
+                    "budget_true_bars": regime_d_sensitivity.budget_ok.count(1),
+                    "budget_false_bars": regime_d_sensitivity.budget_ok.count(0),
+                    "budget_unknown_bars": regime_d_sensitivity.budget_ok.count(-1),
+                    "maximal_true_runs": len(regime_d_sensitivity.runs),
+                },
+            },
+            "reconciliation": {
+                "B": result_b_sensitivity["reconciliation"],
+                "D": result_d_sensitivity["reconciliation"],
+            },
+            "never_changes_primary_signal_set_denominator_or_verdict": True,
+        },
         "reconciliation": {
             "B": result_b["reconciliation"],
             "D": result_d["reconciliation"],

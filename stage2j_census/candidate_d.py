@@ -65,7 +65,7 @@ def run_candidate_d(
     secondary: Counter[str] = Counter()
     diagnostics: Counter[str] = Counter()
     per_session: dict[str, Counter[str]] = {
-        session_id: Counter({f"S{index}": 0 for index in range(10)})
+        session_id: Counter({f"S{index}": 0 for index in range(10) if index != 1})
         for session_id, _ in SESSION_OFFSETS
     }
     full_data_true = 0
@@ -218,6 +218,7 @@ def run_candidate_d(
             }
             for label in entry_diag:
                 diagnostics[label] += 1
+                secondary[label] += 1
             if cost <= COST_GATE:
                 counts["S7"] += 1
                 per_session[session_id]["S7"] += 1

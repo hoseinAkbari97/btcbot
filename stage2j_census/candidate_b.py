@@ -251,6 +251,7 @@ def run_candidate_b(
                                             }
                                             for label in entry_diag:
                                                 diagnostics[label] += 1
+                                                secondary[label] += 1
                                             if cost <= COST_GATE:
                                                 counts["S8"] += 1
                                                 feasible.append(record)

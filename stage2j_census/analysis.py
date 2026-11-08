@@ -201,6 +201,17 @@ def _regime_state_counts(records: Sequence[dict[str, Any]], field: str) -> dict[
     return {key: counts.get(key, 0) for key in ("true", "false", "unknown")}
 
 
+def _budget_state_counts(
+    records: Sequence[dict[str, Any]], regime: Regime4h
+) -> dict[str, int]:
+    labels = {-1: "unknown", 0: "false", 1: "true"}
+    counts = Counter(
+        labels.get(int(regime.budget_ok[record["budget_slot"]]), "unknown")
+        for record in records
+    )
+    return {key: counts.get(key, 0) for key in ("true", "false", "unknown")}
+
+
 def causality_b(records: Sequence[dict[str, Any]], regime: Regime4h) -> dict[str, Any]:
     violations: list[str] = []
     for record in records:
@@ -308,11 +319,65 @@ def _canonical_records(
     return [record for record in unique if record["key"] in accepted]
 
 
+def _sensitivity_4h_block(
+    result: dict[str, Any],
+    regime: Regime4h,
+    *,
+    canonical_key: str,
+    canonical_hours: int,
+    cluster_field: str,
+    population_name: str,
+    exempt_slot_count: int,
+    exempt_slot_open_times_utc: Sequence[str],
+) -> dict[str, Any]:
+    """Compact non-decision M3 supplied-bar exemption sensitivity."""
+    pre_gate = result["pre_gate"]
+    feasible = result["feasible"]
+    canonical = result["non_overlap"][canonical_key]
+    cluster = cluster_analysis(
+        feasible,
+        run_id=regime.run_id,
+        all_run_count=len(regime.runs),
+        field=cluster_field,
+        population_name=population_name,
+    )
+    return {
+        "role": "non-decision diagnostic",
+        "canonical_hours": canonical_hours,
+        "exempt_slot_count": exempt_slot_count,
+        "exempt_slot_open_times_utc": list(exempt_slot_open_times_utc),
+        "counts": {key: int(value) for key, value in sorted(result["counts"].items())},
+        "primary_labels": dict(sorted(result["primary_labels"].items())),
+        "secondary_labels": dict(sorted(result["secondary_labels"].items())),
+        "diagnostics": dict(sorted(result["diagnostics"].items())),
+        "M_all": median([record["cost_R"] for record in pre_gate]),
+        "M_feasible": median([record["cost_R"] for record in feasible]),
+        "canonical_non_overlap_count": canonical["accepted_count"],
+        "non_overlap_counts": {
+            key: value["accepted_count"]
+            for key, value in sorted(result["non_overlap"].items())
+        },
+        "largest_cluster_share": cluster["largest_cluster_share"],
+        "design_effect": cluster["design_effect"],
+        "n_eff_kish": cluster["n_eff_kish"],
+        "non_empty_clusters": cluster["non_empty_clusters"],
+        "all_regime_runs": cluster["all_regime_runs"],
+        "reconciliation": dict(sorted(result["reconciliation"].items())),
+        "note": (
+            "Reruns the candidate with the twelve registered gap-adjacent 4h buckets "
+            "marked unusable and the 4h ATR segment-broken at them. It is reported for "
+            "transparency only and never changes the primary signal set, denominator, "
+            "or verdict."
+        ),
+    }
+
+
 def analyse_candidate_b(
     result: dict[str, Any],
     regime: Regime4h,
     *,
     compliance: dict[str, Any],
+    sensitivity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     counts = result["counts"]
     primary = result["primary_labels"]
@@ -578,6 +643,20 @@ def analyse_candidate_b(
         "detectable_effect_R": detectable_effect(counts["S10"]),
         "causality": causality,
         "verdict": verdict,
+        "sensitivity_4h_exemption": (
+            _sensitivity_4h_block(
+                sensitivity["result"],
+                sensitivity["regime"],
+                canonical_key="72h",
+                canonical_hours=72,
+                cluster_field="regime_slot",
+                population_name="S8 cost-feasible (4h exemption sensitivity)",
+                exempt_slot_count=sensitivity["exempt_slot_count"],
+                exempt_slot_open_times_utc=sensitivity["exempt_slot_open_times_utc"],
+            )
+            if sensitivity is not None
+            else None
+        ),
         "signal_metadata": {
             "S7_pre_gate": _signal_metadata(pre_gate),
             "S8_feasible": _signal_metadata(feasible),
@@ -591,6 +670,7 @@ def analyse_candidate_d(
     regime: Regime4h,
     *,
     compliance: dict[str, Any],
+    sensitivity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     counts = result["counts"]
     primary = result["primary_labels"]
@@ -820,12 +900,14 @@ def analyse_candidate_d(
         ],
         "regime_counts": {
             "S6": {
+                "budget_state": _budget_state_counts(pre_gate, regime),
                 "budget_pct_decile": decile_counts(pre_gate),
                 "session_id": dict(
                     sorted(Counter(str(record["session_id"]) for record in pre_gate).items())
                 ),
             },
             "S7": {
+                "budget_state": _budget_state_counts(feasible, regime),
                 "budget_pct_decile": decile_counts(feasible),
                 "session_id": dict(
                     sorted(Counter(str(record["session_id"]) for record in feasible).items())
@@ -855,6 +937,20 @@ def analyse_candidate_d(
         "detectable_effect_R": detectable_effect(counts["S9"]),
         "causality": causality,
         "verdict": verdict,
+        "sensitivity_4h_exemption": (
+            _sensitivity_4h_block(
+                sensitivity["result"],
+                sensitivity["regime"],
+                canonical_key="24h",
+                canonical_hours=24,
+                cluster_field="budget_slot",
+                population_name="S7 cost-feasible (4h exemption sensitivity)",
+                exempt_slot_count=sensitivity["exempt_slot_count"],
+                exempt_slot_open_times_utc=sensitivity["exempt_slot_open_times_utc"],
+            )
+            if sensitivity is not None
+            else None
+        ),
         "signal_metadata": {
             "S6_pre_gate": _signal_metadata(pre_gate),
             "S7_feasible": _signal_metadata(feasible),
