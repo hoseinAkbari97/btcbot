@@ -98,3 +98,6 @@ stage6_rebuild_v2/__pycache__/
 .freebuff/
 .claude/settings.local.json
 .opencode/
+.agents/
+.aws/
+.gapcode/
