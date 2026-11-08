@@ -77,7 +77,7 @@ revisit A and no comparable reason for B, C or D.
 | direction | primary evidence base |
 |---|---|
 | D1 | The four census reports and the Stage 2J verdicts, which establish the counts |
-| D2 | Stage 2D §9 (the 150 floor is underived); every candidate spec §0.1 (26 bp is a proxy); Stage 2J §4 (349 is a planning reference) |
+| D2 | `STAGE2D_STRATEGY_REDESIGN.md` §1.3–§1.5 (the 150 floor is underived, 349 is an independence estimate, 0.15R is an assumption); every candidate spec §0.1 (26 bp is a proxy) |
 | D3 | Stage 2C (A: 151 feasible, 71 canonical, 120h overlap removes 53%); Stage 2J A-related concentration diagnostics |
 | D4 | The four failures, which say nothing about other families; Stage 2K synthesis §10 |
 | D5 | The Stage 2J final decision and the four failed gates |
@@ -119,3 +119,99 @@ one **decisive consideration** per direction, and §5 states what would change t
 
 **Verified fact:** nothing in this scoring is derived from a statistical model, a backtest or a
 simulation. It is a structured judgement over the frozen record.
+
+---
+
+## 3. The five directions
+
+### D1 — Proceed to an outcome study on an existing candidate by amending the gate
+
+**What it is.** Take the candidate with the largest canonical population and run the outcome study
+that Stage 2L would have run, treating the 150 floor as advisory rather than binding. The variants:
+
+| variant | canonical N | smallest detectable effect | concentration |
+|---|---:|---:|---|
+| D1a — Candidate A | 71 | 0.332R | Kish `n_eff` 12.69 over 151; largest episode 13.9% |
+| D1b — Candidate D | 34 | 0.480R | design effect 3.93; all signals 2021–2022 |
+| D1c — Candidate B | 24 | 0.572R | design effect 1.69 on S8, 4.93 on the quarter view |
+
+Candidate C is not a variant: 12 events imply 0.809R and the trigger population is capped at 17.
+
+**Output.** An in-sample outcome estimate with a confidence interval on 24–71 events.
+
+**What it requires.** An explicit owner override of a floor that was frozen before counting; a new
+Stage 2L protocol; and a decision about what would count as a result. It does not require OOS data,
+but it does spend the programme's remaining in-sample statistical budget.
+
+**What it can establish.** Whether these particular frozen signal sets, on this interval, produced
+returns distinguishable from zero at the effect sizes above.
+
+**What it cannot establish.** An edge of the size the project says it cares about. **Verified
+arithmetic:** with 34 events the smallest detectable effect is 0.480R, and with 71 events it is
+0.332R; a failure to reject at those sizes is consistent with a true effect of 0.15R. A null result
+would therefore be uninformative about the hypothesis, and a positive result would need out-of-sample
+confirmation that no current plan provides.
+
+**Main risk.** The move is exactly what the protocol forbids: changing the admissibility gate after
+seeing the counts. Stage 2I considered threshold changes only as formal change proposals and Stage 2J
+declined to apply them (`stage2i/CHANGE_PROPOSALS.md`; `stage2j/STAGE2J_FINAL_DECISION.md` §5).
+Doing it informally would leave the programme without a rule it can trust in the next stage.
+
+**Secondary risk.** D's canonical signals all fall before 2022-10, so a D1b estimate would describe a
+market state that has not recurred in the sample; A's effective sample is roughly a sixth of its
+nominal count.
+
+**Scores.** E 0 · I 1 · C 2 · R 0 · G 2 · V 2
+
+**Decisive consideration.** The study cannot answer the question it would be commissioned to answer,
+because its own detectable effect is three times the target effect.
+
+---
+
+### D2 — Repair the research framework before any further candidate work
+
+**What it is.** Three linked repairs, none of which touches a frozen artifact:
+
+1. **Verify the execution cost.** Obtain the venue's fee schedule (maker and taker), measure the BTC
+   spread distribution at the times these signals fire, measure realised slippage rather than assuming
+   it, check depth and minimum notional at the sizes implied by 1% risk, and record outage behaviour.
+2. **Replace the underived floor with a derived sufficiency rule.** The owner declares a minimum
+   economic effect δ. The rule maps δ, the significance level, the power target, the return variance
+   and a declared dependence allowance to a required count. The rule is frozen **before** any new
+   count is taken, and it replaces 150 rather than being fitted to it.
+3. **Re-freeze and audit the framework.** Publish the repaired framework as a new version and subject
+   it to an arms-length audit, since Stage 2H was a self-audit
+   (`STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md` §1).
+
+**Output.** A framework in which "admissible" has a stated meaning; a documented, venue-specific cost
+basis; a pre-declared count requirement. It produces **no** opportunity count and validates no
+candidate.
+
+**What it requires.** An owner decision on δ; external venue data collection; a new framework freeze;
+preferably a third-party audit.
+
+**What it can establish.** Whether the current threshold is defensible, what count would actually be
+needed, and whether 26 bp over- or under-states the real cost.
+
+**What it cannot establish.** That any candidate has an edge, or that any failed candidate would have
+passed under a different rule. **Verified fact:** even a zero-cost world cannot lift B above 32 or C
+above 17, so the framework repair cannot rescue those two.
+
+**Main risk.** It produces no trading insight on its own. If the owner declares a large δ, the derived
+rule may show that no design of this kind can be tested on this interval — which is informative but
+may read as a refusal to proceed.
+
+**Secondary risk.** Cost verification may reveal a **higher** all-in cost than 26 bp, which would
+close A and D rather than open them.
+
+**Evidence status.** E 3/4. Two defects are verified rather than supposed: the 150 floor has no
+statistical derivation (`STAGE2D_STRATEGY_REDESIGN.md` §1.3;
+`STAGE2D_STRATEGY_RECOMMENDATION.md` §9(1)), and 26 bp is a Binance proxy, not a measured Nobitex
+cost (every candidate spec §0.1; `STAGE2D_STRATEGY_REDESIGN.md` §10.2, §10.4). A third is verified
+arithmetic: the 150 floor is sufficient only for an effect near 0.23R, not the stated 0.15R
+(`FAILURE_MODE_ANALYSIS.md` §7.3).
+
+**Scores.** E 3 · I 2 · C 2 · R 4 · G 4 · V 4
+
+**Decisive consideration.** It is the only direction that removes both known framework defects
+without altering a frozen artifact, consuming OOS data, or prejudging any candidate.
