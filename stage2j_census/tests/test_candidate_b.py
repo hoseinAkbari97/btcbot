@@ -167,6 +167,7 @@ def test_present_entry_bar_with_unusable_close_time_properties_is_accepted() -> 
     assert result["counts"]["S7"] == 1
     assert result["counts"]["S8"] == 1
     assert result["diagnostics"]["zero_volume_entry"] == 1
+    assert result["secondary_labels"]["zero_volume_entry"] == 1
     assert result["primary_labels"].get("no_entry_bar", 0) == 0
 
 

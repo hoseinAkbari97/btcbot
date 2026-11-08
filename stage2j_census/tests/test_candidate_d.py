@@ -41,6 +41,11 @@ def session_bars(start_slot: int, *, entry_open: float = 30_610.0) -> list[dict]
                 "high": 30_150.0,
                 "low": 30_050.0,
                 "close": 30_100.0,
+                # Seven bars at HLC3=30,100 with total volume 28, plus one bar
+                # at HLC3=30,600 with volume 7, reproduce the frozen VWAP
+                # 30,200.0 exactly: (30,100*28 + 30,600*7) / 35.
+                "volume": 4.0,
+                "trade_count": 4,
             }
         )
     bars.append(
@@ -50,6 +55,8 @@ def session_bars(start_slot: int, *, entry_open: float = 30_610.0) -> list[dict]
             "high": 30_600.0,
             "low": 30_600.0,
             "close": 30_600.0,
+            "volume": 7.0,
+            "trade_count": 7,
         }
     )
     bars.append(
@@ -59,6 +66,8 @@ def session_bars(start_slot: int, *, entry_open: float = 30_610.0) -> list[dict]
             "high": entry_open + 40.0,
             "low": entry_open - 60.0,
             "close": entry_open - 10.0,
+            "volume": 1.0,
+            "trade_count": 1,
         }
     )
     return bars
@@ -114,7 +123,7 @@ def test_frozen_worked_example_arithmetic_and_pipeline() -> None:
     assert signal["p1"] == 30_600.0
     assert signal["r2"] == pytest.approx(0.02)
     assert signal["threshold"] == pytest.approx(0.5 * 1000.0 / 30_000.0)
-    assert signal["vwap"] == pytest.approx(30_162.5)
+    assert signal["vwap"] == pytest.approx(30_200.0)
     assert signal["p1"] > signal["vwap"]
     assert signal["regime_pct"] == 63.0
     assert signal["entry_open"] == 30_610.0
@@ -243,6 +252,19 @@ def test_below_vwap_rejects_after_the_threshold_passes() -> None:
     assert result["counts"]["S3"] == 1
     assert result["counts"]["S5"] == 0
     assert result["primary_labels"]["below_vwap"] == 1
+
+
+def test_entry_diagnostics_are_recorded_as_secondary_labels() -> None:
+    series_15m, series_1h = series_pair()
+    entry_slot = SESSION_SLOT_15M + 8
+    series_15m.volume[entry_slot] = 0.0
+    series_15m.trade_count[entry_slot] = 0
+    result = run_candidate_d(series_15m, series_1h, regime())
+
+    assert result["counts"]["S7"] == 1
+    assert result["diagnostics"]["zero_volume_entry"] == 1
+    assert result["secondary_labels"]["zero_volume_entry"] == 1
+    assert result["primary_labels"].get("no_entry_bar", 0) == 0
 
 
 def test_missing_entry_bar_rejects_without_skipping_forward() -> None:

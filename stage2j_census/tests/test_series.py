@@ -8,10 +8,12 @@ import math
 from stage2i_readiness.loader import DEV_START_MS, TIMEFRAME_MS, LoadStats, iter_candles
 from stage2j_census.series import (
     build_series,
+    compute_regime_4h,
     is_on_grid,
     slot_count,
     slot_index,
     slot_open_ms,
+    utc_iso_to_ms,
 )
 from stage2j_census.tests.helpers import make_series
 
@@ -132,3 +134,60 @@ def test_duplicate_open_time_keeps_the_first_record_in_file_order(tmp_path) -> N
     ]
     assert candles[0].close == 101
     assert stats.duplicate_timestamps == 1
+
+
+def test_utc_iso_to_ms_parses_frozen_manifest_timestamps() -> None:
+    assert utc_iso_to_ms("2021-01-01T00:00:00Z") == DEV_START_MS
+    assert utc_iso_to_ms("2021-01-01T04:00:00Z") == DEV_START_MS + TIMEFRAME_MS["4h"]
+    assert utc_iso_to_ms("2023-03-24T12:00:00Z") == slot_open_ms(
+        slot_index(utc_iso_to_ms("2023-03-24T12:00:00Z"), "4h"), "4h"
+    )
+
+
+def four_hour_bars(count: int) -> list[dict[str, float]]:
+    bars = []
+    for index in range(count):
+        close = 100.0 + index * 0.01
+        bars.append(
+            {
+                "open_time_ms": DEV_START_MS + index * TIMEFRAME_MS["4h"],
+                "open": close,
+                "high": close + 1.0,
+                "low": close - 1.0,
+                "close": close,
+            }
+        )
+    return bars
+
+
+def test_exempt_slots_break_the_4h_segment_and_reset_atr() -> None:
+    series = make_series("4h", four_hour_bars(30))
+    primary = compute_regime_4h(series, state_key="permission")
+    sensitivity = compute_regime_4h(series, exempt_slots=frozenset({20}), state_key="permission")
+
+    assert primary.usable[20] is True
+    assert primary.segment_id[20] == 0
+    assert primary.local_index[20] == 20
+
+    assert sensitivity.exempt_slots == frozenset({20})
+    assert sensitivity.usable[20] is False
+    assert sensitivity.segment_id[19] == 0
+    assert sensitivity.segment_id[20] == -1
+    assert sensitivity.segment_id[21] == 1
+    assert sensitivity.local_index[21] == 0
+    assert math.isnan(sensitivity.atr[21])
+
+
+def test_exempt_slot_makes_percentile_unknown_until_the_window_rebuilds() -> None:
+    series = make_series("4h", four_hour_bars(1200))
+    exempt_slot = 560
+    primary = compute_regime_4h(series, state_key="budget_ok")
+    sensitivity = compute_regime_4h(
+        series, exempt_slots=frozenset({exempt_slot}), state_key="budget_ok"
+    )
+
+    assert not math.isnan(primary.pct[exempt_slot])
+    assert math.isnan(sensitivity.pct[exempt_slot])
+    assert math.isnan(sensitivity.pct[exempt_slot + 1])
+    assert math.isnan(sensitivity.pct[exempt_slot + 552])
+    assert not math.isnan(sensitivity.pct[exempt_slot + 553])
