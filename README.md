@@ -127,6 +127,18 @@ This implements **Phase 0 + Phase 1** of the quantitative trading platform:
 
 The system is ready for Phase 2 (professional market chart) and beyond.
 
+## Research status
+
+The current research milestone is Stage 2J. The Candidate B and D feasibility
+census is complete; both are recorded as
+`FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` under the frozen Stage 2E v2
+rules. See `docs/research/stage2j/` for the reports and
+`docs/research/stage2j/FREEZE_MANIFEST.json` for the artifact hashes. Stage 2K
+has not started.
+
+This is a structural feasibility result. It is not a profitability claim, and no
+trading strategy is enabled by it.
+
 ## Next Steps
 
 After Phase 0 + Phase 1 is validated:
