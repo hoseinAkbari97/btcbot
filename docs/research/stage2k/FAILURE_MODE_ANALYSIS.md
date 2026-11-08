@@ -489,3 +489,100 @@ example Stage 2C §12 item 3).
 
 **Interpretation:** the record can say which conjunction failed; it cannot say which element of the
 conjunction is responsible.
+
+---
+
+## 8. Structural constraints versus project choices
+
+This is the distinction the Stage 2K brief requires. A **structural** item is potentially inherent in
+the market, instrument or strategy family. A **research assumption** is a condition chosen for this
+setup. A **project threshold** is a rule chosen to decide whether research proceeds. Only the first
+category is a market claim; the other two are decisions.
+
+### 8.1 Structural or market-related constraints
+
+| item | what it means | evidence status | what remains unknown | how changing it would affect interpretation |
+|---|---|---|---|---|
+| **Opportunity density of the setup family** | Few qualifying setups occur in 3.5 years once the frozen conjunctions are applied | **Verified fact** that the counts are low; **Unknown** whether the cause is the market or the definitions | Whether an unconditioned or less-conditioned version is denser (partly measured for A and C controls) | Cannot be changed; if structural, no filter design will fix it |
+| **BTC volatility level and its variation** | Stop size in percent is largely a volatility property; `cost_R` is inverse to it | **Verified fact** that implied stops span roughly 0.8% (D) to 3.0% (B); **Verified fact** that D has no cost-feasible signal after 2022-09 | Whether the 2023–24 low-volatility state is persistent | A permanently lower-volatility market makes tight-stop designs permanently cost-infeasible |
+| **Cost relative to stop distance** | A round trip consumes a fixed fraction of R determined by stop size | **Verified fact** as arithmetic; the 26 bp level itself is a proxy | The true venue cost | If true cost is higher, every count falls; if lower, only D's population changes materially |
+| **Clustering of opportunities in regimes** | Signals arrive in episodes rather than evenly | **Verified fact** for A and D; view-dependent for B; absent for C | The outcome dependence structure | Lower effective sample than nominal; affects any sufficiency rule |
+| **Continuous 24/7 trading and vendor gaps** | No session close; the dataset has 7 gaps | **Verified fact** (213 missing 5m bars, 12 exempt 4h buckets) | Whether the gaps are exchange outages or vendor omissions | Handled by protocol; does not explain the counts |
+| **Fat tails and jump reversal** | Large moves may exhaust rather than continue, competing with B and C | **Hypothesis** — no outcome was observed | Whether continuation or reversal dominates after an expansion | If reversal dominates, the family's premise is wrong, not merely rare |
+| **Long-only upside asymmetry** | Spot long-only cannot express downside continuation | **Hypothesis** | The size of the missing opportunity set | Not measurable from this record; would require a short-leg study |
+
+### 8.2 Research and execution assumptions
+
+| item | what it means | evidence status | what remains unknown | how changing it would affect interpretation |
+|---|---|---|---|---|
+| **Spot-only, long-only, no leverage** | Mandate constraint applied to every candidate | **Verified fact** as a specification, **unmeasured** as an effect | Counterfactual opportunity count with a short leg | Removing it changes the hypothesis, not just the sample; prior verdicts would not transfer |
+| **26 bp round-trip Binance proxy** | Fee plus adverse-execution estimate | **Verified fact** as the assumption; **not verified** for Nobitex | Real fees, spread, slippage, depth | A lower verified cost raises D's feasible share sharply; B and C remain below their floors by construction |
+| **5m dataset and execution/alignment grid** | 5m is the entry grid for A and C and a membership diagnostic for B and D | **Verified fact** | Whether a coarser execution grid changes stop geometry | Little effect on counts; the binding variable is stop size, not sampling frequency |
+| **Signal timeframes (1h, 4h, 15m)** | Chosen per candidate before counting | **Verified fact** | Whether another timeframe combination would be denser | Changing it creates a new hypothesis; no prior verdict applies |
+| **Indicator constructions** | Wilder ATR(14), SMA50/200, EMA20, 540-bar percentile, HLC3 VWAP, session UTC | **Verified fact** | Sensitivity to each construction | Any change is a new specification and requires a new freeze |
+| **Development interval 2021-01-01 → 2024-07-01** | One 1,277-day path | **Verified fact** | Behaviour in other periods | Extending it would consume validation/OOS data and requires separate authorization; per-year rates suggest the floor would still be hard to reach |
+| **Next-bar-open entry, no explicit slippage** | Causal fill assumption | **Verified fact** | Realised fill quality | A worse fill raises effective cost without changing the signal counts |
+| **$10,000 equity, 1% risk, one position** | Capital geometry basis | **Verified fact** | Scalability at other equity | Capital was not the binding constraint in any verdict; no capital violation was found on the cost-feasible populations |
+| **UTC sessions (D only)** | Research convention for intraday anchoring | **Verified fact**, and the specification denies any claim that the equity result transfers | Whether session-relative behaviour exists at all in BTC | A null result would be a genuine refutation of D's premise, not a convention failure |
+| **Implementation conventions B-1, C-1, M3** | Regime-failed episodes occupy the slot; capital check on cost-feasible population; 4h supplied-bar exemption | **Verified fact**, fixed before counting | Alternative conventions' effect on counts | M3 sensitivity changes B to 18 and D to 22 canonical; neither verdict direction changes |
+
+### 8.3 Project-specific decision thresholds
+
+| item | what it means | evidence status | what remains unknown | how changing it would affect interpretation |
+|---|---|---|---|---|
+| **150-opportunity floor** | The count required to proceed | **Project choice** from the Stage 2C freeze, with no statistical derivation (`stage2e_v2/CANDIDATE_B_SPEC.md` §0.1, §11.3) | Why 150 rather than a derived number | Lowering it after seeing counts would invalidate the pre-registration; deriving it beforehand is a legitimate but separate decision |
+| **200-opportunity gate (Stage 2A only)** | The earlier floor used for C | **Project choice**, inconsistent with the later 150 | Why it changed | The 200 and 150 results are not directly comparable; C would still fail either |
+| **349 tier boundary** | Top-tier label for `N ≥ 349` | **Planning reference** under independence, 0.15R, σ=1R, 5% two-sided, 80% power | Nothing statistically; it is an assumption set | It is not a requirement and not a power result for this design; treating it as one would overstate precision |
+| **`cost_R ≤ 0.20`** | Maximum round-trip cost as a fraction of R | **Project threshold**; equivalent to a 1.30% minimum stop at 26 bp | Whether 0.20 is the right economic cutoff | Relaxing it admits trades whose costs are a larger share of risk; the B and C counts would still fail |
+| **0.15R effect of interest** | Assumed minimum edge used in the design-margin diagnostic | **Design assumption**, not measured | The project's actual minimum economic effect | With 0.15R, no candidate is testable; with a larger declared effect, a different sufficiency rule follows |
+| **Non-overlap horizons (72h, 24h, 120h)** | Minimum spacing between accepted entries | **Project choices**, not optimal holding periods | Expected holding distributions (no outcome) | Shorter horizons raise counts; they also raise overlap and dependence. A's 120h choice costs 80 of 151 signals |
+| **Concentration screen (50% / 2.00)** | Screening rule, not a test | **Project choice** | Whether 2.00 is the right dependence allowance | It already triggers for D and not for B on the primary view; it does not drive any verdict |
+| **C duration ≥ 6 bars** | Minimum compression length | **Project choice** | Whether 4–5 bars is still a "compression state" | It is the binding cap: 63 of 461 episodes. Relaxing it would change the hypothesis |
+| **B retest and permission parameters** | 1–6 bars, 0.25 ATR tolerance, 0.50 ATR penetration, percentile 20–95 | **Project choices**, frozen before counting | Marginal yield of each condition | Not decomposable from this record; no ablation exists |
+| **D threshold and budget parameters** | 0.5 × ATR1h threshold, percentile 25–80 | **Project choices**, frozen before counting | Same | Same |
+| **Feasible-share thresholds 0.25 / 0.30** | Proposed economic screens | **Proposed, never adopted** | Whether they would have changed any verdict | B's 0.906 and A's 0.774 pass; D's 0.153 fails; B and D already fail on count, so the verdicts would not change |
+
+**Warning:** none of the items in Section 8.3 is a market fact. Presenting 150 as a universal
+statistical standard, or 349 as a power requirement, would misstate the record. Stage 2K does not do
+so, and no number in this analysis should be quoted that way.
+
+---
+
+## 9. Attribution and what would separate the explanations
+
+### 9.1 Attribution matrix
+
+| candidate | F1 frequency | F2 cost/stop | F3 regime/timeframe | F4 concentration | F5 design | F6 evidence |
+|---|---|---|---|---|---|---|
+| **A** | **Strong** — 71 vs 150 | Moderate — 44 of 195 fail; feasible share 0.774 | **Strong** — regime removes 56%; overlap removes 53% | **Strong** — `n_eff` 12.69, 24 clusters | Moderate — 120h overlap; 0.15R mismatch | Shared project limitation |
+| **B** | **Strong** — 24 vs 150 | **Weak** — 3 of 32 fail; share 0.906 | **Strong** — regime removes 74.5%; structure removes 70.9% of the rest | Mild — primary 1.69, quarter view 4.93 | Moderate — nine-condition conjunction | Shared project limitation |
+| **C** | **Strong and structural** — 63-episode ceiling | Moderate — 5 of 17 fail; best case 17 | Not applicable — no regime condition | Moot — sparse, not clustered | **Strong** — six-bar floor is the cap | Shared project limitation |
+| **D** | **Strong** — 34 vs 150 | **Strong** — 250 of 295 fail; share 0.153 | Moderate — budget removes 64% | **Strong** — 3.93, signals only in 2021–22 | Moderate — 1h-ATR stop near the gate | Shared project limitation |
+
+### 9.2 What the matrix supports
+
+**Interpretation:** F1 is the verdict for every candidate, but the causal routes differ. There is no
+single dominant failure mode across the family. Two candidates are regime-limited, one is
+state-limited, one is cost-geometry-limited. A project response that assumes a single cause — for
+example "lower the cost proxy" or "add a better filter" — would address at most one candidate.
+
+**Interpretation:** F6 applies to all four. The record's strongest common limitation is not any
+individual rule; it is that no outcome was ever observed, so the project knows where opportunities
+were lost but not whether the survivors carry any edge.
+
+### 9.3 What would separate structural from project-specific
+
+| question | evidence required | authorized in Stage 2K? |
+|---|---|---|
+| Which condition is responsible for the low yield? | Pre-registered ablation: yield of the frozen rule with one condition removed at a time, no threshold tuning, no outcome observed | **No** — new counting |
+| Is the cost proxy too high? | Verified venue fee, spread and slippage measurement, then a pre-registered cost-scenario recomputation including the non-overlap count | **No** — new analysis and external data |
+| Would more data help? | A longer interval, which necessarily consumes validation/OOS data, plus a new freeze | **No** — prohibited and governance-sensitive |
+| Is the effect-size target achievable? | An owner-declared minimum economic effect and a dependence-aware sufficiency rule, frozen before any count | **No** — owner decision |
+| Does the family work in another instrument or period? | Out-of-sample replication under a new pre-registration | **No** — later stage |
+| Is the v2 freeze trustworthy? | An arms-length third-party audit, not a self-audit | **No** — governance |
+
+**Conclusion of this analysis:** the record is sufficient to establish that these four frozen designs
+produced too few opportunities, and sufficient to show that the cause differs by candidate. It is
+**not** sufficient to establish that the market lacks the opportunities, that the cost proxy is
+wrong, or that the family has no edge. The distinction cannot be resolved without new, separately
+authorized work.
