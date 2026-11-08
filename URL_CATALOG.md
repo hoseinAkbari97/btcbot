@@ -1,7 +1,7 @@
 # Frontend and Backend URL Catalog
 
-Last reviewed: **October 25, 2026** (added research-module pointers for the Setup 1 split/gap
-integration; no URL routes changed)
+Last reviewed: **November 8, 2026** (reviewed for the Stage 2J feasibility census; no URL routes
+changed)
 
 This file inventories the URL routes and external service URLs defined in the current source tree.
 Examples are illustrative; database contents, generated IDs, timestamps, and output file names vary at
@@ -1301,3 +1301,16 @@ The printed output includes a `risk_violations` list for every run, empty when n
   - `frontend/src/components/StructureShifts.tsx`
   - `frontend/src/components/LiquidityZones.tsx`
   - `frontend/src/components/SetupMarkers.tsx`
+
+## Research-only additions with no URL surface
+
+Stage 2J (2026-11-08) added no HTTP routes, WebSocket endpoints, or external
+service URLs. It is a file-only feasibility census under
+`docs/research/stage2j/`; its entry point is the CLI:
+
+```bash
+python -m stage2j_census.run_census --output-dir docs/research/stage2j/machine_readable
+```
+
+The census reads local dataset files and writes local JSON/Markdown artifacts.
+It exposes no API, server, or network endpoint.
