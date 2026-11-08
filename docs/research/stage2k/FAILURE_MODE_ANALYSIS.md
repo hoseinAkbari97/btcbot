@@ -306,3 +306,186 @@ duration floor on 4h bars, which has nothing to do with 5m sampling.
 | Spot-only long-only is the binding constraint | **Hypothesis** — no counterfactual measured |
 | The 5m framework is structurally incompatible with the cost model | **Not supported** — the binding variable is stop size |
 | The strategy family is incompatible with the selected framework | **Unknown** — the four failures are consistent with it, but do not establish it |
+
+---
+
+## 6. F4 — Concentration and effective evidence
+
+### 6.1 What the two diagnostics mean
+
+The Stage 2J concentration criterion is met if **either** the largest non-empty 4h regime cluster
+contains more than 50% of the population **or** the Kish design effect `N / n_eff` is at least 2.00,
+where `n_eff = (Σ n_k)² / Σ n_k²` over non-empty clusters
+(`stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md` §5; `stage2e_v2/SHARED_CENSUS_PROTOCOL.md` §3.1).
+
+- The **largest-share** component asks whether one episode dominates.
+- The **design-effect** component asks whether the population is spread thinly across many small
+  clusters rather than concentrated in a few large ones.
+- They can disagree, and they do.
+
+### 6.2 Recorded values
+
+| candidate / population | N | non-empty clusters | largest share | Kish `n_eff` | design effect |
+|---|---:|---:|---:|---:|---:|
+| A — feasible signals, regime episodes | 151 | 24 | 0.139 | 12.69 | 11.9 |
+| B — S8 cost-feasible | 29 | 21 of 171 | 0.1034 | 17.16 | 1.69 |
+| B — S10 canonical | 24 | 21 of 171 | 0.0833 | 19.20 | 1.25 |
+| B — calendar quarter view | 29 | 9 | 0.2759 | — | 4.93 |
+| B — permission-decile view | 29 | 8 | 0.2069 | — | 3.97 |
+| D — S7 cost-feasible | 45 | 20 of 212 | 0.1778 | 11.44 | **3.93** |
+| D — S9 canonical | 34 | 19 of 212 | 0.1765 | 11.12 | 3.06 |
+| D — S6 pre-gate view | 295 | 111 of 212 | 0.0712 | 51.96 | 5.68 |
+| D — session-id view | 45 | 3 | 0.3556 | — | 15.13 |
+| D — calendar-quarter view | 45 | 5 | 0.3778 | — | 11.62 |
+| C — all events | 12 | — | — | — | not computed |
+
+Sources: Stage 2C §8.1; Stage 2J B report §6; Stage 2J D report §6. Dashes mean the artifact does not
+report the value; Stage 2K did not compute it.
+
+### 6.3 What the diagnostics actually tell us
+
+**Verified fact:** B does not meet the pre-declared screen on its primary S8 population (design
+effect 1.69) or on the canonical S10 population (1.25), but its calendar-quarter view gives a design
+effect of 4.93 and a largest share of 27.6%. The screen result is therefore **view-dependent**.
+
+**Verified fact:** D meets the screen on the primary S7 population (3.93) and on the canonical S9
+population (3.06). Its largest-share component is below 50% in both, so the design-effect component is
+what triggers the screen.
+
+**Verified fact:** D's canonical 34 signals all fall in 2021–2022, and no cost-feasible signal occurs
+after 2022-09. That is a stronger statement than any cluster statistic: the opportunity set is
+confined to a subset of the development interval.
+
+**Interpretation:** the largest-share component is insensitive to dispersion across many small
+clusters, while the design-effect component is sensitive to it. A candidate can be "not concentrated"
+because no single episode dominates and still have an effective sample far below its nominal count.
+
+### 6.4 Why non-overlap does not establish independence
+
+Non-overlap is a greedy construction on entry timestamps. It guarantees that selected entry windows
+do not overlap in clock time. It does **not** guarantee that the selected opportunities are
+independent observations, because:
+
+1. Opportunities in the same trend, volatility regime, or macro episode share common drivers even
+   when their holding windows do not overlap.
+2. A greedy earliest-first rule can select a whole sequence from one favourable regime and skip a
+   later cluster, so the selected set inherits the regime's dependence.
+3. Returns can be serially correlated across non-overlapping windows through volatility clustering
+   and slow-moving regimes.
+4. The dependence structure of **outcomes** cannot be estimated from a census that observes no
+   outcomes.
+
+**Verified fact:** both the Stage 2J final decision and the Stage 2C report state explicitly that
+non-overlapping observations are not independent observations
+(`stage2j/STAGE2J_FINAL_DECISION.md` §3; `STAGE2C_FEASIBILITY_CENSUS.md` §8.2–§8.3).
+
+### 6.5 Why Kish must not be read as a serial-dependence estimator
+
+Kish's `n_eff` is the effective size under **perfect within-cluster correlation and zero
+between-cluster correlation**. It is a concentration diagnostic and a deliberately conservative bound
+for that assumed structure. If within-cluster correlation is below 1, the true effective sample is
+larger than Kish; if dependence spans clusters (for example two adjacent 4h runs in the same trend),
+the true effective sample can be smaller. The artifact states this limitation in
+`stage2e_v2/SHARED_CENSUS_PROTOCOL.md` §3.1, and the protocol prescribes a `rho` sensitivity
+(`n_eff(ρ) = N / (1 + (m̄ − 1)ρ)` for ρ ∈ {0.25, 0.50, 0.75, 1.00}) precisely so that no single
+number is presented as the effective sample size.
+
+**Interpretation:** substituting `n_eff` into the independence-based detectable-effect formula is
+illustrative only. It would raise the smallest detectable effect above the already-reported values
+(0.332R for A at 71, 0.572R for B at 24, 0.480R for D at 34, 0.809R for C at 12), but it is not a
+power calculation and must not be quoted as one.
+
+### 6.6 Does the concentration weaken confidence in the opportunity count?
+
+| candidate | assessment |
+|---|---|
+| A | **Yes.** 24 signal-producing regime episodes, Kish `n_eff` 12.69, largest episode 13.9%. The nominal 151 feasible / 71 canonical overstate independent evidence. |
+| B | **Mildly.** The primary screen passes (1.69) and the canonical screen passes (1.25), but the quarter view (4.93) shows calendar concentration. The nominal 24 is not 24 independent draws. |
+| C | **Moot.** 12 events spread over 3.5 years with no pair inside the 3-day hold; the failure is scarcity, not clustering. |
+| D | **Yes, strongly.** Design effect 3.93 on the primary population, 3.06 on the canonical set, all signals in 2021–2022, and quarter/session views worse. |
+
+**Interpretation:** concentration does not change any recorded verdict — every candidate already
+fails on count. It changes what a future sufficiency rule would have to require: a nominal count of
+150 would not be enough if the design effect is near 4.
+
+---
+
+## 7. F5 — Research-design limitations
+
+These are questions about the design, not permission to alter frozen rules. Each is recorded as a
+possible attribution, with its evidential status.
+
+### 7.1 Conjunctive definitions
+
+**Verified fact:** B requires an expansion bar, 4h permission at the expansion bar, a retest touch
+within six bars, penetration no deeper than 0.50 ATR, resumption within three bars, 4h permission at
+confirmation, a valid stop, the cost gate, and the 72h overlap rule. From 30,625 usable 1h bars this
+yields 24 opportunities.
+
+**Interpretation:** each condition is defensible in isolation; their conjunction is the design. The
+census cannot say which condition is "too strict" because no condition was ablated.
+
+### 7.2 Thresholds that dominate the population
+
+| threshold | candidate | effect |
+|---|---|---|
+| duration ≥ 6 bars | C | caps the sample at 63 episodes before any other rule |
+| 4h regime conjunction | A, B | removes 56% and 74.5% of the relevant populations |
+| 4h volatility budget | D | removes 64% of directional signals |
+| 26 bp cost gate | D | removes 84.7% of pre-gate sessions |
+| 120h overlap | A | removes 53% of feasible signals |
+
+**Interpretation:** these five choices, not the market alone, determine the observed counts. Whether
+a different value is defensible is a separate question that would require a new pre-registration.
+
+### 7.3 The sufficiency rule does not match the stated effect of interest
+
+This is the deepest design limitation in the record.
+
+**Verified arithmetic:** under the project's own assumptions (σ = 1R, α = 0.05 two-sided, 80% power,
+independence), the smallest detectable effect is `2.801585 / √N`:
+
+| N | smallest detectable effect |
+|---:|---:|
+| 349 | 0.150R (the stated target) |
+| 150 | 0.229R |
+| 71 (A) | 0.332R |
+| 34 (D) | 0.480R |
+| 24 (B) | 0.572R |
+| 12 (C) | 0.809R |
+
+**Verified fact:** the 349 reference is what the stated 0.15R target requires under independence. The
+150 floor is only sufficient for an effect near 0.23R, and no candidate's count is sufficient for
+0.15R.
+
+**Interpretation:** the programme has been applying a **sample-size floor** (150) that is inconsistent
+with its own **effect-size target** (0.15R). A candidate could have passed the 150 floor and still
+been unable to detect the effect the project says it cares about. This is a research-design mismatch,
+not a market finding.
+
+### 7.4 Candidate selection was frequency-first, and the frequency judgement failed
+
+**Verified fact:** Stage 2D recommended B and D explicitly on feasibility grounds: B because a 72h
+horizon has a 425-episode calendar ceiling; D because it was "the only candidate with a credible path
+to the 150 floor" (`STAGE2D_STRATEGY_RECOMMENDATION.md` §1, §3). Both then failed frequency.
+
+**Interpretation:** ex ante frequency intuition was unreliable in both recommended cases. That is an
+argument against selecting the next candidate on a similar judgement without a pre-count bound.
+
+### 7.5 One-shot instantiation
+
+Each candidate was frozen once and counted once. No parameter was tuned in the decision path, which
+protects the census from overfitting but limits the conclusion: the verdict is about **this
+instantiation**, not about the hypothesis family as a whole. The reports say this explicitly (for
+example Stage 2C §12 item 3).
+
+### 7.6 Missing controls and missing ablations
+
+- A and C have unconditioned control arms, but neither control was promoted and C's control stop was
+  a provisional substitute.
+- B and D have no outcome control arm.
+- No condition was ablated in any census, so the marginal contribution of each condition to the
+  population loss is unmeasured.
+
+**Interpretation:** the record can say which conjunction failed; it cannot say which element of the
+conjunction is responsible.
