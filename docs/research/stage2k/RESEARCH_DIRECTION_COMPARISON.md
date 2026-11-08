@@ -395,6 +395,10 @@ satisfied by the current record.
 | A third-party audit is required before any new count | D2 must precede D3 and D4; D5 unaffected | **Governance question** |
 | The owner will not declare a minimum effect | D2 and D3 cannot be completed; the choice reduces to D5 | **Owner decision** |
 
+**Status vocabulary:** in the table above, *Unmeasured*, *Uncomputed* and *Not tested* mean
+**Unknown** — the record contains no value. *Undecided* and *Owner decision* mean **Unknown** pending
+an owner choice, not a finding. *Governance question* is procedural, not evidential.
+
 **Verified arithmetic for the δ rows:** `N = (2.801585 / δ)²` under the project's independence
 assumptions. At δ = 0.25R this gives 125.6, so 126; at δ = 0.23R it gives 148.4, close to 150; at
 δ = 0.15R it gives 348.8, the recorded 349 reference.
