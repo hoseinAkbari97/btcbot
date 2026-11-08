@@ -1,0 +1,253 @@
+{
+  "artifact_commit": "737bf90f32b3c49f72008040696c07f9ce326d84",
+  "artifact_commit_note": "Commit that introduced the final Stage 2J report before this manifest. Integrity rests on self_hash, not on this field.",
+  "artifact_hashes": {
+    "CANDIDATE_B_CENSUS_REPORT.md": {
+      "bytes": 9793,
+      "path": "docs/research/stage2j/CANDIDATE_B_CENSUS_REPORT.md",
+      "role": "Candidate B census report",
+      "sha256": "e987e27ae6815f86d0ce0ac921b08e9ec8a0a12df9282a51ee780a40edd6a7f1"
+    },
+    "CANDIDATE_COMPARISON.md": {
+      "bytes": 6279,
+      "path": "docs/research/stage2j/CANDIDATE_COMPARISON.md",
+      "role": "Candidate B and D structural comparison",
+      "sha256": "e98852ad6f72e79f46cc07ea7edac13e1e8ce6ef02d8f74b08e6919925e417ca"
+    },
+    "CANDIDATE_D_CENSUS_REPORT.md": {
+      "bytes": 11217,
+      "path": "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md",
+      "role": "Candidate D census report",
+      "sha256": "07291ef379746a435eb05ec4dcc43252807287d2b29092135ded04c381188251"
+    },
+    "CENSUS_METHODOLOGY_AND_EXECUTION.md": {
+      "bytes": 11513,
+      "path": "docs/research/stage2j/CENSUS_METHODOLOGY_AND_EXECUTION.md",
+      "role": "Census methodology, execution, resources, and determinism record",
+      "sha256": "ed47df1c426727eeaf57789565af072010afde1e61fe89d2100b1bf6e0867a61"
+    },
+    "DATA_ALIGNMENT_AND_METHOD_AUDIT.md": {
+      "bytes": 7346,
+      "path": "docs/research/stage2j/DATA_ALIGNMENT_AND_METHOD_AUDIT.md",
+      "role": "Gap-aware data alignment and method audit",
+      "sha256": "98a215102d6e8d9f3483335e71b25cdb28f73cdc7a01a3c0747f1441d6c62985"
+    },
+    "PRE_REGISTERED_ANALYSIS_PLAN.md": {
+      "bytes": 29918,
+      "path": "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md",
+      "role": "Pre-registered Stage 2J analysis plan (frozen before counting)",
+      "sha256": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e"
+    },
+    "STAGE2J_FINAL_DECISION.md": {
+      "bytes": 4677,
+      "path": "docs/research/stage2j/STAGE2J_FINAL_DECISION.md",
+      "role": "Stage 2J final decision and stop point",
+      "sha256": "12d37bec9baa2e242103da1b0f30c38a6f4874e5127eb989e4d88d416397864d"
+    },
+    "STAGE2J_SUMMARY_AND_VERDICT.md": {
+      "bytes": 6445,
+      "path": "docs/research/stage2j/STAGE2J_SUMMARY_AND_VERDICT.md",
+      "role": "Stage 2J summary and verdict",
+      "sha256": "d1a332a2bef5b299f8cd04797bc623d623a60695ff3d0499928a0d8386e97935"
+    },
+    "alignment_audit.json": {
+      "bytes": 20648,
+      "path": "docs/research/stage2j/machine_readable/alignment_audit.json",
+      "role": "Gap-aware alignment audit",
+      "sha256": "0205d76da6eecb1aa9f78a52d4bcb486c6d7ba0f993a02b29869edeaf275e099"
+    },
+    "candidate_b_census.json": {
+      "bytes": 76743,
+      "path": "docs/research/stage2j/machine_readable/candidate_b_census.json",
+      "role": "Candidate B machine-readable census",
+      "sha256": "a0c74d7d5124dc6afd7c11f5fcccd86e4bd76d363563597e616b11c997c69db7"
+    },
+    "candidate_d_census.json": {
+      "bytes": 260957,
+      "path": "docs/research/stage2j/machine_readable/candidate_d_census.json",
+      "role": "Candidate D machine-readable census",
+      "sha256": "cc9d0191b83b6d4a2bab4e5213dc72131c354217aa1c443eceb22f7402d0effa"
+    },
+    "census_run.json": {
+      "bytes": 20549,
+      "path": "docs/research/stage2j/machine_readable/census_run.json",
+      "role": "Run identity, confirmations, and reconciliation record",
+      "sha256": "0c4005dfdb0abe19081ef411caa635faf324059fd6fa3208cf99653669778722"
+    },
+    "preflight.json": {
+      "bytes": 14025,
+      "path": "docs/research/stage2j/machine_readable/preflight.json",
+      "role": "Preflight identity and frozen-artifact verification",
+      "sha256": "1d6b597e1472dcb07d9ad80c18f5bf1e3212fc4c26dd39f70a58ab485945e195"
+    },
+    "resources.json": {
+      "bytes": 1519,
+      "path": "docs/research/stage2j/machine_readable/resources.json",
+      "role": "Measured time and memory; excluded from deterministic identity",
+      "sha256": "7706428baae25c604cba3eedbed7ef093914ca5aa2b91d89d8b63bdbd398e965"
+    },
+    "verdict_inputs.json": {
+      "bytes": 2075,
+      "path": "docs/research/stage2j/machine_readable/verdict_inputs.json",
+      "role": "Pre-registered verdict inputs and vocabulary",
+      "sha256": "100cfb496739b4610b27f52e20b1dbb000cde4170ba50a952c897e67c39de8f7"
+    }
+  },
+  "artifact_set": "Stage 2J Candidate B and D feasibility census",
+  "baseline": {
+    "change_proposals_applied": [],
+    "cost_proxy": {
+      "cost_fraction_primary": 0.0026,
+      "gate_cost_r": 0.2,
+      "round_trip_bps_primary": 26,
+      "venue": "Binance spot proxy; not a verified Nobitex execution cost"
+    },
+    "decision_thresholds": {
+      "concentration_design_effect_ceiling": 2.0,
+      "concentration_largest_share_ceiling": 0.5,
+      "independent_sample_reference": 349,
+      "independent_sample_status": "planning reference under independence; not a requirement and not a power result for this design",
+      "non_overlap_is_not_independence": true,
+      "project_floor_non_overlapping": 150,
+      "project_floor_status": "project protocol choice from the Stage 2C freeze; not statistically derived"
+    },
+    "development_interval": {
+      "end": "2024-07-01T00:00:00Z",
+      "end_ms": 1719792000000,
+      "semantics": "half-open [start_ms, end_ms) on candle open_time_ms; start included, end excluded",
+      "start": "2021-01-01T00:00:00Z",
+      "start_ms": 1609459200000
+    },
+    "freeze_manifest": "docs/research/stage2e_v2/FREEZE_MANIFEST.json",
+    "freeze_manifest_self_hash": "751831e2fed6b406cdaf701d342fe6891eccab337a5e32f6d68e5a279ff13a93",
+    "freeze_manifest_sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7",
+    "frozen_artifact_set": "docs/research/stage2e_v2/",
+    "frozen_version": "2.0.0",
+    "stage2h_audit": "docs/research/STAGE2H_INDEPENDENT_V2_FREEZE_AUDIT.md",
+    "stage2h_audit_sha256": "c91a3486e26f06af7523d47aacfe4ee56ee6e88a12b6d2262aea191f5a3feddf",
+    "stage2i_manifest": "docs/research/stage2i/FREEZE_MANIFEST.json",
+    "stage2i_manifest_sha256": "a7a7df57ea19b550804f91767338902091826c0646277352a5d7bfbd3c81b294"
+  },
+  "census_execution": {
+    "candidate_scope": [
+      "B",
+      "D"
+    ],
+    "canonical_horizons_hours": {
+      "B": 72,
+      "D": 24
+    },
+    "code_sha256": "1a482033996496ad3629b68e2ff7b39d2c78ae0cc100e3d1d72282ec53dce221",
+    "determinism_method": "Two runs with identical code and HEAD produced byte-identical analytical JSON; resources.json differs by design because it records wall time and RSS.",
+    "determinism_verified": true,
+    "deterministic_outputs": [
+      "alignment_audit.json",
+      "candidate_b_census.json",
+      "candidate_d_census.json",
+      "verdict_inputs.json",
+      "census_run.json"
+    ],
+    "git_head": "bc1285c8277c37c93b76addfe83dcb50267c1f35",
+    "non_deterministic_output": "resources.json",
+    "sensitivity_horizons_hours": {
+      "B": [
+        24,
+        120
+      ],
+      "D": [
+        12,
+        48
+      ]
+    }
+  },
+  "confirmations": {
+    "backtest_run": false,
+    "change_proposals_applied": false,
+    "drawdown_computed": false,
+    "expectancy_computed": false,
+    "frozen_artifacts_modified": false,
+    "monte_carlo_run": false,
+    "oos_payloads_decoded": 0,
+    "optimization_run": false,
+    "paper_or_live_trading_started": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "pre_registered_plan_modified_after_counting": false,
+    "returns_computed": false,
+    "sharpe_or_sortino_computed": false,
+    "signals_counted": true,
+    "stage2k_started": false,
+    "validation_or_oos_accessed": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-08T07:52:38Z",
+  "manifest_commit_note": "This manifest cannot contain its own commit or hash. A verifier must recompute self_hash after removing the self_hash field.",
+  "no_performance_claim": "This manifest records a structural feasibility census only. It contains no P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity curve, bootstrap, Monte Carlo, optimisation, backtest, paper-trade, or live-trade result. Non-overlapping observations are not independent observations. Neither candidate is shown to be profitable or unprofitable.",
+  "self_hash": "d12de357a8032a123bd0efaea156f26aa71c707061204cc058011bbc4e5df96a",
+  "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
+  "stage": "2J",
+  "supporting_files": {
+    "stage2i_readiness/loader.py": {
+      "bytes": 14510,
+      "sha256": "df3424fdbf696007b72f404e9f05b3974bab03416b9e84c501bd0df427007c2c"
+    },
+    "stage2j_census/__init__.py": {
+      "bytes": 303,
+      "sha256": "0841172d6d14fda4f125662f8b9e61cb6b1e5d2b34ddca3e648e91e585304dc1"
+    },
+    "stage2j_census/alignment.py": {
+      "bytes": 16800,
+      "sha256": "3ba64c0958791700ec300ef1f4d67e3c158a1f37a5f316e510fb05beffd175e5"
+    },
+    "stage2j_census/analysis.py": {
+      "bytes": 40711,
+      "sha256": "07274e450166aa072be72506e1fe4629d16ed0b28b42482b02ecfcda977c9cb9"
+    },
+    "stage2j_census/candidate_b.py": {
+      "bytes": 16339,
+      "sha256": "d76bdc7c14a27d7dc66f42083eeb52d83c4c2c32599d433e3d72974d143bc00a"
+    },
+    "stage2j_census/candidate_d.py": {
+      "bytes": 11708,
+      "sha256": "6d7bb61baeee8ae9162012bae0dcf0a9d82c09a4f859d906d60ff6d7941678a1"
+    },
+    "stage2j_census/run_census.py": {
+      "bytes": 20109,
+      "sha256": "f1917f5654c0be53ef95d5deb5531436c72ce9644746c5dbe6982c7ab67de226"
+    },
+    "stage2j_census/series.py": {
+      "bytes": 17120,
+      "sha256": "62faa06d83d18a89fd995173246af14d9929872410765ad023af728ed2a2ed98"
+    },
+    "stage2j_census/stats.py": {
+      "bytes": 17390,
+      "sha256": "7cd2d72b8f5371ea1e11bbeec894b853a8d073c992e1644e19703c4a842e9b23"
+    }
+  },
+  "verdicts": {
+    "B": {
+      "M_all": 0.086505387877563,
+      "M_feasible": 0.07480838117382954,
+      "N_nonoverlap": 24,
+      "canonical_horizon_hours": 72,
+      "concentration_criterion_met": false,
+      "design_effect": 1.6896551724137934,
+      "frozen_tier_label": "FAIL",
+      "largest_cluster_share": 0.10344827586206896,
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    },
+    "D": {
+      "M_all": 0.32255940800148175,
+      "M_feasible": 0.16508519719805634,
+      "N_nonoverlap": 34,
+      "canonical_horizon_hours": 24,
+      "concentration_criterion_met": true,
+      "design_effect": 3.933333333333333,
+      "frozen_tier_label": "FAIL",
+      "largest_cluster_share": 0.17777777777777778,
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    },
+    "stage2k_started": false
+  },
+  "version_identifier": "stage2j/1.0.0"
+}
