@@ -77,3 +77,87 @@ omits `freeze_verify.py` (L-010).
 | Are concentration and statistical diagnostics correct? | Yes for the verdict screen. Exact Kish, design effect, and largest-cluster share match the synthetic values. | L-002 (added criterion), L-007 (rho mean) |
 | Is the verdict logic faithful to the pre-registered plan? | Yes. Compliance gates, precedence, subconditions, and verdict names match. | L-001, L-002 |
 | Are provenance and reproducibility adequate? | Partially. Hashes are strong; determinism and code coverage are incomplete. | L-009, L-010 |
+
+## 5. Findings and historical-conclusion impact
+
+| Severity | Count | IDs |
+|---|---:|---|
+| CRITICAL | 0 | — |
+| MAJOR | 0 | — |
+| MINOR | 6 | L-001, L-002, L-003, L-006, L-009, L-010 |
+| OBSERVATION | 4 | L-004, L-005, L-007, L-008 |
+| **Total** | **10** | |
+
+**Candidate B:** the recorded verdict is `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`
+with `N_nonoverlap=24`, `M_all=0.086505387877563`, largest-cluster share `0.103448`, and
+design effect `1.689655`. The findings do not change any of those inputs or the verdict.
+The `retest_timeout=0` count is accepted as recorded but not independently reproduced
+(L-008).
+
+**Candidate D:** the recorded verdict is `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`
+with `N_nonoverlap=34`, `M_all=0.32255940800148175`, largest-cluster share `0.177778`, and
+design effect `3.933333`. The pre-gate capital diagnostic has 208 of 295 signals above
+`notional_pct=1.00`, but the verdict population has none (L-001). The concentration
+criterion is met but has lower precedence than insufficient opportunities (L-002). The
+verdict is unchanged.
+
+**Stage 2K:** the decision to stop the current strategy family remains in force. Stage 2L
+does not promote a candidate, revise a verdict, or reopen candidate selection.
+
+All ten findings are **open**. Stage 2L records them; it does not repair them.
+
+## 6. What this audit does not establish
+
+1. It does not establish independence. The primary verdict is
+   **SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED**.
+2. It does not establish that either candidate has an edge, is profitable, or is
+   unprofitable. No P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR,
+   equity curve, bootstrap, Monte Carlo, optimisation, or backtest was computed.
+3. It does not reproduce the historical census. Counts and labels are accepted only as
+   hash-verified Stage 2J records.
+4. It does not read, decode, slice, or summarise development, validation, or out-of-sample
+   market rows.
+5. It does not exercise every real-data interaction of gaps, partial bars, and regime runs.
+   The synthetic checks are unit-level evidence.
+6. It does not certify that the absence of CRITICAL or MAJOR findings is itself independent.
+   A self-review can share the original implementer's blind spots.
+
+## 7. Recommended follow-ups (not performed)
+
+1. Commission an independent auditor to repeat the trace and synthetic checks without the
+   prior Stage 2J involvement, and to decide whether the self-review limitations are
+   acceptable.
+2. In a future frozen specification, state the capital-geometry evaluation population in the
+   verdict table, define the status of the concentration term, and resolve the entry
+   presence-versus-same-segment rule.
+3. Retain second-run digests or a determinism receipt, and add `freeze_verify.py` to the
+   hashed code set.
+4. Correct the extra-4h-bucket wording in a future note without rewriting the historical
+   report.
+5. If the historical `retest_timeout=0` count matters, authorise a separate reproduction;
+   do not treat Stage 2L as that reproduction.
+
+## 8. Completion and stop
+
+The required Stage 2L deliverables are present in `docs/research/stage2l/`:
+
+- `AUDIT_SCOPE_AND_INDEPENDENCE.md`
+- `SPECIFICATION_IMPLEMENTATION_TRACE.md`
+- `TECHNICAL_FINDINGS.md`
+- `STAGE2L_FINAL_AUDIT_REPORT.md`
+- `FREEZE_MANIFEST.json`
+
+Supporting evidence is preserved in `synthetic_audit_checks.py` and
+`SYNTHETIC_TEST_LOG.md`. The manifest records the hashes of the documents and evidence,
+the source hashes, the synthetic-check result, and the audit confirmations.
+
+No historical file, application file, frozen specification, dataset, or Stage 2J verdict
+was modified. The census was not rerun, no detector was run on historical data, and no
+performance metric was computed. The audit stops here. It does not repair the
+implementation, rerun the census, revise a verdict, create a candidate, or start Stage 2M.
+
+---
+
+**Prepared by:** Big Pickle, self-review  
+**Independence status:** not established  
+**Primary verdict:** **SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED**
