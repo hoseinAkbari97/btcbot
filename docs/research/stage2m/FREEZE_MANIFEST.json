@@ -1,0 +1,321 @@
+{
+  "artifact_set": "Stage 2M research-governance and economic-feasibility design framework",
+  "confirmations": {
+    "application_code_modified": false,
+    "application_service_started": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_promoted": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "dependency_installed": false,
+    "detector_run": false,
+    "development_validation_or_oos_rows_processed": false,
+    "docker_started": false,
+    "drawdown_computed": false,
+    "equity_curve_computed": false,
+    "expectancy_computed": false,
+    "experiment_authorized": false,
+    "frozen_artifacts_modified": false,
+    "historical_analysis_executed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "implementation_created": false,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "optimization_run": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "recount_run": false,
+    "research_code_modified": false,
+    "returns_computed": false,
+    "sharpe_or_sortino_computed": false,
+    "stage2n_started": false,
+    "validation_or_oos_accessed": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-09T06:38:19Z",
+  "deliverables": [
+    {
+      "bytes": 30728,
+      "path": "docs/research/stage2m/CURRENT_FRAMEWORK_GAP_ANALYSIS.md",
+      "role": "Current framework, established facts, unresolved gaps G-01-G-13, gap-to-treatment matrix",
+      "sha256": "47806f7e0497e0f0ec48cd26bca5abaa0e2e6737b5a356756f5a8bab91616e8f"
+    },
+    {
+      "bytes": 39108,
+      "path": "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md",
+      "role": "Estimands, minimum-meaningful-effect options, risk and capital context, 10-component cost model, venue requirements, cost uncertainty",
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    {
+      "bytes": 31205,
+      "path": "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md",
+      "role": "Evidence hierarchy, dependence methods, sample-sufficiency derivation, illustrative calculations, multiplicity",
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    {
+      "bytes": 39850,
+      "path": "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md",
+      "role": "Gates 0-6, freeze policy, independent-audit policy, data separation, representativeness, resource classification, evidence preservation",
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    {
+      "bytes": 26674,
+      "path": "docs/research/stage2m/OWNER_DECISION_REGISTER.md",
+      "role": "Fifteen owner decisions D-01-D-15 with options, consequences, recommended framing, dependencies, response record",
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    {
+      "bytes": 26123,
+      "path": "docs/research/stage2m/STAGE2M_FINAL_PROPOSAL.md",
+      "role": "Overall framework, unresolved decisions, essential/deferrable/optional requirements, recommendation, completion report",
+      "sha256": "c0320eb9a0425c73e4b7bbec8d43c4785562d53a9e345729a519fbfb7a241cb6"
+    }
+  ],
+  "design_scope": {
+    "authorized": [
+      "read Stage 2J, 2K and 2L documentation and the frozen Stage 2E v2 and Stage 2I artifacts",
+      "write six design documents under docs/research/stage2m/",
+      "generate and verify this manifest"
+    ],
+    "prohibited": [
+      "candidate or strategy development",
+      "market-data processing, census, re-count or detector run",
+      "backtest, P&L, return, expectancy, win-rate, drawdown, Sharpe, Sortino, CAGR or equity-curve computation",
+      "bootstrap, Monte Carlo, optimization or parameter tuning",
+      "validation or out-of-sample access",
+      "implementation repair or application-code modification",
+      "modification of any historical report, specification, threshold, manifest or verdict",
+      "starting Stage 2N or any subsequent stage"
+    ]
+  },
+  "framework_adopted": false,
+  "framework_shape": {
+    "co_primary_proposed": "net annual contribution or net annual return at the owner's declared capital and risk policy",
+    "cost_components": [
+      "trading fees",
+      "bid-ask spread",
+      "market impact",
+      "slippage",
+      "order type and execution assumptions",
+      "liquidity and depth",
+      "partial fills and rejections",
+      "latency and market movement",
+      "entry/exit asymmetry",
+      "venue operational restrictions"
+    ],
+    "gap_ids": [
+      "G-01",
+      "G-02",
+      "G-03",
+      "G-04",
+      "G-05",
+      "G-06",
+      "G-07",
+      "G-08",
+      "G-09",
+      "G-10",
+      "G-11",
+      "G-12",
+      "G-13"
+    ],
+    "gates": [
+      "Gate 0 \u2014 Economic objective",
+      "Gate 1 \u2014 Data and venue validity",
+      "Gate 2 \u2014 Hypothesis registration",
+      "Gate 3 \u2014 Feasibility",
+      "Gate 4 \u2014 Independent implementation verification",
+      "Gate 5 \u2014 Controlled performance evaluation",
+      "Gate 6 \u2014 Final research decision"
+    ],
+    "owner_decision_ids": [
+      "D-01",
+      "D-02",
+      "D-03",
+      "D-04",
+      "D-05",
+      "D-06",
+      "D-07",
+      "D-08",
+      "D-09",
+      "D-10",
+      "D-11",
+      "D-12",
+      "D-13",
+      "D-14",
+      "D-15"
+    ],
+    "primary_estimand_proposed": "net return per executed trade in R after all-in execution costs",
+    "sufficiency_method_proposed": "dependence-adjusted derived requirement: N_ind ~= (z_{1-alpha/2}+z_{1-beta})^2 sigma^2 / delta^2; N_obs ~= N_ind * DE; required_opportunities ~= N_obs / p_exec"
+  },
+  "hashing_procedure": {
+    "algorithm": "SHA256 over raw file bytes for deliverables and source_artifacts.",
+    "bytes_field": "byte length of the raw file at manifest creation time.",
+    "reproduce": [
+      "cd <repository root>",
+      "python3 - <<'PY'",
+      "import hashlib, json",
+      "d = json.load(open('docs/research/stage2m/FREEZE_MANIFEST.json'))",
+      "for v in d['deliverables']: print(hashlib.sha256(open(v['path'],'rb').read()).hexdigest(), v['sha256'], v['path'])",
+      "for p,v in d['source_artifacts'].items(): print(hashlib.sha256(open(p,'rb').read()).hexdigest(), v['sha256'], p)",
+      "d.pop('self_hash', None)",
+      "canonical = json.dumps(d, sort_keys=True, separators=(',',':'), ensure_ascii=False)",
+      "print('self_hash', hashlib.sha256(canonical.encode('utf-8')).hexdigest())",
+      "PY"
+    ],
+    "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline."
+  },
+  "historical_positions_preserved": {
+    "candidate_A_result": "71 canonical opportunities against a 150 floor; fail; unchanged",
+    "candidate_B_verdict": "FEASIBILITY FAIL \u2014 INSUFFICIENT OPPORTUNITIES",
+    "candidate_C_result": "12 canonical opportunities against a 200 Stage 2A gate; fail; unchanged",
+    "candidate_D_verdict": "FEASIBILITY FAIL \u2014 INSUFFICIENT OPPORTUNITIES",
+    "candidate_or_experiment_authorized": false,
+    "stage2k_stop_remains_in_force": true,
+    "stage2l_usable_as_future_gate4_evidence": false,
+    "stage2l_verdict": "SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED",
+    "stage2n_started": false
+  },
+  "manifest_commit_note": "This manifest cannot contain its own commit or hash. A verifier must recompute self_hash after removing the self_hash field.",
+  "nature": "Design-only. Research-governance and methodology framework. No candidate, no experiment, no data processing.",
+  "no_performance_claim": "This manifest records a design-only research-governance and economic-feasibility framework. It contains no P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity curve, bootstrap, Monte Carlo, optimisation, backtest, paper-trade or live-trade result. No market-data row was processed. No candidate is shown to be profitable or unprofitable. Historical feasibility failure is not a profitability finding.",
+  "owner_decisions_open": true,
+  "repository": {
+    "artifact_commit_note": "The six Stage 2M documents were committed in one-document increments before this manifest. HEAD at manifest creation is the final document commit; the final HEAD is the commit that introduces this file. The manifest cannot contain its own commit or hash.",
+    "branch": "main",
+    "head_at_manifest_creation": "11dd4a2",
+    "head_at_review_start": "93152bd21893b63422f113d977b677f8386889b2",
+    "remote_tracking": "origin/main",
+    "synchronized_with_origin_at_review_start": true,
+    "working_tree_clean_at_review_start": true
+  },
+  "self_hash": "6469d6a417681c9a6615d08ede9059a48aa104ab301c5bd42a17e4b24f54b0a9",
+  "source_artifacts": {
+    "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md": {
+      "bytes": 45246,
+      "role": "Frozen Candidate B specification 2.0.0",
+      "sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41"
+    },
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": {
+      "bytes": 41652,
+      "role": "Frozen Candidate D specification 2.0.0",
+      "sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa"
+    },
+    "docs/research/stage2e_v2/FREEZE_MANIFEST.json": {
+      "bytes": 21715,
+      "role": "Frozen Stage 2E v2 manifest",
+      "sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7"
+    },
+    "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md": {
+      "bytes": 30579,
+      "role": "Frozen shared census protocol 2.0.0",
+      "sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c"
+    },
+    "docs/research/stage2i/CHANGE_PROPOSALS.md": {
+      "bytes": 6017,
+      "role": "Stage 2I unapplied change proposals CP-1 to CP-5",
+      "sha256": "768c5ffaacaaa930ab965c9f2cbec7d9f54ec2f7e80667fe6dc85853cc775e0d"
+    },
+    "docs/research/stage2i/OWNER_RATIFICATION.md": {
+      "bytes": 8650,
+      "role": "Stage 2I owner ratification K0-K4",
+      "sha256": "39ca94cbcf452d0db2f0768256fe4ff3360b9902c410777a7e99708b8ddcf75b"
+    },
+    "docs/research/stage2i/STAGE2I_FINAL_READINESS_DECISION.md": {
+      "bytes": 5236,
+      "role": "Stage 2I final readiness decision",
+      "sha256": "ff8a7c7b4cdb2c4ac2d3c694143941009baea3ed91149a84c5703b349eb720fd"
+    },
+    "docs/research/stage2j/CENSUS_METHODOLOGY_AND_EXECUTION.md": {
+      "bytes": 11513,
+      "role": "Stage 2J methodology, resources and determinism",
+      "sha256": "ed47df1c426727eeaf57789565af072010afde1e61fe89d2100b1bf6e0867a61"
+    },
+    "docs/research/stage2j/DATA_ALIGNMENT_AND_METHOD_AUDIT.md": {
+      "bytes": 7346,
+      "role": "Stage 2J data alignment and method audit",
+      "sha256": "98a215102d6e8d9f3483335e71b25cdb28f73cdc7a01a3c0747f1441d6c62985"
+    },
+    "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md": {
+      "bytes": 29918,
+      "role": "Stage 2J pre-registered analysis plan",
+      "sha256": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e"
+    },
+    "docs/research/stage2j/STAGE2J_FINAL_DECISION.md": {
+      "bytes": 4677,
+      "role": "Stage 2J final decision",
+      "sha256": "12d37bec9baa2e242103da1b0f30c38a6f4874e5127eb989e4d88d416397864d"
+    },
+    "docs/research/stage2j/STAGE2J_SUMMARY_AND_VERDICT.md": {
+      "bytes": 6445,
+      "role": "Stage 2J summary and verdict",
+      "sha256": "d1a332a2bef5b299f8cd04797bc623d623a60695ff3d0499928a0d8386e97935"
+    },
+    "docs/research/stage2k/FAILURE_MODE_ANALYSIS.md": {
+      "bytes": 38983,
+      "role": "Failure-mode taxonomy, threshold and dependence analysis",
+      "sha256": "b7ac79915a8d4821591d73e729e2b8044d41f451dce74911450fd14585b5a53a"
+    },
+    "docs/research/stage2k/FREEZE_MANIFEST.json": {
+      "bytes": 12776,
+      "role": "Stage 2K freeze manifest",
+      "sha256": "9b30040843d8f7b65097a817b84b6f373bb739e4d19b65ef0168ca123f2f9372"
+    },
+    "docs/research/stage2k/HISTORICAL_RESEARCH_SYNTHESIS.md": {
+      "bytes": 36261,
+      "role": "Historical research synthesis, provenance and label audit",
+      "sha256": "d6672879111e8fabd95c2a0ccfc22c7ffa390e60b320a96d555621d3e7de8d90"
+    },
+    "docs/research/stage2k/RESEARCH_DIRECTION_COMPARISON.md": {
+      "bytes": 27894,
+      "role": "Five-direction comparison including D2 framework repair",
+      "sha256": "653aa30f9dd91614699fc86c1717473c0caa4f866ac10da561d4f60fb41d459b"
+    },
+    "docs/research/stage2k/STAGE2K_FINAL_RECOMMENDATION.md": {
+      "bytes": 20188,
+      "role": "Stage 2K stop decision and conditional D2 path",
+      "sha256": "e992910641e96f0bd0be5d6e30ba3bce1daf376e7bd6cf4515669f8210ee237e"
+    },
+    "docs/research/stage2l/AUDIT_SCOPE_AND_INDEPENDENCE.md": {
+      "bytes": 9475,
+      "role": "Stage 2L audit scope and independence status",
+      "sha256": "11e71f8182897856ab332d48aa20ad58f05ac19b69ffa5fcdc1b76927e7ecdc1"
+    },
+    "docs/research/stage2l/FREEZE_MANIFEST.json": {
+      "bytes": 8925,
+      "role": "Stage 2L freeze manifest",
+      "sha256": "aa6f27cce6520a78a9f96014d269ff9420e5131952921af659f3add0b0534213"
+    },
+    "docs/research/stage2l/STAGE2L_FINAL_AUDIT_REPORT.md": {
+      "bytes": 9787,
+      "role": "Stage 2L self-review final audit report",
+      "sha256": "6b09a22a8e369895410ffb10e517e62049b9f5328558ebad189bde3b05c42f37"
+    },
+    "docs/research/stage2l/TECHNICAL_FINDINGS.md": {
+      "bytes": 23442,
+      "role": "Stage 2L technical findings L-001 to L-010",
+      "sha256": "13214e8b70ce2bd42e374d88139d2adc9e5b36f0543daee35b052f425ff65743"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2k": {
+      "all_recorded_file_hashes_and_bytes_match": true,
+      "manifest_path": "docs/research/stage2k/FREEZE_MANIFEST.json",
+      "recomputed_self_hash": "4946a0c4fb7cb404490c7494b78e7a269734b66fae1954a1e9f34eb14ed5a0eb",
+      "recorded_entries_checked": 27,
+      "recorded_self_hash": "4946a0c4fb7cb404490c7494b78e7a269734b66fae1954a1e9f34eb14ed5a0eb",
+      "self_hash_match": true
+    },
+    "stage2l": {
+      "all_recorded_file_hashes_and_bytes_match": true,
+      "manifest_path": "docs/research/stage2l/FREEZE_MANIFEST.json",
+      "recomputed_self_hash": "08bc483cdb34f6fcc1ee4acadc58619d570752b9802f360a0a3a56b033bcdc3f",
+      "recorded_entries_checked": 27,
+      "recorded_self_hash": "08bc483cdb34f6fcc1ee4acadc58619d570752b9802f360a0a3a56b033bcdc3f",
+      "self_hash_match": true
+    }
+  },
+  "stage": "2M",
+  "version_identifier": "stage2m/1.0.0"
+}
