@@ -1,0 +1,244 @@
+{
+  "audit_type": "Independent technical audit of the Stage 2J Candidate B and D feasibility census implementation",
+  "baseline": {
+    "artifact_commit": "737bf90f32b3c49f72008040696c07f9ce326d84",
+    "branch": "main",
+    "census_execution_commit": "bc1285c8277c37c93b76addfe83dcb50267c1f35",
+    "head": "69f78a8b14429b4d32daa54976653e3b51a832ec",
+    "working_tree_clean_at_audit_start": true
+  },
+  "confirmations": {
+    "application_code_modified": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_created": false,
+    "candidate_promoted": false,
+    "census_rerun": false,
+    "detectors_run_on_historical_data": false,
+    "drawdown_computed": false,
+    "expectancy_computed": false,
+    "frozen_specs_modified": false,
+    "historical_files_modified": false,
+    "implementation_repaired": false,
+    "monte_carlo_run": false,
+    "oos_payloads_decoded": 0,
+    "optimization_run": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "returns_computed": false,
+    "sharpe_or_sortino_computed": false,
+    "stage2j_verdicts_modified": false,
+    "stage2m_started": false,
+    "validation_or_oos_accessed": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-09T06:15:15Z",
+  "deliverables": [
+    {
+      "bytes": 9475,
+      "path": "docs/research/stage2l/AUDIT_SCOPE_AND_INDEPENDENCE.md",
+      "sha256": "11e71f8182897856ab332d48aa20ad58f05ac19b69ffa5fcdc1b76927e7ecdc1"
+    },
+    {
+      "bytes": 17416,
+      "path": "docs/research/stage2l/SPECIFICATION_IMPLEMENTATION_TRACE.md",
+      "sha256": "22ad4d0dadd98bd76314fe2c42cd60add9fccb6962ca1866fed50e8fefdb8da3"
+    },
+    {
+      "bytes": 23442,
+      "path": "docs/research/stage2l/TECHNICAL_FINDINGS.md",
+      "sha256": "13214e8b70ce2bd42e374d88139d2adc9e5b36f0543daee35b052f425ff65743"
+    },
+    {
+      "bytes": 9787,
+      "path": "docs/research/stage2l/STAGE2L_FINAL_AUDIT_REPORT.md",
+      "sha256": "6b09a22a8e369895410ffb10e517e62049b9f5328558ebad189bde3b05c42f37"
+    }
+  ],
+  "findings": {
+    "all_findings_open": true,
+    "critical": 0,
+    "ids": [
+      "L-001",
+      "L-002",
+      "L-003",
+      "L-004",
+      "L-005",
+      "L-006",
+      "L-007",
+      "L-008",
+      "L-009",
+      "L-010"
+    ],
+    "major": 0,
+    "minor": 6,
+    "observation": 4,
+    "total": 10
+  },
+  "independence_status": "SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED",
+  "integrity": {
+    "all_artifact_hashes_matched": true,
+    "all_supporting_file_hashes_matched": true,
+    "artifact_commit_is_ancestor_of_baseline": true,
+    "census_code_hash_matched_current_files": true,
+    "census_commit_is_ancestor_of_baseline": true,
+    "census_git_head_matched": true,
+    "frozen_manifest_self_hash": "751831e2fed6b406cdaf701d342fe6891eccab337a5e32f6d68e5a279ff13a93",
+    "frozen_manifest_sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7",
+    "frozen_specs_unmodified": true,
+    "no_code_drift_after_census": true,
+    "stage2j_manifest_self_hash": "d12de357a8032a123bd0efaea156f26aa71c707061204cc058011bbc4e5df96a",
+    "stage2j_manifest_sha256": "6b16da91d64a9fe7e64e03edf9547dbe96e3e6eacb61a973c72d030fa2c8c842"
+  },
+  "no_performance_claim": "Stage 2L audits implementation fidelity and provenance only. It contains no P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity curve, bootstrap, Monte Carlo, optimisation, backtest, paper-trade, or live-trade result. It does not show either candidate to be profitable or unprofitable.",
+  "primary_verdict": "SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED",
+  "self_hash": "08bc483cdb34f6fcc1ee4acadc58619d570752b9802f360a0a3a56b033bcdc3f",
+  "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline.",
+  "source_hashes": [
+    {
+      "bytes": 45246,
+      "path": "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md",
+      "sha256": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41"
+    },
+    {
+      "bytes": 41652,
+      "path": "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md",
+      "sha256": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa"
+    },
+    {
+      "bytes": 30579,
+      "path": "docs/research/stage2e_v2/SHARED_CENSUS_PROTOCOL.md",
+      "sha256": "844db74b2a37abc3217bb401c471d266fda9665c495be74f08a0f37a27f39c4c"
+    },
+    {
+      "bytes": 21715,
+      "path": "docs/research/stage2e_v2/FREEZE_MANIFEST.json",
+      "sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7"
+    },
+    {
+      "bytes": 10955,
+      "path": "docs/research/stage2j/FREEZE_MANIFEST.json",
+      "sha256": "6b16da91d64a9fe7e64e03edf9547dbe96e3e6eacb61a973c72d030fa2c8c842"
+    },
+    {
+      "bytes": 29918,
+      "path": "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md",
+      "sha256": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e"
+    },
+    {
+      "bytes": 76743,
+      "path": "docs/research/stage2j/machine_readable/candidate_b_census.json",
+      "sha256": "a0c74d7d5124dc6afd7c11f5fcccd86e4bd76d363563597e616b11c997c69db7"
+    },
+    {
+      "bytes": 260957,
+      "path": "docs/research/stage2j/machine_readable/candidate_d_census.json",
+      "sha256": "cc9d0191b83b6d4a2bab4e5213dc72131c354217aa1c443eceb22f7402d0effa"
+    },
+    {
+      "bytes": 20648,
+      "path": "docs/research/stage2j/machine_readable/alignment_audit.json",
+      "sha256": "0205d76da6eecb1aa9f78a52d4bcb486c6d7ba0f993a02b29869edeaf275e099"
+    },
+    {
+      "bytes": 20549,
+      "path": "docs/research/stage2j/machine_readable/census_run.json",
+      "sha256": "0c4005dfdb0abe19081ef411caa635faf324059fd6fa3208cf99653669778722"
+    },
+    {
+      "bytes": 2075,
+      "path": "docs/research/stage2j/machine_readable/verdict_inputs.json",
+      "sha256": "100cfb496739b4610b27f52e20b1dbb000cde4170ba50a952c897e67c39de8f7"
+    },
+    {
+      "bytes": 17120,
+      "path": "stage2j_census/series.py",
+      "sha256": "62faa06d83d18a89fd995173246af14d9929872410765ad023af728ed2a2ed98"
+    },
+    {
+      "bytes": 17390,
+      "path": "stage2j_census/stats.py",
+      "sha256": "7cd2d72b8f5371ea1e11bbeec894b853a8d073c992e1644e19703c4a842e9b23"
+    },
+    {
+      "bytes": 16339,
+      "path": "stage2j_census/candidate_b.py",
+      "sha256": "d76bdc7c14a27d7dc66f42083eeb52d83c4c2c32599d433e3d72974d143bc00a"
+    },
+    {
+      "bytes": 11708,
+      "path": "stage2j_census/candidate_d.py",
+      "sha256": "6d7bb61baeee8ae9162012bae0dcf0a9d82c09a4f859d906d60ff6d7941678a1"
+    },
+    {
+      "bytes": 16800,
+      "path": "stage2j_census/alignment.py",
+      "sha256": "3ba64c0958791700ec300ef1f4d67e3c158a1f37a5f316e510fb05beffd175e5"
+    },
+    {
+      "bytes": 40711,
+      "path": "stage2j_census/analysis.py",
+      "sha256": "07274e450166aa072be72506e1fe4629d16ed0b28b42482b02ecfcda977c9cb9"
+    },
+    {
+      "bytes": 20109,
+      "path": "stage2j_census/run_census.py",
+      "sha256": "f1917f5654c0be53ef95d5deb5531436c72ce9644746c5dbe6982c7ab67de226"
+    },
+    {
+      "bytes": 12081,
+      "path": "stage2j_census/freeze_verify.py",
+      "sha256": "4ddb23d1acd1fb955f3b25fc22b2b6aa092f232bc0c6627aa1173b4a80fb1940"
+    },
+    {
+      "bytes": 14510,
+      "path": "stage2i_readiness/loader.py",
+      "sha256": "df3424fdbf696007b72f404e9f05b3974bab03416b9e84c501bd0df427007c2c"
+    },
+    {
+      "bytes": 1909,
+      "path": "backend/app/schemas/market_data.py",
+      "sha256": "2507d2ebb3c4d07876ce4f9eb55cc94f585e33edfde78af3bd59550709a9b2b9"
+    }
+  ],
+  "stage": "2L",
+  "supporting_evidence": [
+    {
+      "bytes": 24121,
+      "path": "docs/research/stage2l/synthetic_audit_checks.py",
+      "sha256": "0201dc7889870a7cdb123b4ad6b7989e82ed0689a91d95c70ad90b6684489c8f"
+    },
+    {
+      "bytes": 20955,
+      "path": "docs/research/stage2l/SYNTHETIC_TEST_LOG.md",
+      "sha256": "3cc89be84e757cc5b36c878d8d9b63ae317862e4be6946eb34ced8cca2cdf421"
+    }
+  ],
+  "synthetic_checks": {
+    "categories": 13,
+    "checks": 98,
+    "failed": 0,
+    "harness": "docs/research/stage2l/synthetic_audit_checks.py",
+    "log": "docs/research/stage2l/SYNTHETIC_TEST_LOG.md",
+    "market_data_opened": false,
+    "passed": 98
+  },
+  "verdicts_preserved": {
+    "B": {
+      "M_all": 0.086505387877563,
+      "N_nonoverlap": 24,
+      "design_effect": 1.6896551724137934,
+      "largest_cluster_share": 0.10344827586206896,
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    },
+    "D": {
+      "M_all": 0.32255940800148175,
+      "N_nonoverlap": 34,
+      "design_effect": 3.933333333333333,
+      "largest_cluster_share": 0.17777777777777778,
+      "verdict": "FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES"
+    },
+    "stage2k_stop_remains_in_force": true
+  },
+  "version_identifier": "stage2l/1.0.0"
+}
