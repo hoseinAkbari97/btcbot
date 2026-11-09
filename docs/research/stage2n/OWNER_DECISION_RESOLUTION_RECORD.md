@@ -19,13 +19,13 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 
 | ID | decision | status |
 |---|---|---|
-| D-01 | minimum meaningful effect | **OPEN** |
+| D-01 | minimum meaningful effect | **OPEN — DEFINITION A SELECTED; VALUE NOT SET** |
 | D-02 | acceptable drawdown and risk | **OPEN** |
 | D-03 | primary performance estimand | **RESOLVED** |
 | D-04 | capital and execution context | **RESOLVED — RESEARCH LEG ONLY; REAL-CAPITAL CHECK OPEN** |
 | D-05 | venue and cost evidence standard | **OPEN** |
 | D-06 | cost-uncertainty and conservative-cost rule | **OPEN** |
-| D-07 | annual contribution as a co-primary metric | **OPEN** |
+| D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
 | D-08 | statistical confidence and error-control objective | **OPEN** |
 | D-09 | dependence treatment and robustness standard | **OPEN** |
 | D-10 | sample-sufficiency methodology | **OPEN** |
@@ -135,15 +135,80 @@ dependent gate remains blocked.
 
 ---
 
-## 4. What remains open
+## 4. D-01 — Minimum meaningful effect
 
-All other decisions, D-01, D-02, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and
-D-15, remain open. The next decision in the proposed order is the coupled D-01 / D-07
-economic-target cluster, followed by D-02.
+### 4.1 Owner answer
+
+- **Definition selected:** **A — Net R per executed trade.**
+- **Numeric MME (`δ_R`):** open — not set.
+- **Annual contribution target:** open — not set.
+- The owner chose to keep the numeric values open rather than select a threshold.
+
+### 4.2 Implications
+
+1. The MME will be expressed in **net R per executed trade**, consistent with D-03.
+2. No specific `δ_R` is adopted. The historical `0.15R` is **not** treated as a default or as
+   approved.
+3. Because the value is open, Gate 0 remains blocked and D-10 cannot derive a sample-size
+   requirement.
+4. The annual contribution target is also open; until it is set, the D-07 co-primary requirement
+   cannot be operationalized.
+
+### 4.3 Qualifications and open items
+
+- Selecting the definition is not the same as resolving D-01. The numeric threshold is the core of
+  the decision and remains owner-only.
+- D-01 remains **open** in the status summary. The definition selection is recorded as an interim
+  selection, not a resolution.
+
+### 4.4 Confirmation
+
+- The owner explicitly selected definition A.
+- The owner explicitly chose to keep the values open.
+- The owner confirmed the interim record above before it was written.
+- No numeric value in this entry was defaulted by the research agent.
 
 ---
 
-## 5. Integrity statement
+## 5. D-07 — Annual contribution as a co-primary metric
+
+### 5.1 Owner answer
+
+- **Chosen option:** **A — Yes, co-primary.**
+- **Annual target value:** pending D-01.
+
+### 5.2 Implications
+
+1. A future experiment must satisfy both the per-trade MME and an annual contribution target; the
+   target value is part of D-01 and is not yet set.
+2. A rule that passes the per-trade test but fails the annual target is a research result, not an
+   investment candidate.
+3. The exact conjunction rule and error-control allocation across the two co-primary metrics remain
+   **undecided**; they belong to D-08 and D-11.
+
+### 5.3 Qualifications and open items
+
+- D-07 is resolved in principle, but the annual target is not set. The decision is recorded as
+  **co-primary; annual target pending D-01**.
+- D-07 A is consistent with D-03's co-primary designation; no revision to D-03 is needed.
+
+### 5.4 Confirmation
+
+- The owner explicitly selected option A.
+- The owner confirmed the interim record above before it was written.
+- No value in this entry was defaulted by the research agent.
+
+---
+
+## 6. What remains open
+
+All other decisions, D-01, D-02, D-05, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15,
+remain open. D-01 remains open with definition A selected and its numeric values unset. The next
+decision in the proposed order is D-02 (acceptable drawdown and risk).
+
+---
+
+## 7. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
