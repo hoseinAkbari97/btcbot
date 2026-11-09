@@ -115,3 +115,46 @@ proof status is marked accordingly.
 The synthetic checks are unit-level evidence. They show that specified arithmetic and
 boundary behaviour occur under controlled inputs; they do not show that the full historical
 census is correct, and they do not convert a structural count into a profitability claim.
+
+## 6. Independence disclosure and primary verdict
+
+**Primary verdict: SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED.**
+
+The assistant performing this audit participated in the implementation review and
+reporting work that produced the Stage 2J census. The same assistant therefore cannot be
+treated as an arms-length auditor of that work. No separate auditor, reviewer, or
+independent party performed or signed this audit.
+
+This is a material limitation, not a formality:
+
+- the auditor may share undocumented assumptions or blind spots with the original
+  implementer;
+- the auditor's prior acceptance of design choices could bias which tensions are noticed;
+- a self-review cannot supply the adversarial distance that an independent audit is meant
+  to provide;
+- the resulting verdict is an audit record, not an independence certification.
+
+The audit still applied the evidence standard in §5, recomputed integrity values, and ran
+independent synthetic checks. Those steps can find concrete defects and can document
+fidelity, but they do not cure the independence defect. For that reason the primary
+verdict is **SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED** rather than PASS, CONDITIONAL
+PASS, FAIL, or INCONCLUSIVE.
+
+## 7. Limitations
+
+1. The census was not rerun. Historical counts and labels were accepted only after their
+   files and code identity were hash-verified against the Stage 2J record.
+2. No second-run artifacts were retained by Stage 2J. The recorded determinism claim
+   (`determinism_verified: true`) is therefore documented as not independently verifiable
+   within the Stage 2L prohibitions.
+3. No development, validation, or out-of-sample market rows were read or decoded. Dataset
+   identity was checked by hash, not by re-parsing prices.
+4. Synthetic fixtures cannot reproduce the full interaction of real gaps, partial bars, and
+   regime runs. They test specified behaviour, not population-level correctness.
+5. Findings that would require a census rerun to quantify are marked as such; none is
+   converted into an estimated historical effect.
+6. The audit does not revisit the Stage 2K decision to stop the current strategy family.
+   Stage 2L records technical findings only and does not reopen candidate selection.
+
+These limitations are reflected in the proof status and historical-conclusion impact of
+each finding in `TECHNICAL_FINDINGS.md`.
