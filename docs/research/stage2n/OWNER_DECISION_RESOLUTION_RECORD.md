@@ -20,7 +20,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | ID | decision | status |
 |---|---|---|
 | D-01 | minimum meaningful effect | **OPEN — DEFINITION A SELECTED; VALUE NOT SET** |
-| D-02 | acceptable drawdown and risk | **OPEN** |
+| D-02 | acceptable drawdown and risk | **OPEN — OPTION C SELECTED; LIMITS NOT SET** |
 | D-03 | primary performance estimand | **RESOLVED** |
 | D-04 | capital and execution context | **RESOLVED — RESEARCH LEG ONLY; REAL-CAPITAL CHECK OPEN** |
 | D-05 | venue and cost evidence standard | **OPEN** |
@@ -200,15 +200,58 @@ dependent gate remains blocked.
 
 ---
 
-## 6. What remains open
+## 6. D-02 — Acceptable drawdown and risk
 
-All other decisions, D-01, D-02, D-05, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15,
-remain open. D-01 remains open with definition A selected and its numeric values unset. The next
-decision in the proposed order is D-02 (acceptable drawdown and risk).
+### 6.1 Owner answer
+
+- **Chosen option:** **C — Drawdown, tail, and liquidity.**
+- **Maximum drawdown:** open — not set.
+- **Per-trade loss limit:** open — not set.
+- **Tail measure and limit:** open — not set.
+- **Liquidity / position-size constraint:** open — not set.
+- The owner chose to keep the numeric limits open rather than set them now.
+
+### 6.2 Implications
+
+1. The agreed scope is a maximum drawdown, a per-trade loss limit, a tail measure, and a
+   liquidity/position-size constraint. No numeric limit is adopted.
+2. Because the limits are open, Gate 5 and Gate 6 remain blocked, and no rule can be judged
+   acceptable or unacceptable on risk grounds.
+3. The risk limits must eventually be expressed in the same units as the primary metric (R), with
+   the drawdown and liquidity constraints stated in their natural units.
+4. The tail and liquidity measurement methods are not decided here; they may depend on D-05 and
+   D-14.
+5. On the D-04 research basis, 1R = `$100` = 1% of `$10,000`; this is a translation, not an approved
+   limit.
+
+### 6.3 Qualifications and open items
+
+- D-02 remains **open** in the status summary. The option selection is recorded as an interim
+  selection, not a resolution.
+- No maximum drawdown, per-trade loss limit, tail limit, or liquidity constraint is recorded as
+  approved.
+- Option D additions (time under water, ruin probability, concentration, operational risk) are not
+  adopted; the owner chose C.
+
+### 6.4 Confirmation
+
+- The owner explicitly selected option C.
+- The owner explicitly chose to keep the numeric limits open.
+- The owner confirmed the interim record above before it was written.
+- No numeric limit in this entry was defaulted by the research agent.
 
 ---
 
-## 7. Integrity statement
+## 7. What remains open
+
+All other decisions, D-01, D-02, D-05, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15,
+remain open. D-01 remains open with definition A selected and its numeric values unset. D-02 remains
+open with option C selected and its numeric limits unset. Group A has now been addressed; the next
+group is Group B (D-05 and D-06).
+
+---
+
+## 8. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
