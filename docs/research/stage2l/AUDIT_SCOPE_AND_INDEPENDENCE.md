@@ -44,3 +44,46 @@ The following integrity facts were recomputed during Stage 2L:
 Integrity verification establishes that the audit inspected the same files that produced
 the recorded census. It does **not** establish that the implementation is correct; that
 question is addressed by the trace and the independent synthetic checks.
+
+## 3. In scope
+
+The audit covers the implementation path from frozen specification to recorded census
+output:
+
+1. **Frozen-specification fidelity** for Candidate B, Candidate D, and the shared census
+   protocol, including labels, stage ladders, denominators, gates, and verdict terms.
+2. **Temporal correctness and lookahead safety**: canonical epoch-millisecond timestamps,
+   the half-open development interval, previous-closed-bar regime reads, confirmation
+   sequencing, and entry-at-open execution.
+3. **Data alignment and gap handling**: series construction, segment boundaries, Wilder ATR
+   resets, warm-up windows, missing/partial/zero-volume bars, 4h regime construction, and
+   the gap-aware upper-timeframe alignment denominator.
+4. **Cost, stop, and capital arithmetic**: 26 bp cost, `cost_R`, the 0.20 gate boundary,
+   stop distance and stop validity, and notional/equity geometry.
+5. **Non-overlap and deduplication**: canonical horizons, inclusive boundary behaviour,
+   greedy acceptance against the last accepted signal, and deterministic duplicate ties.
+6. **Concentration and statistical diagnostics**: Kish effective sample size, design
+   effect, largest-cluster share, `rho` sensitivity, quantiles, cost buckets, and the
+   detectable-effect reference.
+7. **Verdict logic**: compliance gates, precedence, the pre-registered concentration
+   criterion, capital-geometry population, and the exact verdict names recorded.
+8. **Reproducibility and provenance**: manifest hashes, code identity, deterministic-output
+   claims, retained evidence, and the completeness of the recorded code set.
+
+## 4. Out of scope and prohibited actions
+
+The audit deliberately does **not** do any of the following:
+
+- rerun the Stage 2J census or any detector over historical market data;
+- run a backtest, paper trade, live trade, or any strategy simulation;
+- compute P&L, returns, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, an equity
+  curve, or any other performance metric;
+- run bootstrap, Monte Carlo, optimisation, parameter tuning, or model selection;
+- read, decode, inspect, or summarise development, validation, or out-of-sample market
+  rows beyond the already-published aggregate census evidence;
+- modify historical Stage 2J files, application code, frozen specifications, the dataset
+  manifest, or any Stage 2J verdict;
+- create a new candidate, promote a candidate, or begin Stage 2M.
+
+The audit does not repair the implementation. Findings are recorded; remediation is left
+to a separately authorised stage.
