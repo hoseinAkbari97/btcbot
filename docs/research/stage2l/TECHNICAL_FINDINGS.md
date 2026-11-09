@@ -310,3 +310,49 @@ tuple.
 **Recommended resolution:** Add `stage2j_census/freeze_verify.py` (and any audit-critical
 test or harness commit) to the hashed code set in a future census, while keeping the
 historical identity record unchanged.
+
+## 4. Synthetic test evidence
+
+The independent harness at `docs/research/stage2l/synthetic_audit_checks.py` ran 98 checks:
+**98 passed, 0 failed**. It opened no repository data file and constructed every series in
+memory from invented values. The full check-by-check record, including purpose, expected
+value, actual value, result, and per-category limitation, is in
+`SYNTHETIC_TEST_LOG.md`.
+
+Coverage by category:
+
+| Category | Checks |
+|---|---:|
+| Timestamp and grid boundaries | 7 |
+| Wilder ATR segment reset | 5 |
+| Candidate B worked-example arithmetic | 4 |
+| B present-but-unusable entry (B-3) | 4 |
+| B missing / off-grid / out-of-interval / invalid-stop entries | 8 |
+| B touch and structure boundaries, including timeout branches | 10 |
+| B permission lookback | 4 |
+| D worked example, entry presence, and cost gate | 17 |
+| Non-overlap boundary and greediness | 5 |
+| Cluster and concentration diagnostics | 9 |
+| Quantile, cost bucket, sensitivity, and detectable effect | 16 |
+| 4h regime warm-up | 6 |
+| Gap-aware alignment | 3 |
+| **Total** | **98** |
+
+The checks establish unit-level and boundary behaviour. They do not reproduce the historical
+census, do not exercise every interaction of real gaps and partial bars, and do not support
+any performance or independence claim.
+
+## 5. Finding conclusion
+
+The finding set contains **no CRITICAL and no MAJOR** defects. The six MINOR findings are
+bounded specification, population, documentation, or provenance divergences. The four
+OBSERVATION items are latent couplings, label semantics, a diagnostic-weight ambiguity, and
+an unreproduced historical zero. None of them reverses a Stage 2J verdict.
+
+Both Stage 2J candidates remain `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`. The Stage
+2K decision to stop the current strategy family remains in force. All findings are **open**
+and are not repaired in Stage 2L; remediation requires separate authorisation.
+
+Because the auditor participated in the prior Stage 2J work, this finding set is a
+self-review. It records concrete defects and fidelity evidence, but it does not establish
+arms-length independence.
