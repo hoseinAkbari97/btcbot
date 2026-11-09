@@ -21,7 +21,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 |---|---|---|
 | D-01 | minimum meaningful effect | **OPEN** |
 | D-02 | acceptable drawdown and risk | **OPEN** |
-| D-03 | primary performance estimand | **OPEN** |
+| D-03 | primary performance estimand | **RESOLVED** |
 | D-04 | capital and execution context | **RESOLVED — RESEARCH LEG ONLY; REAL-CAPITAL CHECK OPEN** |
 | D-05 | venue and cost evidence standard | **OPEN** |
 | D-06 | cost-uncertainty and conservative-cost rule | **OPEN** |
@@ -91,15 +91,59 @@ dependent gate remains blocked.
 
 ---
 
-## 3. What remains open
+## 3. D-03 — Primary performance estimand
 
-All other decisions, D-01, D-02, D-03, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13,
-D-14, and D-15, remain open. The next decision in the proposed order is the coupled
-D-03 / D-01 / D-07 economic-target cluster, followed by D-02.
+### 3.1 Owner answer
+
+- **Primary estimand:** **A — Net R per executed trade**, after all-in execution costs.
+- **Co-primary estimand:** **D — Net annual contribution.**
+- By selecting A and D, the owner did not designate B (net expectancy per opportunity),
+  C (net annual return on capital), or E (risk-adjusted ratio) as primary or co-primary.
+
+### 3.2 Implications
+
+1. The headline result is net R per executed trade, after all-in costs. It is scale-free and
+   comparable to the stop, but by itself ignores frequency and capital utilization.
+2. The annual contribution is a co-primary **decision** metric, not merely descriptive. A rule that
+   passes the per-trade test but fails the annual contribution target is a research result, not an
+   investment candidate.
+3. The annual contribution will be computed on the D-04 research basis (`$10,000`, 1% risk, one
+   position, no leverage). The real-capital check remains open, so the annual figure is a
+   convention, not a live-account forecast.
+4. D-01 must be stated in two parts: an MME in **net R per executed trade**, and an annual
+   contribution target.
+5. D-10 sample-size work will use the R-based outcome variance and the R-based MME as the primary
+   calculation.
+6. The exact rule for combining the two co-primary results — for example, whether both must pass,
+   and how error control is allocated across them — is **not** decided here. That belongs to D-08
+   and D-11.
+
+### 3.3 Qualifications and open items
+
+- The reporting role of the non-primary metrics (B, C, E, and risk/tail diagnostics) is not decided
+  by this entry; it is to be fixed at pre-registration.
+- The consistency of D-07 with this entry is to be confirmed when D-07 is decided. The owner's
+  choice of D as co-primary logically implies D-07 option A, unless D-03 is revised.
+- No MME value, annual target, error-control rule, dependence treatment, or sample-size method is
+  recorded as decided here.
+
+### 3.4 Confirmation
+
+- The owner explicitly selected A as primary and D as co-primary.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 4. Integrity statement
+## 4. What remains open
+
+All other decisions, D-01, D-02, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and
+D-15, remain open. The next decision in the proposed order is the coupled D-01 / D-07
+economic-target cluster, followed by D-02.
+
+---
+
+## 5. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
