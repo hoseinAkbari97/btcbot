@@ -67,3 +67,35 @@ audit actually established.
 | D-08 | `cost_R = 0.0026 * entry_open / D`; S7 requires `cost_R <= 0.20` (D §7.3). | `candidate_d.py:190,222` | Synthetic: cost exactly 0.20 passes; cost just above 0.20 fails and is labelled `cost_gate`. | Verified |
 | D-09 | D deduplicates by session key and applies canonical 24h non-overlap, greedy against the last accepted signal, with 12h and 48h sensitivities (D §8-9). | `candidate_d.py:226-245`; `stats.deduplicate_by_key`, `stats.non_overlap` | Machine-readable D identity reconciles S7=45, S8=45, S9=34 with `non_overlap=11`; synthetic greedy 72h case confirms last-accepted logic and exact-boundary acceptance. | Verified |
 | D-10 | The shared 4h supplied-bar exemption (M3) applies only to the registered gap-adjacent buckets; a non-exempt gap-affected bucket must be excluded from the 4h-from-1h comparison denominator (shared §1.6, D §2.3). | Alignment report (`alignment.py`); recorded `alignment_audit.json` | Machine-readable alignment: 7,649 complete, 12 exempt, 1 non-exempt gap-affected bucket, no price mismatch; synthetic gap-affected bucket is excluded. | Verified with note (L-006: report wording for the extra bucket) |
+
+## 5. Diagnostics, verdict, and provenance trace
+
+| ID | Frozen or pre-registered requirement | Implementation | Audit evidence | Result |
+|---|---|---|---|---|
+| V-01 | Compliance must pass before a feasibility verdict is issued, including reconciliation, causality, interval isolation, alignment, and preflight (shared §6; Stage 2J plan §7). | `analysis.decide_verdict` (`analysis.py:971-1068`); `analysis.alignment_compliance`; `iter_identity_flags` | Machine-readable verdicts: every compliance flag is `true` for both candidates; ATR/D reconciliation and stage identities also pass. | Verified |
+| V-02 | Stage ladders must reconcile without unexplained losses (B §9, D §10). | B ladder `candidate_b.py:99-320`; D ladder `candidate_d.py:54-245`; identity tables in `analysis.py` | Machine-readable B: 30,625 → 30,513 → 503 → 458 → 117 → 34 → 32 → 29 → 29 → 24. D: 3,831 → 122,510 → 3,829 → 927 → 332 → 296 → 295 → 45 → 45 → 34. All recorded identity flags reconcile. | Verified |
+| V-03 | Verdict precedence is INCONCLUSIVE, then INSUFFICIENT OPPORTUNITIES, then EXCESSIVE CONCENTRATION, then FEASIBILITY PASS (Stage 2J plan §7). | `decide_verdict` (`analysis.py:971-1068`) | Code order and machine-readable `precedence` field match; both candidates record `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`. | Verified |
+| V-04 | The project floor is `N_nonoverlap < 150`; the cost-median condition is `M_all > 0.20` (B §11, D §12). | `decide_verdict` (`analysis.py:990-1012`) | B: N=24, M_all=0.086505; D: N=34, M_all=0.322559. Both fail the floor; D also fails the cost-median condition; the recorded subconditions name exactly those facts. | Verified |
+| V-05 | The pre-registered concentration criterion is largest non-empty cluster share `> 0.50` or design effect `>= 2.00` (Stage 2J plan §7.3). | `decide_verdict` (`analysis.py:996-1012`); `cluster_analysis` (`stats.py:273-329`) | B: largest share 0.103448, design effect 1.689655 — not met. D: largest share 0.177778, design effect 3.933333 — met, but insufficient opportunities has precedence. | Verified with note (L-002: criterion is a Stage 2J extension) |
+| V-06 | Capital geometry is reported on the cost-feasible verdict population, with the pre-gate population as a labelled diagnostic (C-1). | `analysis.py:631-644` (B), `921-938` (D); `stats.capital_geometry` | B: verdict 29, none above 1.00; pre-gate 32, none above. D: verdict 45, none above; pre-gate 295, 208 above 1.00 (70.51%). | Verified with note (L-001: frozen "any signal" wording is narrowed) |
+| V-07 | The census reports no outcome-based metric and does not access validation or OOS data (shared §8; Stage 2J plan). | `run_census.py` confirmations; report text | `census_run.json` records `pnl_computed=false`, `returns_computed=false`, `backtest_run=false`, `monte_carlo_run=false`, `optimization_run=false`, `validation_or_oos_accessed=false`, `oos_payloads_decoded=0`. | Verified from recorded evidence; not independently re-executed |
+
+## 6. Trace conclusion
+
+The trace found no CRITICAL or MAJOR fidelity defect. The shared timestamp, interval, ATR,
+regime-read, alignment, Kish, non-overlap, cost, and capital units are implemented in the
+places the frozen documents require, and the independent synthetic checks reproduce the
+specified arithmetic and boundary behaviour.
+
+The trace did find specification and documentation tensions that are recorded as findings:
+the D capital-geometry population is narrowed by pre-registration (L-001); the concentration
+FAIL criterion is a Stage 2J extension (L-002); entry presence versus same-segment usability
+is resolved by pre-registration but not by the frozen text alone (L-003); two label and
+warm-up details differ from a literal reading (L-004, L-005); one report sentence
+misattributes an extra 4h bucket (L-006); the `rho` sensitivity uses a mean that is not the
+exact Kish weight (L-007); and the recorded provenance has three reproducibility gaps
+(L-008, L-009, L-010).
+
+None of these findings reverses a Stage 2J verdict. The primary audit verdict remains
+**SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED**, for the reason stated in
+`AUDIT_SCOPE_AND_INDEPENDENCE.md` §6.
