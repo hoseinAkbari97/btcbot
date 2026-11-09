@@ -137,3 +137,78 @@ is evidenced by empty entry diagnostics but not by a full rerun.
 present-but-unusable bar at `c+1`. If segment continuity is intended, add an explicit
 segment check; if presence-only is intended, remove the contrary sentence. Stage 2L does not
 repair the implementation.
+
+### L-004 — B pre-touch deep break is labelled `retest_too_deep`, not `structure_broken`
+
+**Severity:** OBSERVATION  
+**Location:** `stage2j_census/candidate_b.py:150-166`; frozen `CANDIDATE_B_SPEC.md:378-380`
+and `658-659`; pre-registered interpretation B-2.  
+**Requirement:** The frozen B table says any bar `x` in `e+1 .. r-1` with
+`close[x] < L_e - 0.50*A_e` is `structure_broken`. A different row says penetration
+`> 0.50` at the touch bar is `retest_too_deep`. A pre-touch bar that closes below the lower
+bound necessarily has a low below the bound, so both rows can describe the same bar.  
+**Explanation:** The implementation evaluates the touch and penetration first. A pre-touch
+bar with penetration above 0.50 ends the episode as `retest_too_deep`; the pre-touch
+`structure_broken` label is never emitted. Post-touch breaks are still labelled
+`structure_broken`. This is exactly the resolution pre-registered as B-2.  
+**Impact:** Label semantics differ from a literal reading of the pre-touch row, but both
+labels are S6 rejections and no signal survives either way. Recorded B labels contain
+`retest_too_deep=72` and `structure_broken=8`. The distinction affects diagnostics, not the
+stage count or verdict.  
+**Proof status:** Proved. Synthetic checks show a pre-touch deep break ending as
+`retest_too_deep` and a post-touch break ending as `structure_broken`.  
+**Historical-conclusion impact:** None.  
+**Evidence:** `candidate_b_census.json` labels; synthetic checks “B pre-touch deep break
+carries retest_too_deep (B-2)” and “B post-touch break carries structure_broken”.  
+**Recommended resolution:** Future specifications should state the precedence between the
+pre-touch structure row and the penetration row. Do not relabel the historical census.
+
+### L-005 — D `budget_ok` is unnecessarily gated on SMA/slope availability
+
+**Severity:** OBSERVATION  
+**Location:** `stage2j_census/series.py:479-491`; frozen `CANDIDATE_D_SPEC.md:319-391`.  
+**Requirement:** Candidate D's `S4` requires `budget_ok == True`, where the budget depends on
+the ATR percentile band `[25, 80]`. D does not require SMA50 or the 24h slope for its budget
+predicate.  
+**Explanation:** `compute_regime_4h` computes both `permission` (which needs SMA50 and slope)
+and `budget_ok` inside the same `if pct_known and sma_known and slope_known` block. Thus a
+known percentile is not enough to set `budget_ok`; the other two indicators must also be
+known. This couples D's budget availability to indicators D does not use.  
+**Impact:** No observed effect. The first known percentile is at 4h index 552; SMA50 and the
+24h slope are known much earlier, so the coupling cannot delay any D signal in the recorded
+data. It is a latent maintenance and interpretation risk.  
+**Proof status:** Proved by code trace and synthetic warm-up test: `pct`, `budget_ok`, and
+`permission` all first become known at index 552, and `pct[551]` is NaN.  
+**Historical-conclusion impact:** None.  
+**Evidence:** `series.py:479-491`; synthetic checks in “4h regime warm-up boundary”.  
+**Recommended resolution:** In future code, split the availability conditions: set
+`budget_ok` on `pct_known` alone, and set `permission` on `pct_known and sma_known and
+slope_known`. Stage 2L does not change the implementation.
+
+### L-006 — D report attributes an extra non-exempt 4h bucket to the M3 exemption
+
+**Severity:** MINOR  
+**Location:** `docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md:255-258`;
+`docs/research/stage2j/DATA_ALIGNMENT_AND_METHOD_AUDIT.md:92-98`;
+shared `SHARED_CENSUS_PROTOCOL.md:206-242`.  
+**Requirement:** The M3 supplied-bar exemption applies to the twelve registered
+gap-adjacent 4h buckets. A non-exempt gap-affected bucket must be excluded from the
+4h-from-1h comparison denominator and reported separately.  
+**Explanation:** The report correctly identifies the extra bucket
+`2023-03-24T08:00:00Z` as non-exempt and explains that zero-volume 5m placeholders at
+`11:30`–`11:55` make the `11:00` 1h bucket partial. It then says the supplied 4h bar
+“remains usable under the M3 exemption.” The alignment audit uses the same phrase. Strictly,
+the bucket is **not** an M3-exempt bucket; it remains in the primary series because the
+supplied 4h bar is itself present and usable under the general 4h usability rule. The M3
+exemption governs only the twelve registered buckets.  
+**Impact:** Documentation only. The count is disclosed, the sensitivity excludes only the
+twelve registered buckets, and no verdict depends on the wording. A reader could incorrectly
+infer that the extra bucket is covered by M3.  
+**Proof status:** Proved by direct text comparison and by the alignment JSON
+(`complete_buckets=7649`, `exempt_buckets=12`, one non-exempt gap-affected bucket).  
+**Historical-conclusion impact:** None.  
+**Evidence:** Report sentence at lines 255-258; alignment audit §4.1;
+`alignment_audit.json` bucket counts.  
+**Recommended resolution:** Future notes should say the extra bucket is “usable under the
+general supplied-4h rule” and is “not part of the twelve M3-exempt buckets.” Do not rewrite
+the historical report.
