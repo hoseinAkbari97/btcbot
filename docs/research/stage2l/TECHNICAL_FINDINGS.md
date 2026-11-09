@@ -212,3 +212,101 @@ infer that the extra bucket is covered by M3.
 **Recommended resolution:** Future notes should say the extra bucket is “usable under the
 general supplied-4h rule” and is “not part of the twelve M3-exempt buckets.” Do not rewrite
 the historical report.
+
+### L-007 — `rho=1` sensitivity uses the arithmetic mean cluster size, not the exact Kish weight
+
+**Severity:** OBSERVATION  
+**Location:** `stage2j_census/stats.py:294-329`; shared
+`SHARED_CENSUS_PROTOCOL.md:340-360`.  
+**Requirement:** The shared protocol defines
+`n_eff(rho) = N / (1 + (m̄ - 1) * rho)` with `m̄` the mean cluster size, and asks for the
+exact Kish value alongside it for `rho = 1`. The exact Kish value uses cluster sizes
+weighted by themselves, not the unweighted arithmetic mean.  
+**Explanation:** The implementation sets `mean_size = population / k_nonempty` and uses that
+arithmetic mean in the `rho` sensitivity. The exact Kish `n_eff` is computed separately from
+`Σ n_k^2`. For unequal cluster sizes, the `rho=1` sensitivity therefore does not equal the
+exact Kish value. The report's `note` field explains this distinction and both values are
+reported.  
+**Impact:** Presentation only. The concentration verdict uses `design_effect = N /
+n_eff_kish`, not the `rho` sensitivity, so the screen is unaffected. The sensitivity is not
+an estimate of dependence and is not used to claim effective sample size.  
+**Proof status:** Proved. Synthetic sizes 5 and 1 give exact Kish `36/26 = 1.384615`, design
+effect `6/(36/26) = 4.333333`, and `rho=1` sensitivity `6/(1+(3-1)*1) = 2.0`; the last two
+values differ.  
+**Historical-conclusion impact:** None.  
+**Evidence:** `stats.py:294-329`; synthetic checks “rho=1 uses mean non-empty size, not
+exact Kish” and “rho=1 value differs from exact Kish for unequal clusters”.  
+**Recommended resolution:** Either define `m̄` explicitly as the arithmetic mean of
+non-empty cluster sizes, or use the size-weighted mean so that `rho=1` reproduces exact
+Kish. Keep the exact Kish value separately reported in either case.
+
+### L-008 — Recorded B `retest_timeout=0` is not independently reproduced
+
+**Severity:** OBSERVATION  
+**Location:** `docs/research/stage2j/machine_readable/candidate_b_census.json` (`labels`);
+`stage2j_census/candidate_b.py:150-166`.  
+**Requirement:** If no touch occurs in the six-bar window `e+1 .. e+6`, the episode must end
+with `retest_timeout`.  
+**Explanation:** The recorded B label table contains `retest_timeout=0`, while
+`retest_too_deep=72`, `structure_broken=8`, `resumption_timeout=3`, and
+`regime_not_permitted=322`. A zero timeout count is plausible if every attempt that reaches
+the touch phase touches within six bars, but confirming the historical incidence would
+require rerunning the detector on the development data, which Stage 2L is prohibited from
+doing. The synthetic harness now proves that the timeout branch emits `retest_timeout` when
+no touch occurs; it does not prove that the historical count is zero.  
+**Impact:** No identified effect. The count is a recorded output and the branch is present
+and correct under controlled input.  
+**Proof status:** Mechanism verified; historical incidence not independently reproduced.  
+**Historical-conclusion impact:** None.  
+**Evidence:** Recorded B labels; synthetic checks “B no touch in window yields no S6” and
+“B no touch in window carries retest_timeout”.  
+**Recommended resolution:** A future authorised reproduction can confirm the historical zero.
+No Stage 2L action is required.
+
+### L-009 — Determinism claim has no retained second-run artifacts
+
+**Severity:** MINOR  
+**Location:** `docs/research/stage2j/FREEZE_MANIFEST.json`
+(`census_execution.determinism_verified`, `determinism_method`);
+`stage2j_census/run_census.py:408-420`.  
+**Requirement:** The audit is asked to assess reproducibility and provenance. A determinism
+claim should be checkable from retained evidence or be labelled as unverified.  
+**Explanation:** Stage 2J records that two runs with identical code and HEAD produced
+byte-identical analytical JSON, with `resources.json` differing by design because it records
+wall time and RSS. No second-run artifacts or digests are retained. The audit cannot rerun
+the census under its prohibitions, so the claim cannot be independently checked. The code is
+deterministic by construction in the ordinary sense (sorted keys, fixed serialisation), but
+that is not the same as retained two-run evidence.  
+**Impact:** Reproducibility evidence gap. It does not indicate that the recorded outputs are
+wrong, and no verdict depends on the determinism claim.  
+**Proof status:** Not independently verified.  
+**Historical-conclusion impact:** None.  
+**Evidence:** Stage 2J manifest `census_execution` block; `census_run.json`
+`deterministic_serialization` with `excluded_from_identity: ["resources.json"]`.  
+**Recommended resolution:** Future census runs should retain both run manifests or a
+determinism receipt with per-file digests, or state that determinism was observed once and
+is not independently evidenced.
+
+### L-010 — Code hash omits `freeze_verify.py` and test files
+
+**Severity:** MINOR  
+**Location:** `stage2j_census/run_census.py:31,44-54`;
+`docs/research/stage2j/machine_readable/census_run.json` (`code.files`).  
+**Requirement:** The recorded code identity should cover code that can affect the census or
+its preflight verification.  
+**Explanation:** `run_census.py` imports `run_preflight` and `git_state` from
+`stage2j_census/freeze_verify.py`, but `freeze_verify.py` is not in `CODE_FILES`. The code
+hash covers the nine analytical and loader files, not the preflight/hash-verification logic
+and not any test file. A change to preflight behaviour would therefore not change the
+recorded `code_sha256`, even though it could change whether a run is admitted.  
+**Impact:** Incomplete code identity. The analytical code that produces counts is covered;
+the verification wrapper is not. No observed effect: all Stage 2J preflight and integrity
+checks passed.  
+**Proof status:** Proved by direct comparison of the imported module and the `CODE_FILES`
+tuple.  
+**Historical-conclusion impact:** None observed.  
+**Evidence:** `run_census.py:31` import; `CODE_FILES` at lines 44-54; `census_run.json`
+`code.files` list.  
+**Recommended resolution:** Add `stage2j_census/freeze_verify.py` (and any audit-critical
+test or harness commit) to the hashed code set in a future census, while keeping the
+historical identity record unchanged.
