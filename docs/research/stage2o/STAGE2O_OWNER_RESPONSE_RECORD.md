@@ -16,7 +16,7 @@ An unanswered item remains open. Nothing is defaulted.
 |---|---|---|---|---|---|
 | D-01a | numeric minimum net R per executed trade | **RESOLVED** | **0.10R** | R per executed trade | 2026-11-10 |
 | D-01b | numeric annual contribution target | **RESOLVED** | **`$250`/year** | USD/year on `$10,000` research leg | 2026-11-10 |
-| D-02e | scope of the D-02 risk limits | **OPEN** | — | research leg / real capital / both | — |
+| D-02e | scope of the D-02 risk limits | **RESOLVED** | **Research leg only** | `$10,000` research leg | 2026-11-10 |
 | D-02a | maximum drawdown | **OPEN** | — | % of equity peak | — |
 | D-02b | per-trade loss limit | **OPEN** | — | R and % of equity | — |
 | D-02c | tail-risk limit | **OPEN** | — | CVaR95 in R | — |
