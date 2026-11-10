@@ -27,7 +27,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-05 | venue and cost evidence standard | **RESOLVED — STAGED A + B; ACCESS OPEN** |
 | D-06 | cost-uncertainty and conservative-cost rule | **RESOLVED — CONSERVATIVE PRIMARY (p95); APPLICATION PENDING NOBITEX MEASUREMENT** |
 | D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
-| D-08 | statistical confidence and error-control objective | **OPEN** |
+| D-08 | statistical confidence and error-control objective | **RESOLVED — A+B; α=5%; POWER=80%; HIERARCHICAL** |
 | D-09 | dependence treatment and robustness standard | **OPEN** |
 | D-10 | sample-sufficiency methodology | **OPEN** |
 | D-11 | multiple-testing and selection policy | **OPEN** |
@@ -335,18 +335,64 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 9. What remains open
+## 9. D-08 — Statistical confidence and error-control objective
 
-All other decisions, D-01, D-02, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. The next group is Group C (D-08 through D-12, statistical
-confidence, dependence, sufficiency, multiplicity, and validation access).
+### 9.1 Owner answer
+
+- **Chosen standard:** **A + B combination** — two-sided significance for the primary test, plus
+  power for the MME.
+- **Two-sided `α`:** **5%**.
+- **Target power:** **80%**.
+- **Co-primary allocation:** **hierarchical** — the per-trade primary must pass first; the annual
+  co-primary is tested conditionally.
+- **Precision reporting:** required — the interval width must be reported.
+
+### 9.2 Implications
+
+1. The primary test uses a **two-sided 5%** error rate.
+2. The design targets **80% power** for the MME. The numeric sample-size requirement depends on the
+   MME value (D-01, currently open), the variance, and the dependence treatment (D-09).
+3. The per-trade primary is tested **first**; the annual co-primary is tested **only if the primary
+   passes**. This preserves the error rate and prevents a frequency-driven annual result from
+   rescuing a failed per-trade result.
+4. The confidence-interval width must be reported alongside the verdict.
+5. The exact decision rule — for example, whether the lower confidence bound must be at or above the
+   MME — is **not** separately decided here. It remains to be specified in D-10 or pre-registration.
+6. D-08 cannot produce a sample size until D-01's numeric MME is set. Gate 2 therefore remains
+   blocked despite D-08 being resolved.
+
+### 9.3 Qualifications and open items
+
+- No variance, sample size, or MME value is recorded as decided here. The `α` and power are decision
+  inputs, not estimates from data.
+- The hierarchical allocation is recorded; the exact test sequence and the treatment of the annual
+  metric's dependence on the per-trade result remain to be specified operationally.
+- D-08 is resolved as an error-control standard, not as a complete experimental design.
+
+### 9.4 Confirmation
+
+- The owner explicitly selected the A + B combination.
+- The owner explicitly selected 5% two-sided `α`.
+- The owner explicitly selected 80% power.
+- The owner explicitly selected hierarchical co-primary allocation.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 10. Integrity statement
+## 10. What remains open
+
+All other decisions, D-01, D-02, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08 is resolved as an error-control standard, but Gate 2 remains
+blocked until D-01's numeric MME is set. The next decision is D-09 (dependence treatment and
+robustness standard).
+
+---
+
+## 11. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
