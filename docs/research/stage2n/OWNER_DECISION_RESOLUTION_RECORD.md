@@ -25,7 +25,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-03 | primary performance estimand | **RESOLVED** |
 | D-04 | capital and execution context | **RESOLVED — RESEARCH LEG ONLY; REAL-CAPITAL CHECK OPEN** |
 | D-05 | venue and cost evidence standard | **RESOLVED — STAGED A + B; ACCESS OPEN** |
-| D-06 | cost-uncertainty and conservative-cost rule | **OPEN** |
+| D-06 | cost-uncertainty and conservative-cost rule | **RESOLVED — CONSERVATIVE PRIMARY (p95); APPLICATION PENDING NOBITEX MEASUREMENT** |
 | D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
 | D-08 | statistical confidence and error-control objective | **OPEN** |
 | D-09 | dependence treatment and robustness standard | **OPEN** |
@@ -295,17 +295,58 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 8. What remains open
+## 8. D-06 — Cost-uncertainty and conservative-cost rule
 
-All other decisions, D-01, D-02, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain
-open. D-01 remains open with definition A selected and its numeric values unset. D-02 remains open
-with option C selected and its numeric limits unset. D-05 is resolved as to the venue split and
-evidence standard, with Nobitex access still open. The next decision is D-06 (cost-uncertainty and
-conservative-cost rule).
+### 8.1 Owner answer
+
+- **Chosen option:** **A — Conservative primary.**
+- **Conservative threshold:** **95th percentile (p95)** of the measured cost distribution.
+- **Sensitivity reporting:** **mandatory.**
+- **Optimistic-only pass:** **prohibited.**
+
+### 8.2 Implications
+
+1. The primary verdict uses the **p95** of the measured cost distribution, not the mean or the most
+   favourable estimate.
+2. This protects against optimistic cost assumptions and may reject a rule that would pass on the
+   mean.
+3. The cost range and sensitivity scenarios must be reported alongside the primary verdict.
+4. A pass that depends **solely** on an optimistic cost scenario is prohibited.
+5. The rule is fully specified but **cannot be applied** until a Nobitex cost distribution exists.
+   Stage 2N does not collect or process that data.
+6. D-05's Nobitex access remains open; if access cannot be obtained, D-06 remains defined but
+   inapplicable to Nobitex evidence.
+
+### 8.3 Qualifications and open items
+
+- The rule is a decision rule, not a cost estimate. No cost data has been measured.
+- D-06 is resolved as a decision rule, with application pending the Nobitex measurement.
+- No candidate or experiment is authorized.
+- D-06 does not resolve the Nobitex access question in D-05.
+
+### 8.4 Confirmation
+
+- The owner explicitly selected option A.
+- The owner explicitly selected p95 as the conservative threshold.
+- The owner explicitly made sensitivity reporting mandatory.
+- The owner explicitly prohibited an optimistic-only pass.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 9. Integrity statement
+## 9. What remains open
+
+All other decisions, D-01, D-02, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. The next group is Group C (D-08 through D-12, statistical
+confidence, dependence, sufficiency, multiplicity, and validation access).
+
+---
+
+## 10. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
