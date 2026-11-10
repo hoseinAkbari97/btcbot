@@ -23,7 +23,7 @@ An unanswered item remains open. Nothing is defaulted.
 | D-02d | liquidity / position-size limit | **RESOLVED** | **`$2,500` fixed notional** | USD notional, research leg | 2026-11-10 |
 
 **D-01 overall:** **RESOLVED** — definition A; `δ_R = 0.10R`; annual target `$250`/year.
-**D-02 overall:** **OPEN** — option C selected; scope resolved as research leg only; maximum drawdown resolved at 15%; per-trade limit resolved at 1.00R; tail limit resolved at 0.50R CVaR95; liquidity limit unresolved.
+**D-02 overall:** **RESOLVED** — option C; research-leg scope; maximum drawdown 15%; per-trade limit 1.00R; tail limit 0.50R CVaR95; position-size limit `$2,500` fixed notional. Real-capital translation and venue liquidity evidence remain open.
 
 ---
 
