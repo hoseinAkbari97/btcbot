@@ -1,7 +1,7 @@
 # Stage 2O — Owner Response Record
 
 **Stage:** 2O (owner-decision resolution only)
-**Status:** **PARTIAL — D-01 resolved; D-02 scope, maximum drawdown, per-trade, and tail limits resolved; one D-02 numeric limit open.**
+**Status:** **D-01 RESOLVED; D-02 RESOLVED on the research leg; real-capital translation and venue liquidity evidence remain open.**
 **Date opened:** 2026-11-10 (UTC)
 **Companion packet:** `STAGE2O_D01_D02_DECISION_PACKET.md`
 
