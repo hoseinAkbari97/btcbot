@@ -15,14 +15,14 @@ An unanswered item remains open. Nothing is defaulted.
 | ID | decision | status | value | units | date |
 |---|---|---|---|---|---|
 | D-01a | numeric minimum net R per executed trade | **RESOLVED** | **0.10R** | R per executed trade | 2026-11-10 |
-| D-01b | numeric annual contribution target | **OPEN** | — | USD per year on `$10,000` research leg | — |
+| D-01b | numeric annual contribution target | **RESOLVED** | **`$250`/year** | USD/year on `$10,000` research leg | 2026-11-10 |
 | D-02e | scope of the D-02 risk limits | **OPEN** | — | research leg / real capital / both | — |
 | D-02a | maximum drawdown | **OPEN** | — | % of equity peak | — |
 | D-02b | per-trade loss limit | **OPEN** | — | R and % of equity | — |
 | D-02c | tail-risk limit | **OPEN** | — | CVaR95 in R | — |
 | D-02d | liquidity / position-size limit | **OPEN** | — | % of visible depth | — |
 
-**D-01 overall:** **OPEN** — definition A selected; `δ_R = 0.10R` set; annual target unresolved.
+**D-01 overall:** **RESOLVED** — definition A; `δ_R = 0.10R`; annual target `$250`/year.
 **D-02 overall:** **OPEN** — option C selected; all four numeric limits and the scope unresolved.
 
 ---
@@ -61,15 +61,32 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 3.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** USD per year on the `$10,000` research leg.
-- **Conditions:** none recorded.
+- **Status:** resolved.
+- **Value:** **`$250` per year**.
+- **Percent:** **2.5%** of the `$10,000` research leg.
+- **Units:** net annual contribution, USD/year, under the D-04 research convention.
+- **Implied frequency:** **≈ 25 executed trades/year** at `δ_R = 0.10R`, before compounding and
+  before `p_exec < 1`.
+- **Conditions:** frequency feasibility remains a Gate 3 question.
 
-### 3.2 Confirmation
+### 3.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. D-01 is now complete: definition A, `δ_R = 0.10R`, and annual target `$250`/year.
+2. The target is modest, but at `0.10R` it still implies about 25 executed trades per year. That is
+   above Candidate A's historical opportunity frequency of about 20/year and well above B, C, and D.
+3. Because `p_exec < 1`, the required **opportunity** count is higher than 25/year. Gate 3 may
+   therefore fail on frequency even though the annual target is low.
+4. The annual metric is co-primary and hierarchical: the per-trade test must pass first, then the
+   annual target is tested conditionally.
+5. D-01 being resolved does **not** pass Gate 0. D-02, the D-04 real-capital check, D-05 Nobitex
+   access, and D-13 remain unresolved.
+6. No compounding forecast, performance estimate, or backtest is implied by this target.
+
+### 3.3 Confirmation
+
+- The owner explicitly selected `$250`/year.
+- The owner explicitly confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
@@ -154,7 +171,8 @@ An unanswered item remains open. Nothing is defaulted.
 
 ## 9. Explicitly unresolved items carried forward
 
-- **D-01:** the annual contribution target remains open; `δ_R = 0.10R` is set.
+- **D-01:** **resolved** — `δ_R = 0.10R` and annual target `$250`/year; Gate 3 frequency feasibility
+  remains untested.
 - **D-02:** all four numeric limits and the scope remain open.
 - **D-04:** real-capital check remains open.
 - **D-05:** Nobitex access and cost evidence remain open.
