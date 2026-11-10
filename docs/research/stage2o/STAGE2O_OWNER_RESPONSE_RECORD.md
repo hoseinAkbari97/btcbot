@@ -188,7 +188,8 @@ An unanswered item remains open. Nothing is defaulted.
    before gaps shorten the count.
 6. Gap, slippage, and stop-fill distributions remain **unmeasured**; Nobitex execution evidence (D-05)
    is open, so compliance cannot yet be verified.
-7. D-02c and D-02d remain open and are not affected by this value.
+7. D-02d remains open; D-02c was subsequently resolved at 0.50R CVaR95, and neither value is changed
+   by this entry.
 
 ### 6.3 Confirmation
 
