@@ -31,8 +31,12 @@ separate authorization.
 | capital base | `1R` at `1%` | MME `0.10R` | drawdown `15%` | `$2,500` cap binds below |
 |---:|---:|---:|---:|---:|
 | `$10,000` (research leg, today) | `$100` | `$10` | `$1,500` | `4%` stop |
-| `$25,000` | `$250` | `$25` | `$3,750` | `1.6%` stop |
-| `$50,000` | `$500` | `$50` | `$7,500` | `0.8%` stop |
+| `$25,000` | `$250` | `$25` | `$3,750` | `10%` stop |
+| `$50,000` | `$500` | `$50` | `$7,500` | `20%` stop |
+
+The binding threshold is `(1% risk) / $2,500` expressed as a fraction of equity, so it rises with
+the capital base: at `$10,000` the cap binds below a `4%` stop, at `$50,000` it binds below a `20%`
+stop — that is, for almost every plausible stop.
 
 **Label:** arithmetic from recorded rules only, for illustration of scale. No capital figure other
 than the research leg is recorded anywhere, and this table does not imply the owner has any
