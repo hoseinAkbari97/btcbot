@@ -23,7 +23,7 @@ An unanswered item remains open. Nothing is defaulted.
 | D-02d | liquidity / position-size limit | **OPEN** | — | % of visible depth | — |
 
 **D-01 overall:** **RESOLVED** — definition A; `δ_R = 0.10R`; annual target `$250`/year.
-**D-02 overall:** **OPEN** — option C selected; all four numeric limits and the scope unresolved.
+**D-02 overall:** **OPEN** — option C selected; scope resolved as research leg only; all four numeric limits unresolved.
 
 ---
 
