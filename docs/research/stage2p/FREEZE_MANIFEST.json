@@ -74,10 +74,10 @@
   },
   "deliverables": [
     {
-      "bytes": 20868,
+      "bytes": 20991,
       "path": "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md",
       "role": "Gate 0 requirement classification, verdict, and critical consistency review of the 0.10R/$250 frequency implication and the $2,500 notional cap",
-      "sha256": "ebcf4a9ffc29393236f98696daf117a031721204d3d0f1e5d06b748836871daa"
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
     },
     {
       "bytes": 17645,
@@ -92,10 +92,10 @@
       "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
     },
     {
-      "bytes": 6868,
+      "bytes": 7116,
       "path": "docs/research/stage2p/RECOMMENDED_NEXT_ACTIONS.md",
       "role": "Single recommended next action, four owner questions, ordered follow-on steps, what not to do next, stop condition",
-      "sha256": "5e44d5bfc17c5b7e19e68948d4999c195f666cdf171558564dfec16943a0da43"
+      "sha256": "9e182aa26ed03f7614f91702b40369cc27376ad8a51a18bd3dd4216a7d9d12a0"
     }
   ],
   "design_scope": {
@@ -142,11 +142,19 @@
       "risk limits (D-02)",
       "capital and position-sizing context (D-04 option C)"
     ],
+    "open_rows": [
+      "R-08",
+      "R-18",
+      "R-19",
+      "R-20",
+      "R-21"
+    ],
     "requirements_blocked_by_another_decision": 1,
     "requirements_not_applicable": 2,
-    "requirements_open_owner_input": 4,
+    "requirements_open_owner_input": 5,
     "requirements_partially_satisfied": 5,
-    "requirements_satisfied": 11,
+    "requirements_satisfied": 10,
+    "rows_total": 23,
     "single_remaining_gate0_decision": "D-04 real-capital translation",
     "verdict": "NOT PASSED - NOT READY"
   },
@@ -200,15 +208,15 @@
     "label": "owner-selected limits; not empirically verified execution characteristics"
   },
   "repository": {
-    "artifact_commit_note": "The four Stage 2P documents were committed and pushed in one-document increments before this manifest. HEAD at manifest creation is the final document commit; the final HEAD is the commit that introduces this file. The manifest cannot contain its own commit or hash.",
+    "artifact_commit_note": "The four Stage 2P documents were committed and pushed in one-document increments, followed by two corrective edits to the row tally and the notional-cap thresholds, before this manifest. HEAD at manifest update is the final document commit; the final HEAD is the commit that introduces this file. The manifest cannot contain its own commit or hash.",
     "branch": "main",
-    "head_at_manifest_creation": "b1f69b8",
+    "head_at_manifest_creation": "1b1cd2b",
     "head_at_review_start": "b0630e5",
     "remote_tracking": "origin/main",
     "synchronized_with_origin_at_review_start": true,
     "working_tree_clean_at_review_start": true
   },
-  "self_hash": "1118d9274a844c48552b1510e119c4cb87f399e8da7a86f69ee6ef2932162d5c",
+  "self_hash": "cbbbbae0e07a9695f19cac7d8b5b2601b8279616ef3daca26bb47afa9c76a19c",
   "source_artifacts": {
     "docs/research/stage2e_v2/FREEZE_MANIFEST.json": {
       "bytes": 21715,
