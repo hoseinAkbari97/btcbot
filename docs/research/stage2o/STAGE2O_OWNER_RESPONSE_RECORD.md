@@ -109,7 +109,8 @@ An unanswered item remains open. Nothing is defaulted.
 4. The limits can be evaluated against research-leg evidence without implying live authorization.
 5. If real capital differs from `$10,000`, the position sizes, liquidity check, and currency
    drawdown will change accordingly.
-6. This decision does not resolve any of the four numeric limits.
+6. This decision did not resolve any of the four numeric limits; they were subsequently resolved as
+   D-02a–D-02d.
 
 ### 4.3 Confirmation
 
