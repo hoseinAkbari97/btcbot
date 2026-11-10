@@ -19,7 +19,7 @@ An unanswered item remains open. Nothing is defaulted.
 | D-02e | scope of the D-02 risk limits | **RESOLVED** | **Research leg only** | `$10,000` research leg | 2026-11-10 |
 | D-02a | maximum drawdown | **RESOLVED** | **15%** | % of prior equity peak, research leg | 2026-11-10 |
 | D-02b | per-trade loss limit | **RESOLVED** | **1.00R** | R; % of equity at entry | 2026-11-10 |
-| D-02c | tail-risk limit | **OPEN** | — | CVaR95 in R | — |
+| D-02c | tail-risk limit | **RESOLVED** | **0.50R** | CVaR95 in R, research leg | 2026-11-10 |
 | D-02d | liquidity / position-size limit | **OPEN** | — | % of visible depth | — |
 
 **D-01 overall:** **RESOLVED** — definition A; `δ_R = 0.10R`; annual target `$250`/year.
