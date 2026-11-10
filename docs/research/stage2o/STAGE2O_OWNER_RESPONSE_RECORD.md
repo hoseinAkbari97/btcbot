@@ -14,7 +14,7 @@ An unanswered item remains open. Nothing is defaulted.
 
 | ID | decision | status | value | units | date |
 |---|---|---|---|---|---|
-| D-01a | numeric minimum net R per executed trade | **OPEN** | — | R per executed trade | — |
+| D-01a | numeric minimum net R per executed trade | **RESOLVED** | **0.10R** | R per executed trade | 2026-11-10 |
 | D-01b | numeric annual contribution target | **OPEN** | — | USD per year on `$10,000` research leg | — |
 | D-02e | scope of the D-02 risk limits | **OPEN** | — | research leg / real capital / both | — |
 | D-02a | maximum drawdown | **OPEN** | — | % of equity peak | — |
@@ -22,7 +22,7 @@ An unanswered item remains open. Nothing is defaulted.
 | D-02c | tail-risk limit | **OPEN** | — | CVaR95 in R | — |
 | D-02d | liquidity / position-size limit | **OPEN** | — | % of visible depth | — |
 
-**D-01 overall:** **OPEN** — definition A selected; both numeric values unresolved.
+**D-01 overall:** **OPEN** — definition A selected; `δ_R = 0.10R` set; annual target unresolved.
 **D-02 overall:** **OPEN** — option C selected; all four numeric limits and the scope unresolved.
 
 ---
@@ -31,15 +31,29 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 2.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** net R per executed trade.
-- **Conditions:** none recorded.
+- **Status:** resolved.
+- **Value:** **0.10R** net per executed trade.
+- **Units:** net R per executed trade, after all-in costs.
+- **Dollar scale:** `$10` per trade at 1R = `$100` on the `$10,000` research leg.
+- **Conditions:** the numeric sample requirement remains pending `σ`, `DE`, and `p_exec`.
 
-### 2.2 Confirmation
+### 2.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. The per-trade economic bar is the smallest listed value. It requires substantially more evidence
+   than `0.15R`–`0.30R`.
+2. At 1% risk, a trade at the MME earns `$10` on a `$100` risk unit. The annual target will therefore
+   demand high frequency to be meaningful.
+3. The illustrative requirement is `≈ 785` independent observations; dependence inflation and
+   execution losses will raise the opportunity requirement further.
+4. D-01 remains **open** overall until the annual contribution target is also set.
+5. Gate 0 remains blocked, and D-10 still cannot produce a final numeric requirement without `σ`,
+   `DE`, and `p_exec`.
+
+### 2.3 Confirmation
+
+- The owner explicitly selected 0.10R.
+- The owner explicitly confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
@@ -140,7 +154,7 @@ An unanswered item remains open. Nothing is defaulted.
 
 ## 9. Explicitly unresolved items carried forward
 
-- **D-01:** both numeric values remain open.
+- **D-01:** the annual contribution target remains open; `δ_R = 0.10R` is set.
 - **D-02:** all four numeric limits and the scope remain open.
 - **D-04:** real-capital check remains open.
 - **D-05:** Nobitex access and cost evidence remain open.
