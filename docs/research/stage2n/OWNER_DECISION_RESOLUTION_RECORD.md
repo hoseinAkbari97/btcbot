@@ -32,7 +32,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-10 | sample-sufficiency methodology | **RESOLVED — METHODOLOGY A; NUMERIC REQUIREMENT PENDING INPUTS** |
 | D-11 | multiple-testing and selection policy | **RESOLVED — A+D; ONE PRIMARY HYPOTHESIS; NO MULTIPLE HYPOTHESES; OOS CONFIRMATION REQUIRED** |
 | D-12 | validation/OOS access and one-look policy | **RESOLVED — STRICT ONE-LOOK; LOGGING; EMBARGO** |
-| D-13 | independent audit standard | **OPEN** |
+| D-13 | independent audit standard | **RESOLVED — B+E; SPECIALIST IF FEASIBLE; RESIDUAL DISCLOSURE REQUIRED** |
 | D-14 | data representativeness requirements | **OPEN** |
 | D-15 | revisit Candidate A's control or investigate a different family | **OPEN** |
 
@@ -550,19 +550,60 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 14. What remains open
+## 14. D-13 — Independent audit standard
 
-All other decisions, D-01, D-02, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08 through D-12 are resolved as standards and policies, but Gate
-2 and Gate 3 remain blocked until D-01's numeric MME is set. Group C is complete. The next group is
-Group D (D-13 audit standard and D-14 data representativeness).
+### 14.1 Owner answer
+
+- **Chosen standard:** **B + E combination** — separate reviewer with no prior involvement, plus an
+  external specialist for critical components.
+- **Minimum reviewer:** a separate reviewer who did not design, implement, review, or report on the
+  artifact.
+- **Critical specialist:** external review of the cost model and statistical method, **required if
+  feasible**.
+- **Residual limitations:** disclosure required in every result.
+
+### 14.2 Implications
+
+1. Gate 4 requires a **separate reviewer with no prior involvement** in the design, implementation,
+   review, or reporting of the artifact.
+2. An **external specialist** reviews the cost model and the statistical method if feasible. If it
+   is not feasible, the limitation must be recorded explicitly.
+3. Any residual independence limitation must be **disclosed in every result**.
+4. Stage 2L's self-review **cannot** satisfy Gate 4. A different model or a different conversation
+   is not, by itself, independence.
+5. Gate 4 cannot pass until the reviewer and specialist are identified and the audit is performed.
+6. The standard applies **before** any historical performance result is accepted.
+
+### 14.3 Qualifications and open items
+
+- The reviewer's identity, the specialist's availability, and the feasibility of external review
+  are not set.
+- No audit has been performed.
+- The documentation standard for proving "no prior involvement" remains to be specified.
+
+### 14.4 Confirmation
+
+- The owner explicitly selected the B + E combination.
+- The owner explicitly required the external specialist if feasible.
+- The owner explicitly required residual limitation disclosure.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 15. Integrity statement
+## 15. What remains open
+
+All other decisions, D-01, D-02, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08 through D-13 are resolved as standards and policies, but Gate
+2, Gate 3, and Gate 4 remain blocked until D-01's numeric MME is set and the audit is performed.
+The next decision is D-14 (data representativeness requirements).
+
+---
+
+## 16. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
