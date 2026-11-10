@@ -28,7 +28,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-06 | cost-uncertainty and conservative-cost rule | **RESOLVED — CONSERVATIVE PRIMARY (p95); APPLICATION PENDING NOBITEX MEASUREMENT** |
 | D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
 | D-08 | statistical confidence and error-control objective | **RESOLVED — A+B; α=5%; POWER=80%; HIERARCHICAL** |
-| D-09 | dependence treatment and robustness standard | **OPEN** |
+| D-09 | dependence treatment and robustness standard | **RESOLVED — C; INCONCLUSIVE ON DISAGREEMENT; PARAMETERS OPEN** |
 | D-10 | sample-sufficiency methodology | **OPEN** |
 | D-11 | multiple-testing and selection policy | **OPEN** |
 | D-12 | validation/OOS access and one-look policy | **OPEN** |
@@ -380,19 +380,59 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 10. What remains open
+## 10. D-09 — Dependence treatment and robustness standard
 
-All other decisions, D-01, D-02, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08 is resolved as an error-control standard, but Gate 2 remains
-blocked until D-01's numeric MME is set. The next decision is D-09 (dependence treatment and
-robustness standard).
+### 10.1 Owner answer
+
+- **Primary treatment:** **C — cluster-robust plus block bootstrap.**
+- **Requirement:** the two treatments must agree.
+- **Disagreement rule:** **inconclusive** — not a pass and not a failure.
+- **Diagnostics:** Kish and design effects are reported as descriptive only.
+- **Episode definition:** open — to be fixed at pre-registration.
+- **Block length / resampling scheme:** open — to be fixed at pre-registration.
+
+### 10.2 Implications
+
+1. Episode-clustered standard errors are the primary dependence treatment; the block bootstrap is a
+   required sensitivity.
+2. The two treatments must agree. If the conclusion changes between them, the result is
+   **inconclusive** — it is not promoted to a pass and not recorded as a failure.
+3. Kish and design effects are reported as **descriptive diagnostics**, not as the decision rule.
+4. The episode definition and block length remain open. They must be fixed **before** any outcome is
+   observed; choosing them after seeing results would invalidate the pre-registration.
+5. D-10 will use the dependence treatment and design effect to inflate the sample-size requirement.
+   D-09 resolves the treatment and robustness standard, not the numeric design effect.
+6. D-01's numeric MME remains open, so Gate 2 remains blocked despite D-09 being resolved.
+
+### 10.3 Qualifications and open items
+
+- No episode definition, block length, design effect, or sample size is recorded as decided here.
+- No data has been processed.
+- The exact operational test sequence and the implementation of the agreement rule remain to be
+  specified with D-10.
+
+### 10.4 Confirmation
+
+- The owner explicitly selected option C.
+- The owner explicitly selected the inconclusive disagreement rule.
+- The owner explicitly required descriptive Kish and design-effect reporting.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 11. Integrity statement
+## 11. What remains open
+
+All other decisions, D-01, D-02, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08 and D-09 are resolved as standards, but Gate 2 remains blocked
+until D-01's numeric MME is set. The next decision is D-10 (sample-sufficiency methodology).
+
+---
+
+## 12. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
