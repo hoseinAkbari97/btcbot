@@ -176,8 +176,10 @@ Status codes: **S** satisfied · **P** partially satisfied · **O** open, owner 
 | R-22 | Independent-audit standard and reviewer | **P** — standard resolved (D-13 B+E); **no reviewer identified**; audit not performed and not authorized | reviewer identity, qualification evidence, independence declaration | owner | D-13 |
 | R-23 | Deferred decisions (D-15) | **N** — deferred; status preserved and not revisited | none in this stage | owner | D-15 |
 
-**Count:** 11 satisfied, 5 partially satisfied, 4 open to the owner, 1 blocked by D-04, 2 not
-applicable. No row is satisfied on the strength of the D-01/D-02 resolutions alone.
+**Count over the 23 rows:** 10 satisfied, 5 partially satisfied, 5 open to the owner, 1 satisfied
+for the research leg and blocked for any real-capital claim, 2 not applicable. No row is satisfied
+on the strength of the D-01/D-02 resolutions alone. The five open rows are `R-08` and `R-18` to
+`R-21`.
 
 ---
 
