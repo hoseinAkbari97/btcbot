@@ -1,7 +1,8 @@
 # Stage 2N — Owner Decision Resolution Record
 
 **Stage:** 2N (owner decision resolution only)
-**Status:** in progress. Only decisions explicitly answered and confirmed by the owner are recorded here.
+**Status:** owner decision process addressed. Only decisions explicitly answered and confirmed by the
+owner are recorded here; unresolved items remain open.
 **Date:** 2026-11-09 (UTC)
 **Last updated:** 2026-11-10 (UTC)
 **Source register:** `docs/research/stage2m/OWNER_DECISION_REGISTER.md`
@@ -34,7 +35,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-12 | validation/OOS access and one-look policy | **RESOLVED — STRICT ONE-LOOK; LOGGING; EMBARGO** |
 | D-13 | independent audit standard | **RESOLVED — B+E; SPECIALIST IF FEASIBLE; RESIDUAL DISCLOSURE REQUIRED** |
 | D-14 | data representativeness requirements | **RESOLVED — C; ALL THREE REGIMES; D-12 OOS LOOK; SINGLE-INTERVAL PROVISIONAL** |
-| D-15 | revisit Candidate A's control or investigate a different family | **OPEN** |
+| D-15 | revisit Candidate A's control or investigate a different family | **OPEN — DEFERRED UNTIL D-01/D-02 RESOLVED AND GATE 0–4 COMPLETE** |
 
 An open decision has not been defaulted. Where the register marks a decision **BLOCKING**, the
 dependent gate remains blocked.
@@ -631,19 +632,82 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 16. What remains open
+## 16. D-15 — Future research direction (deferred)
 
-All other decisions, D-01, D-02, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08 through D-14 are resolved as standards and policies, but Gate
-2, Gate 3, and Gate 4 remain blocked until D-01's numeric MME is set and the audit is performed.
-Group D is complete. The next decision is D-15 (future research direction).
+### 16.1 Owner answer
+
+- **Status:** **deferred** — not resolved.
+- **No option selected.** None of A, B, C, D, or E was chosen.
+- **Deferral condition:** D-15 will be revisited only after D-01 and D-02 are resolved and the
+  Gate 0–4 work is complete.
+- The owner explicitly chose to defer rather than to record a provisional preference.
+
+### 16.2 Implications
+
+1. No future research direction is authorized. Option A (status-quo stop) remains the operative
+   posture by default, because nothing else has been approved.
+2. Candidate A's control arm is **not** promoted. Option D is explicitly rejected by Stage 2C as a
+   selectivity diagnostic, and no decision here changes that.
+3. No A-family variant (option B), no different strategy family (option C), and no abandonment
+   (option E) is authorized.
+4. Deferring D-15 does not unblock any gate. The framework repair and the open numeric decisions
+   still come first.
+5. The deferral preserves owner optionality; it does not create an implicit preference for any
+   option.
+
+### 16.3 Qualifications and open items
+
+- D-15 remains **open** in substance; deferral is a scheduling decision, not a resolution.
+- D-01's numeric MME and D-02's numeric risk limits remain unset, and both are prerequisites for
+  revisiting D-15.
+- D-05's Nobitex access remains open; D-13's audit standard is set but no auditor is identified and
+  no audit has been performed.
+- No candidate, experiment, or implementation stage is authorized by this entry.
+
+### 16.4 Confirmation
+
+- The owner explicitly chose to defer D-15.
+- The owner explicitly did not select any of options A–E.
+- The owner confirmed the deferral condition (D-01/D-02 resolved, Gate 0–4 complete).
+- No option in this entry was defaulted by the research agent.
 
 ---
 
-## 17. Integrity statement
+## 17. What remains open and process status
+
+**Decisions resolved or qualified:** twelve decisions have an explicit, confirmed owner answer —
+D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, and D-14. D-01 and D-02 have an
+explicit owner answer at the level of definition/option only, with their numeric values still open.
+D-15 is deferred and remains unresolved. No decision was defaulted.
+
+**Still open:**
+
+- **D-01** — definition A selected, numeric MME and annual target **not set**.
+- **D-02** — option C selected, numeric drawdown, per-trade, tail, and liquidity limits **not set**.
+- **D-15** — **deferred**, to be revisited after D-01 and D-02 are resolved and Gate 0–4 work is
+  complete.
+
+**Qualifications carried forward:**
+
+- **D-04** — real-capital check remains open as a Gate 0 input.
+- **D-05** — Nobitex access is unknown/open; the execution-cost evidence cannot be completed without
+  it.
+- **D-06** — the conservative p95 rule is defined but cannot be applied until a Nobitex cost
+  distribution exists.
+- **D-07** — the annual target depends on D-01.
+- **D-08, D-09, D-10** — standards and methodology are set; numeric sample size and dependence
+  parameters remain pending D-01 and data.
+- **D-11, D-12, D-14** — policies are set; no look has been spent and no later-period data source is
+  identified.
+- **D-13** — the audit standard is set; no reviewer or specialist is identified and no audit has
+  been performed.
+
+**Gate status:** Gate 1, Gate 2, Gate 3, Gate 4, and Gate 5 remain blocked. No Stage 2O, candidate,
+strategy, experiment, or implementation stage is authorized.
+
+---
+
+## 18. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
