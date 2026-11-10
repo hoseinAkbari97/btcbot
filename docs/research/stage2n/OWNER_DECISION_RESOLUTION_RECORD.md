@@ -29,7 +29,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
 | D-08 | statistical confidence and error-control objective | **RESOLVED — A+B; α=5%; POWER=80%; HIERARCHICAL** |
 | D-09 | dependence treatment and robustness standard | **RESOLVED — C; INCONCLUSIVE ON DISAGREEMENT; PARAMETERS OPEN** |
-| D-10 | sample-sufficiency methodology | **OPEN** |
+| D-10 | sample-sufficiency methodology | **RESOLVED — METHODOLOGY A; NUMERIC REQUIREMENT PENDING INPUTS** |
 | D-11 | multiple-testing and selection policy | **OPEN** |
 | D-12 | validation/OOS access and one-look policy | **OPEN** |
 | D-13 | independent audit standard | **OPEN** |
@@ -421,18 +421,61 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 11. What remains open
+## 11. D-10 — Sample-sufficiency methodology
 
-All other decisions, D-01, D-02, D-10, D-11, D-12, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08 and D-09 are resolved as standards, but Gate 2 remains blocked
-until D-01's numeric MME is set. The next decision is D-10 (sample-sufficiency methodology).
+### 11.1 Owner answer
+
+- **Chosen methodology:** **A — power for the MME.**
+- **Dependence inflation:** required — uses D-09's design effect / cluster-bootstrap treatment.
+- **Execution-rate adjustment:** required — inflate the opportunity count for the fill/execution
+  rate.
+- **Sensitivity reporting:** required — report the requirement as a function of `DE`, `σ`, and `δ`.
+- **Universal fixed count:** not adopted.
+- **Numeric sample size:** pending D-01 MME value, variance, D-09 parameters, and fill rate.
+
+### 11.2 Implications
+
+1. The sample requirement is derived from **power for the MME**, using the D-08 settings (`α=5%`
+   two-sided, 80% power, hierarchical co-primary).
+2. The requirement is inflated for dependence using D-09's treatment, and adjusted for the
+   execution/fill rate so the required number of **executed** trades is reached.
+3. The requirement must be reported as sensitive to `DE`, `σ`, and `δ`; a single unqualified `N` is
+   not sufficient.
+4. No universal fixed count is adopted. The historical 150-event floor is **not** inherited.
+5. The numeric sample size cannot be computed until D-01's MME value is set, a variance estimate
+   exists, D-09's episode/block parameters are fixed, and a fill-rate estimate exists.
+6. Gate 3 remains blocked until the numeric requirement can be derived.
+
+### 11.3 Qualifications and open items
+
+- D-10 resolves the methodology, not the number.
+- No variance, design effect, fill rate, or sample size is recorded as decided here.
+- The variance source/assumption and the exact dependence-inflation method remain to be specified
+  at pre-registration.
+
+### 11.4 Confirmation
+
+- The owner explicitly selected option A.
+- The owner explicitly required the execution-rate adjustment.
+- The owner explicitly required sensitivity reporting.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 12. Integrity statement
+## 12. What remains open
+
+All other decisions, D-01, D-02, D-11, D-12, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08, D-09, and D-10 are resolved as standards and methodology, but
+Gate 2 and Gate 3 remain blocked until D-01's numeric MME is set. The next decision is D-11
+(multiple-testing and selection policy).
+
+---
+
+## 13. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
