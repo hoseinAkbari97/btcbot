@@ -163,15 +163,39 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 6.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** R and % of equity at entry.
-- **Conditions:** none recorded.
+- **Status:** resolved — explicit owner approval.
+- **Value:** **1.00R**.
+- **Percent basis:** **1.00% of equity at entry**.
+- **Dollar illustration:** `$100` per trade at 1R = `$100` on the `$10,000` research reference.
+- **Measurement:** realized **net** loss on a single executed trade, after entry and exit costs,
+  including adverse gap and slippage beyond the planned stop.
+- **Declared basis:** equity at entry, not current equity.
+- **Scope:** `$10,000` research leg only; real-capital translation remains open.
+- **Conditions:** gap and slippage compliance remains evidence-dependent.
 
-### 6.2 Confirmation
+### 6.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. This is a constraint on the realized outcome, distinct from the frozen 1% fixed-fractional *sizing*
+   rule.
+2. Because there is **no overshoot allowance**, a gap-through-stop or material slippage that produces
+   a realized loss above 1R is a **policy breach**, unless position sizing includes an explicit
+   slippage/gap buffer that keeps the realized loss at or below 1R.
+3. The owner has therefore accepted the tighter of the two interpretations: 1% is both the sizing
+   target and the realized per-trade ceiling.
+4. A binding 1R ceiling may reject rules whose stops fill poorly, and may require smaller positions,
+   which lowers contribution at `δ_R = 0.10R`.
+5. Interaction with D-02a: at a 15% drawdown limit, roughly fifteen full 1R losses reach the budget,
+   before gaps shorten the count.
+6. Gap, slippage, and stop-fill distributions remain **unmeasured**; Nobitex execution evidence (D-05)
+   is open, so compliance cannot yet be verified.
+7. D-02c and D-02d remain open and are not affected by this value.
+
+### 6.3 Confirmation
+
+- The owner explicitly selected 1.00R and confirmed this record before it was written.
+- The approval specified the realized net-loss measurement, the equity-at-entry basis, the absence of
+  an overshoot allowance, the research-leg scope, and the open real-capital translation.
+- No value or basis in this entry was defaulted by the research agent.
 
 ---
 
