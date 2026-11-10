@@ -94,14 +94,28 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 4.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Scope:** not set.
-- **Conditions:** none recorded.
+- **Status:** resolved.
+- **Scope:** **Research leg only.**
+- **Basis:** `$10,000` equity, 1% risk, fixed-fractional, one position, no leverage, spot long-only.
+- **Real capital:** not covered; the D-04 real-capital check remains open and separate.
+- **Conditions:** the real-capital translation remains open.
 
-### 4.2 Confirmation
+### 4.2 Implications
 
-- No confirmation has been received.
-- No scope has been defaulted.
+1. The drawdown, per-trade, tail, and liquidity limits will be expressed on the `$10,000` research leg.
+2. They are **not** automatically the owner's live limits. A separate real-capital translation is
+   required before any live-decision claim.
+3. The real-capital amount remains undisclosed and the D-04 check remains open.
+4. The limits can be evaluated against research-leg evidence without implying live authorization.
+5. If real capital differs from `$10,000`, the position sizes, liquidity check, and currency
+   drawdown will change accordingly.
+6. This decision does not resolve any of the four numeric limits.
+
+### 4.3 Confirmation
+
+- The owner explicitly selected research leg only.
+- The owner explicitly confirmed the record above before it was written.
+- No scope was defaulted by the research agent.
 
 ---
 
