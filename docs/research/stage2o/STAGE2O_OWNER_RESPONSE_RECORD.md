@@ -273,7 +273,7 @@ D-02b or alter its measurement.
 - **D-04:** real-capital check remains open.
 - **D-05:** Nobitex access and cost evidence remain open.
 - **D-06:** the p95 rule cannot be applied until a Nobitex cost distribution exists.
-- **D-07:** the annual target remains pending D-01.
+- **D-07:** annual target is set via D-01b at `$250`/year; co-primary status unchanged.
 - **D-13:** no reviewer or specialist has been identified and no audit has been performed.
 - **D-15:** remains deferred; not revisited here.
 
