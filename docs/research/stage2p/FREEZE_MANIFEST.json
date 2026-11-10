@@ -1,0 +1,302 @@
+{
+  "artifact_set": "Stage 2P Gate 0 readiness and outstanding-prerequisite assessment",
+  "confirmations": {
+    "application_code_modified": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_promoted": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "cost_study_run": false,
+    "data_processed_market": false,
+    "dependency_installed": false,
+    "detector_run": false,
+    "development_validation_or_oos_rows_processed": false,
+    "drawdown_computed": false,
+    "equity_curve_computed": false,
+    "expectancy_computed": false,
+    "experiment_authorized": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate_authorized": false,
+    "historical_analysis_executed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "implementation_created": false,
+    "independence_established": false,
+    "liquidity_study_run": false,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "new_performance_metric_computed": false,
+    "optimization_run": false,
+    "paper_trade_executed": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "recount_run": false,
+    "research_code_modified": false,
+    "returns_computed": false,
+    "reviewer_appointed": false,
+    "stage2q_started": false,
+    "trading_executed": false,
+    "validation_or_oos_accessed": false,
+    "venue_contacted": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-10T08:12:59Z",
+  "critical_consistency_review": {
+    "annual_contribution_achievable_by_any_candidate": "not claimed in either direction",
+    "annual_target_frequency_requirement": {
+      "derivation": "$250 / (0.10R x $100 per R)",
+      "unit": "executed trades per year",
+      "value": 25
+    },
+    "historical_opportunities_per_year": {
+      "A": 20,
+      "B": 7,
+      "C": 3,
+      "D": 10
+    },
+    "historical_opportunity_counts_over_1277_days": {
+      "A": 71,
+      "B": 24,
+      "C": 12,
+      "D": 34
+    },
+    "illustrative_independent_observation_requirement": {
+      "assumptions": "delta=0.10R, sigma=1R, alpha=0.05 two-sided, power 0.80",
+      "label": "conventional power arithmetic illustration, not a measurement",
+      "value": 785
+    },
+    "method": "arithmetic restatement of frozen figures; no data processed, no metric computed",
+    "notional_cap_binding_threshold_stop_fraction": 0.04,
+    "notional_cap_consequence": "below a 4% stop the $2,500 cap reduces realised risk per trade and the dollar value of 0.10R, raising the trade count needed for $250; documented arithmetic only",
+    "resolution_changed": false
+  },
+  "deliverables": [
+    {
+      "bytes": 20868,
+      "path": "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md",
+      "role": "Gate 0 requirement classification, verdict, and critical consistency review of the 0.10R/$250 frequency implication and the $2,500 notional cap",
+      "sha256": "ebcf4a9ffc29393236f98696daf117a031721204d3d0f1e5d06b748836871daa"
+    },
+    {
+      "bytes": 17645,
+      "path": "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md",
+      "role": "Twelve outstanding blockers with type, status, gate blocked, responsible party, and prohibited shortcut",
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    {
+      "bytes": 13500,
+      "path": "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md",
+      "role": "Owner inputs, external evidence acceptance standards, required Gate 0 artifacts, gate mapping, dependency graph, unacceptable substitutions",
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    {
+      "bytes": 6868,
+      "path": "docs/research/stage2p/RECOMMENDED_NEXT_ACTIONS.md",
+      "role": "Single recommended next action, four owner questions, ordered follow-on steps, what not to do next, stop condition",
+      "sha256": "5e44d5bfc17c5b7e19e68948d4999c195f666cdf171558564dfec16943a0da43"
+    }
+  ],
+  "design_scope": {
+    "authorized": [
+      "inspect branch, HEAD, working tree and remote synchronisation",
+      "read Stage 2M, 2N and 2O documentation and the frozen manifests",
+      "verify historical artifact hashes without modifying them",
+      "write four assessment documents and this manifest under docs/research/stage2p/",
+      "commit and push each increment"
+    ],
+    "prohibited": [
+      "market-data processing",
+      "validation or out-of-sample access",
+      "census, recount or detector run",
+      "backtest, P&L, return, expectancy, win-rate, drawdown, Sharpe, Sortino, CAGR or equity-curve computation",
+      "bootstrap, Monte Carlo, optimization or parameter tuning",
+      "new performance metric or new research result",
+      "Nobitex cost, liquidity or access study",
+      "application or strategy-specification change",
+      "new candidate or experiment",
+      "independent audit, reviewer appointment, or Gate 4 activity",
+      "resolving D-04, D-05, D-06, D-13 or D-15",
+      "Gate 0 pass or Gate 1-5 authorisation",
+      "paper, live or any trading execution",
+      "modification of any Stage 2M, 2N, 2O or earlier artifact"
+    ]
+  },
+  "gate0_assessment": {
+    "gate0_artifacts_missing": [
+      "consolidated Gate 0 owner decision record",
+      "economic objective memo",
+      "risk policy statement",
+      "capital and execution context statement"
+    ],
+    "gate0_inputs_fully_satisfied": [
+      "minimum meaningful effect (D-01 option A)",
+      "primary and secondary estimands (D-03 A, D-03 D, D-07 A)",
+      "error-control and dependence standard (D-08 A+B, D-09 C)"
+    ],
+    "gate0_inputs_satisfied_as_standard_without_evidence": [
+      "execution venue and cost-evidence standard (D-05 staged A+B, D-06 option A)"
+    ],
+    "gate0_inputs_satisfied_for_research_leg_only": [
+      "risk limits (D-02)",
+      "capital and position-sizing context (D-04 option C)"
+    ],
+    "requirements_blocked_by_another_decision": 1,
+    "requirements_not_applicable": 2,
+    "requirements_open_owner_input": 4,
+    "requirements_partially_satisfied": 5,
+    "requirements_satisfied": 11,
+    "single_remaining_gate0_decision": "D-04 real-capital translation",
+    "verdict": "NOT PASSED - NOT READY"
+  },
+  "gate0_passed": false,
+  "hashing_procedure": {
+    "algorithm": "SHA256 over raw file bytes for deliverables and source_artifacts.",
+    "bytes_field": "byte length of the raw file at manifest creation time.",
+    "reproduce": [
+      "cd <repository root>",
+      "python3 - <<'PY'",
+      "import hashlib, json",
+      "d = json.load(open('docs/research/stage2p/FREEZE_MANIFEST.json'))",
+      "for v in d['deliverables']: print(hashlib.sha256(open(v['path'],'rb').read()).hexdigest(), v['sha256'], v['path'])",
+      "for p,v in d['source_artifacts'].items(): print(hashlib.sha256(open(p,'rb').read()).hexdigest(), v['sha256'], p)",
+      "d.pop('self_hash', None)",
+      "canonical = json.dumps(d, sort_keys=True, separators=(',',':'), ensure_ascii=False)",
+      "print('self_hash', hashlib.sha256(canonical.encode('utf-8')).hexdigest())",
+      "PY"
+    ],
+    "self_hash_algorithm": "SHA256 over the UTF-8 bytes of the canonical JSON serialisation of this document with the self_hash field removed: keys sorted, separators ',' and ':' with no insignificant whitespace, ensure_ascii false, no trailing newline."
+  },
+  "historical_positions_preserved": {
+    "D-15_status": "deferred; preserved; not revisited",
+    "candidate_A_result": "71 canonical opportunities against a 150 floor; fail; unchanged",
+    "candidate_B_verdict": "FEASIBILITY FAIL - INSUFFICIENT OPPORTUNITIES; unchanged",
+    "candidate_C_result": "12 canonical opportunities against a 200 Stage 2A gate; fail; unchanged",
+    "candidate_D_verdict": "FEASIBILITY FAIL - INSUFFICIENT OPPORTUNITIES; unchanged",
+    "candidate_or_experiment_authorized": false,
+    "gate_authorized": false,
+    "stage2l_verdict": "SELF-REVIEW / INDEPENDENCE NOT ESTABLISHED; unchanged"
+  },
+  "manifest_commit_note": "This manifest cannot contain its own commit or hash. A verifier must recompute self_hash after removing the self_hash field.",
+  "nature": "Assessment-only. Readiness classification of frozen owner decisions against the frozen Gate 0 criteria. No candidate, no experiment, no data processing, no audit, no gate pass.",
+  "no_performance_claim": "This manifest records a documentary readiness assessment. It contains no P&L, return, expectancy, win rate, drawdown, Sharpe, Sortino, CAGR, equity curve, bootstrap, Monte Carlo, optimisation, backtest, paper-trade or live-trade result. No market-data row was processed, no venue was contacted, no audit was performed, and no gate was passed. The frequency and notional-cap comparisons are arithmetic consequences of recorded owner values, not evidence about any candidate.",
+  "owner_decisions_open": true,
+  "owner_values_restated_not_changed": {
+    "D-01": {
+      "annual_contribution_target_usd": 250,
+      "definition": "Definition A",
+      "mme_net_per_executed_trade": "0.10R",
+      "option": "A",
+      "research_equity_usd": 10000
+    },
+    "D-02": {
+      "capital_scope": "research leg only",
+      "max_cvar95_R": 0.5,
+      "max_drawdown_pct_of_prior_equity_peak": 15,
+      "max_entry_notional_usd": 2500,
+      "max_realized_net_loss_per_trade_R": 1.0
+    },
+    "label": "owner-selected limits; not empirically verified execution characteristics"
+  },
+  "repository": {
+    "artifact_commit_note": "The four Stage 2P documents were committed and pushed in one-document increments before this manifest. HEAD at manifest creation is the final document commit; the final HEAD is the commit that introduces this file. The manifest cannot contain its own commit or hash.",
+    "branch": "main",
+    "head_at_manifest_creation": "b1f69b8",
+    "head_at_review_start": "b0630e5",
+    "remote_tracking": "origin/main",
+    "synchronized_with_origin_at_review_start": true,
+    "working_tree_clean_at_review_start": true
+  },
+  "self_hash": "1118d9274a844c48552b1510e119c4cb87f399e8da7a86f69ee6ef2932162d5c",
+  "source_artifacts": {
+    "docs/research/stage2e_v2/FREEZE_MANIFEST.json": {
+      "bytes": 21715,
+      "role": "Stage 2E v2 frozen manifest, cost proxy provenance",
+      "sha256": "adb721bfab4a63d95646c1e81d8739b46fa1b2395690e9ddf55564c66e244fa7"
+    },
+    "docs/research/stage2k/FREEZE_MANIFEST.json": {
+      "bytes": 12776,
+      "role": "Stage 2K frozen manifest, verified in this stage",
+      "sha256": "9b30040843d8f7b65097a817b84b6f373bb739e4d19b65ef0168ca123f2f9372"
+    },
+    "docs/research/stage2l/FREEZE_MANIFEST.json": {
+      "bytes": 8925,
+      "role": "Stage 2L frozen manifest, verified in this stage",
+      "sha256": "aa6f27cce6520a78a9f96014d269ff9420e5131952921af659f3add0b0534213"
+    },
+    "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md": {
+      "bytes": 39108,
+      "role": "Ten-component cost model, venue requirements, cost uncertainty policy, Nobitex evidence list",
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    "docs/research/stage2m/FREEZE_MANIFEST.json": {
+      "bytes": 14594,
+      "role": "Stage 2M frozen manifest, verified in this stage",
+      "sha256": "c7bdb364f67bf1e3d929f040f1dcad7c248cdfa867c72841e601f66f5a5dfbe6"
+    },
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "role": "D-01-D-15 definitions, blocking status, dependency table",
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "role": "Gate 0-6 criteria, independence requirements, freeze policy, audit access and conflict disclosure",
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2m/STAGE2M_FINAL_PROPOSAL.md": {
+      "bytes": 26123,
+      "role": "Framework summary and essential/deferrable classification",
+      "sha256": "c0320eb9a0425c73e4b7bbec8d43c4785562d53a9e345729a519fbfb7a241cb6"
+    },
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": {
+      "bytes": 31205,
+      "role": "Sample-sufficiency derivation N_ind, N_obs, required_opportunities",
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "role": "Authoritative per-decision resolutions D-03 to D-15",
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_D01_D02_DECISION_PACKET.md": {
+      "bytes": 30979,
+      "role": "Annual-target frequency table, historical opportunity counts, sample requirement illustration",
+      "sha256": "d8b16ade03abe742b3b24065a2f9f3842cd97e2cfd4572a7b39a189a0ebade6f"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "role": "D-01 and D-02 numeric values, D-02d cap note, carried-forward open items",
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2k": {
+      "all_recorded_file_hashes_and_bytes_match": true,
+      "manifest_path": "docs/research/stage2k/FREEZE_MANIFEST.json",
+      "recomputed_self_hash": "4946a0c4fb7cb404490c7494b78e7a269734b66fae1954a1e9f34eb14ed5a0eb",
+      "recorded_entries_checked": 23,
+      "recorded_self_hash": "4946a0c4fb7cb404490c7494b78e7a269734b66fae1954a1e9f34eb14ed5a0eb",
+      "self_hash_match": true
+    },
+    "stage2l": {
+      "all_recorded_file_hashes_and_bytes_match": true,
+      "manifest_path": "docs/research/stage2l/FREEZE_MANIFEST.json",
+      "recomputed_self_hash": "08bc483cdb34f6fcc1ee4acadc58619d570752b9802f360a0a3a56b033bcdc3f",
+      "recorded_entries_checked": 4,
+      "recorded_self_hash": "08bc483cdb34f6fcc1ee4acadc58619d570752b9802f360a0a3a56b033bcdc3f",
+      "self_hash_match": true
+    },
+    "stage2m": {
+      "all_recorded_file_hashes_and_bytes_match": true,
+      "manifest_path": "docs/research/stage2m/FREEZE_MANIFEST.json",
+      "recomputed_self_hash": "6469d6a417681c9a6615d08ede9059a48aa104ab301c5bd42a17e4b24f54b0a9",
+      "recorded_entries_checked": 27,
+      "recorded_self_hash": "6469d6a417681c9a6615d08ede9059a48aa104ab301c5bd42a17e4b24f54b0a9",
+      "self_hash_match": true
+    }
+  },
+  "stage": "2P",
+  "version_identifier": "stage2p/1.0.0"
+}
