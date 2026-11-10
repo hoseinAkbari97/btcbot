@@ -33,7 +33,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-11 | multiple-testing and selection policy | **RESOLVED — A+D; ONE PRIMARY HYPOTHESIS; NO MULTIPLE HYPOTHESES; OOS CONFIRMATION REQUIRED** |
 | D-12 | validation/OOS access and one-look policy | **RESOLVED — STRICT ONE-LOOK; LOGGING; EMBARGO** |
 | D-13 | independent audit standard | **RESOLVED — B+E; SPECIALIST IF FEASIBLE; RESIDUAL DISCLOSURE REQUIRED** |
-| D-14 | data representativeness requirements | **OPEN** |
+| D-14 | data representativeness requirements | **RESOLVED — C; ALL THREE REGIMES; D-12 OOS LOOK; SINGLE-INTERVAL PROVISIONAL** |
 | D-15 | revisit Candidate A's control or investigate a different family | **OPEN** |
 
 An open decision has not been defaulted. Where the register marks a decision **BLOCKING**, the
@@ -591,19 +591,59 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 15. What remains open
+## 15. D-14 — Data representativeness requirements
 
-All other decisions, D-01, D-02, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08 through D-13 are resolved as standards and policies, but Gate
-2, Gate 3, and Gate 4 remain blocked until D-01's numeric MME is set and the audit is performed.
-The next decision is D-14 (data representativeness requirements).
+### 15.1 Owner answer
+
+- **Chosen option:** **C — regime coverage plus later-period confirmation.**
+- **Regime coverage:** **all three** — volatility, trend, and liquidity.
+- **Later-period confirmation:** the single D-12 OOS look.
+- **Single-interval result:** provisional.
+- **Structural-break analysis:** not adopted by this decision.
+
+### 15.2 Implications
+
+1. Extrapolation requires coverage across **volatility, trend, and liquidity** regimes.
+2. Later-period confirmation uses the **single OOS look** protected by D-12. It is not an additional
+   look; once spent, it cannot be reused.
+3. A result based on a single development interval is **provisional**, not a basis for extrapolation.
+4. Structural-break analysis (option D) is **not** required by this decision. If it is wanted later,
+   it requires a new decision.
+5. D-12's one-look policy governs the confirmation; D-14 does not create a second look.
+6. D-05's Nobitex access remains open; if later-period data is unavailable, the confirmation cannot
+   be completed.
+7. Gate 1 and Gate 5 remain blocked until the data and venue evidence exists.
+
+### 15.3 Qualifications and open items
+
+- The numeric regime definitions are not set and must be fixed **before** outcomes.
+- The later-period data source is not identified.
+- No data has been processed.
+- Structural-break analysis is not required, but the limitation of omitting it should be disclosed.
+
+### 15.4 Confirmation
+
+- The owner explicitly selected option C.
+- The owner explicitly selected all three regimes.
+- The owner explicitly selected the D-12 OOS look for later confirmation.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 16. Integrity statement
+## 16. What remains open
+
+All other decisions, D-01, D-02, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08 through D-14 are resolved as standards and policies, but Gate
+2, Gate 3, and Gate 4 remain blocked until D-01's numeric MME is set and the audit is performed.
+Group D is complete. The next decision is D-15 (future research direction).
+
+---
+
+## 17. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
