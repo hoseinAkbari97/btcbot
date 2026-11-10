@@ -1,7 +1,7 @@
 # Stage 2O — Owner Response Record
 
 **Stage:** 2O (owner-decision resolution only)
-**Status:** **PENDING — no owner response has been recorded yet.**
+**Status:** **PARTIAL — D-01 resolved; D-02 scope resolved; four D-02 numeric limits open.**
 **Date opened:** 2026-11-10 (UTC)
 **Companion packet:** `STAGE2O_D01_D02_DECISION_PACKET.md`
 
