@@ -30,7 +30,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-08 | statistical confidence and error-control objective | **RESOLVED — A+B; α=5%; POWER=80%; HIERARCHICAL** |
 | D-09 | dependence treatment and robustness standard | **RESOLVED — C; INCONCLUSIVE ON DISAGREEMENT; PARAMETERS OPEN** |
 | D-10 | sample-sufficiency methodology | **RESOLVED — METHODOLOGY A; NUMERIC REQUIREMENT PENDING INPUTS** |
-| D-11 | multiple-testing and selection policy | **OPEN** |
+| D-11 | multiple-testing and selection policy | **RESOLVED — A+D; ONE PRIMARY HYPOTHESIS; NO MULTIPLE HYPOTHESES; OOS CONFIRMATION REQUIRED** |
 | D-12 | validation/OOS access and one-look policy | **OPEN** |
 | D-13 | independent audit standard | **OPEN** |
 | D-14 | data representativeness requirements | **OPEN** |
@@ -463,19 +463,64 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 12. What remains open
+## 12. D-11 — Multiple-testing and selection policy
 
-All other decisions, D-01, D-02, D-11, D-12, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08, D-09, and D-10 are resolved as standards and methodology, but
-Gate 2 and Gate 3 remain blocked until D-01's numeric MME is set. The next decision is D-11
-(multiple-testing and selection policy).
+### 12.1 Owner answer
+
+- **Chosen policy:** **A + D combination** — one pre-registered primary hypothesis per stage, plus
+  OOS confirmation for promotion.
+- **Multiple hypotheses:** **not permitted within a stage**.
+- **Exploratory tests:** allowed but explicitly labelled exploratory.
+- **Family correction:** not applicable under the no-multiple-hypotheses rule; a future change would
+  require a new decision before outcomes.
+- **OOS confirmation:** **required** for any promotion to a candidate.
+
+### 12.2 Implications
+
+1. Each stage tests **one** pre-registered primary hypothesis; every other test is labelled
+   exploratory.
+2. Multiple hypotheses within a stage are **not permitted**. If a future need arises, it requires a
+   new owner decision and a new pre-registration — not an ad hoc addition.
+3. Any promotion to a candidate requires **OOS confirmation**. D-12 will define how the OOS data is
+   protected, accessed, and looked at.
+4. No family-wise or false-discovery correction is adopted, because the no-multiple-hypotheses rule
+   makes it inapplicable. If that rule is later relaxed, a correction policy must be decided
+   **before** outcomes.
+5. The historical pattern of changing the floor and selecting on frequency intuition is prohibited
+   without a new pre-registration.
+6. D-12 remains open; OOS confirmation is required in principle, but the access and protection
+   policy is not yet set.
+
+### 12.3 Qualifications and open items
+
+- D-11 resolves the selection policy; it does not resolve the OOS access mechanics (D-12).
+- No candidate or promotion is authorized.
+- The definition of "exploratory" and the reporting format remain to be specified at
+  pre-registration.
+
+### 12.4 Confirmation
+
+- The owner explicitly selected the A + D combination.
+- The owner explicitly excluded multiple hypotheses within a stage.
+- The owner explicitly required OOS confirmation for promotion.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 13. Integrity statement
+## 13. What remains open
+
+All other decisions, D-01, D-02, D-12, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08, D-09, D-10, and D-11 are resolved as standards and policies,
+but Gate 2 and Gate 3 remain blocked until D-01's numeric MME is set. The next decision is D-12
+(validation/OOS access and one-look policy).
+
+---
+
+## 14. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
