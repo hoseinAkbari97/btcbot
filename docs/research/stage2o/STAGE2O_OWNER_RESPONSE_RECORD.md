@@ -123,15 +123,39 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 5.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** % of equity peak, net-of-cost mark-to-market equity.
-- **Conditions:** none recorded.
+- **Status:** resolved — explicit owner approval.
+- **Value:** **15% maximum drawdown**.
+- **Units:** percentage of the prior equity peak.
+- **Measurement basis:** net-of-cost, mark-to-market research-leg equity, measured peak-to-trough as a
+  percentage of the prior equity peak.
+- **Research-equity reference:** `$10,000`.
+- **Dollar illustration:** **`$1,500`** at a `$10,000` equity peak.
+- **Scope:** `$10,000` research leg only.
+- **Real-capital translation:** remains open.
 
-### 5.2 Confirmation
+### 5.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. The drawdown constraint is now a fixed, pre-outcome risk limit at 15% of the running research-leg
+   equity peak.
+2. At a `$10,000` peak the limit corresponds to a `$1,500` decline; at a higher peak the currency
+   amount scales with the peak, because the limit is a percentage.
+3. The limit is evaluated on mark-to-market, net-of-cost equity, so open-position declines and
+   execution costs count, not only closed-trade results.
+4. It applies to the research leg only. It does not become a live/real-capital limit, and the D-04
+   real-capital check remains open and separate.
+5. The per-trade, tail, and liquidity limits remain unresolved; the drawdown limit does not imply
+   their values.
+6. Gate 0 remains blocked by the unresolved D-02 items and by other carried-open conditions.
+
+### 5.3 Confirmation
+
+- The owner explicitly approved 15% maximum drawdown.
+- The approval specified the `$10,000` research-equity reference, the `$1,500` dollar illustration,
+  the net-of-cost mark-to-market measurement basis, the research-leg scope, and the open real-capital
+  translation.
+- The measurement definition was not changed by the research agent, and no additional assumption was
+  introduced.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
