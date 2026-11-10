@@ -203,15 +203,48 @@ An unanswered item remains open. Nothing is defaulted.
 
 ### 7.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** CVaR95 in R.
-- **Conditions:** none recorded.
+- **Status:** resolved — explicit owner approval.
+- **Value:** **0.50R**.
+- **Unit:** R, where 1R is the trade's initial stop risk.
+- **Dollar translation:** `$50` per tail-average trade at 1R = `$100` on the `$10,000` reference.
+- **Equity translation:** 0.50% of the `$10,000` research leg.
+- **Definition:** average net loss across the worst 5% of executed trades, after entry and exit costs,
+  including gap, slippage, and stop-execution effects.
+- **Observation unit:** individual executed trade outcomes.
+- **Selection:** order net trade R outcomes worst-to-best and average the worst 5%.
+- **Scope:** `$10,000` research leg only; real-capital translation remains open.
+- **Conditions:** the tail estimate remains evidence-dependent.
 
-### 7.2 Confirmation
+### 7.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. This is a **binding** tail constraint: under D-02b's 1.00R no-overshoot ceiling, 0.50R is below the
+   per-trade ceiling and therefore actually constrains the worst-5% average.
+2. It is independent of D-02a and D-02b: it can fail even when no single trade exceeds 1.00R and the
+   path drawdown stays under 15%.
+3. It is stricter than the packet's illustrative 1.5R–3.0R values; those would have been non-binding
+   given the recorded per-trade limit.
+4. Interaction with D-02a: at a 0.50R CVaR95 (`$50`), roughly thirty worst-5% average losses reach the
+   `$1,500` 15% drawdown budget, before clustering and other losses.
+5. The estimate cannot yet be computed or verified: gap, slippage, and stop-fill distributions are
+   unmeasured, and no historical analysis is authorized in Stage 2O.
+6. This is an owner-selected risk tolerance, **not** a measured description of the strategy's tail
+   behavior.
+7. D-02d remains open and is unaffected by this value.
+
+### 7.3 Cross-consistency note
+
+D-02b is recorded as 1.00R with no overshoot allowance. If every compliant trade loss is at or below
+1.00R, the average of the worst 5% cannot exceed 1.00R. The 0.50R limit is therefore inside the
+feasible region and binding; a limit above 1.00R would have been non-binding under strict D-02b
+compliance. This note records an arithmetic consequence of the two decisions; it does not re-open
+D-02b or alter its measurement.
+
+### 7.4 Confirmation
+
+- The owner explicitly selected 0.50R and confirmed this record before it was written.
+- The approval specified the CVaR95 definition, the worst-5% averaging, the executed-trade observation
+  unit, the R unit, the research-leg scope, and the open real-capital translation.
+- No value or definition in this entry was defaulted by the research agent.
 
 ---
 
