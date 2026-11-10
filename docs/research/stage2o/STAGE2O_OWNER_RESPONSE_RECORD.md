@@ -293,8 +293,9 @@ D-02b or alter its measurement.
 
 - **D-01:** **resolved** — `δ_R = 0.10R` and annual target `$250`/year; Gate 3 frequency feasibility
   remains untested.
-- **D-02:** scope resolved as research leg only; maximum drawdown resolved at 15%; per-trade limit
-  resolved at 1.00R; tail limit resolved at 0.50R CVaR95; liquidity limit remains open.
+- **D-02:** **resolved** — research-leg scope; maximum drawdown 15%; per-trade limit 1.00R; tail limit
+  0.50R CVaR95; position-size limit `$2,500` fixed notional. Real-capital translation and venue
+  liquidity evidence remain open.
 - **D-04:** real-capital check remains open.
 - **D-05:** Nobitex access and cost evidence remain open.
 - **D-06:** the p95 rule cannot be applied until a Nobitex cost distribution exists.
