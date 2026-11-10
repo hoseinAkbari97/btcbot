@@ -230,7 +230,7 @@ An unanswered item remains open. Nothing is defaulted.
    unmeasured, and no historical analysis is authorized in Stage 2O.
 6. This is an owner-selected risk tolerance, **not** a measured description of the strategy's tail
    behavior.
-7. D-02d remains open and is unaffected by this value.
+7. D-02d was subsequently resolved at `$2,500` fixed notional and is unaffected by this value.
 
 ### 7.3 Cross-consistency note
 
