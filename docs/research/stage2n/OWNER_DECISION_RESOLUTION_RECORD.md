@@ -3,6 +3,7 @@
 **Stage:** 2N (owner decision resolution only)
 **Status:** in progress. Only decisions explicitly answered and confirmed by the owner are recorded here.
 **Date:** 2026-11-09 (UTC)
+**Last updated:** 2026-11-10 (UTC)
 **Source register:** `docs/research/stage2m/OWNER_DECISION_REGISTER.md`
 
 **Source integrity:** the Stage 2M freeze manifest self-hash was verified as
@@ -23,7 +24,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-02 | acceptable drawdown and risk | **OPEN — OPTION C SELECTED; LIMITS NOT SET** |
 | D-03 | primary performance estimand | **RESOLVED** |
 | D-04 | capital and execution context | **RESOLVED — RESEARCH LEG ONLY; REAL-CAPITAL CHECK OPEN** |
-| D-05 | venue and cost evidence standard | **OPEN** |
+| D-05 | venue and cost evidence standard | **RESOLVED — STAGED A + B; ACCESS OPEN** |
 | D-06 | cost-uncertainty and conservative-cost rule | **OPEN** |
 | D-07 | annual contribution as a co-primary metric | **RESOLVED — CO-PRIMARY; ANNUAL TARGET PENDING D-01** |
 | D-08 | statistical confidence and error-control objective | **OPEN** |
@@ -242,16 +243,69 @@ dependent gate remains blocked.
 
 ---
 
-## 7. What remains open
+## 7. D-05 — Venue and cost evidence standard
 
-All other decisions, D-01, D-02, D-05, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15,
-remain open. D-01 remains open with definition A selected and its numeric values unset. D-02 remains
-open with option C selected and its numeric limits unset. Group A has now been addressed; the next
-group is Group B (D-05 and D-06).
+### 7.1 Owner answer
+
+- **Chosen variant:** **Staged A + B** — Binance research proxy for research; Nobitex-specific
+  measurement for execution.
+- **Research data venue:** Binance — research only.
+- **Execution venue:** Nobitex.
+- **Nobitex access status:** unknown / open.
+- The owner explicitly confirmed the Binance-research / Nobitex-execution split.
+
+### 7.2 Implications
+
+1. No live-decision feasibility claim may rest on the 26 bp Binance proxy.
+2. Nobitex may be cheaper or more expensive than the proxy; only a measured study can establish
+   which.
+3. The Nobitex study is a prerequisite for the execution-cost evidence standard, not an
+   authorization to trade.
+4. If Nobitex access is unavailable, option B cannot be completed and D-05 must be revisited or the
+   limitation explicitly accepted.
+5. D-06 remains open and depends on this decision.
+
+### 7.3 Required execution evidence
+
+- dated fee schedule (maker/taker, tier, effective dates);
+- measured bid-ask spread at decision and exit times;
+- order-book depth and size-depth;
+- slippage and fill evidence;
+- latency;
+- partial fills and rejections;
+- entry/exit asymmetry;
+- operational constraints.
+
+The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
+
+### 7.4 Qualifications and open items
+
+- D-05 is resolved as to the venue split and the evidence standard.
+- The Nobitex access status is **unknown/open**; if access cannot be obtained, this decision must be
+  revisited.
+- No market data was collected and no venue measurement was performed in Stage 2N.
+- D-06 remains open.
+
+### 7.5 Confirmation
+
+- The owner explicitly selected the staged A + B variant.
+- The owner explicitly confirmed Binance for research and Nobitex for execution.
+- The owner explicitly recorded the Nobitex access status as unknown/open.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 8. Integrity statement
+## 8. What remains open
+
+All other decisions, D-01, D-02, D-06, D-08, D-09, D-10, D-11, D-12, D-13, D-14, and D-15, remain
+open. D-01 remains open with definition A selected and its numeric values unset. D-02 remains open
+with option C selected and its numeric limits unset. D-05 is resolved as to the venue split and
+evidence standard, with Nobitex access still open. The next decision is D-06 (cost-uncertainty and
+conservative-cost rule).
+
+---
+
+## 9. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
