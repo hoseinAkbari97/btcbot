@@ -253,15 +253,39 @@ D-02b or alter its measurement.
 
 ### 8.1 Owner answer
 
-- **Status:** open — no answer recorded.
-- **Value:** not set.
-- **Units:** % of visible top-of-book depth, or a stated alternative.
-- **Conditions:** none recorded.
+- **Status:** resolved — explicit owner approval.
+- **Rule type:** fixed maximum notional.
+- **Exact rule:** `notional_usd ≤ $2,500` at entry.
+- **Unit:** USD notional (quantity × entry price).
+- **Equity translation:** 25% of the `$10,000` research leg.
+- **Scope:** `$10,000` research leg only; real-capital translation remains open.
+- **Evidence status:** arithmetically enforceable now; **not** a verified liquidity constraint.
+- **Conditions:** venue depth, volume, minimum notional, lot size, slippage, and impact remain
+  unmeasured.
 
-### 8.2 Confirmation
+### 8.2 Implications
 
-- No confirmation has been received.
-- No value has been defaulted.
+1. The rule is a **notional ceiling**, not a depth or volume participation rate. It does not establish
+   that `$2,500` is executable on Nobitex.
+2. Because D-04 sizes positions at 1% risk via `notional = $100 / stop_fraction`, the cap binds
+   whenever `stop_fraction < 4%` (stop tighter than 4% of entry). In that region realized planned risk
+   falls **below** `$100`, so R is smaller than 1% of equity.
+3. That interaction can reduce the annual contribution at `δ_R = 0.10R`, weakening but not changing the
+   D-01 `$250`/year target. It does **not** relax D-02b's 1.00R or D-02c's 0.50R limits.
+4. Maximum exposure remains ≤ `$10,000` mechanically under spot long-only, one position, no leverage;
+   the `$2,500` cap is tighter and binding.
+5. The cap is measurable now from price and position size alone, so the rule can be applied in any
+   future test without venue data.
+6. It cannot be validated as a liquidity constraint: Nobitex depth, volume, minimum notional, lot
+   size, slippage, and impact remain unmeasured.
+7. This is a **research convention**, not evidence that the venue can absorb the order.
+
+### 8.3 Confirmation
+
+- The owner explicitly selected and confirmed the `$2,500` fixed notional cap.
+- The approval specified the exact rule, the USD notional unit, the 25%-of-equity translation, the
+  research-leg scope, and the unverified venue-liquidity status.
+- No value, formula, or scope in this entry was defaulted by the research agent.
 
 ---
 
