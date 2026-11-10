@@ -20,7 +20,7 @@ An unanswered item remains open. Nothing is defaulted.
 | D-02a | maximum drawdown | **RESOLVED** | **15%** | % of prior equity peak, research leg | 2026-11-10 |
 | D-02b | per-trade loss limit | **RESOLVED** | **1.00R** | R; % of equity at entry | 2026-11-10 |
 | D-02c | tail-risk limit | **RESOLVED** | **0.50R** | CVaR95 in R, research leg | 2026-11-10 |
-| D-02d | liquidity / position-size limit | **OPEN** | — | % of visible depth | — |
+| D-02d | liquidity / position-size limit | **RESOLVED** | **`$2,500` fixed notional** | USD notional, research leg | 2026-11-10 |
 
 **D-01 overall:** **RESOLVED** — definition A; `δ_R = 0.10R`; annual target `$250`/year.
 **D-02 overall:** **OPEN** — option C selected; scope resolved as research leg only; maximum drawdown resolved at 15%; per-trade limit resolved at 1.00R; tail limit resolved at 0.50R CVaR95; liquidity limit unresolved.
