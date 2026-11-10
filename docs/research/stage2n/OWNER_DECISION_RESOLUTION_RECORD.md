@@ -31,7 +31,7 @@ does not access validation or out-of-sample data, and does not authorize Stage 2
 | D-09 | dependence treatment and robustness standard | **RESOLVED — C; INCONCLUSIVE ON DISAGREEMENT; PARAMETERS OPEN** |
 | D-10 | sample-sufficiency methodology | **RESOLVED — METHODOLOGY A; NUMERIC REQUIREMENT PENDING INPUTS** |
 | D-11 | multiple-testing and selection policy | **RESOLVED — A+D; ONE PRIMARY HYPOTHESIS; NO MULTIPLE HYPOTHESES; OOS CONFIRMATION REQUIRED** |
-| D-12 | validation/OOS access and one-look policy | **OPEN** |
+| D-12 | validation/OOS access and one-look policy | **RESOLVED — STRICT ONE-LOOK; LOGGING; EMBARGO** |
 | D-13 | independent audit standard | **OPEN** |
 | D-14 | data representativeness requirements | **OPEN** |
 | D-15 | revisit Candidate A's control or investigate a different family | **OPEN** |
@@ -508,19 +508,61 @@ The detailed checklist is in `ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md` §7.1.
 
 ---
 
-## 13. What remains open
+## 13. D-12 — Validation/OOS access and one-look policy
 
-All other decisions, D-01, D-02, D-12, D-13, D-14, and D-15, remain open.
-D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
-option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
-standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
-pending the Nobitex measurement. D-08, D-09, D-10, and D-11 are resolved as standards and policies,
-but Gate 2 and Gate 3 remain blocked until D-01's numeric MME is set. The next decision is D-12
-(validation/OOS access and one-look policy).
+### 13.1 Owner answer
+
+- **Chosen policy:** **A — strict one-look.**
+- **Validation looks:** one.
+- **OOS looks:** one.
+- **Changes after a look:** none.
+- **Access logging:** required — date, purpose, and result for every access.
+- **Embargo between blocks:** required.
+- **Additional looks:** only as a new, separately authorized stage with a new pre-registration.
+
+### 13.2 Implications
+
+1. Validation gets **one** look and OOS gets **one** look. No changes are permitted after either
+   look.
+2. Every validation and OOS access must be logged with date, purpose, and result.
+3. An embargo separates the validation block from the OOS block.
+4. Any additional look is a **new stage** with a new pre-registration — not a second look at the
+   same data.
+5. Reusing validation or OOS data converts it into development data and destroys its confirmatory
+   status.
+6. **Stage 2N has not spent any look and does not access validation or OOS data.** This entry sets
+   the policy only.
+7. D-11's OOS-confirmation requirement is operationalized by this policy.
+
+### 13.3 Qualifications and open items
+
+- The exact embargo duration and the logging format remain to be specified at pre-registration.
+- No validation or OOS row has been read.
+- The policy is a protection standard; it does not authorize a look.
+
+### 13.4 Confirmation
+
+- The owner explicitly selected option A.
+- The owner explicitly required access logging.
+- The owner explicitly required an embargo between blocks.
+- The owner confirmed the record above before it was written.
+- No value in this entry was defaulted by the research agent.
 
 ---
 
-## 14. Integrity statement
+## 14. What remains open
+
+All other decisions, D-01, D-02, D-13, D-14, and D-15, remain open.
+D-01 remains open with definition A selected and its numeric values unset. D-02 remains open with
+option C selected and its numeric limits unset. D-05 is resolved as to the venue split and evidence
+standard, with Nobitex access still open. D-06 is resolved as a decision rule, with application
+pending the Nobitex measurement. D-08 through D-12 are resolved as standards and policies, but Gate
+2 and Gate 3 remain blocked until D-01's numeric MME is set. Group C is complete. The next group is
+Group D (D-13 audit standard and D-14 data representativeness).
+
+---
+
+## 15. Integrity statement
 
 - Stage 2M documents were not modified.
 - No historical research artifact was modified.
