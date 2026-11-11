@@ -76,7 +76,31 @@ confirm
 | agent-added words | none |
 
 The reply does not name the packet, does not name `O-2A`, states no scope, and carries no date. It is a
-single word of assent. §4 assesses it against the packet's authorization form and explains why that form
+single word of assent. §5 assesses it against the packet's authorization form and explains why that form
 is not met.
+
+---
+
+## 3. The O-2A declaration to which the reply refers
+
+The reply immediately follows this declaration, presented as the O-2A choice set. Reproduced exactly:
+
+```
+Decision: O-2A — AUTHORIZE.
+Artifact: `docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md`
+SHA-256: `ab8c84d0c38a864f465904c83c36e03e28923c819a0adb293f6961b020ba8634`
+```
+
+| field | value |
+|---|---|
+| presented by | the agent, as the O-2A declaration in the Stage 2ZB instruction |
+| nature | a restatement of **Choice `O-2A`** in the packet's §4.1; it adds no option and changes none |
+| hash in the declaration | matches the packet's §1 binding and the Stage 2ZA freeze manifest — re-verified in §4 |
+| scope stated in the declaration | **none** — it names a decision, an artifact, and a hash, and refers to no scope clause |
+| owner's response to it | `confirm` (§2) |
+
+The declaration names the option and the artifact. It does not state what `O-2A` permits, and it makes no
+reference to the packet's §6.1, which is where the authorized scope is specified. That omission matters
+in §5.
 
 ---
