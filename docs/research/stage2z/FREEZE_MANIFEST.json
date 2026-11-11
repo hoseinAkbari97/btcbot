@@ -1,0 +1,297 @@
+{
+  "addendum_binding": {
+    "bytes": 31691,
+    "path": "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md",
+    "sha256": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "version": "1.0.0-draft"
+  },
+  "artifact_set": "Stage 2Z O-1 preparation package: a draft addendum separating research-leg readiness from real-capital readiness, the O-1 owner decision packet bound to the addendum hash, a C-1 to C-9 conflict traceability matrix, and the authorization boundary for each possible O-1 outcome",
+  "confirmations": {
+    "a1_to_a4_modified": false,
+    "addendum_adopted": false,
+    "backtest_or_simulation_run": false,
+    "blocker_closed": false,
+    "census_or_signal_count_run": false,
+    "code_modified": false,
+    "cost_or_liquidity_measured": false,
+    "d01_to_d15_modified": false,
+    "expectancy_or_pnl_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate_progression": false,
+    "market_data_accessed_or_processed": false,
+    "next_stage_started": false,
+    "o1_decided": false,
+    "o2_authorized": false,
+    "owner_decision_created_or_inferred": false,
+    "research_authorized": false,
+    "sizing_convention_selected": false,
+    "stage2y_files_modified": false,
+    "strategy_or_candidate_designed": false,
+    "trading_or_paper_trading": false,
+    "venue_contacted_or_researched": false
+  },
+  "created_utc": "2026-11-11T12:38:42Z",
+  "deliverables": [
+    {
+      "bytes": 31691,
+      "path": "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md",
+      "role": "The proposed addendum (version 1.0.0-draft): status and authority, the problem stated from the sources, definitions, scope, the per-base Gate 0 assessment, the research-leg readiness determination, the R-08/R-15 readings, the T-4 question, preservation of Gates 1-6 and the independent audit, the six T-4 evidence items, the cost/venue/claim boundary, the preserved statistical rules and owner values, the five enumerated proposed changes P-1 to P-5, the prohibitions, and the adoption mechanism",
+      "sha256": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc"
+    },
+    {
+      "bytes": 12384,
+      "path": "docs/research/stage2z/STAGE2Z_O1_OWNER_DECISION_PACKET.md",
+      "role": "The O-1 decision packet: the hash-bound addendum identity, a one-paragraph summary, the three choices (adopt, reject, revise) with consequences and a side-by-side table, the exhaustive list of what adoption would not do, the O-2 requirement and its scope, the blank owner decision fields, a response template, the alternatives, and the pending-status statement",
+      "sha256": "1dd7eabdb8738a97b1eedcf1987cbaf6584a282ef353b7c2d11466ae38eb6d2a"
+    },
+    {
+      "bytes": 13445,
+      "path": "docs/research/stage2z/STAGE2Z_CONFLICT_TRACEABILITY_MATRIX.md",
+      "role": "The conflict traceability matrix: C-1 to C-9 traced to original sources and sections, with the inconsistency, the addendum clause that addresses it, whether adoption would resolve it (conditional, partial, not resolved, or preserved), the residual ambiguity, and a summary matrix with counts",
+      "sha256": "e8e4dbb7e7c8be2faee5a0859b73a2223bd42703047189cfc1e7bb04cf108266"
+    },
+    {
+      "bytes": 11053,
+      "path": "docs/research/stage2z/STAGE2Z_AUTHORIZATION_BOUNDARY.md",
+      "role": "The authorization boundary: the three O-1 states, the prohibitions in each, the distinction between permissible and authorized, the required contents of a separate O-2 Gate 1 authorization, the claim boundary, the prohibitions that survive adoption, eleven stop conditions, and the remaining owner decisions O-1 to O-8",
+      "sha256": "771a19e8a320c74aa20cd64bd10ee2f6a4fd84a4814872f5b5542f48715d37b1"
+    }
+  ],
+  "gate0_status": {
+    "evidence": [
+      "R-08 P - real-capital sizing convention deferred (T-4)",
+      "R-15 B - real-capital objective not in testable form"
+    ],
+    "passed": false,
+    "verdict": "NOT PASSED"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Governance drafting and decision preparation only. It drafts a proposed addendum, binds it to a hash for an owner decision, traces the known conflicts, and describes the authorization boundary. It adopts nothing, authorizes nothing, and passes no gate.",
+  "no_performance_claim": "No expected return, profitability, achievable annual income, feasibility or execution claim is made. The $250 objective on $100 capital remains an unvalidated owner objective.",
+  "o1_status": {
+    "choices": [
+      "A - adopt the addendum exactly as drafted and hash-bound",
+      "B - reject; the current framework and restrictions continue",
+      "C - revise; list the changes and return the addendum for review"
+    ],
+    "decision_made": false,
+    "hash_bound_artifact": "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md",
+    "hash_bound_sha256": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "next_act_if_adopted": "a separate O-2 named Gate 1 research-leg stage authorization under protocol \u00a72.1",
+    "status": "PENDING - awaiting the owner"
+  },
+  "owner_inputs_unchanged": {
+    "annual_objective_usd": 250,
+    "order_notional_range_usd": [
+      1,
+      3
+    ],
+    "personal_cumulative_loss_tolerance_usd": 30,
+    "real_capital_usd": 100,
+    "research_reference_capital_usd": 10000
+  },
+  "proposed_changes": {
+    "P-1": "scope protocol \u00a73.5's prohibition to the capital base whose Gate 0 inputs are incomplete",
+    "P-2": "represent Gate 0 status per base and permit a research-leg readiness determination that is not Gate 0 passage",
+    "P-3": "read R-08 as applying to the real-capital base only",
+    "P-4": "apply R-15 per its own text: S for the research leg, B for real-capital claims",
+    "P-5": "require a future Gate 1 authorization to disclose venue-specification completeness item by item",
+    "status": "proposed only - effective only if O-1 is adopted",
+    "thresholds_metrics_decisions_or_gates_changed": false
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "58ae39c",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "cc29845ebf95560df6ecbedce3a37a890c3f2c37a8f8e10683c91ab86367d45b",
+  "source_artifacts": {
+    "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md": {
+      "bytes": 39108,
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": {
+      "bytes": 31205,
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    },
+    "docs/research/stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md": {
+      "bytes": 5959,
+      "sha256": "d9ca43cada42fb85cab465de119703715217ac365245f799a892be0badc716f3"
+    },
+    "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md": {
+      "bytes": 7104,
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8442,
+      "sha256": "f9b59b063413a980275c09334dbbe06d3efd65bcade3786cdb24ae4dd4ba9f3d"
+    },
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": {
+      "bytes": 4370,
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    },
+    "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md": {
+      "bytes": 11764,
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    },
+    "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md": {
+      "bytes": 18745,
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    },
+    "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md": {
+      "bytes": 2816,
+      "sha256": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8"
+    },
+    "docs/research/stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md": {
+      "bytes": 5639,
+      "sha256": "75347be574afd3eb6f0b2974d3bceed818fcdb53b9887c5821e88f9dfd2d7999"
+    },
+    "docs/research/stage2y/STAGE2Y_AUTHORIZATION_BOUNDARY.md": {
+      "bytes": 15434,
+      "sha256": "7f2514cc9caf421b014b01c9cdde085ae3f9af89a784cad3f107bdcca8fff226"
+    },
+    "docs/research/stage2y/STAGE2Y_GOVERNANCE_DEPENDENCY_MAP.md": {
+      "bytes": 30478,
+      "sha256": "428aee5f6fbe0f7c2d001cfaf75c48a245ad15c32cd8c98f6c53cf03ce6b24a7"
+    },
+    "docs/research/stage2y/STAGE2Y_PATH_COMPARISON_AND_RECOMMENDATION.md": {
+      "bytes": 19830,
+      "sha256": "35e271d519b38df44d872d99799d1d4fbd08f4c2ff5d992f2df435a46391978b"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2v": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2w": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2x": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2y": {
+      "entries_checked": 20,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2Z",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "D-01_to_D-15": "unchanged",
+    "O-1": "PENDING",
+    "O-2": "NOT AUTHORIZED",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked",
+    "T-4": "deferred",
+    "checklist": "16 S / 4 P / 0 O / 1 B / 2 N/A",
+    "gate0": "NOT PASSED",
+    "stage2y_package": "frozen and unchanged"
+  },
+  "unresolved_conflicts": {
+    "C-1": "resolved only if O-1 is adopted; Gate 0 remains NOT PASSED",
+    "C-2": "partially addressed only if O-1 is adopted; both R-08 wordings preserved",
+    "C-3": "resolved only if O-1 is adopted, and only a separate O-2 can authorize research",
+    "C-4": "not resolved; a Gate 1 disclosure rule is proposed (P-5), not a pass criterion",
+    "C-5": "restated, not changed; label discipline depends on future report wording",
+    "C-6": "not resolved; requires a separate owner decision (O-5)",
+    "C-7": "preserved unchanged",
+    "C-8": "preserved unchanged",
+    "C-9": "resolved only if O-1 is adopted, as a clarification"
+  },
+  "version_identifier": "stage2z/1.0.0"
+}
