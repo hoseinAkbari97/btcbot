@@ -55,3 +55,42 @@ document as the authorization cannot serve as its independent precondition. Whic
 chooses, step 1 of the authorized stage is to record the determination with its checklist.
 
 ---
+
+## 3. The activities, separated
+
+Every activity the project could want is listed once. They are **not** bundled: each has its own
+prerequisites, permitted scope, prohibited scope, and required decision.
+
+| # | activity | prerequisites | permitted scope | prohibited scope | required owner decision |
+|---|---|---|---|---|---|
+| **A** | **documentary preparation** — drafting governance text, hashing, manifests, recording the readiness determination | none beyond the adopted addendum | reading and writing project documents; verifying hashes of already-committed artifacts; recording a readiness determination under addendum §4.3 | reading any market dataset; counting signals; contacting a venue | **none** — protocol §3.5 permits documentation review |
+| **B** | **documentary venue evidence** — published fee schedule, instrument specification, account terms, minimum notional, lot step, tick size, order types | O-2 scope (bounded sub-scope) or a separate O-3 | public documents and the owner's own existing account documentation; recording each fact with a dated source | contacting the venue; opening or changing an account; API keys; observing live quotes | **O-2** (as the bounded sub-scope in §5) **or O-3** if kept separate |
+| **C** | **quote sampling and cost measurement** — spread, depth, posted liquidity, fill proxies | Gate 1 data validity established (activity D) | an explicitly bounded, dated sampling window, recorded with method and limitations | order placement; fills; slippage; latency; any use of sampled spread as Nobitex execution evidence | **O-4** — not part of any O-2 option recommended here |
+| **D** | **historical market-data access and processing** — provenance, hashes, gaps, alignment, block separation | O-1 adopted; readiness determination recorded; O-2 issued | the already-recorded Binance historical files, **development block only**: hash verification, gap accounting, duplicate/off-grid/zero-volume checks, invalid-OHLC checks, partial-bucket accounting, lower-to-higher-timeframe reconciliation, development/validation/OOS range separation | acquiring new data; reading validation or OOS rows; any signal, indicator, or outcome computation; any return or expectancy | **O-2** |
+| **E** | **feasibility census** — counting signals, opportunities, or trades | Gate 1 passed; Gate 2 hypothesis registered | the frozen detector run on the frozen rules, with funnel accounting | observing outcomes; estimating returns; using counts as evidence of profitability | **Gate 3 stage authorization** — not O-2 |
+| **F** | **strategy design and testing** — hypothesis, rules, parameters, backtest, simulation | Gates 2 and 3 passed, in order | the pre-registered plan, frozen and hashed before any outcome is read | parameter search after seeing outcomes; validation/OOS access before its gate; multiple looks | **Gate 2, 3, 4, and 5 authorizations** — not O-2 |
+| **G** | **independent audit** | an artifact suite to audit; reviewer appointed | independent reconstruction of the implementation and the analysis | the implementer auditing their own work; audit used as a substitute for evidence | **O-6** (appointment) and a Gate 4 authorization — not O-2 |
+| **H** | **real-capital readiness and deployment** — sizing, funding, live execution | T-4 decided; Gate 0 passed for real capital; Gates 1–6 complete; separate deployment authorization | nothing before those conditions exist | any real-capital claim, sizing, funding calculation, paper or live order | **O-7** (T-4) and later decisions — never O-2 |
+
+### 3.1 The two lines that matter most
+
+1. **Documentary vs market data.** Activity A touches no market data and needs no O-2. Activity D
+   touches market data and does. Activity B touches no market data but does touch an external venue's
+   published facts; it is bounded separately.
+2. **Observation vs execution.** Activity C observes quotes; it places no order. Activity H and the
+   execution half of T-4 item 2 require order placement, which the protocol places after Gate 6 and
+   for which no "measurement-only" category exists (`C-6`). O-2 does not create that category.
+
+### 3.2 Why not one broad authorization
+
+A single instrument covering A–H would:
+
+- make a Gate 3 census and a Gate 5 backtest permissible before Gate 1 or Gate 2 passes;
+- make venue contact and cost measurement permissible with no data-validity finding;
+- blur the research-leg / real-capital boundary that O-1 was adopted to establish;
+- remove the stop conditions that make each gate meaningful.
+
+The protocol's sequence exists because each gate can fail. One authorization would let a failure at
+Gate 1 be bypassed by later activities already permitted.
+
+---
