@@ -1,0 +1,91 @@
+{
+  "confirmations": {
+    "backtest_or_simulation_run": false,
+    "blocker_closed": false,
+    "census_or_signal_count_run": false,
+    "code_modified": false,
+    "cost_or_liquidity_measured": false,
+    "d01_to_d15_modified": false,
+    "dataset_rows_read_decoded_or_hashed": false,
+    "expectancy_or_pnl_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate1_authorized": false,
+    "gate1_verdict_recorded": false,
+    "gate_progression": false,
+    "market_data_accessed_or_processed": false,
+    "next_stage_started": false,
+    "o2_authorized": false,
+    "owner_decision_created_or_inferred": false,
+    "quote_sampling_or_spread_measured": false,
+    "readiness_determination_recorded": false,
+    "research_authorized": false,
+    "sizing_convention_selected": false,
+    "stage2z_files_modified": false,
+    "stage2za_files_modified": false,
+    "strategy_or_candidate_designed": false,
+    "trading_or_paper_trading": false,
+    "venue_contacted_or_documented": false
+  },
+  "created_utc": "2026-11-11T13:20:06Z",
+  "deliverables": [
+    {
+      "bytes": 21603,
+      "path": "docs/research/stage2zb/STAGE2ZB_O2_OWNER_AUTHORIZATION_RECORD.md",
+      "role": "The pending O-2 authorization record: the owner's verbatim confirm, the O-2A declaration it answers, the packet hash verification, the condition-by-condition assessment against packet section 9, why the accepted O-1 pattern does not carry over, the explicit exclusions, the exact statement requested, and a disclosure of filesystem-metadata inspection that preceded the determination",
+      "sha256": "d889cdc007fa2939cf0eff1d796d6b4bdb3b4cbb95eb596d6b80b9beba8654b6"
+    }
+  ],
+  "deliverables_withheld": {
+    "not_created": [
+      "STAGE2ZB_RESEARCH_LEG_READINESS_REPORT.md",
+      "STAGE2ZB_GATE1_DEVELOPMENT_DATA_VALIDATION_REPORT.md",
+      "STAGE2ZB_PUBLISHED_VENUE_DOCUMENTATION_REGISTER.md",
+      "STAGE2ZB_P5_VENUE_DISCLOSURE.md",
+      "STAGE2ZB_FINAL_COMPLETION_REPORT.md"
+    ],
+    "reason": "Stage 2ZB section 7 forbids creating execution reports when authorization is formally insufficient, and Stage 2ZB section 4 forbids performing any O-2A activity. None of the six was created."
+  },
+  "gate0_status": {
+    "evidence": [
+      "R-08 P - real-capital sizing convention deferred (T-4)",
+      "R-15 B - real-capital objective not in testable form"
+    ],
+    "passed": false,
+    "verdict": "NOT PASSED"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Pending O-2 authorization recording only. It preserves the owner's one-word reply, records why the Stage 2ZA packet's authorization form is not met, and requests the missing dated statement. It conducts no O-2A activity, reads no market data, collects no venue document, and advances no gate.",
+  "no_performance_claim": "No expected return, profitability, achievable annual income, feasibility or execution claim is made. The $250 objective on $100 capital remains an unvalidated owner objective.",
+  "o2_authorization": {
+    "date_available": "not reliably available - the message carries no timestamp",
+    "form_conditions_met": {
+      "dated": false,
+      "names_option": false,
+      "names_packet": false,
+      "references_section_6_1": false,
+      "states_scope_in_owner_words": false
+    },
+    "missing_formal_statement_requested": true,
+    "option_at_issue": "O-2A",
+    "owner_wording": "confirm",
+    "owner_wording_characters": 7,
+    "owner_wording_dated": false,
+    "owner_wording_words": 1,
+    "packet_bytes": 21990,
+    "packet_path": "docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md",
+    "packet_sha256": "ab8c84d0c38a864f465904c83c36e03e28923c819a0adb293f6961b020ba8634",
+    "record": "docs/research/stage2zb/STAGE2ZB_O2_OWNER_AUTHORIZATION_RECORD.md",
+    "scope_authorized": "none",
+    "status": "PENDING - NOT ACCEPTED"
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "d7e9027",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "6e7d641b9a33827abe51d98e5fa99871ae72da5028c6e268f5b70a9ff4255bfd",
+  "stage": "2ZB",
+  "version_identifier": "stage2zb/1.0.0"
+}
