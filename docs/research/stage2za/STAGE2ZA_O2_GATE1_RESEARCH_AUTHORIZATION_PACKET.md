@@ -293,3 +293,57 @@ T-4 therefore remains deferred even if Gate 1 passes. That is the intended seque
    is modified, and none is evidence of profitability or authorization for risk.
 
 ---
+
+## 9. Owner decision fields
+
+To be completed by the owner only. The agent leaves every field blank.
+
+| field | owner entry |
+|---|---|
+| decision | ☐ `O-2A` — Gate 1 validity, documentary external evidence only · ☐ `O-2B` — data work only · ☐ `O-2C` — validity plus quote sampling · ☐ `O-2D` — defer |
+| date | |
+| stage name, if authorizing | |
+| narrower or additional conditions | |
+| any activity explicitly withheld | |
+| signature or approval statement | |
+
+**Authorization statement form.** A valid O-2 requires a dated written owner statement that names this
+packet, names the chosen option, and states the scope in the owner's own words or by explicit
+reference to §6.1. A statement that does not name an option authorizes nothing.
+
+**Deferral form.** Any dated statement that no Gate 1 stage is authorized. No reason is required.
+
+A conditional statement (for example "`O-2A`, but no venue documents") is valid and is recorded as a
+narrower scope; it is not an `O-2A` authorization beyond the condition.
+
+---
+
+## 10. Response template (for the owner's convenience; not a decision)
+
+```
+O-2 decision: [O-2A | O-2B | O-2C | O-2D]
+Packet: docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md
+Date: YYYY-MM-DD
+Stage name: ...
+Conditions or exclusions: ...
+```
+
+The agent will record the statement verbatim and create no interpretation of it.
+
+---
+
+## 11. What this packet does not do
+
+- It does not decide O-2. Every field in §9 is blank.
+- It does not authorize activity A, B, C, D, E, F, G, or H.
+- It does not record the research-leg readiness determination.
+- It does not pass Gate 0 or Gate 1, and does not advance any gate.
+- It does not approve a real-capital sizing convention or decide T-4.
+- It does not resolve `C-4` or `C-6`.
+- It does not change D-01–D-15, A-1–A-4, any status code, blocker, threshold, or owner value.
+- It does not access data, contact a venue, measure a cost, design a strategy, size capital, or trade.
+- It does not treat the Stage 2ZA instruction, the O-1 adoption, or this packet as an O-2 decision.
+
+---
+
+**O-2 status: PENDING. O-2 options: `O-2A` recommended, `O-2B`, `O-2C`, `O-2D`. Gate 0: NOT PASSED. Gate 1: NOT AUTHORIZED.**
