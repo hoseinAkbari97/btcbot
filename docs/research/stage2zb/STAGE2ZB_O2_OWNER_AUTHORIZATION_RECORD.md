@@ -262,3 +262,38 @@ that is otherwise reachable in the near term, and it is not permitted.
 | D-01–D-15, A-1–A-4 | unchanged |
 
 ---
+
+## 8. The missing formal confirmation, requested
+
+One dated owner statement closes the gap. Any of the following satisfies packet §9, because each names the
+packet, names the option, and states the scope in the owner's words or by §6.1 reference.
+
+**Form 1 — reference form (shortest that is valid):**
+
+```
+O-2 decision: O-2A
+Packet: docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md (SHA-256 ab8c84d0c38a864f465904c83c36e03e28923c819a0adb293f6961b020ba8634)
+Scope: as specified in §6.1 of that packet
+Date: YYYY-MM-DD
+```
+
+**Form 2 — own-words form:**
+
+```
+I authorize O-2A, dated YYYY-MM-DD. Scope: the research-leg readiness determination, Gate 1 data-validity
+work on the development block only, and collection of published venue documents with a dated source per
+fact. No other activity. Packet: docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md.
+```
+
+**Other valid answers.** A narrower conditional statement (for example "`O-2A`, but no venue documents")
+is valid under §9 and will be recorded as a narrower scope. A choice of `O-2B`, `O-2C`, or `O-2D` is also
+valid in the same form. Any dated statement that no Gate 1 stage is authorized is a valid deferral.
+
+**On receipt**, the agent will: record the statement verbatim; create a Stage 2ZC (or successor) O-2
+authorization record binding that statement to the same packet hash; and execute only the stated scope,
+in the order the packet prescribes — readiness determination first, then data validity, then published
+venue documentation, with the `P-5` disclosure and the stop conditions in packet §6.2.
+
+No interim work will be done, and no part of O-2A will be started on the strength of `confirm`.
+
+---
