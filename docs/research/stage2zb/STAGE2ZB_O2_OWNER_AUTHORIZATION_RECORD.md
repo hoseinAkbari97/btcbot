@@ -183,3 +183,35 @@ record adopts: nothing is authorized.
 - It is not a refusal to work. §8 makes the missing step concrete and immediately actionable.
 
 ---
+
+## 6. Why the O-1 precedent does not carry over
+
+On 2026-11-11 the owner adopted the Stage 2Z addendum with the same two-word pattern (`I confirm`), and
+`stage2za/STAGE2ZA_O1_OWNER_ADOPTION_RECORD.md` recorded it as **ADOPTED** while disclosing a single
+formality limitation and offering a cure. Consistency requires stating why that treatment is not repeated
+for O-2.
+
+| dimension | O-1 (`I confirm`) | O-2 (`confirm`) |
+|---|---|---|
+| governing requirement | addendum §14.1: a written statement naming the document by **path and SHA256**, stating adopt, carrying a date | packet §9: a **dated** statement naming the **packet**, naming the **option**, and stating the **scope** in the owner's words or by **§6.1 reference** |
+| categorical rule for failure | none stated in §14.1 | **§9 states it directly**: an option-less statement "authorizes nothing" |
+| what the statement had to identify | a text whose content already contained every boundary | a **boundary** — the scope is the thing being authorized, and it lives outside the statement |
+| consequence of misreading | a documentary adoption of text that could otherwise be substituted | market-data processing with no owner-stated limit |
+| purpose the missing element served | preventing post-decision text substitution — served by independent hash verification | fixing *which of four scopes* the owner chose and where it ends — **not** served, because the declaration states no scope |
+| cure status | offered; **not** provided | requested in §8 |
+
+The O-1 record already flagged that the owner's words do not restate the hash and that a one-line cure
+would make the record self-contained. That cure was never issued. Carrying an uncured limitation forward
+into an instrument that would authorize **market-data processing** — a materially different act from
+recording an adoption — is not something this record is willing to do.
+
+Two narrow readings are therefore explicitly rejected:
+
+1. **"O-1 was accepted, so O-2 must be."** The two instruments set different conditions, and only O-2's
+   states a null-authorization consequence. There is no rule that a weak form accepted once must be
+   accepted always; there is a rule that gates open on named, written authorizations.
+2. **"The declaration names O-2A, so the option is named."** §9 requires the *statement* to name the
+   option and the scope. A statement may be read together with what it answers only where the governing
+text permits that reading. §9 permits it nowhere and forbids the inference by its last sentence.
+
+---
