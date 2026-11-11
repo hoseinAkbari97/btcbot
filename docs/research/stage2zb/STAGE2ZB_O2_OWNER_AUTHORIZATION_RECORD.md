@@ -104,3 +104,27 @@ reference to the packet's §6.1, which is where the authorized scope is specifie
 in §5.
 
 ---
+
+## 4. The packet, verified at recording time
+
+| field | value |
+|---|---|
+| path | `docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md` |
+| bytes | **21,990** |
+| SHA256 | **`ab8c84d0c38a864f465904c83c36e03e28923c819a0adb293f6961b020ba8634`** |
+| declared hash | the declaration in §3 — matches |
+| bound in the Stage 2ZA manifest | `deliverables[1].sha256`, and `o2_status.packet` — both match |
+| modified since the Stage 2Z package closed (`0bc3b27`) | no — the file's last commit is `07f7fab`, before that HEAD |
+| newer or modified packet substituted | no |
+
+| check | result |
+|---|---|
+| recomputed SHA256 of the packet at `HEAD` | `ab8c84d0…8634` — matches the declaration and the manifest |
+| recomputed byte count | `21,990` — matches the manifest |
+| adopted addendum still hash-bound | yes — 31,691 bytes, `b88db1e8…36dc`; O-1 record in force |
+| any other Stage 2ZA file changed since `0bc3b27` | none |
+
+The packet is therefore the exact artifact the owner was asked about. Verification of the instrument does
+not supply the missing authorization: the defect in §5 is in the owner's statement, not in the packet.
+
+---
