@@ -89,3 +89,72 @@ Recording it is documentary and permitted in State 0. It has no operative effect
 cites it.
 
 ---
+
+## 4. State 1 — if `O-2A` is authorized
+
+### 4.1 What becomes permitted
+
+1. Recording the research-leg readiness determination as the stage's first step.
+2. Gate 1 data work on the **development block only**: provenance, hash verification, data-quality
+   report, alignment report, block separation.
+3. Collection of **published** venue facts, with a dated source per fact, and an item-by-item
+   known/unknown disclosure in the Gate 1 record (`P-5`).
+4. A Gate 1 verdict of **passed** or **not passed**, with the evidence that produced it.
+5. An access log of every dataset file read.
+
+### 4.2 What remains prohibited in State 1
+
+The full State 0 list in §2.1, with no exception other than the five items in §4.1. In particular:
+no new data acquisition; no validation or OOS row; no signal, indicator, opportunity count, outcome,
+return, or P&L; no backtest or simulation; no strategy design; no quote sampling; no venue contact or
+account change; no sizing; no trading.
+
+### 4.3 Conditions attached to any authorization
+
+- The authorization names one stage and one scope. It does not imply the next stage.
+- A `passed` Gate 1 verdict authorizes **nothing** beyond Gate 1; Gate 2 needs its own authorization.
+- A `not passed` verdict is final for that stage and closes the direction unless the owner authorizes
+  remediation.
+- The stop conditions in `STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md` §6.2 apply in full.
+
+---
+
+## 5. State 1b — the other O-2 shapes
+
+| shape | what it permits | what it cannot do |
+|---|---|---|
+| **`O-2B`** (data only) | the data half of §4.1 | close Gate 1 — the venue specification stays UNKNOWN; the stage must end as **not passed, venue inputs absent** |
+| **`O-2C`** (data + venue documents + quote sampling) | §4.1 plus a bounded, dated spread/depth sampling window | place orders; treat sampled spread as Nobitex execution evidence; count signals; observe outcomes; resolve `C-6` |
+
+Under `O-2C` the sampling exercise must still be recorded as a **sampling**, not a fill or slippage
+measurement, and it does not create the measurement-only execution category that `C-6` says is
+missing.
+
+---
+
+## 6. State 2 — if O-2 is deferred or rejected
+
+No permission changes from State 0. Gate 0 remains **NOT PASSED**, `R-08` remains `P`, `R-15` remains
+`B`, T-4 remains deferred, and no data may be read. The only difference is documentary: the record will
+state that O-1 was adopted and O-2 was not authorized, so the resulting stop cannot later be described
+as an oversight.
+
+---
+
+## 7. Claim boundary by state
+
+| claim | State 0 (now) | State 1 (O-2A complete) | after a full authorized Gate 1–6 sequence |
+|---|---|---|---|
+| "the addendum is adopted" | **yes** — owner record exists | yes | yes |
+| "the research-leg inputs are complete" | no — not yet recorded | yes, as a determination | yes |
+| "Gate 0 has passed" | **no** | **no** | **no** |
+| "Gate 1 has passed" | no | yes, if the verdict says so, with its disclosure table | yes |
+| "the dataset is valid for the research leg" | no | yes, within the Gate 1 scope | yes |
+| "Nobitex can execute this strategy" | no | no — venue facts may be UNKNOWN | only with venue evidence **and** measured execution |
+| "a strategy is feasible" | no | no | at Gate 3, within its stated scope |
+| "the strategy is profitable" | no | no | **no** — profitability is not an estimand |
+| "the `$250` objective is achievable" | no | no | not until T-4 is decided |
+| "the account should risk `$X` per trade" | no | no | only after T-4 |
+| "Binance data shows Nobitex execution" | no | no | **no** — a category error at every stage |
+
+---
