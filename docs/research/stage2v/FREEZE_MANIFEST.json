@@ -1,0 +1,255 @@
+{
+  "artifact_set": "Stage 2V affirmation and reassessment package: the captured A-1 owner ratification binding the frozen Stage 2U A-1 text by hash, and the Gate 0 reassessment recording R-17 satisfied, B-07 closed, and Gate 0 still not passed",
+  "blocker_status_after_stage": {
+    "B-01": "closed - Option A inputs complete 2026-11-11; unchanged",
+    "B-02": "open, narrowed - owner statement recorded; per-capability venue evidence unmet",
+    "B-03": "open",
+    "B-04": "open",
+    "B-05": "open - no independent reviewer; Gate 4",
+    "B-06": "open, deliberately deferred",
+    "B-07": "closed 2026-11-11 - all four Gate 0 artifacts now exist: A-1 signed via the Stage 2V affirmation record, A-2/A-3/A-4 ratified by T-1/T-2/T-3; closure covers consolidation only and does not pass Gate 0",
+    "B-08": "closed",
+    "B-09": "closed as an interpretation question",
+    "B-10": "open - D-09/D-12 numeric parameters; Gate 2",
+    "B-11": "open - D-10 sample inputs; Gate 2 and Gate 3",
+    "B-12": "recorded, not actionable"
+  },
+  "confirmations": {
+    "a1_artifact_modified": false,
+    "affirmation_recorded_verbatim": true,
+    "application_code_modified": false,
+    "backtest_run": false,
+    "census_run": false,
+    "cost_or_liquidity_study_run": false,
+    "d01_to_d15_modified": false,
+    "expectancy_or_pnl_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate1_or_later_started": false,
+    "historical_artifacts_modified": false,
+    "market_data_accessed_or_processed": false,
+    "owner_statement_extended_or_paraphrased": false,
+    "paper_or_live_trading": false,
+    "prior_stage_artifacts_modified": false,
+    "r17_satisfied": true,
+    "r17_wording_discrepancy_resolved": false,
+    "real_capital_sizing_selected": false,
+    "research_or_candidate_work": false,
+    "stage2w_started": false,
+    "t4_resolved": false,
+    "venue_contacted": false
+  },
+  "created_utc": "2026-11-11T08:36:46Z",
+  "deliverables": [
+    {
+      "bytes": 4738,
+      "path": "docs/research/stage2v/STAGE2V_A1_OWNER_AFFIRMATION_RECORD.md",
+      "role": "The signed-instrument capture for A-1: the owner's ratification statement verbatim with its 2026-11-11 date, the artifact path, SHA256, byte count and git blob it binds, the verification that the frozen A-1 is unchanged at that hash, the administrative interpretation kept separate from the owner's words, the disposition of the earlier insufficient 'confirmed.' reply, the captured A-1 section 6 signature fields, and the effect on R-17 and B-07 together with the limits of that effect",
+      "sha256": "c58cd43e01ad5f53c1aeaa35c4e194251f1936a81c26070f998256f93e4e9f81"
+    },
+    {
+      "bytes": 4370,
+      "path": "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md",
+      "role": "The Gate 0 reassessment after the affirmation: the 23-row checklist at 16 S / 4 P / 0 O / 1 B / 2 N/A with R-17 P to S as the only change, B-07 closed and every remaining blocker, the decision register unchanged, the Gate 0 verdict of not passed with the R-08/R-15 evidence, validation results, repository state and scope confirmations",
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    }
+  ],
+  "gate0_artifact_status": {
+    "A-1_signed_owner_decision_record": "SIGNED 2026-11-11 - the frozen stage2u A-1 text at SHA256 7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f plus the Stage 2V affirmation record that captures the owner's verbatim ratification; R-17 S",
+    "A-2_economic_objective_memo": "ratified 2026-11-11 by T-1; contents unmodified; R-18 S",
+    "A-3_risk_policy_statement": "ratified 2026-11-11 by T-2; contents unmodified; R-19 S",
+    "A-4_capital_and_execution_context_statement": "ratified 2026-11-11 by T-3; contents unmodified; R-20 S"
+  },
+  "gate0_assessment": {
+    "blocked_rows": [
+      "R-15"
+    ],
+    "changed_rows": {
+      "R-17": "P -> S (owner ratification of A-1 recorded 2026-11-11)"
+    },
+    "not_applicable_rows": [
+      "R-06",
+      "R-23"
+    ],
+    "note": "Gate 0 inputs I-1, I-6 and A-1 to A-4 now all exist, but Gate 0 is not passed: R-08 stays P because the real-capital per-trade sizing convention is deferred (T-4) and R-15 stays B for any real-capital claim. R-05 and R-10 are Gate 1 evidence items and R-22 is a Gate 4 item.",
+    "open_rows": [],
+    "partially_satisfied_rows": [
+      "R-05",
+      "R-08",
+      "R-10",
+      "R-22"
+    ],
+    "requirement_counts": {
+      "B": 1,
+      "N/A": 2,
+      "O": 0,
+      "P": 4,
+      "S": 16,
+      "total": 23
+    },
+    "satisfied_rows": [
+      "R-01",
+      "R-02",
+      "R-03",
+      "R-04",
+      "R-07",
+      "R-09",
+      "R-11",
+      "R-12",
+      "R-13",
+      "R-14",
+      "R-16",
+      "R-17",
+      "R-18",
+      "R-19",
+      "R-20",
+      "R-21"
+    ]
+  },
+  "gate0_passed": false,
+  "gate0_verdict": "not passed",
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Governance-recording and reassessment only: captures the owner's A-1 ratification statement verbatim and binds the frozen A-1 text by hash, then reassesses the Gate 0 checklist and blocker register in new records. Contains no research, no measurement, no venue evidence, and no gate passage.",
+  "no_performance_claim": "No return, expectancy, win rate, drawdown, tail, equity curve, P&L or feasibility claim is made or implied. The 250% annual objective remains an unvalidated owner objective, not a forecast or an achievability claim.",
+  "owner_affirmation": {
+    "artifact_bound": {
+      "bytes": 10023,
+      "git_blob": "22d42b70e0bca2e504a97f88e78f57baaf9ccb1a",
+      "path": "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md",
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f",
+      "unchanged_since_commit": "0e6c20972f4c2dfae717aa1d845f89cf15c60f04"
+    },
+    "date": "2026-11-11",
+    "form": "ratify - names the artifact path and SHA256, dated, recorded verbatim",
+    "prior_reply_disposition": "the 2026-11-11 reply 'confirmed.' was assessed as insufficient (no artifact, no hash, none of the enumerated forms, no owner-authored date) and had no effect",
+    "recorded_exactly_as_supplied": true,
+    "statement": "I ratify docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md, SHA256 7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f, dated 2026-11-11."
+  },
+  "owner_values_restated_not_changed": {
+    "D-01": {
+      "annual_target_usd": 250,
+      "mme_value_R": 0.1,
+      "research_equity_usd": 10000
+    },
+    "D-02": {
+      "cvar95_R": 0.5,
+      "max_drawdown_pct_of_prior_peak": 15,
+      "max_entry_notional_usd": 2500,
+      "per_trade_net_loss_cap_R": 1.0,
+      "scope": "research leg"
+    },
+    "T-4": "deferred - no real-capital per-trade risk amount or percentage selected",
+    "T-5": "retained $250 annually on $100 capital = 250% annually, unvalidated; $250/$10,000 = 2.5% remains the research-reference framing"
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "f515b78",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "95ad896e6687682a81953e5c4f60e3291d76f31347496f75c9bf477ba54ed891",
+  "source_artifacts": {
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2s/STAGE2S_A1_OBJECTIVE_MEMO_DRAFT.md": {
+      "bytes": 5966,
+      "sha256": "eb9fac9bff5d7a1a22cf14fd005ff0e4338a3bcc28e78368260714497b97c2b5"
+    },
+    "docs/research/stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md": {
+      "bytes": 5959,
+      "sha256": "d9ca43cada42fb85cab465de119703715217ac365245f799a892be0badc716f3"
+    },
+    "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md": {
+      "bytes": 7104,
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 3812,
+      "sha256": "5963a9375b85be4f7be45dc672815d5fcedd25997fcddbde6a0279f00f2d2e0a"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8442,
+      "sha256": "f9b59b063413a980275c09334dbbe06d3efd65bcade3786cdb24ae4dd4ba9f3d"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2V",
+  "version_identifier": "stage2v/1.0.0"
+}
