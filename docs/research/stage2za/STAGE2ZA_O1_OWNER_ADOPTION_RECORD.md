@@ -112,3 +112,51 @@ decision form for the draft as issued, with every field blank. This record is a 
 does not edit the packet.
 
 ---
+
+## 4. The adopted artifact, verified at recording time
+
+| field | value |
+|---|---|
+| path | `docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md` |
+| version | `1.0.0-draft` |
+| bytes | **31,691** |
+| SHA256 | **`b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc`** |
+| finalized by commit | `2ab9cf1` ("docs(stage2z): add the preserved owner values, enumerated changes and adoption terms") |
+| unchanged since finalization | yes — `git log 2ab9cf1..HEAD -- <path>` returns no commit, and the blob at `2ab9cf1` hashes to the same value |
+| bound in the O-1 packet | §1 and §7 — both values match |
+| bound in the Stage 2Z manifest | `addendum_binding.sha256` and `addendum_binding.bytes` — both match |
+
+**Verification performed at recording time**
+
+| check | result |
+|---|---|
+| recomputed SHA256 of the file at `HEAD` | `b88db1e8…36dc` — matches the declaration, the packet, and the manifest |
+| recomputed byte count | `31,691` — matches |
+| file content at `2ab9cf1` | identical hash and byte count — no post-decision edit, no substitution |
+| any other stage2z file changed since `9ce1b93` | none |
+| newer or modified artifact substituted | no |
+
+A later edit to that file would change the hash and void this adoption record.
+
+---
+
+## 5. Effects of adoption
+
+Under the addendum's §14.2, and only these:
+
+1. **`P-1` through `P-5` become part of the governance text.** The protocol §3.5 prohibition is
+   scoped to the capital base whose Gate 0 inputs are incomplete; Gate 0 status may be accompanied by
+   a per-base assessment; `R-08` is read as real-capital-only; `R-15` is applied per its own `S`/`B`
+   text; a future Gate 1 authorization must disclose venue-specification completeness item by item.
+2. **A research-leg readiness determination may be recorded** under addendum §4.3 once its conditions
+   hold. **It is not recorded by this document.** Stage 2ZA makes no status change; the determination
+   is the first step of any O-2 authorization, as set out in
+   `STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md` §2 and §4.
+3. **The failure rule is scoped** as described in addendum §6.2. A complete research-leg context is no
+   longer blocked by an incomplete real-capital context — but still requires a separate, named stage
+   authorization before any research.
+
+None of the three effects authorizes any activity. Effect 3 removes a bar; it does not create a
+permission.
+
+---
