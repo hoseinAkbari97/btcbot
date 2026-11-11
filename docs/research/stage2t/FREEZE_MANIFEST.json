@@ -1,0 +1,367 @@
+{
+  "artifact_set": "Stage 2T owner decision packet: numbering reconciliation, three separate artifact ratification requests, the real-capital sizing convention decision, the real-capital annual-objective decision, and the signed decision record authorization question, with a consolidated owner response record with empty slots",
+  "blocker_status_after_stage": {
+    "B-01": "closed - Option A inputs complete per the stage2q section 6 rule, supplied by the owner on 2026-11-11; unchanged by this stage",
+    "B-02": "open, narrowed - owner statement of account accessibility recorded 2026-11-11; the I-2 per-capability documented evidence standard remains unmet; unchanged by this stage",
+    "B-03": "open",
+    "B-04": "open",
+    "B-05": "open",
+    "B-06": "open, deliberately deferred",
+    "B-07": "open, narrowed - three Gate 0 artifact drafts prepared and awaiting separate owner ratification (decisions T-1/T-2/T-3); the signed owner decision record not drafted (decision T-6)",
+    "B-08": "closed",
+    "B-09": "closed as an interpretation question",
+    "B-10": "open",
+    "B-11": "open",
+    "B-12": "recorded, not actionable"
+  },
+  "confirmations": {
+    "application_code_modified": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_promoted": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "cost_study_run": false,
+    "d01_or_d02_modified": false,
+    "d04_fully_resolved": false,
+    "d04_resolved": false,
+    "d05_resolved": false,
+    "d06_resolved": false,
+    "d13_resolved": false,
+    "d15_revisited": false,
+    "data_processed_market": false,
+    "decision_packet_presented": true,
+    "dependency_installed": false,
+    "development_validation_or_oos_rows_processed": false,
+    "drawdown_computed": false,
+    "equity_curve_computed": false,
+    "expectancy_computed": false,
+    "experiment_authorized": false,
+    "frozen_artifacts_modified": false,
+    "gate0_artifact_drafting_performed": false,
+    "gate0_artifacts_created": false,
+    "gate0_artifacts_ratified": false,
+    "gate0_passed": false,
+    "gate_authorized": false,
+    "historical_analysis_executed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "implementation_created": false,
+    "independence_established": false,
+    "liquidity_study_run": false,
+    "market_data_collected": false,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "new_performance_metric_computed": false,
+    "optimization_run": false,
+    "owner_choices_recorded_on_behalf_of_owner": false,
+    "owner_decisions_recorded": false,
+    "owner_ratification_recorded": false,
+    "paper_trade_executed": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "prior_stage_artifacts_modified": false,
+    "ratification_marked_complete": false,
+    "research_code_modified": false,
+    "returns_computed": false,
+    "reviewer_appointed": false,
+    "risk_percentage_or_dollar_amount_selected_for_owner": false,
+    "stage2s_files_renamed_or_rewritten": false,
+    "stage2u_started": false,
+    "strategy_changed": false,
+    "trading_executed": false,
+    "validation_or_oos_accessed": false,
+    "venue_capability_checked": false,
+    "venue_contacted": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-11T07:13:09Z",
+  "critical_arithmetic_restated": {
+    "R_definition_unchanged": "R = executed_notional x stop_fraction, per the Stage 2Q Q3 selection; unchanged by this stage",
+    "annual_target_shares": {
+      "derivation": "$250 / $10,000 = 2.5%; $250 / $100 = 250%",
+      "label": "the $250 annual target as a share of the research reference and of the stated real capital; both disclosed, neither concealed"
+    },
+    "d01_changed": false,
+    "d02_changed": false,
+    "dollar_risk_identity": "dollar risk = position notional x stop-distance fraction",
+    "method": "arithmetic on recorded values only; no data processed, no metric computed, no distribution fitted, no venue consulted",
+    "order_notional_is_not_risk_capital": true,
+    "order_notional_share_of_stated_capital": {
+      "derivation": "$1 / $100 = 1%; $3 / $100 = 3%",
+      "label": "the owner-confirmed $1-$3 order-notional range as a share of the stated $100 strategy capital; notional, not risk",
+      "value_range": [
+        0.01,
+        0.03
+      ]
+    },
+    "owner_loss_tolerance_is_not_a_per_trade_risk_authorization": true,
+    "owner_loss_tolerance_is_not_a_strategy_drawdown_authorization": true,
+    "owner_loss_tolerance_is_personal_and_cumulative": true,
+    "per_trade_risk_limit_created": false,
+    "research_parameters_preserved": {
+      "max_entry_notional_usd": 2500,
+      "note": "the $10,000 research reference and the $2,500 notional cap remain frozen research parameters, unchanged and unreinterpreted, and are not scaled to the $100 real base",
+      "research_equity_usd": 10000
+    },
+    "sizing_examples_are_illustrative_only": true,
+    "sizing_examples_note": "the $1-$3 x hypothetical-stop table in the packet is arithmetic illustration, not recommended trading settings; realized losses can exceed stop arithmetic through gaps, fees and slippage",
+    "stop_fraction_selected_or_assumed": false
+  },
+  "d04_status": {
+    "after_stage": "resolved - Option A complete; unchanged by this stage",
+    "before_stage": "resolved - Option A complete: the currency amount plus the four constraint statements, all supplied by the owner and dated 2026-11-11",
+    "changed_in_this_stage": false,
+    "fully_resolved": true,
+    "missing_fields": [],
+    "qualifications": [
+      "the restriction statements are owner statements, not venue evidence",
+      "the real-base per-trade sizing convention remains undecided (decision T-4)",
+      "the real-base expression of the $250 annual target remains undecided (decision T-5)"
+    ]
+  },
+  "deliverables": [
+    {
+      "bytes": 14768,
+      "path": "docs/research/stage2t/STAGE2T_DECISION_PACKET.md",
+      "role": "Owner decision packet: Stage 2P artifact numbering reconciliation, separate ratification requests T-1/T-2/T-3 for the objective memo, risk policy, and capital/execution context drafts, the real-capital sizing convention decision T-4 with identity and illustrative arithmetic, the real-capital annual-objective decision T-5 with options A-D, and the signed decision record requirements and authorization question T-6. No choice recorded on the owner's behalf",
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    {
+      "bytes": 3812,
+      "path": "docs/research/stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md",
+      "role": "Consolidated owner response record with decisions T-1 through T-6 separately identified and empty response slots; completed only by the owner's explicit answers; no ratification marked complete",
+      "sha256": "5963a9375b85be4f7be45dc672815d5fcedd25997fcddbde6a0279f00f2d2e0a"
+    }
+  ],
+  "design_scope": {
+    "authorized": [
+      "inspect branch, HEAD, working tree and remote synchronisation",
+      "read and hash-verify the Stage 2M through 2S chain and freeze manifests",
+      "reconcile the Stage 2S artifact labels against the authoritative Stage 2P definitions without rewriting or renaming Stage 2S files",
+      "prepare separate ratification requests for the three Stage 2S drafts",
+      "present the real-capital sizing convention and annual-objective decisions with alternatives, without selecting for the owner",
+      "state the signed decision record requirements and ask whether drafting is authorized",
+      "commit and push the Stage 2T decision packet after successful manifest validation"
+    ],
+    "prohibited": [
+      "passing Gate 0 or authorizing Gate 1 to 5",
+      "collecting or processing any market data",
+      "backtest, simulation, bootstrap, census or Monte Carlo",
+      "strategy design or optimization",
+      "Nobitex API access, venue contact, or capability, minimum-notional, fee, spread or lot-step checks",
+      "cost-distribution or liquidity/execution studies",
+      "independent audit or reviewer appointment",
+      "paper or live trading",
+      "modifying D-01, D-02, D-15 or any prior-stage artifact without separate explicit authorization",
+      "recording any owner choice, ratification, or signature on the owner's behalf",
+      "treating silence, partial approval, or approval of one artifact as approval of another",
+      "selecting a risk percentage, dollar amount, or objective option for the owner",
+      "renaming or rewriting historical Stage 2S files",
+      "changing checklist statuses merely to make numbering consistent",
+      "initiating Stage 2U or any research activity"
+    ]
+  },
+  "gate0_assessment": {
+    "blocked_rows": [
+      "R-15"
+    ],
+    "not_applicable_rows": [
+      "R-06",
+      "R-23"
+    ],
+    "note": "No row changed status in this stage. The packet presents decisions T-1 to T-6 that, when answered by the owner, may move R-18/R-19/R-20 (artifact ratification), R-17 (signed record), R-08 (sizing convention) and R-15 (real-capital objective expression); none of these is moved here. Gate 0 remains unpassed and not ready to pass.",
+    "open_rows": [],
+    "partially_satisfied_rows": [
+      "R-05",
+      "R-08",
+      "R-10",
+      "R-17",
+      "R-18",
+      "R-19",
+      "R-20",
+      "R-22"
+    ],
+    "requirements_blocked_by_another_decision": 1,
+    "requirements_not_applicable": 2,
+    "requirements_open": 0,
+    "requirements_partially_satisfied": 8,
+    "requirements_satisfied": 12,
+    "rows_total": 23,
+    "satisfied_rows": [
+      "R-01",
+      "R-02",
+      "R-03",
+      "R-04",
+      "R-07",
+      "R-09",
+      "R-11",
+      "R-12",
+      "R-13",
+      "R-14",
+      "R-16",
+      "R-21"
+    ]
+  },
+  "gate0_passed": false,
+  "gate0_verdict": "not passed, not ready to pass",
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "historical_positions_preserved": {
+    "candidate_status_changed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "note": "All historical censuses, gates and verdicts are unchanged and were not re-run. The $10,000 research leg and its limits are untouched."
+  },
+  "manifest_commit_note": "This manifest is committed after the two Stage 2T deliverables. The final repository HEAD is the commit that introduces this file; the manifest cannot contain its own hash.",
+  "nature": "Owner-decision preparation stage only: reconciles the artifact numbering, presents six separately identified decisions (three artifact ratifications, the real-capital sizing convention, the real-capital annual-objective expression, and the signed decision record authorization) with empty response slots, and stops for the owner's answers. Contains no research, no measurement, no venue evidence, no gate outcome, no ratification, and no choice recorded on the owner's behalf.",
+  "no_performance_claim": "No return, expectancy, win rate, drawdown, tail, equity curve, P&L or feasibility claim is made or implied. No data was processed and no venue evidence was collected. The sizing and objective arithmetic in the packet is disclosed arithmetic on recorded values, not a forecast, not a recommendation, and not an achievability claim. The $1-$3 order range is not validated against any venue limit.",
+  "numbering_reconciliation": {
+    "authoritative_source": "stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md section 4",
+    "effect_on_checklist": "none from numbering; R-17 P because A-1 is not drafted; R-18/R-19/R-20 P because the corresponding drafts are unratified; no status changed to make numbering consistent",
+    "mapping": {
+      "A-1_signed_owner_decision_record": "not drafted; distinct required artifact; decision T-6 asks whether drafting is authorized",
+      "A-2_economic_objective_memo": "stage2s/STAGE2S_A1_OBJECTIVE_MEMO_DRAFT.md, unratified; decision T-1",
+      "A-3_risk_policy_statement": "stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md, unratified; decision T-2",
+      "A-4_capital_and_execution_context_statement": "stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md, unratified; decision T-3"
+    },
+    "note": "the Stage 2S instruction's artifact labels are shifted relative to Stage 2P section 4 and omit the signed owner decision record; Stage 2P definitions take precedence; the R-17 row wording ('consolidating D-01...D-07') differs slightly from the section 4 content list (D-01/D-02/D-03/D-07/D-08/D-09/D-12) and is flagged, not reconciled",
+    "stage2s_files_renamed_or_rewritten": false
+  },
+  "owner_values_restated_not_changed": {
+    "D-01": {
+      "annual_target_usd": 250,
+      "mme_definition": "Definition A, net R per executed trade",
+      "mme_value_R": 0.1,
+      "research_equity_usd": 10000
+    },
+    "D-02": {
+      "cvar95_R": 0.5,
+      "max_drawdown_pct_of_prior_peak": 15,
+      "max_entry_notional_usd": 2500,
+      "per_trade_net_loss_cap_R": 1.0,
+      "scope": "research leg"
+    }
+  },
+  "repository": {
+    "artifact_commit_note": "The two Stage 2T deliverables were committed before this manifest was written; all were pushed together after manifest validation succeeded. The manifest cannot contain its own commit or hash; HEAD above is the decision-packet commit.",
+    "branch": "main",
+    "head_at_manifest_creation": "425c232",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "093a40133508aea36fddc2e911fd1d8599bf56f7cc23d9c7a69f51aaae1ccd92",
+  "source_artifacts": {
+    "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md": {
+      "bytes": 39108,
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": {
+      "bytes": 31205,
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_D01_D02_DECISION_PACKET.md": {
+      "bytes": 30979,
+      "sha256": "d8b16ade03abe742b3b24065a2f9f3842cd97e2cfd4572a7b39a189a0ebade6f"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2p/RECOMMENDED_NEXT_ACTIONS.md": {
+      "bytes": 7116,
+      "sha256": "9e182aa26ed03f7614f91702b40369cc27376ad8a51a18bd3dd4216a7d9d12a0"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_CLARIFICATIONS_Q2_Q3_Q4.md": {
+      "bytes": 14484,
+      "sha256": "578afcd79eb935de42ed719c2991900045c373df43b598a4991975fb77f9b156"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15452,
+      "sha256": "b8c7f85c9628904741c9d8fb2b11256f5cb0cd85115a057de4dcf35ba9c7c05e"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    },
+    "docs/research/stage2s/STAGE2S_A1_OBJECTIVE_MEMO_DRAFT.md": {
+      "bytes": 5966,
+      "sha256": "eb9fac9bff5d7a1a22cf14fd005ff0e4338a3bcc28e78368260714497b97c2b5"
+    },
+    "docs/research/stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md": {
+      "bytes": 5959,
+      "sha256": "d9ca43cada42fb85cab465de119703715217ac365245f799a892be0badc716f3"
+    },
+    "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md": {
+      "bytes": 7104,
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    "docs/research/stage2s/STAGE2S_A4_STATUS_AND_DEPENDENCIES.md": {
+      "bytes": 11417,
+      "sha256": "8f1daaccc387d85498e2356a20bec2d568799fa9b2ce1712b61e30257f5f05a9"
+    },
+    "docs/research/stage2s/STAGE2S_OWNER_CLARIFICATION_REQUEST_AND_RESPONSES.md": {
+      "bytes": 13176,
+      "sha256": "612222721c8fee6c1dcd5f4379a66867706834adfd09f667b3ce9ad08cdd9232"
+    },
+    "docs/research/stage2s/STAGE2S_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8707,
+      "sha256": "4fdd522dfce7ebdb97f70d5aad0f5084e1d306e6893cb6cb353fd464bb820f21"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2T",
+  "version_identifier": "stage2t/1.0.0"
+}
