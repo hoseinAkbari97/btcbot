@@ -56,3 +56,27 @@ count, any outcome, any backtest, any quote sampling, any venue contact, any ord
 trade.
 
 ---
+
+## 2. The owner's response, verbatim
+
+Recorded exactly as supplied. No word, punctuation mark, capitalisation, date, scope, or attribution was
+added, removed, or reordered:
+
+```
+confirm
+```
+
+| field | value |
+|---|---|
+| words | 1 |
+| characters | 7 |
+| punctuation added | none |
+| provenance | the owner's reply to the O-2A declaration reproduced in §3, in the Stage 2ZB session |
+| date carried by the message | **none** — the message has no timestamp; the session date is 2026-11-11 (UTC) |
+| agent-added words | none |
+
+The reply does not name the packet, does not name `O-2A`, states no scope, and carries no date. It is a
+single word of assent. §4 assesses it against the packet's authorization form and explains why that form
+is not met.
+
+---
