@@ -299,3 +299,155 @@ authorize the research leg. T-4 remains **deferred** exactly as recorded in
 `stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md` §1 and §4.
 
 ---
+
+## 7. Preservation of the Gate 1–6 sequence and the audit
+
+### 7.1 Sequence unchanged
+
+**Verified fact** (protocol §2.2): the order is Gate 0 → Gate 1 → Gate 2 → Gate 3 → Gate 4 → Gate 5
+→ Gate 6. The addendum does not reorder, split, merge, skip, or duplicate a gate. A research-leg
+determination under §4.3 does not let a stage begin at any gate other than the one authorized.
+
+### 7.2 Gate-specific preservation
+
+| gate | preserved requirement |
+|---|---|
+| **Gate 1** — data and venue validity | protocol §4.2 inputs and §4.3 pass criteria unchanged, including the venue specification as a required input, the dataset hashes, the block separation, and the rule that cost evidence is "either measured or explicitly labelled as an assumption with a plan to replace it" |
+| **Gate 2** — hypothesis registration | protocol §5.2 sixteen required inputs unchanged, including the sample-sufficiency calculation and the frozen hashes; no outcome may have been observed |
+| **Gate 3** — feasibility | protocol §6.2 census unchanged: counts signals and opportunities, observes **no outcomes** |
+| **Gate 4** — independent audit | protocol §7 unchanged; an independent reviewer is required; an implementer cannot audit their own work; `I-4` is still unresolved |
+| **Gate 5** — controlled performance | protocol §8 unchanged; validation and OOS blocks separate, chronological, embargoed; one validation look |
+| **Gate 6** — final decision | protocol §9 unchanged; "Advance to paper trading" requires all gates plus a **separate owner authorization** |
+
+### 7.3 Audit preserved
+
+The independent-audit requirement is not relaxed on either base. The reviewer identity
+(`I-4`), the independence declaration, and the `R-22` Gate 4 item remain exactly as recorded
+(`stage2m/OWNER_DECISION_REGISTER.md` D-13; `stage2p/GATE0_READINESS_ASSESSMENT.md` §5 row `R-22`).
+A research-leg result produced without a completed Gate 4 audit is not an acceptable confirmatory
+result.
+
+### 7.4 Venue specification at Gate 1 (disclosed, not changed)
+
+**Verified fact** (protocol §4.2 versus §4.3): the venue specification is a required Gate 1 **input**,
+but venue-specification completeness is not among the §4.3 **pass criteria**. This is conflict `C-4`.
+
+The addendum does **not** add a pass criterion, because that would change a gate. It records one
+disclosure rule for any future Gate 1 authorization: the gate record must state, item by item, whether
+the venue specification is **known** or **UNKNOWN**, with the evidence that would resolve each unknown.
+That is a reporting requirement for the stage authorization (proposed change `P-5`), not a change to
+§4.3. The residual ambiguity remains until the owner decides otherwise.
+
+---
+
+## 8. Evidence required before T-4 may be reconsidered
+
+### 8.1 The six items, unchanged
+
+**Verified fact** (`stage2w/STAGE2W_OWNER_DECISION_PACKET.md` §4, verbatim list; adopted as the
+revisit condition by `stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md` §1 and §3):
+
+1. a validated net-of-cost expectancy from an authorized experiment;
+2. measured fee, spread, and slippage distributions for the intended venue and order sizes;
+3. verified minimum order/notional, lot step, tick size, and stop-order support;
+4. an assessed tail-loss and gap/stop-failure distribution;
+5. the strategy's actual trade frequency;
+6. a restated annual objective reconciled with the above, or an explicit decision that the objective
+   is aspirational and not a sizing input.
+
+### 8.2 How each item could be produced (analysis, not authorization)
+
+| item | class | route | requires real capital? |
+|---|---|---|---|
+| 1 — validated expectancy | research outcome | Gates 1–5 under separate authorization | no |
+| 2 — fees, spread, slippage | documentary + sampling + measured execution | fee schedule and spread sampling are documentary/sampling; fills and slippage need order placement, which the protocol places after Gate 6 | no, for the documentary/sampling half; the execution half requires a separate owner decision (`C-6`) |
+| 3 — venue constraints | documentary | venue documents and account screens under owner authorization | no |
+| 4 — tails and gaps | research outcome / model | Gates 3 and 5 | no |
+| 5 — trade frequency | research census | Gate 3, no outcomes | no |
+| 6 — restated objective | owner decision | owner only | no |
+
+### 8.3 Limits
+
+1. Meeting the six items "does not itself approve a convention; it only makes the decision appropriate
+   to take up again" (`stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md` §3 item 3).
+2. No item above is satisfied by this addendum.
+3. Item 2's execution half is not authorized by this addendum. The protocol defines no
+   "measurement-only execution" category; creating one is an owner decision (conflict `C-6`).
+4. Item 6 cannot be answered before items 1–5 exist in usable form.
+
+---
+
+## 9. Cost, venue, and claim boundary
+
+### 9.1 The venue split is unchanged
+
+**Verified fact** (`stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md` §4; `stage2n` §7.1):
+**Binance is the research data venue; Nobitex is the intended execution venue.** The cost-evidence
+standard remains Nobitex-specific measurement.
+
+### 9.2 The proxy rule is unchanged
+
+**Verified fact** (`stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md` §8): "the frozen `26 bp` figure
+as a venue cost" is an unacceptable substitution, because it is "documented as a Binance spot proxy,
+explicitly not a measurement." **Verified fact** (`stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md`
+§7.3): the proxy "may be too high or too low for Nobitex."
+
+A research-leg result may use the proxy only as an explicitly labelled **research-leg cost
+assumption with a plan to replace it** (protocol §4.3). It may never be described as a Nobitex cost,
+and no result computed with it may be described as execution-feasible.
+
+### 9.3 Claim boundary
+
+| claim | research leg | real capital |
+|---|---|---|
+| a dependence-adjusted net effect of X R on historical Binance data | permitted at Gates 5–6, with intervals and deviations | no |
+| distinguishable from zero at the pre-registered error control | permitted under D-08/D-09 | no |
+| not feasible at the recorded frequency | permitted — a Gate 3 stop is a valid result | no |
+| the strategy is profitable | no — profitability is not an estimand and no P&L is produced | no |
+| the strategy will earn `$250` per year | no | no |
+| Nobitex can execute this strategy | no | not until Gate 1 venue evidence **and** measured execution |
+| the real-capital objective is achievable | no | not until T-4 is decided |
+| the account should risk `$X` per trade | no | only after T-4 |
+
+### 9.4 Required reporting sentence
+
+Every Gate 5 and Gate 6 report produced on the research-leg track must contain:
+
+> *"This result is research-leg evidence on historical Binance data under a labelled cost assumption.
+> It is not evidence of Nobitex execution feasibility, not a real-capital return, and not a sizing
+> recommendation."*
+
+---
+
+## 10. Statistical sufficiency and data separation preserved
+
+### 10.1 Frozen statistical decisions
+
+**Verified fact** (`stage2n/OWNER_DECISION_RESOLUTION_RECORD.md` §9–§13; `stage2p/GATE0_READINESS_ASSESSMENT.md`
+§5 rows `R-11`, `R-12`, `R-16`): `α = 5%` two-sided; power `80%`; hierarchical co-primary allocation;
+cluster-robust plus block bootstrap, disagreement ⇒ inconclusive; `R`-denominated primary metric.
+
+### 10.2 Sample sufficiency unchanged
+
+**Verified fact** (protocol §5.2 item 11; `stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md` §5.2): the
+registration must carry `N_ind`, `N_obs`, `required_opportunities`, assumptions, and sensitivity, with
+`N_ind ≈ (z_{1-α/2} + z_{1-β})² σ² / δ²`, `N_obs ≈ N_ind × DE`, and
+`required_opportunities ≈ N_obs / p_exec`. Step 5 states that an unattainable requirement is
+"a legitimate outcome, not a reason to lower the requirement."
+
+The addendum changes none of this. It adds no relaxation for the research-leg base.
+
+### 10.3 The recorded arithmetic is not a forecast
+
+`N_ind ≈ 785` at `δ = 0.10R`, `σ = 1R`, `α = 5%`, power `80%`, against `12`–`71` opportunities per
+family over 1,277 days (`stage2p/GATE0_READINESS_ASSESSMENT.md` §7.2–§7.3). That is arithmetic on
+recorded values, not a prediction and not a reason to lower any bar.
+
+### 10.4 Data separation and one-look
+
+**Verified fact** (`stage2n/OWNER_DECISION_RESOLUTION_RECORD.md` §13; protocol §8.2): D-12 is
+**strict one-look with logging and an embargo**. Development, validation, and OOS blocks are
+chronological and non-overlapping. No validation or OOS row may be read before its gate. The
+addendum does not change the one-look rule, the embargo, or the block definitions.
+
+---
