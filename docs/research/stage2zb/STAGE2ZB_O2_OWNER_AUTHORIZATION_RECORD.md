@@ -25,3 +25,34 @@ is a **pending** authorization record: it preserves the owner's word, documents 
 single missing formal statement. It records no decision and authorizes nothing.
 
 ---
+
+## 1. What the owner was asked to decide
+
+The O-2 packet puts one question to the owner (its §0): whether to authorize a named Gate 1
+research-leg stage, and with which scope. It offers four options, each with its own consequences:
+
+| option | scope | Gate 1 closable? |
+|---|---|---|
+| `O-2A` | activities A + D + B — readiness determination, Gate 1 data validity on the development block, published venue documents | **yes** |
+| `O-2B` | activities A + D — data only | no — venue inputs stay UNKNOWN |
+| `O-2C` | activities A + D + B + C — adds quote sampling | yes, but sampling is out of sequence |
+| `O-2D` | defer; authorize nothing | no |
+
+The packet recommends `O-2A` as the smallest scope that can close Gate 1's data-and-cost question
+(packet §6). The recommendation is the agent's analysis, not an owner decision.
+
+`O-2A` would permit, and only permit (packet §4.1):
+
+1. recording the research-leg readiness determination (activity A);
+2. the Gate 1 data work on the **development block only** — provenance, hash verification,
+   data-quality report, alignment report, block separation (activity D);
+3. collection of **published** venue facts with a dated source per fact, without contact, account
+   change, or API use (activity B);
+4. a Gate 1 record with the item-by-item venue disclosure under `P-5`, and a verdict of **passed** or
+   **not passed**.
+
+It would not permit new data acquisition, validation or out-of-sample rows, any signal or opportunity
+count, any outcome, any backtest, any quote sampling, any venue contact, any order, any sizing, or any
+trade.
+
+---
