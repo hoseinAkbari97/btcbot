@@ -221,3 +221,75 @@ expectancy or P&L calculation, strategy or candidate design, parameter fitting, 
 access, quote sampling, venue contact, order placement, real-capital sizing, paper or live trading.
 
 ---
+
+## 7. The unresolved conflicts that constrain O-2
+
+### 7.1 `C-4` — the venue specification is required but not a pass criterion
+
+**The position under the adopted text.** The venue specification is a required Gate 1 input (protocol
+§4.2) but venue-specification completeness is not among the §4.3 pass criteria. `P-5` requires a
+future Gate 1 authorization to disclose completeness **item by item**; it does not add a pass
+criterion.
+
+**What this means for O-2A.** The Gate 1 record must carry a table like:
+
+| venue item | status | source or evidence that would resolve it |
+|---|---|---|
+| fee schedule | KNOWN / UNKNOWN | dated publication, or the document that must be obtained |
+| minimum notional | KNOWN / UNKNOWN | as above |
+| lot step, tick size | KNOWN / UNKNOWN | as above |
+| order types, stop support | KNOWN / UNKNOWN | as above |
+| API limits, maintenance windows | KNOWN / UNKNOWN | as above |
+| depth, spread | UNKNOWN by design until an O-4 sampling decision | sampling plan |
+
+**Residual.** Gate 1 can still pass with venue facts unknown, provided they are disclosed. A `passed`
+verdict therefore means "the dataset and the labelled cost basis are valid for the research leg" — it
+does **not** mean "the venue is verified". The record may never say Nobitex has been verified, and a
+minimum notional that makes the research-leg position size non-executable must be recorded as a
+transferability limitation, not passed silently.
+
+### 7.2 `C-6` — the execution half of T-4 item 2 has no authorized route
+
+**The position under the adopted text.** T-4 item 2 asks for measured fee, spread, and slippage
+distributions. Fees and a venue specification can be documented; spread can be sampled;
+**fills, partial fills, rejections, latency, and realized slippage require order placement**. The
+protocol places measured execution after Gate 6, defines no "measurement-only execution" category, and
+`C-6` was deliberately left unresolved by the addendum.
+
+**What this means for O-2A.** The execution half is **out of scope**. After a completed O-2A, the cost
+evidence is a labelled assumption plus a documentary fee schedule — not a measurement.
+
+**Residual.** T-4 remains deferred. Unless the owner creates a measurement category (`O-5`), the
+execution half stays an assumption with a plan under §4.3. No research-leg result can cure it.
+
+### 7.3 Where the six T-4 revisit items stand after a completed `O-2A`
+
+| item | after O-2A |
+|---|---|
+| 1 — validated net-of-cost expectancy | **not met** — needs Gates 2–5 |
+| 2 — measured fee, spread, slippage | **partly met** — fee schedule documented; spread, fills, slippage **not measured** (`C-6`) |
+| 3 — minimum notional, lot step, tick size, stop support | **met if published**; otherwise recorded UNKNOWN |
+| 4 — tail-loss and gap/stop-failure distribution | **not met** — needs Gates 3 and 5 |
+| 5 — actual trade frequency | **not met** — needs Gate 3 |
+| 6 — restated annual objective | **not met** — owner decision only |
+
+T-4 therefore remains deferred even if Gate 1 passes. That is the intended sequencing, not a defect.
+
+---
+
+## 8. Distinctions this packet preserves
+
+1. **Research-leg readiness is not real-capital readiness.** O-1 separated them; O-2 operates only on
+   the research leg.
+2. **Gate 0 remains NOT PASSED for real-capital readiness.** Nothing in O-2A changes that.
+3. **T-4 remains deferred**, and `R-08` remains **partially satisfied** for real-capital sizing.
+4. **`R-15` remains blocked** for real-capital claims.
+5. **Research-leg results cannot establish real-capital deployability.** A Gate 5 result at `$10,000`
+   says nothing about `$100` with `$1`–`$3` orders.
+6. **Binance proxy data cannot establish Nobitex execution feasibility.** The `26 bp` proxy is a
+   labelled assumption, never a venue cost, never an execution measurement.
+7. **Owner values are unchanged and are not evidence.** `$100` capital, `$30` cumulative personal
+   tolerance, `$1`–`$3` order notional, `$250` annual objective, `$10,000` research convention — none
+   is modified, and none is evidence of profitability or authorization for risk.
+
+---
