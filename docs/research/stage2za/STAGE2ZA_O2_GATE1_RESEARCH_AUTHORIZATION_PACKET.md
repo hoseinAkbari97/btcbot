@@ -94,3 +94,74 @@ The protocol's sequence exists because each gate can fail. One authorization wou
 Gate 1 be bypassed by later activities already permitted.
 
 ---
+
+## 4. The four choices
+
+### 4.1 Choice `O-2A` — Gate 1 research-leg validity, documentary external evidence only *(recommended)*
+
+**Scope:** activities **A + D + B**, and nothing else. The smallest authorization that can actually
+close Gate 1's data-and-cost question.
+
+**It permits:**
+
+- recording the research-leg readiness determination (A);
+- the full Gate 1 data work on the **development block only** (D): provenance records, hash
+  verification, data-quality report, alignment report, block separation;
+- collection of **published** venue facts — fee schedule, instrument specification, minimum notional,
+  lot step, tick size, order types, API rate limits, maintenance windows — with a dated source for each
+  (B), without contact, account changes, or API use;
+- creating the Gate 1 record, including an item-by-item venue-specification disclosure
+  (**`P-5`**), and a Gate 1 verdict of **passed** or **not passed**.
+
+**It does not permit:** new data acquisition, validation or OOS rows, any signal or opportunity count,
+any outcome, any backtest, any quote sampling, any venue contact, any order, any sizing, any trade.
+
+### 4.2 Choice `O-2B` — data work only *(smaller, but cannot close Gate 1)*
+
+**Scope:** activities **A + D**.
+
+**It permits:** everything in `O-2A` except activity B.
+
+**Consequence:** the venue specification would stay **UNKNOWN**, and since it is a required Gate 1
+input (protocol §4.2) the stage can end only as **Gate 1 not passed — venue inputs absent**. It is the
+smallest possible start, but it defers the venue question to a later O-3 and leaves Gate 2 blocked
+until then.
+
+### 4.3 Choice `O-2C` — Gate 1 validity plus quote sampling *(larger; not recommended now)*
+
+**Scope:** activities **A + D + B + C**.
+
+**It permits:** everything in `O-2A`, plus a bounded, dated spread/depth sampling exercise for the
+intended venue.
+
+**Consequence:** it introduces cost measurement (previously O-4) into the same stage as data validity.
+If the data work fails, the sampling was wasted; if sampling reveals that spread alone exceeds the
+`0.10R` MME at the intended sizes, the result arrives before the dataset is validated, inviting an
+improper adjustment of the dataset standard. Sequencing the two is cheaper and more honest.
+
+### 4.4 Choice `O-2D` — defer; authorize nothing
+
+**Scope:** none.
+
+**Consequence:** the adopted addendum has no practical effect. The project stays stopped, exactly as
+under `O-1` reject for operational purposes, although the circularity in `C-3` is now broken *by rule*
+rather than by fact. This is a valid choice if the owner does not yet want any data work.
+
+---
+
+## 5. Consequences side by side
+
+| question | `O-2A` | `O-2B` | `O-2C` | `O-2D` |
+|---|---|---|---|---|
+| market data accessed? | **yes — development block only** | yes — development block only | yes — development block only | no |
+| venue documents collected? | **yes — published only** | no | yes — published only | no |
+| quote sampling / cost measurement? | no | no | **yes** | no |
+| Gate 1 completable? | **yes** | no — venue inputs absent | yes | no |
+| census, signals, outcomes? | no | no | no | no |
+| backtest, expectancy, P&L? | no | no | no | no |
+| real-capital work? | no | no | no | no |
+| Gate 0 passed? | **no** | no | no | no |
+| changes any threshold or value? | no | no | no | no |
+| reversible? | yes — stop at any time | yes | yes | yes |
+
+---
