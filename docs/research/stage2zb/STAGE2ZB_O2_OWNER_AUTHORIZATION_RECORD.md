@@ -215,3 +215,50 @@ Two narrow readings are therefore explicitly rejected:
 text permits that reading. §9 permits it nowhere and forbids the inference by its last sentence.
 
 ---
+
+## 7. Scope authorized: none
+
+| field | value |
+|---|---|
+| decision recorded | **none** — O-2 remains PENDING |
+| option accepted | **none** — `O-2A` is not authorized, and neither is any other option |
+| scope authorized | **none** |
+| stage authorized | **none** — no stage name, no data, no artifacts, no analyses, no verdict |
+| authorization effective date | none — the reply is undated |
+| research-leg readiness determination | **not recorded** (activity A is an O-2A activity, not permitted) |
+| Gate 1 verdict | none |
+
+### 7.1 Explicit exclusions, restated for the avoidance of doubt
+
+Because nothing is authorized, every exclusion in the Stage 2ZB instruction remains in force and every
+activity in the packet's §3 table B–H remains barred:
+
+- quote sampling, spread measurement, cost or liquidity measurement;
+- order placement or execution, fill, slippage, or latency measurement;
+- venue research, contact, account creation, endpoint testing, API keys;
+- strategy or candidate design, selection, or optimisation;
+- feasibility census, signal or opportunity counting;
+- backtesting, simulation, expectancy, return, or P&L calculation;
+- validation or out-of-sample data access;
+- real-capital sizing, T-4 reconsideration, paper or live trading, leverage, bot execution;
+- Gate 2 or any later gate progression.
+
+Historical market-data processing is also barred. It was the **only** thing `O-2A` would have permitted
+that is otherwise reachable in the near term, and it is not permitted.
+
+### 7.2 Distinctions preserved unchanged
+
+| item | status |
+|---|---|
+| Gate 0 | **NOT PASSED** for real-capital readiness |
+| T-4 | deferred |
+| `R-08` | `P` — partially satisfied for real-capital sizing |
+| `R-15` | `B` — blocked for real-capital claims |
+| `C-4` | unresolved — documented venue facts and Gate 1 disclosure do not establish venue execution feasibility |
+| `C-6` | unresolved — no measurement-only execution category exists without a separate O-5 decision |
+| research-leg findings vs deployability | research-leg evidence cannot establish real-capital deployability |
+| Binance data vs Nobitex execution | Binance historical data cannot establish Nobitex execution feasibility |
+| `$250` on `$100` | an owner objective, not a validated forecast or demonstrated edge |
+| D-01–D-15, A-1–A-4 | unchanged |
+
+---
