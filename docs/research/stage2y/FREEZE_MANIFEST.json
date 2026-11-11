@@ -1,0 +1,245 @@
+{
+  "artifact_set": "Stage 2Y governance dependency and authorization-boundary audit: the requirement-level dependency map, the tested circularity hypotheses, the recorded conflicts, the four-path comparison with a Path C recommendation, and the research-leg/real-capital authorization boundary",
+  "confirmations": {
+    "a1_to_a4_modified": false,
+    "backtest_or_simulation_run": false,
+    "blocker_closed": false,
+    "census_or_signal_count_run": false,
+    "code_modified": false,
+    "cost_or_liquidity_measured": false,
+    "d01_to_d15_modified": false,
+    "expectancy_or_pnl_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate_progression": false,
+    "market_data_accessed_or_processed": false,
+    "next_stage_started": false,
+    "owner_decision_made_by_agent": false,
+    "sizing_convention_selected": false,
+    "stage2x_files_modified": false,
+    "stage2z_started": false,
+    "strategy_or_candidate_designed": false,
+    "trading_or_paper_trading": false,
+    "venue_contacted_or_researched": false
+  },
+  "created_utc": "2026-11-11T12:28:22Z",
+  "deliverables": [
+    {
+      "bytes": 30478,
+      "path": "docs/research/stage2y/STAGE2Y_GOVERNANCE_DEPENDENCY_MAP.md",
+      "role": "The dependency audit: T-4 and its six evidence items, the Gate 0 requirements, a requirement-by-requirement dependency table, the dependency graph as the source documents define it, six independently tested circularity hypotheses A-F, conflicts C-1 to C-9 recorded without resolution, and the finding that the loop is scoping-induced rather than evidence-induced",
+      "sha256": "428aee5f6fbe0f7c2d001cfaf75c48a245ad15c32cd8c98f6c53cf03ce6b24a7"
+    },
+    {
+      "bytes": 19830,
+      "path": "docs/research/stage2y/STAGE2Y_PATH_COMPARISON_AND_RECOMMENDATION.md",
+      "role": "The path comparison: four paths (freeze, one-off research stage, owner addendum separating the research leg from real capital, new framework) assessed against the owner's seven criteria, the comparison matrix, the Path C recommendation with its rationale and risks, the proposed addendum scope, the research-leg/real-capital boundary table, owner decisions O-1 to O-8, and the triggers that would change the recommendation",
+      "sha256": "35e271d519b38df44d872d99799d1d4fbd08f4c2ff5d992f2df435a46391978b"
+    },
+    {
+      "bytes": 15434,
+      "path": "docs/research/stage2y/STAGE2Y_AUTHORIZATION_BOUNDARY.md",
+      "role": "The boundary specification: the two tracks side by side, the candidate next actions N-0 to N-4 with prerequisites and scopes, the prohibition list, the prerequisite matrix per future activity, eleven stop conditions, the claim-level boundary table, the decision-relevance test, and the owner decisions still required",
+      "sha256": "7f2514cc9caf421b014b01c9cdde085ae3f9af89a784cad3f107bdcca8fff226"
+    }
+  ],
+  "gate0_status": {
+    "evidence": [
+      "R-08 P - real-capital sizing convention deferred (T-4)",
+      "R-15 B - real-capital objective not in testable form"
+    ],
+    "passed": false,
+    "verdict": "NOT PASSED"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Governance audit and decision preparation only. It analyses existing documents, records conflicts without resolving them, compares paths, and recommends one. It creates no authorization, collects no evidence, passes no gate and changes no decision value.",
+  "no_performance_claim": "No expected return, profitability, achievable annual income, feasibility or execution claim is made. The $250 objective on $100 capital remains an unvalidated owner objective.",
+  "owner_inputs_unchanged": {
+    "annual_objective_usd": 250,
+    "order_notional_range_usd": [
+      1,
+      3
+    ],
+    "personal_cumulative_loss_tolerance_usd": 30,
+    "real_capital_usd": 100,
+    "research_reference_capital_usd": 10000
+  },
+  "recommendation": {
+    "binding_on_owner": false,
+    "circularity_finding": "scoping-induced, not evidence-induced",
+    "path_recommended": "C",
+    "paths_compared": [
+      "A - freeze until T-4 resolves",
+      "B - one-off research-leg stage authorization",
+      "C - owner addendum separating the research-leg track from the real-capital track",
+      "D - abandon and redesign the framework"
+    ],
+    "paths_rejected": [
+      "A - permanent stop presented as patience",
+      "B - implicit exception to protocol \u00a73.5",
+      "D - discards a validated framework to fix one clause"
+    ],
+    "status": "agent recommendation only - not an owner decision and not an authorization"
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "831562f",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "105a65aa133da41452862867b79de1636ccc90a5156a5b4dc03f9d66653cb037",
+  "source_artifacts": {
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8442,
+      "sha256": "f9b59b063413a980275c09334dbbe06d3efd65bcade3786cdb24ae4dd4ba9f3d"
+    },
+    "docs/research/stage2v/STAGE2V_A1_OWNER_AFFIRMATION_RECORD.md": {
+      "bytes": 4738,
+      "sha256": "c58cd43e01ad5f53c1aeaa35c4e194251f1936a81c26070f998256f93e4e9f81"
+    },
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": {
+      "bytes": 4370,
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    },
+    "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md": {
+      "bytes": 11764,
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    },
+    "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md": {
+      "bytes": 18745,
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    },
+    "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md": {
+      "bytes": 2816,
+      "sha256": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8"
+    },
+    "docs/research/stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md": {
+      "bytes": 5639,
+      "sha256": "75347be574afd3eb6f0b2974d3bceed818fcdb53b9887c5821e88f9dfd2d7999"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2v": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2w": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2x": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2Y",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "D-01_to_D-15": "unchanged",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked",
+    "T-4": "deferred",
+    "checklist": "16 S / 4 P / 0 O / 1 B / 2 N/A",
+    "gate0": "NOT PASSED",
+    "next_stage": "not authorized; no owner decision on a new research stage exists",
+    "stage2x_package": "frozen and unchanged"
+  },
+  "unresolved_conflicts": {
+    "C-1": "Gate 0's own frozen blocker list is satisfied, yet Gate 0 is recorded as not passed",
+    "C-2": "R-08's requirement was strengthened after the Gate 0 criteria were frozen",
+    "C-3": "protocol \u00a73.5 bars the evidence T-4 requires (the circularity itself)",
+    "C-4": "Gate 1 requires a venue specification but its pass criteria do not test one",
+    "C-5": "Binance-proxy cost is allowed by \u00a74.3 but forbidden as a venue cost by 2P \u00a78",
+    "C-6": "measured execution is required by T-4 E-2 and placed after Gate 6 by the protocol",
+    "resolution": "none - all are escalated to the owner and recorded without change"
+  },
+  "version_identifier": "stage2y/1.0.0"
+}
