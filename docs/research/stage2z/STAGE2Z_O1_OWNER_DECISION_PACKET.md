@@ -156,3 +156,108 @@ This list is exhaustive for the addendum as drafted. Adoption would **not**:
 17. authorize Stage 3 or any research stage.
 
 ---
+
+## 6. After adoption: O-2 is still required
+
+Adoption of O-1 would authorize **no work**. The next act is a separate owner decision.
+
+### 6.1 What O-2 must contain
+
+A named Gate 1 stage authorization under protocol §2.1, naming at least:
+
+| element | content the authorization must state |
+|---|---|
+| stage and objective | Gate 1 for the research leg: establish that the dataset and the cost assumption are fit for the frozen experiment |
+| artifacts | data-provenance manifest; data-quality report; alignment report; development/validation/OOS ranges and hashes; execution-cost evidence file; venue specification with per-item known/unknown status; access log |
+| data | Binance historical, **development block only**; no validation or OOS row |
+| analyses | hash verification, gap accounting, alignment reconciliation, block separation — **no signal count, no outcome, no return** |
+| prohibitions | no hypothesis registration; no census; no backtest; no expectancy; no venue contact beyond document collection; no trading |
+| cost rule | the Binance proxy is labelled a research-leg assumption with a plan to replace it; never a Nobitex cost |
+| stop condition | stop on any hash mismatch, any validation/OOS read, any unlabelled assumption, or any scope breach |
+
+### 6.2 What O-2 would still not authorize
+
+Gate 2, a census, a backtest, a strategy design, real-capital sizing, or trading. Each later stage
+needs its own authorization.
+
+### 6.3 Decisions that would remain after O-2
+
+| ID | decision | status |
+|---|---|---|
+| O-3 | authorize documentary venue evidence collection (I-2, I-3) | pending |
+| O-4 | authorize quote sampling for spread, and when | pending |
+| O-5 | create a measurement-only execution category (`C-6`), or keep the assumption | pending |
+| O-6 | appoint the independent reviewer (I-4) before Gate 4 | pending |
+| O-7 | T-4 itself, only after the six evidence items exist | pending |
+| O-8 | reaffirm or restate `$250` on `$100` (T-5) | pending |
+
+---
+
+## 7. Owner decision fields
+
+To be completed by the owner only. The agent leaves every field blank.
+
+| field | owner entry |
+|---|---|
+| decision | ☐ A — adopt · ☐ B — reject · ☐ C — revise |
+| date | |
+| addendum SHA256 acknowledged | `b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc` |
+| if **revise**: the changes required | |
+| conditions, if any | |
+| signature or approval statement | |
+
+**Adoption statement form.** A valid adoption requires a written owner statement that identifies this
+document by path and SHA256, states "adopt", carries a date, and is recorded verbatim. A statement
+that does not name the hash adopts nothing.
+
+**Rejection statement form.** Any dated statement that the owner does not adopt the addendum. No
+reason is required.
+
+**Revision statement form.** A dated statement listing the changes. The draft is then revised and a
+new packet is issued.
+
+---
+
+## 8. Response template (for the owner's convenience; not a decision)
+
+```
+O-1 decision: [adopt | reject | revise]
+Addendum: docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md
+SHA256: b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc
+Date: YYYY-MM-DD
+If revise, changes required: ...
+Conditions: ...
+```
+
+The agent will record the statement verbatim and create no interpretation of it.
+
+---
+
+## 9. Alternatives if the owner does not adopt
+
+These are the Stage 2Y paths, restated only so the choice set is complete. They are not
+recommendations in this packet.
+
+| path | what it means | consequence |
+|---|---|---|
+| **Path A — freeze** | keep the project stopped until T-4 resolves | permanent stop: the T-4 evidence cannot be produced while §3.5 is unconditional |
+| **Path B — one-off stage authorization** | authorize one research stage while Gate 0 stays incomplete | works only as an exception to §3.5; the exception must be recorded in the authorization itself, and every later stage inherits the ambiguity |
+| **Path D — new framework** | discard and redesign | would discard validated thresholds and the audit trail of four failed candidates; not recommended in Stage 2Y |
+
+Path C is the addendum in §1. Choosing A or B is a decision the agent cannot make.
+
+---
+
+## 10. What this packet does not do
+
+- It does not decide O-1. Every field in §7 is blank.
+- It does not adopt, sign, ratify, or affirm the addendum.
+- It does not create O-2 or any stage authorization.
+- It does not pass Gate 0 or advance any gate.
+- It does not change D-01–D-15, A-1–A-4, any status code, blocker, threshold, or owner value.
+- It does not access data, contact a venue, measure a cost, design a strategy, size capital, or trade.
+- It does not treat the Stage 2Z instruction, this packet, or the addendum as an owner decision.
+
+---
+
+**O-1 status: PENDING. O-2: NOT AUTHORIZED. Gate 0: NOT PASSED.**
