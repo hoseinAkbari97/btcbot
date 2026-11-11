@@ -128,3 +128,58 @@ The packet is therefore the exact artifact the owner was asked about. Verificati
 not supply the missing authorization: the defect in §5 is in the owner's statement, not in the packet.
 
 ---
+
+## 5. Assessment against the packet's authorization form
+
+The packet's §9 states, in its own words:
+
+> **Authorization statement form.** A valid O-2 requires a dated written owner statement that names this
+> packet, names the chosen option, and states the scope in the owner's own words or by explicit
+> reference to §6.1. A statement that does not name an option authorizes nothing.
+
+### 5.1 Condition by condition
+
+| # | condition | owner's `confirm` | met? |
+|---|---|---|---|
+| 1 | dated | carries no date; the session date (2026-11-11) is the agent's, not the owner's | **no** |
+| 2 | names this packet | names no document | **no** |
+| 3 | names the chosen option | the word `O-2A` does not appear; the option appears only in the agent's declaration | **no** |
+| 4 | states the scope in the owner's own words | states no scope | **no** |
+| 5 | or states the scope by explicit reference to §6.1 | makes no reference to §6.1 or to any scope clause | **no** |
+
+All five are unmet. Condition 4/5 is the one that cannot be repaired by context, because the declaration
+itself states no scope: the only place `O-2A`'s permitted activities are defined is the packet's §4.1 and
+§6.1, and neither the declaration nor the reply refers to them.
+
+### 5.2 The packet's stated consequence
+
+§9 does not leave the effect of an option-less statement to interpretation. It states that such a
+statement **authorizes nothing**. Applied to `confirm`, the packet's own rule produces the answer this
+record adopts: nothing is authorized.
+
+### 5.3 Why the surrounding context does not cure it
+
+1. **The context supplies the option, not the scope.** The declaration immediately before the reply
+   names `O-2A` and the packet. Accepting the reply as an instruction to proceed would still leave the
+   agent to read §4.1 and §6.1, decide what they cover, and then perform that work. The agent would be
+   defining the authorized scope and exercising it — self-authorization under an owner's one-word
+   assent. The packet exists precisely to prevent that: it requires the owner to state the scope or to
+   point at the clause that does.
+2. **Assent is not the only element missing.** Two of the five conditions — the date and the scope —
+   cannot be inferred from any context at all. The owner's message is undated. No amount of surrounding
+   declaration text dates it.
+3. **The stakes differ from a recording act.** O-2A's activity D would process historical market data.
+   The governance chain in Stage 2M–2ZA is built on the rule that no research occurs without a named,
+   written, dated stage authorization. Reading a one-word assent as a gate authorization would be the
+   single largest relaxation of that rule in the program, and it would be made by the agent.
+4. **A cheap cure exists.** §8 sets out the exact statement that would satisfy §9. It costs the owner one
+   dated line. Refusing to infer is therefore not obstructive; it is the cheaper and safer path.
+
+### 5.4 What the insufficiency is *not*
+
+- It is not a doubt about the owner's intent. The reply is very likely meant as assent to `O-2A`. The
+  finding is about the **form** the packet requires, not about the owner's meaning.
+- It is not a defect in the packet. The packet's form is clear; the statement did not meet it.
+- It is not a refusal to work. §8 makes the missing step concrete and immediately actionable.
+
+---
