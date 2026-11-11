@@ -1,0 +1,222 @@
+{
+  "artifact_set": "Stage 2X W-F decision and status-freeze package: the owner's verbatim choice to continue deferring T-4, the explicit statement that no sizing convention is approved, and the status record confirming that no checklist row, blocker or decision value moved",
+  "confirmations": {
+    "a1_to_a4_modified": false,
+    "blocker_closed_by_deferral": false,
+    "code_modified": false,
+    "cost_or_liquidity_study_run": false,
+    "d01_to_d15_modified": false,
+    "evidence_requirement_marked_satisfied": false,
+    "expectancy_or_pnl_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate_progression": false,
+    "market_data_accessed_or_processed": false,
+    "owner_statement_extended_or_paraphrased": false,
+    "r08_marked_satisfied": false,
+    "r15_marked_satisfied": false,
+    "sizing_convention_selected": false,
+    "sizing_implemented_in_code": false,
+    "stage2y_started": false,
+    "strategy_or_backtest_work": false,
+    "t4_closed": false,
+    "trading_or_paper_trading": false,
+    "venue_contact_or_research": false
+  },
+  "created_utc": "2026-11-11T12:16:13Z",
+  "decision": {
+    "agent_added_words": null,
+    "date": "2026-11-11",
+    "evidence_required_before_revisit": [
+      "a validated net-of-cost expectancy from an authorized experiment",
+      "measured fee, spread and slippage distributions for the intended venue and order sizes",
+      "verified minimum order/notional, lot step, tick size and stop-order support",
+      "an assessed tail-loss and gap/stop-failure distribution",
+      "the strategy's actual trade frequency",
+      "a restated annual objective reconciled with the evidence, or an explicit statement that it is aspirational"
+    ],
+    "no_risk_amount_percentage_or_convention_approved": true,
+    "option_equivalence": "W-F = Stage 2T T-4c (defer)",
+    "option_selected": "W-F",
+    "provenance": "the owner's message following the Stage 2W decision packet, 2026-11-11",
+    "recorded_exactly_as_supplied": true,
+    "statement": "I choose W-F \u2014 continue deferral of T-4. No real-capital per-trade risk amount or sizing convention is approved. Keep R-08 partially satisfied, R-15 blocked, and Gate 0 NOT PASSED. Revisit T-4 only after the evidence requirements in the Stage 2W decision packet are met."
+  },
+  "deliverables": [
+    {
+      "bytes": 5639,
+      "path": "docs/research/stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md",
+      "role": "The W-F decision record: the owner's statement verbatim, the 2026-11-11 date, the W-F identification with its 2T T-4c equivalence, the verified Stage 2W packet SHA256 and byte count, the explicit statement that no risk amount, percentage or sizing convention is approved, the six-item evidence condition for revisiting T-4, the resulting T-4/R-08/R-15/Gate 0 statuses with unchanged D and A artifacts, and the documented Stage 2P R-08 wording evolution",
+      "sha256": "75347be574afd3eb6f0b2974d3bceed818fcdb53b9887c5821e88f9dfd2d7999"
+    },
+    {
+      "bytes": 2816,
+      "path": "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md",
+      "role": "The status-neutral record: the 23-row checklist at 16 S / 4 P / 0 O / 1 B / 2 N/A, the blocker table showing nothing closed by the deferral, the unchanged D and T decisions and A artifacts, Gate 0 not passed, and the consistency check confirming that no requirement or blocker was marked satisfied because the owner deferred",
+      "sha256": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8"
+    }
+  ],
+  "gate0_status": {
+    "evidence": [
+      "R-08 P - real-capital sizing deferred",
+      "R-15 B - real-capital objective not testable without a sizing convention"
+    ],
+    "passed": false,
+    "verdict": "NOT PASSED"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Governance-recording only: captures an owner decision to continue deferral and records that no status moved. No research, no measurement, no venue evidence, no implementation, no trading.",
+  "no_performance_claim": "No expected return, profitability, achievable annual income or feasibility claim is made. The $250 objective remains an unvalidated owner objective.",
+  "owner_inputs_unchanged": {
+    "annual_objective_usd": 250,
+    "order_notional_range_usd": [
+      1,
+      3
+    ],
+    "personal_cumulative_loss_tolerance_usd": 30,
+    "real_capital_usd": 100,
+    "research_reference_capital_usd": 10000
+  },
+  "reference_packet": {
+    "analysis": {
+      "bytes": 18745,
+      "path": "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md",
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    },
+    "packet": {
+      "bytes": 11764,
+      "path": "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md",
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    }
+  },
+  "report_correction": "The Stage 2W completion report quoted byte counts 16,447 and 11,257 for the analysis and packet; the verified values are 18,745 and 11,764. The SHA256 values in that report were correct. No file changed; only the reported figures were wrong.",
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "ab45b5b",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "210f510dfaf9c7eaa85c93eff3a3d91bcb69cd80ed6e866d5d145c4d8fc138ee",
+  "source_artifacts": {
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2v/STAGE2V_A1_OWNER_AFFIRMATION_RECORD.md": {
+      "bytes": 4738,
+      "sha256": "c58cd43e01ad5f53c1aeaa35c4e194251f1936a81c26070f998256f93e4e9f81"
+    },
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": {
+      "bytes": 4370,
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    },
+    "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md": {
+      "bytes": 11764,
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    },
+    "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md": {
+      "bytes": 18745,
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2v": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2w": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2X",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "D-01_to_D-15": "unchanged",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked",
+    "T-4": "deferred",
+    "checklist": "16 S / 4 P / 0 O / 1 B / 2 N/A",
+    "gate0": "NOT PASSED",
+    "stage2w_packet": "frozen and unchanged"
+  },
+  "version_identifier": "stage2x/1.0.0"
+}
