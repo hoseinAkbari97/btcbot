@@ -451,3 +451,141 @@ chronological and non-overlapping. No validation or OOS row may be read before i
 addendum does not change the one-look rule, the embargo, or the block definitions.
 
 ---
+
+## 11. Owner values preserved, and not treated as evidence
+
+### 11.1 Values restated as unchanged
+
+| item | value | status | source |
+|---|---|---|---|
+| research reference capital | `$10,000` | research construct, not the owner's account | `R-07`; `stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md` §1 |
+| research risk per trade | `1%` fixed-fractional | frozen research-leg rule | D-02; `R-07` |
+| drawdown limit | `15%` of prior peak | frozen research-leg rule | D-02; `R-02` |
+| per-trade limit | `1.00R` | frozen research-leg rule | D-02; `R-03` |
+| tail limit | `CVaR95 = 0.50R` | frozen research-leg rule | D-02; `R-04` |
+| entry notional cap | `$2,500` | research-leg parameter | `R-05`; `stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md` §2 |
+| real capital | `$100` | owner-stated, deployable | D-04; `stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md` §2 |
+| personal cumulative loss tolerance | `$30` | **personal, cumulative; not a per-trade or drawdown limit** | `stage2r` §3.2; `stage2s` A-3 §2 |
+| practical order-notional range | `$1`–`$3` | owner-stated **notional, not risk** | `stage2r` §3.3; `stage2s` clarification B |
+| annual objective | `$250` net on `$100` = `250%/yr` | **unvalidated owner objective** | T-5; `stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md` §7 |
+
+### 11.2 What none of these values establish
+
+1. `$250` on `$100` is **250% per year**. It is an owner objective, not evidence, not a forecast, and
+   not a sizing input.
+2. A return target does not justify higher risk. With no validated edge, higher risk converts a small
+   expected loss into a larger one faster (`stage2w/STAGE2W_OWNER_DECISION_PACKET.md` §4).
+3. `$30` is a personal cumulative tolerance, not an authorized strategy drawdown limit, and it does
+   not scale D-02.
+4. `$1`–`$3` order notional caps planned risk at `$0.005`–`$0.30` per trade
+   (`stage2w/STAGE2W_T4_SIZING_ANALYSIS.md` §3.1). A research-leg result at `$10,000` does not
+   automatically translate to that base.
+5. No value in §11.1 is changed, reinterpreted, or reopened by this addendum.
+
+---
+
+## 12. Proposed changes, enumerated
+
+If adopted, this addendum changes exactly the following. **No threshold, metric, decision value,
+requirement status, gate criterion, or owner-supplied number changes.**
+
+| # | proposed change | why it is necessary | what it does not do |
+|---|---|---|---|
+| `P-1` | protocol §3.5's prohibition is scoped to the capital base whose Gate 0 inputs are incomplete | removes the loop identified in Stage 2Y §4–§5 (`C-3`) | does not authorize any stage; does not pass Gate 0 |
+| `P-2` | Gate 0 status is accompanied by a per-base assessment, and a **research-leg readiness determination** may be recorded when §4.2's research-leg rows are satisfied | makes Gate 0's representation match the scoping of its inputs (`C-1`) | does not create a gate, does not change the verdict, does not mark any row `S` |
+| `P-3` | `R-08` is read as applying to the real-capital base only, consistent with its own title | confines an already real-capital-specific row to its base (`C-2`) | does not change `R-08`'s status, wording, or requirement |
+| `P-4` | `R-15` is applied per its own text: `S` for the research leg, `B` for real-capital claims | applies the row as written (`C-1`, `C-9`) | does not change the `B` code or mark it satisfied |
+| `P-5` | a future Gate 1 stage authorization must require the gate record to disclose venue-specification completeness item by item | makes an existing input auditable without changing §4.3 (`C-4`) | does not add a pass criterion; does not change Gate 1 |
+
+`C-5` requires no change: the rule in `stage2p` §8 and protocol §4.3 is restated, not amended. `C-7`
+and `C-8` are preserved as recorded. `C-6` is deliberately **not** addressed: it needs a separate owner
+decision, not a drafting change.
+
+---
+
+## 13. Prohibitions
+
+Nothing in this addendum, and nothing in the act of preparing it, permits any of the following. They
+remain prohibited until a separate, explicit, written owner authorization says otherwise:
+
+- market-data access, download, or processing of any kind;
+- a feasibility census or any signal or opportunity count;
+- strategy or candidate design, selection, naming, or revision;
+- parameter selection, fitting, or optimisation;
+- backtesting, simulation, or performance evaluation;
+- expectancy, return, profitability, or P&L calculation or claim;
+- validation or out-of-sample data access;
+- venue research, contact, or capability checking;
+- cost, spread, depth, liquidity, fill, slippage, or latency measurement;
+- real-capital sizing, a sizing convention, or sizing implementation in code;
+- paper trading, live trading, leverage, or bot execution;
+- changes to D-01–D-15, A-1–A-4, or any frozen artifact;
+- Gate 0 passage, or progression to any gate;
+- treating Binance proxy data as verified Nobitex execution evidence;
+- treating a research-leg result as a real-capital return or as a reason to size real capital.
+
+---
+
+## 14. Adoption, effect, and non-effects
+
+### 14.1 Adoption mechanism
+
+The addendum becomes effective only if the owner issues a written statement that:
+
+1. identifies this document by path and by the SHA256 recorded in
+   `STAGE2Z_O1_OWNER_DECISION_PACKET.md` §4;
+2. states **adopt** (or adopt with the changes listed under **revise**);
+3. carries a date; and
+4. is recorded verbatim, without agent paraphrase, in a new record created for that purpose.
+
+A statement that does not name the hash adopts nothing, because the text could otherwise change after
+the decision. The agent may not create, infer, or pre-fill that statement.
+
+### 14.2 Effects of adoption
+
+Only these:
+
+1. `P-1` through `P-5` become part of the governance text.
+2. A research-leg readiness determination may be recorded under §4.3 once its conditions hold.
+3. The failure rule is scoped as described in §6.2.
+
+### 14.3 Explicit non-effects of adoption
+
+Adoption does **not**:
+
+- pass Gate 0, on either base, or change the recorded verdict;
+- authorize Gate 1 or any other gate;
+- authorize market-data access, a census, a backtest, or strategy design;
+- authorize venue contact or measurement;
+- approve a real-capital sizing convention or decide T-4;
+- mark `R-08` or `R-15` satisfied, or close a blocker;
+- resolve `C-4`, `C-6`, `C-7`, or `C-8`;
+- authorize paper or live trading;
+- create an O-2 decision. A named stage authorization is still required before any research begins.
+
+### 14.4 Rejection or revision
+
+- **Reject:** the protocol and all current restrictions continue unchanged.
+- **Revise:** the owner lists the changes; this draft is revised and re-issued with a new hash; the
+  O-1 decision then applies to the revised text, not this one.
+- **No response:** nothing changes. Silence is not adoption.
+
+### 14.5 Severability and interpretation
+
+1. If a clause is rejected or revised, the remaining clauses stand only if the owner adopts them
+   explicitly; the draft is not partially effective by default.
+2. No clause may be read to pass Gate 0, to lower a threshold, or to authorize a stage.
+3. Where this addendum is silent, the protocol governs.
+
+### 14.6 Version
+
+`1.0.0-draft`. Any edit changes the hash and voids the hash binding in the O-1 packet.
+
+---
+
+## 15. What this draft does not do
+
+It does not adopt itself; it does not sign, ratify, or affirm anything; it does not create an owner
+decision; it does not pass Gate 0; it does not authorize O-2, Gate 1, or any research; it does not
+change D-01–D-15, A-1–A-4, or any frozen document; it does not access data, contact a venue, measure a
+cost, design a strategy, size real capital, or trade. It is a proposal awaiting O-1.
