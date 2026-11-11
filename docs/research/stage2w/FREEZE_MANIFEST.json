@@ -1,0 +1,293 @@
+{
+  "artifact_set": "Stage 2W T-4 decision-preparation package: a sizing analysis and an owner decision packet. No convention is selected, T-4 remains deferred, and no authorization is created.",
+  "checklist_status_after_stage": {
+    "blocked_rows": [
+      "R-15"
+    ],
+    "counts": {
+      "B": 1,
+      "N/A": 2,
+      "O": 0,
+      "P": 4,
+      "S": 16,
+      "total": 23
+    },
+    "note": "unchanged by this stage: the packet prepares a decision but records none",
+    "partially_satisfied_rows": [
+      "R-05",
+      "R-08",
+      "R-10",
+      "R-22"
+    ]
+  },
+  "confirmations": {
+    "achievable_income_claimed": false,
+    "candidate_or_strategy_designed": false,
+    "code_modified": false,
+    "d01_to_d15_modified": false,
+    "expected_return_calculated": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "historical_artifacts_modified": false,
+    "market_data_accessed_or_processed": false,
+    "new_stage_started": false,
+    "profitability_claimed": false,
+    "r08_marked_satisfied": false,
+    "r15_marked_satisfied": false,
+    "sizing_convention_selected": false,
+    "sizing_implemented_in_code": false,
+    "t4_resolved": false,
+    "trading_or_paper_trading": false,
+    "venue_contact_or_research": false,
+    "venue_values_invented": false
+  },
+  "created_utc": "2026-11-11T12:12:00Z",
+  "deliverables": [
+    {
+      "bytes": 18745,
+      "path": "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md",
+      "role": "Quantitative T-4 preparation: the six separated quantities (order notional, stop fraction, planned risk, realized loss, cumulative budget, drawdown), the notional-by-stop risk matrix at $1-$3, tolerance burn counts, required-notional inversion, the objective's implied trade counts, proportional and fixed cost-in-R formulas, the five option analyses with formulas and compatibility intervals, the all-UNKNOWN venue input list, and a stop-distance sensitivity table",
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    },
+    {
+      "bytes": 11764,
+      "path": "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md",
+      "role": "The owner decision packet: the recorded constraints restated, the binding arithmetic, options W-A to W-F with advantages, disadvantages, risks, feasible bands and evaluability, the agent recommendation of continued deferral with a six-item evidence gate, the challenge to the $250 objective, explicit approve/reject/revise/defer fields with a shortest-statement template, and the per-choice consequences for T-4, R-08, R-15 and Gate 0",
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    }
+  ],
+  "gate0_status": {
+    "evidence": [
+      "R-08 P - real-capital sizing deferred (T-4)",
+      "R-15 B - real-capital objective not testable without a sizing convention",
+      "R-05 and R-10 are Gate 1 evidence items; R-22 is a Gate 4 item"
+    ],
+    "passed": false,
+    "verdict": "not passed"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "key_arithmetic_restated": {
+    "annual_objective": {
+      "on_100": "250% per year before compounding, unvalidated",
+      "on_10000": "2.5% per year, research-reference framing"
+    },
+    "cost_in_R": {
+      "fixed_fee_form": "cost_R = 2F / (N * s)",
+      "proportional_form": "cost_R = c / s"
+    },
+    "dollar_risk_identity": "D = N * s",
+    "feasible_planned_risk_range_usd": [
+      0.005,
+      0.3
+    ],
+    "losses_to_consume_30_usd": {
+      "max": 6000,
+      "min": 100
+    },
+    "method": "arithmetic on recorded inputs only; no data processed, no distribution fitted, no venue consulted, no expectation computed",
+    "notional_mismatch": "a conventional 1%-of-equity risk of $1.00 needs $50 notional at a 2% stop, outside the $1-$3 practical range",
+    "trades_per_year_implied_at_0_10R": {
+      "max": 500000,
+      "min": 8333,
+      "range_R_usd": [
+        0.005,
+        0.3
+      ]
+    },
+    "trades_to_reach_250_at_R_100": 25
+  },
+  "nature": "Document-based governance analysis and decision preparation for T-4 only. No research, no market data, no strategy design, no backtest, no simulation, no expectancy or P&L, no venue contact, no implementation, no trading, and no Gate 0 passage.",
+  "no_performance_claim": "No expected return, profitability, achievable annual income or feasibility claim is made. The $250 objective is analysed as an arithmetic constraint on the recorded capital and notional range; that analysis is not a forecast and does not assert achievability either way.",
+  "options": {
+    "W-A": "fixed dollar risk per trade (2T T-4a); feasible band D = $0.02-$0.06 at a 2% stop",
+    "W-B": "fixed percentage of current equity (2T T-4b); feasible band f = 0.02%-0.06% at a 2% stop",
+    "W-C": "fixed percentage of the $30 personal budget; requires 5%-30% stops to fit $1-$3 notional",
+    "W-D": "fractional Kelly; theoretical only, requires a validated edge and reliable p and b; incompatible with the notional range in practice",
+    "W-E": "no real risk, research-only scoping decision",
+    "W-F": "continue deferral (2T T-4c); the agent recommendation"
+  },
+  "owner_inputs": {
+    "annual_objective_usd": 250,
+    "historical_research_venue": "Binance",
+    "intended_execution_venue": "Nobitex",
+    "order_notional_range_usd": [
+      1,
+      3
+    ],
+    "personal_cumulative_loss_tolerance_usd": 30,
+    "real_capital_sizing": "deferred (T-4)",
+    "real_capital_usd": 100,
+    "research_reference_capital_usd": 10000
+  },
+  "recommendation": {
+    "agent_recommendation": "continue deferral (W-F); if a positive statement is preferred, W-E research-only; if a number is insisted on now, W-A at $0.02-$0.05 labelled provisional",
+    "evidence_gate_before_numeric_convention": [
+      "validated net-of-cost expectancy from an authorized experiment",
+      "measured fee, spread and slippage distributions for the intended venue and order sizes",
+      "verified minimum order/notional, lot step, tick size and stop-order support",
+      "assessed tail-loss and gap/stop-failure distribution",
+      "the strategy's actual trade frequency",
+      "a restated annual objective reconciled with the evidence, or an explicit statement that it is aspirational"
+    ],
+    "is_owner_decision": false
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "afe0d2f",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "1979d19a0e5e46124e23f453e38b0e2671c24704168d602b168c1a3db259bb97",
+  "source_artifacts": {
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_CLARIFICATIONS_Q2_Q3_Q4.md": {
+      "bytes": 14484,
+      "sha256": "578afcd79eb935de42ed719c2991900045c373df43b598a4991975fb77f9b156"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15452,
+      "sha256": "b8c7f85c9628904741c9d8fb2b11256f5cb0cd85115a057de4dcf35ba9c7c05e"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    },
+    "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md": {
+      "bytes": 7104,
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    "docs/research/stage2s/STAGE2S_OWNER_CLARIFICATION_REQUEST_AND_RESPONSES.md": {
+      "bytes": 13176,
+      "sha256": "612222721c8fee6c1dcd5f4379a66867706834adfd09f667b3ce9ad08cdd9232"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 3812,
+      "sha256": "5963a9375b85be4f7be45dc672815d5fcedd25997fcddbde6a0279f00f2d2e0a"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8442,
+      "sha256": "f9b59b063413a980275c09334dbbe06d3efd65bcade3786cdb24ae4dd4ba9f3d"
+    },
+    "docs/research/stage2v/STAGE2V_A1_OWNER_AFFIRMATION_RECORD.md": {
+      "bytes": 4738,
+      "sha256": "c58cd43e01ad5f53c1aeaa35c4e194251f1936a81c26070f998256f93e4e9f81"
+    },
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": {
+      "bytes": 4370,
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2v": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2W",
+  "status_unchanged": {
+    "B-07": "closed 2026-11-11 (Stage 2V)",
+    "R-08": "P - real-capital sizing deferred (T-4)",
+    "R-15": "B - real-capital claim blocked",
+    "R-17": "S - signed A-1 recorded 2026-11-11",
+    "T-4": "deferred - no convention selected by this stage",
+    "gate0": "not passed"
+  },
+  "unknown_venue_inputs": [
+    "minimum order size (base units)",
+    "minimum order notional",
+    "lot step / quantity granularity",
+    "tick size",
+    "maker/taker fee schedule",
+    "fee currency (base vs quote)",
+    "spread distribution",
+    "slippage for small orders",
+    "supported stop order types",
+    "minimum stop distance / price band",
+    "deposit and withdrawal capability",
+    "settlement and withdrawal restrictions"
+  ],
+  "version_identifier": "stage2w/1.0.0"
+}
