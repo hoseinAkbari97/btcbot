@@ -160,3 +160,64 @@ None of the three effects authorizes any activity. Effect 3 removes a bar; it do
 permission.
 
 ---
+
+## 6. What adoption does **not** do
+
+This list is exhaustive for the adopted text as drafted. Adoption does **not**:
+
+1. pass Gate 0, on the research leg or on real capital — the verdict remains **NOT PASSED**;
+2. authorize Gate 1, or any other gate, or advance the gate sequence;
+3. authorize market-data access, download, or processing;
+4. authorize a feasibility census or any signal or opportunity count;
+5. authorize venue research, contact, or capability checking;
+6. authorize cost, spread, depth, liquidity, fill, slippage, or latency measurement;
+7. authorize a backtest, simulation, expectancy, return, or P&L calculation;
+8. authorize strategy or candidate design, naming, selection, or parameter fitting;
+9. authorize validation or out-of-sample data access;
+10. approve a real-capital sizing convention, risk amount, or risk percentage, or decide T-4;
+11. move `R-08` or `R-15` beyond the precise readings in addendum §5;
+12. close a blocker, mark a requirement satisfied, or change a status code;
+13. resolve `C-4` or `C-6` (or `C-7`/`C-8`, which are preserved as recorded);
+14. create, imply, or pre-fill O-2;
+15. authorize paper trading, live trading, leverage, or bot execution;
+16. change D-01–D-15, A-1–A-4, or any frozen artifact;
+17. authorize Stage 3 or any research stage.
+
+**Adoption makes a research-leg authorization permissible. It does not make any activity authorized.**
+
+---
+
+## 7. Governance status after this record
+
+| item | status | changed by this record? |
+|---|---|---|
+| **O-1** | **ADOPTED 2026-11-11** (this record) | yes — from pending to adopted |
+| **O-2** | **NOT AUTHORIZED — pending a separate owner decision** | no |
+| Gate 0 | **NOT PASSED** (both bases) | no |
+| research-leg readiness determination | **not recorded** | no |
+| `R-08` | `P` — real-capital sizing convention deferred | no |
+| `R-15` | `B` — real-capital objective not in testable form | no |
+| T-4 | deferred | no |
+| checklist | 16 S / 4 P / 0 O / 1 B / 2 N/A | no |
+| D-01–D-15 | unchanged | no |
+| A-1–A-4 | unchanged | no |
+| Gate 1–6 sequence and criteria | unchanged | no |
+
+The Stage 2Z packet and boundary documents state that O-1 is pending. That was true when they were
+written. They are not edited; this record is the later instrument that supersedes that status
+prospectively.
+
+---
+
+## 8. Integrity of this record
+
+1. This record creates no decision. It records the owner's `I confirm` against the declaration in §2,
+   under the addendum's own §14.1 mechanism, with the limitation in §3.3 disclosed.
+2. It edits no adopted or historical document. The addendum, the O-1 packet, the conflict matrix, the
+   Stage 2Z boundary, and the Stage 2Z manifest are byte-identical to their frozen versions.
+3. It adds no owner value, threshold, condition, or exception.
+4. It makes no claim that Gate 0 passed, that any gate advanced, or that any research is authorized.
+5. If a future edit changes the addendum's bytes, this record's hash binding is void and a new O-1
+   decision is required.
+
+---
