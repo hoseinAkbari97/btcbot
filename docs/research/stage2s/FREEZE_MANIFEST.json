@@ -1,0 +1,369 @@
+{
+  "artifact_set": "Stage 2S Gate 0 documentation package: five D-04 clarification answers, three unratified Gate 0 artifact drafts, an artifact status and dependency assessment, and the stage completion report",
+  "blocker_status_after_stage": {
+    "B-01": "closed - Option A inputs complete per the stage2q section 6 rule (currency amount plus the four constraint statements), supplied by the owner on 2026-11-11, not by the existence of any draft",
+    "B-02": "open, narrowed - the owner states an operational Nobitex account with no known restrictions (owner statement, 2026-11-11); the I-2 per-capability documented evidence standard remains unmet; Gate 1 territory, untouched in this stage",
+    "B-03": "open",
+    "B-04": "open",
+    "B-05": "open",
+    "B-06": "open, deliberately deferred",
+    "B-07": "open, narrowed - three Gate 0 artifact drafts prepared and awaiting separate owner ratification; the signed owner decision record (stage2p A-1) not drafted",
+    "B-08": "closed",
+    "B-09": "closed as an interpretation question",
+    "B-10": "open",
+    "B-11": "open",
+    "B-12": "recorded, not actionable"
+  },
+  "confirmations": {
+    "application_code_modified": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_promoted": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "cost_study_run": false,
+    "d01_or_d02_modified": false,
+    "d04_fully_resolved": true,
+    "d04_resolved": true,
+    "d05_resolved": false,
+    "d06_resolved": false,
+    "d13_resolved": false,
+    "d15_revisited": false,
+    "data_processed_market": false,
+    "dependency_installed": false,
+    "development_validation_or_oos_rows_processed": false,
+    "drawdown_computed": false,
+    "equity_curve_computed": false,
+    "expectancy_computed": false,
+    "experiment_authorized": false,
+    "frozen_artifacts_modified": false,
+    "gate0_artifact_drafting_performed": true,
+    "gate0_artifact_drafts_created": true,
+    "gate0_artifacts_created": false,
+    "gate0_artifacts_ratified": false,
+    "gate0_passed": false,
+    "gate_authorized": false,
+    "historical_analysis_executed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "implementation_created": false,
+    "independence_established": false,
+    "liquidity_study_run": false,
+    "market_data_collected": false,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "new_performance_metric_computed": false,
+    "optimization_run": false,
+    "paper_trade_executed": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "research_code_modified": false,
+    "returns_computed": false,
+    "reviewer_appointed": false,
+    "stage2t_started": false,
+    "strategy_changed": false,
+    "trading_executed": false,
+    "validation_or_oos_accessed": false,
+    "venue_capability_checked": false,
+    "venue_contacted": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-11T06:50:00Z",
+  "critical_arithmetic_restated": {
+    "R_definition_unchanged": "R = executed_notional x stop_fraction, per the Stage 2Q Q3 selection; unchanged by this stage",
+    "d01_changed": false,
+    "d02_changed": false,
+    "frequency_arithmetic": {
+      "derivation": "$250 / ($10 per trade) = 25 executed trades per year under full 1R realized risk",
+      "label": "annual target divided by the MME's dollar value at 1R on the $10,000 research leg at 1% risk; disclosed in the objective memo draft; arithmetic on recorded values only, not a forecast, not a claim of achievability",
+      "note": "assumes every executed trade earns exactly the MME and ignores compounding, idle capital and p_exec < 1, each of which raises the requirement; when the $2,500 notional cap binds below 4% stops the required count rises to 50-100 (stage2p/GATE0_READINESS_ASSESSMENT.md section 7)",
+      "trades_per_year": 25
+    },
+    "method": "arithmetic on recorded values only; no data processed, no metric computed, no distribution fitted, no venue consulted",
+    "order_notional_is_not_risk_capital": true,
+    "order_notional_share_of_stated_capital": {
+      "derivation": "$1 / $100 = 1%; $3 / $100 = 3%",
+      "label": "the owner-confirmed $1-$3 order-notional range as a share of the stated $100 strategy capital; notional, not risk",
+      "value_range": [
+        0.01,
+        0.03
+      ]
+    },
+    "owner_loss_tolerance_is_not_a_strategy_drawdown_authorization": true,
+    "owner_loss_tolerance_is_personal_and_cumulative": true,
+    "per_trade_risk_limit_created": false,
+    "research_parameters_preserved": {
+      "max_entry_notional_usd": 2500,
+      "note": "the $10,000 research reference and the $2,500 notional cap remain frozen research parameters, unchanged and unreinterpreted, and are not scaled to the $100 real base",
+      "research_equity_usd": 10000
+    },
+    "stop_fraction_selected_or_assumed": false,
+    "unknowns_converted_to_none": false,
+    "unknowns_note": "the owner's 'no known restrictions' answers are recorded as owner statements dated 2026-11-11, not as verified absence of restrictions and not as venue evidence; no unknown was converted into 'none' by the research agent"
+  },
+  "d04_status": {
+    "after_stage": "resolved - Option A complete: the currency amount plus the four constraint statements, all supplied by the owner and dated 2026-11-11",
+    "before_stage": "partially resolved - equity, cumulative loss tolerance and order range recorded; allocation distinction and capital restrictions outstanding",
+    "fully_resolved": true,
+    "missing_fields": [],
+    "qualifications": [
+      "the restriction statements are owner statements of 'no known restrictions', not venue evidence, and satisfy no per-capability evidence standard (B-02 untouched)",
+      "the real-base per-trade sizing convention remains a separate unmade owner decision, tracked under R-08 (stage2q/STAGE2Q_OWNER_RESPONSE_RECORD.md section 3.3, consequence 3)",
+      "the real-base expression of the $250 annual target remains a separate ratification decision",
+      "the $1-$3 order-notional interpretation is owner-confirmed as of 2026-11-11"
+    ],
+    "unknowns_accepted_as_unknown": true,
+    "unknowns_accepted_as_unknown_note": "no unknown remained unanswered: the owner answered all five questions with positive statements; those statements are recorded at their evidentiary value (owner statements), not upgraded"
+  },
+  "deliverables": [
+    {
+      "bytes": 13176,
+      "path": "docs/research/stage2s/STAGE2S_OWNER_CLARIFICATION_REQUEST_AND_RESPONSES.md",
+      "role": "Record of the five remaining D-04 clarification questions put to the owner on 2026-11-11 and the owner's answers, the completion of the D-04 Option A input set, the register effects (D-04 resolved, B-01 closed by owner inputs, R-08 narrowed, R-13 satisfied), and the reported tensions",
+      "sha256": "612222721c8fee6c1dcd5f4379a66867706834adfd09f667b3ce9ad08cdd9232"
+    },
+    {
+      "bytes": 5966,
+      "path": "docs/research/stage2s/STAGE2S_A1_OBJECTIVE_MEMO_DRAFT.md",
+      "role": "Unratified draft of Gate 0 artifact A-2 (economic objective memo, stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md section 4): frozen estimands, MME 0.10R, $250 annual target, $10,000 research equity, disclosed frequency arithmetic, unresolved opportunity-frequency concern",
+      "sha256": "eb9fac9bff5d7a1a22cf14fd005ff0e4338a3bcc28e78368260714497b97c2b5"
+    },
+    {
+      "bytes": 5959,
+      "path": "docs/research/stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md",
+      "role": "Unratified draft of Gate 0 artifact A-3 (risk policy statement): frozen 15% drawdown, 1.00R per-trade, 0.50R CVaR95, $2,500 notional cap, scope and measurement rules, operational-risk exclusion, and the three-layer separation of research-leg limits, the owner's $30 personal tolerance, and any future real-capital policy",
+      "sha256": "d9ca43cada42fb85cab465de119703715217ac365245f799a892be0badc716f3"
+    },
+    {
+      "bytes": 7104,
+      "path": "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md",
+      "role": "Unratified draft of Gate 0 artifact A-4 (capital and execution context statement): research leg, owner's stated real capital and restrictions as owner statements, venue decision, and the remaining evidence gaps; final form blocked on ratification and the real-base sizing convention",
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    {
+      "bytes": 11417,
+      "path": "docs/research/stage2s/STAGE2S_A4_STATUS_AND_DEPENDENCIES.md",
+      "role": "Status and dependency assessment of the four Gate 0 artifacts (not an artifact itself): numbering map, per-artifact status, every missing input, R-20/B-01 discipline, and the separate-decision ratification list; no final A-4 manufactured",
+      "sha256": "8f1daaccc387d85498e2356a20bec2d568799fa9b2ce1712b61e30257f5f05a9"
+    },
+    {
+      "bytes": 8707,
+      "path": "docs/research/stage2s/STAGE2S_STAGE_COMPLETION_REPORT.md",
+      "role": "Stage completion report: repository state, clarification outcomes, artifact status, before/after for D-04/B-01/R-08, Gate 0 assessment after the stage, ratification list, remaining blockers, prohibited-work confirmations, manifest validation and push status",
+      "sha256": "4fdd522dfce7ebdb97f70d5aad0f5084e1d306e6893cb6cb353fd464bb820f21"
+    }
+  ],
+  "design_scope": {
+    "authorized": [
+      "inspect branch, HEAD, working tree and remote synchronisation",
+      "read and hash-verify the Stage 2M through 2R governance chain and freeze manifests",
+      "ask the owner the five remaining D-04 clarification questions, with partial answers and retained unknowns permitted",
+      "draft the three Gate 0 content artifacts as unratified proposals under the Stage 2Q Q4 Option A authorization",
+      "record the artifact status and dependency assessment without manufacturing a final A-4",
+      "commit and push the Stage 2S package after successful manifest validation"
+    ],
+    "prohibited": [
+      "passing Gate 0 or authorizing Gate 1 to 5",
+      "collecting or processing any market data",
+      "backtest, simulation, bootstrap, census or Monte Carlo",
+      "strategy design or optimization",
+      "Nobitex API access, venue contact, or capability, minimum-notional, fee, spread or lot-step checks",
+      "cost-distribution or liquidity/execution studies",
+      "independent audit or reviewer appointment",
+      "paper or live trading",
+      "modifying D-01, D-02, D-15 or any prior-stage artifact",
+      "automatic resolution of blockers based on drafted documents",
+      "ratifying or signing any artifact on the owner's behalf",
+      "scaling D-02 research-leg limits to the $100 real base or implying 30% strategy drawdown authorization",
+      "converting owner statements into venue evidence",
+      "initiating Stage 2T or any research stage"
+    ]
+  },
+  "gate0_artifact_status": {
+    "A-1_signed_owner_decision_record": "not drafted - no slot in the Stage 2S instruction's artifact list; drafting remains available under a future authorization; R-17 remains P",
+    "A-2_economic_objective_memo": "draft prepared (STAGE2S_A1_OBJECTIVE_MEMO_DRAFT.md), unratified; R-18 O to P",
+    "A-3_risk_policy_statement": "draft prepared (STAGE2S_A2_RISK_POLICY_DRAFT.md), unratified; R-19 O to P",
+    "A-4_capital_and_execution_context_statement": "draft prepared (STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md), unratified, final form blocked on ratification and the real-base sizing convention; R-20 O to P; no final A-4 manufactured",
+    "numbering_note": "the Stage 2S instruction's artifact labels are shifted relative to stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md section 4 and omit the signed owner decision record; Stage 2P definitions govern content, instruction labels govern file naming, and the mismatch is reported for owner review"
+  },
+  "gate0_assessment": {
+    "blocked_rows": [
+      "R-15"
+    ],
+    "not_applicable_rows": [
+      "R-06",
+      "R-23"
+    ],
+    "note": "Rows changed in this stage: R-13 P to S (every decision marked BLOCKING for Gate 0 - D-01, D-02, D-03, D-04, D-07 - is resolved; D-15 blocks only new candidates); R-18, R-19, R-20 O to P (drafts exist, unratified). Gate 0 remains unpassed and not ready to pass: unratified drafts do not satisfy the artifact rows, the signed owner decision record does not exist (R-17 P), and the real-base per-trade sizing convention is undecided (R-08 P).",
+    "open_rows": [],
+    "partially_satisfied_rows": [
+      "R-05",
+      "R-08",
+      "R-10",
+      "R-17",
+      "R-18",
+      "R-19",
+      "R-20",
+      "R-22"
+    ],
+    "requirements_blocked_by_another_decision": 1,
+    "requirements_not_applicable": 2,
+    "requirements_open": 0,
+    "requirements_partially_satisfied": 8,
+    "requirements_satisfied": 12,
+    "rows_total": 23,
+    "satisfied_rows": [
+      "R-01",
+      "R-02",
+      "R-03",
+      "R-04",
+      "R-07",
+      "R-09",
+      "R-11",
+      "R-12",
+      "R-13",
+      "R-14",
+      "R-16",
+      "R-21"
+    ]
+  },
+  "gate0_passed": false,
+  "gate0_verdict": "not passed, not ready to pass",
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "historical_positions_preserved": {
+    "candidate_status_changed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "note": "All historical censuses, gates and verdicts are unchanged and were not re-run. The $10,000 research leg and its limits are untouched."
+  },
+  "manifest_commit_note": "This manifest is committed after the six Stage 2S deliverables. The final repository HEAD is the commit that introduces this file; the manifest cannot contain its own hash.",
+  "nature": "Gate 0 documentation-preparation stage only: records the five D-04 clarification answers, drafts the three Gate 0 content artifacts as unratified proposals under the Stage 2Q Q4 Option A authorization, and assesses artifact status and dependencies. Contains no research, no measurement, no venue evidence, no gate outcome, and no ratification.",
+  "no_performance_claim": "No return, expectancy, win rate, drawdown, tail, equity curve, P&L or feasibility claim is made or implied. No data was processed and no venue evidence was collected. The drafts restate frozen values; the frequency arithmetic is disclosed arithmetic on recorded values, not a forecast and not an achievability claim. The $1-$3 order range is not validated against any venue limit.",
+  "owner_inputs": {
+    "D-04_clarifications": {
+      "A_capital_allocation": "all available capital - the $100 is everything currently available for this strategy, not a portion of a larger amount",
+      "B_order_size_interpretation": "confirmed - the $1-$3 range means order notional in USD",
+      "C_deposits_and_withdrawals": "no known restrictions, delays, limits or lock-ups (owner statement)",
+      "D_exchange_access": "an operational Nobitex account exists with no known account or geographic restrictions (owner statement)",
+      "E_capital_availability": "the $100 remains available throughout the intended research period"
+    },
+    "not_requested_or_recorded": [
+      "credentials",
+      "account numbers",
+      "identity documents",
+      "passwords",
+      "private keys",
+      "sensitive account information",
+      "total personal net worth"
+    ],
+    "presentation": "owner answers recorded verbatim in substance; owner statements recorded as owner statements, not as venue evidence; no field filled in or extended by the research agent",
+    "response_date": "2026-11-11"
+  },
+  "owner_values_restated_not_changed": {
+    "D-01": {
+      "annual_target_usd": 250,
+      "mme_definition": "Definition A, net R per executed trade",
+      "mme_value_R": 0.1,
+      "research_equity_usd": 10000
+    },
+    "D-02": {
+      "cvar95_R": 0.5,
+      "max_drawdown_pct_of_prior_peak": 15,
+      "max_entry_notional_usd": 2500,
+      "per_trade_net_loss_cap_R": 1.0,
+      "scope": "research leg"
+    }
+  },
+  "repository": {
+    "artifact_commit_note": "The six Stage 2S deliverables were committed before this manifest was written; all were pushed together after manifest validation succeeded. The manifest cannot contain its own commit or hash; HEAD above is the completion-report commit.",
+    "branch": "main",
+    "head_at_manifest_creation": "4f3d726",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "9ac7fba34df7e49ef7d773affd83c1bed054b201b50e5456db417b8d744a1bfa",
+  "source_artifacts": {
+    "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md": {
+      "bytes": 39108,
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": {
+      "bytes": 31205,
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_D01_D02_DECISION_PACKET.md": {
+      "bytes": 30979,
+      "sha256": "d8b16ade03abe742b3b24065a2f9f3842cd97e2cfd4572a7b39a189a0ebade6f"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2p/RECOMMENDED_NEXT_ACTIONS.md": {
+      "bytes": 7116,
+      "sha256": "9e182aa26ed03f7614f91702b40369cc27376ad8a51a18bd3dd4216a7d9d12a0"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_CLARIFICATIONS_Q2_Q3_Q4.md": {
+      "bytes": 14484,
+      "sha256": "578afcd79eb935de42ed719c2991900045c373df43b598a4991975fb77f9b156"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15452,
+      "sha256": "b8c7f85c9628904741c9d8fb2b11256f5cb0cd85115a057de4dcf35ba9c7c05e"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2S",
+  "version_identifier": "stage2s/1.0.0"
+}
