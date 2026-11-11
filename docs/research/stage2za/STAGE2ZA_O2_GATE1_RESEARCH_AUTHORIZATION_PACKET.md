@@ -165,3 +165,59 @@ rather than by fact. This is a valid choice if the owner does not yet want any d
 | reversible? | yes — stop at any time | yes | yes | yes |
 
 ---
+
+## 6. Recommendation and the exact scope of `O-2A`
+
+**Recommendation (agent's analysis; not an owner decision): `O-2A`.**
+
+Why `O-2A` is the smallest sensible next authorization:
+
+1. It is the smallest scope that can actually **close** Gate 1's data-and-cost question. `O-2B`
+   cannot, because the venue specification is a required Gate 1 input.
+2. It contains **no measurement and no venue contact**, so it does not pre-empt `O-4`, does not create
+   a measurement-only execution category, and leaves `C-6` untouched.
+3. It handles `C-4` the only way the adopted text allows — by **disclosure** under `P-5`, item by item,
+   with each unknown marked **UNKNOWN** and paired with the evidence that would resolve it.
+4. Gate 1 is where an unfit dataset or an unusable cost basis is **cheapest** to discover. Discovering
+   it before any census or backtest is the point of the sequence.
+5. It presumes no outcome: Gate 1 may pass or fail, and either is a complete result.
+
+### 6.1 What an `O-2A` authorization must state
+
+| element | required content |
+|---|---|
+| stage | Gate 1 — data and venue validity, **research leg**, explicitly named |
+| objective | establish whether the recorded research dataset and the labelled cost assumption are fit for the frozen experiment |
+| artifacts | readiness determination; data-provenance record; data-quality report; alignment report; development/validation/OOS range-and-hash record; venue specification with per-item known/unknown status; labelled cost-assumption record with a dated replacement plan; access log; Gate 1 verdict record |
+| data | the Binance historical files already referenced by the Stage 2J provenance record — **development block only**; no new acquisition; no validation or OOS row |
+| analyses | hash verification; gap accounting; duplicate, off-grid, zero-volume, invalid-OHLC and partial-bucket checks; segment-boundary accounting; lower-to-higher-timeframe reconciliation; development/validation/OOS separation — **no signal, no indicator, no outcome, no return** |
+| venue evidence | published documents and the owner's existing documentation only; dated source per fact; each unresolved item **UNKNOWN** with the evidence required; no contact, no account change, no API key, no quote observation |
+| cost rule | the Binance proxy remains a **research-leg assumption** with a dated plan to replace it (protocol §4.3); never a Nobitex cost; no execution-feasibility claim |
+| verdict | Gate 1 **passed** or **not passed**, with the item-by-item disclosure; a "not passed" verdict is a complete and acceptable stage result |
+| prohibitions | no hypothesis registration; no census; no backtest; no expectancy or P&L; no strategy design; no sizing; no paper or live trading; no real-capital claim |
+| stop condition | the list in §6.2 |
+| reporting | every Gate 1 report carries: *"Research-leg evidence only. Not evidence of Nobitex execution feasibility, not a real-capital return, and not a sizing recommendation."* |
+
+### 6.2 Stop conditions for `O-2A`
+
+The stage must stop and report, without proceeding past the stopping point, if:
+
+1. any dataset, manifest, or frozen artifact does not match its recorded hash;
+2. a validation or OOS row is encountered while working on the development block;
+3. any signal, indicator, opportunity count, outcome, return, or P&L computation appears;
+4. a cost, spread, or venue value is used without being labelled an assumption with a plan;
+5. completing the venue specification would require contact, an account change, or an API key — stop,
+   mark the item **UNKNOWN**, and report;
+6. a real-capital figure is used in any calculation;
+7. the research-leg readiness determination cannot be recorded because some research-leg row is not
+   `S`;
+8. a request arises to lower a standard, widen a tolerance, or drop an input so that Gate 1 can pass;
+9. the owner withdraws the authorization.
+
+### 6.3 What `O-2A` would still not permit
+
+Gate 2 registration, any signal or opportunity count, a census, a backtest, a simulation, an
+expectancy or P&L calculation, strategy or candidate design, parameter fitting, validation or OOS
+access, quote sampling, venue contact, order placement, real-capital sizing, paper or live trading.
+
+---
