@@ -158,3 +158,45 @@ as an oversight.
 | "Binance data shows Nobitex execution" | no | no | **no** — a category error at every stage |
 
 ---
+
+## 8. What no O-2 shape can fix
+
+| unresolved item | effect | what would be needed |
+|---|---|---|
+| **`C-4`** — venue spec is a required input but not a pass criterion | Gate 1 may pass with venue facts UNKNOWN, provided they are disclosed | a formal §4.3 amendment; `P-5` supplies disclosure only |
+| **`C-6`** — no measurement-only execution category | the execution half of T-4 item 2 cannot be produced | **O-5**, an owner decision; otherwise the cost basis stays a labelled assumption |
+| **`C-2`** — two `R-08` wordings | the later reading governs on the real-capital base only because the addendum says so | an owner revision if a single wording is wanted |
+| **`C-7`** — `R-17` wording discrepancy | remains on the record exactly as documented | nothing; editing it would rewrite a signed artifact |
+
+No research-leg result, and no Gate 1 verdict, resolves any of these.
+
+---
+
+## 9. Remaining owner decisions
+
+| ID | decision | gate | status |
+|---|---|---|---|
+| **O-1** | adopt / reject / revise the addendum | Gate 0 scope | **ADOPTED 2026-11-11** |
+| **O-2** | named Gate 1 research-leg authorization (`O-2A` recommended, `O-2B`, `O-2C`, `O-2D`) | Gate 1 | **PENDING** |
+| **O-3** | documentary venue evidence collection, if not folded into `O-2A` | Gate 1 | pending — folded into `O-2A`; separate only if `O-2B` is chosen |
+| **O-4** | quote sampling for spread and depth, and when | Gate 1 | pending |
+| **O-5** | create a measurement-only execution category (`C-6`), or keep the assumption | T-4 item 2 | pending |
+| **O-6** | appoint the independent reviewer (`I-4`) | Gate 4 | pending |
+| **O-7** | T-4 itself, only after the six evidence items exist | Gate 0 real capital | pending |
+| **O-8** | reaffirm or restate `$250` on `$100` (T-5) | Gate 0 real capital | pending |
+
+None beyond O-1 is decided, implied, or pre-filled by Stage 2ZA.
+
+---
+
+## 10. Confirmations
+
+1. No research occurred in this stage: no data was read, no census run, no backtest, no expectancy, no
+   strategy designed, no venue contacted, no cost measured, no sizing selected, no trade placed.
+2. No gate was passed or advanced. **Gate 0 remains NOT PASSED** on both bases; Gate 1 is not
+   authorized.
+3. The adopted addendum is byte-identical to its hash-bound version; no frozen artifact, decision,
+   threshold, or owner-supplied value changed.
+4. O-1 was recorded from the owner's verbatim `I confirm`, with its single formality limitation
+   disclosed in `STAGE2ZA_O1_OWNER_ADOPTION_RECORD.md` §3.3.
+5. O-2 remains pending. This document is a boundary description, not an authorization.
