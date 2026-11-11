@@ -337,3 +337,34 @@ This record deliberately makes **no** statement about dataset integrity, coverag
 are Gate 1 findings, and Gate 1 is not authorized.
 
 ---
+
+## 10. Governance status after this record
+
+| item | status | changed by this record? |
+|---|---|---|
+| **O-1** | ADOPTED 2026-11-11 (uncured formality limitation disclosed there) | no |
+| **O-2** | **PENDING — NOT AUTHORIZED** (form insufficient; cure requested in §8) | no change to the state, but now with a recorded reason |
+| Gate 0 | **NOT PASSED** (both bases) | no |
+| Gate 1 | **NOT AUTHORIZED** | no |
+| research-leg readiness determination | **not recorded** | no |
+| `R-08` | `P` | no |
+| `R-15` | `B` | no |
+| T-4 | deferred | no |
+| checklist | 16 S / 4 P / 0 O / 1 B / 2 N/A | no |
+| D-01–D-15, A-1–A-4 | unchanged | no |
+| Stage 2ZA package | frozen and unchanged | no |
+
+### 10.1 Discrepancy between the Stage 2ZB instruction and the repository
+
+Recorded because the instruction asked that material contradictions be reported:
+
+| instruction assumption | repository reality |
+|---|---|
+| a "Stage 2ZA completion report" exists among the deliverables | there is no file of that name; the Stage 2ZA package is three documents plus `FREEZE_MANIFEST.json`, and its completion statement is `STAGE2ZA_AUTHORIZATION_BOUNDARY.md` §10 |
+| — | the manifest, the boundary, and the O-1 record are internally consistent with each other and with the hashes; the omission is a naming assumption, not a contradiction in the substance |
+
+The gate statuses, the O-2 options, the `O-2A` scope, the dataset reference, and the development block all
+matched the source documents and the supplied report. No material contradiction was found in anything the
+stage depends on.
+
+---
