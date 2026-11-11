@@ -297,3 +297,43 @@ venue documentation, with the `P-5` disclosure and the stop conditions in packet
 No interim work will be done, and no part of O-2A will be started on the strength of `confirm`.
 
 ---
+
+## 9. What this stage did, and did not do
+
+### 9.1 Done
+
+- Read the packet's §0–§11, the Stage 2ZA boundary, the Stage 2ZA manifest, the O-1 record, and the
+  adopted addendum, to establish what a valid O-2 must contain and what O-2A would cover.
+- Re-verified the packet's SHA256 and byte count, the addendum's hash binding, and the Stage 2ZA package.
+- Verified the repository state: branch `main`, HEAD `0bc3b27b598bceb3eadd3b1f59698ea76b9b1417`,
+  clean worktree, synchronized with `origin/main`.
+- Re-verified the predecessor freeze manifests.
+- Recorded the owner's word verbatim, the declaration it answers, the assessment, and the request.
+
+### 9.2 Not done
+
+No O-2A activity was executed. Specifically: no research-leg readiness determination was recorded; no
+Gate 1 data-validity check was run; no dataset row was read, decoded, parsed, hashed, or summarised; no
+data-quality, gap, duplicate, off-grid, zero-volume, OHLC-validity, partial-bucket, segment-boundary, or
+timeframe-reconciliation check was performed; no venue document was collected or reviewed; no `P-5`
+disclosure table was produced; no Gate 1 verdict was reached; no strategy, census, backtest, simulation,
+expectancy, P&L, sizing, or trade was produced.
+
+### 9.3 Disclosure — dataset directory metadata
+
+While establishing whether the dataset the packet names was even present, and **before** the
+authorization question in §5 was settled, the agent listed the directory
+`backend/data/datasets/` and `data/`. That returns file names, sizes, and a directory listing only.
+
+| disclosure | detail |
+|---|---|
+| what was observed | four JSON filenames with byte sizes (`BTCUSDT-{5m,15m,1h,4h}-20210101-20260901.json`), a `manifest.json` entry, `.gitkeep` files, a 38-file parquet tree, and raw JSON sample counts |
+| what was **not** observed | no file was opened; no byte of market data was read, decoded, or hashed; `manifest.json` and the report files were not opened; no row, timestamp, or price was seen |
+| classification | filesystem metadata, not market-data processing |
+| why disclosed | the authorization determination had not yet been made at that point; the sequencing is recorded rather than omitted |
+| effect on the outcome | none — availability of a dataset does not create authorization to process it, and this record does not depend on the listing |
+
+This record deliberately makes **no** statement about dataset integrity, coverage, gaps, or fitness. Those
+are Gate 1 findings, and Gate 1 is not authorized.
+
+---
