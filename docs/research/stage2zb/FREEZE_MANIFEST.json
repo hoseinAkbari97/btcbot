@@ -79,13 +79,300 @@
     "scope_authorized": "none",
     "status": "PENDING - NOT ACCEPTED"
   },
+  "owner_inputs_unchanged": {
+    "annual_objective_usd": 250,
+    "order_notional_range_usd": [
+      1,
+      3
+    ],
+    "personal_cumulative_loss_tolerance_usd": 30,
+    "real_capital_usd": 100,
+    "research_reference_capital_usd": 10000
+  },
   "repository": {
     "branch": "main",
     "head_at_manifest_creation": "d7e9027",
     "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
     "working_tree_clean_at_manifest_creation": true
   },
-  "self_hash": "6e7d641b9a33827abe51d98e5fa99871ae72da5028c6e268f5b70a9ff4255bfd",
+  "self_hash": "99458ec8c02dfb21ed2699f045ea4e632ae5bdfe159c4ea0c01215bb500d721a",
+  "source_artifacts": {
+    "docs/research/stage2m/ECONOMIC_OBJECTIVE_AND_COST_FRAMEWORK.md": {
+      "bytes": 39108,
+      "sha256": "f1753db42f3f6ed30df63ecb11ec6d37ee3afda390fd73741d6b8c061b209a25"
+    },
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": {
+      "bytes": 39850,
+      "sha256": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058"
+    },
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": {
+      "bytes": 31205,
+      "sha256": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md": {
+      "bytes": 13500,
+      "sha256": "12ded27dad7294b255341d975d8767dd027d16d60747beb5f74bd3f2ce3b1fce"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 12202,
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    },
+    "docs/research/stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md": {
+      "bytes": 5959,
+      "sha256": "d9ca43cada42fb85cab465de119703715217ac365245f799a892be0badc716f3"
+    },
+    "docs/research/stage2s/STAGE2S_A3_CAPITAL_EXECUTION_CONTEXT_DRAFT.md": {
+      "bytes": 7104,
+      "sha256": "f4f6e9d559a54d7cd91221d38a81db6b9ef5cecb08b6677bd8492a5834581591"
+    },
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": {
+      "bytes": 14768,
+      "sha256": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70"
+    },
+    "docs/research/stage2u/STAGE2U_A1_SIGNED_OWNER_DECISION_RECORD_DRAFT.md": {
+      "bytes": 10023,
+      "sha256": "7d307a2329fd936d2f04471a8d58017ea93d0d1d8018c9c13e4b53abab6f358f"
+    },
+    "docs/research/stage2u/STAGE2U_STAGE_COMPLETION_REPORT.md": {
+      "bytes": 8442,
+      "sha256": "f9b59b063413a980275c09334dbbe06d3efd65bcade3786cdb24ae4dd4ba9f3d"
+    },
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": {
+      "bytes": 4370,
+      "sha256": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078"
+    },
+    "docs/research/stage2w/STAGE2W_OWNER_DECISION_PACKET.md": {
+      "bytes": 11764,
+      "sha256": "9479137b7e8ca890c05c7a74b1c8ffbd71957e7c0e84cc489d7261638c6c3c7f"
+    },
+    "docs/research/stage2w/STAGE2W_T4_SIZING_ANALYSIS.md": {
+      "bytes": 18745,
+      "sha256": "eec89a3d247159e611f318795c1db0ac047495029d900c27195e9d66050dcc7c"
+    },
+    "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md": {
+      "bytes": 2816,
+      "sha256": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8"
+    },
+    "docs/research/stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md": {
+      "bytes": 5639,
+      "sha256": "75347be574afd3eb6f0b2974d3bceed818fcdb53b9887c5821e88f9dfd2d7999"
+    },
+    "docs/research/stage2y/STAGE2Y_AUTHORIZATION_BOUNDARY.md": {
+      "bytes": 15434,
+      "sha256": "7f2514cc9caf421b014b01c9cdde085ae3f9af89a784cad3f107bdcca8fff226"
+    },
+    "docs/research/stage2y/STAGE2Y_GOVERNANCE_DEPENDENCY_MAP.md": {
+      "bytes": 30478,
+      "sha256": "428aee5f6fbe0f7c2d001cfaf75c48a245ad15c32cd8c98f6c53cf03ce6b24a7"
+    },
+    "docs/research/stage2y/STAGE2Y_PATH_COMPARISON_AND_RECOMMENDATION.md": {
+      "bytes": 19830,
+      "sha256": "35e271d519b38df44d872d99799d1d4fbd08f4c2ff5d992f2df435a46391978b"
+    },
+    "docs/research/stage2z/FREEZE_MANIFEST.json": {
+      "bytes": 13364,
+      "sha256": "19607c590ecc54d5e44b3614f1c1b8cc70a686c167313fe5d7b687e253c29163"
+    },
+    "docs/research/stage2z/STAGE2Z_AUTHORIZATION_BOUNDARY.md": {
+      "bytes": 11053,
+      "sha256": "771a19e8a320c74aa20cd64bd10ee2f6a4fd84a4814872f5b5542f48715d37b1"
+    },
+    "docs/research/stage2z/STAGE2Z_CONFLICT_TRACEABILITY_MATRIX.md": {
+      "bytes": 13445,
+      "sha256": "e8e4dbb7e7c8be2faee5a0859b73a2223bd42703047189cfc1e7bb04cf108266"
+    },
+    "docs/research/stage2z/STAGE2Z_O1_OWNER_DECISION_PACKET.md": {
+      "bytes": 12384,
+      "sha256": "1dd7eabdb8738a97b1eedcf1987cbaf6584a282ef353b7c2d11466ae38eb6d2a"
+    },
+    "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md": {
+      "bytes": 31691,
+      "sha256": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc"
+    },
+    "docs/research/stage2za/FREEZE_MANIFEST.json": {
+      "bytes": 13888,
+      "sha256": "fe83d657bcffca137cf1f0e0a49641f3a1d2ca70ed8bcc9acf6803737df3ec78"
+    },
+    "docs/research/stage2za/STAGE2ZA_AUTHORIZATION_BOUNDARY.md": {
+      "bytes": 10942,
+      "sha256": "d112980bc3dd82d85592a433b58cd7ebf087746eb9f5dee90bccb8bf2646f456"
+    },
+    "docs/research/stage2za/STAGE2ZA_O1_OWNER_ADOPTION_RECORD.md": {
+      "bytes": 11494,
+      "sha256": "377b596217447fcff56ae4dab5e86d8ce48dae6c5892947ff3db752bacdf8146"
+    },
+    "docs/research/stage2za/STAGE2ZA_O2_GATE1_RESEARCH_AUTHORIZATION_PACKET.md": {
+      "bytes": 21990,
+      "sha256": "ab8c84d0c38a864f465904c83c36e03e28923c819a0adb293f6961b020ba8634"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2e_v2": {
+      "entries_checked": 12,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2i": {
+      "entries_checked": 5,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": null,
+      "self_hash_present": false
+    },
+    "stage2j": {
+      "entries_checked": 24,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2k": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2l": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2m": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2r": {
+      "entries_checked": 10,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2s": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2t": {
+      "entries_checked": 23,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2u": {
+      "entries_checked": 25,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2v": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2w": {
+      "entries_checked": 21,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2x": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2y": {
+      "entries_checked": 20,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2z": {
+      "entries_checked": 27,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    },
+    "stage2za": {
+      "entries_checked": 31,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true,
+      "self_hash_present": true
+    }
+  },
   "stage": "2ZB",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "D-01_to_D-15": "unchanged",
+    "O-1": "ADOPTED 2026-11-11",
+    "O-2": "PENDING - form insufficient, NOT AUTHORIZED",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked",
+    "T-4": "deferred",
+    "checklist": "16 S / 4 P / 0 O / 1 B / 2 N/A",
+    "gate0": "NOT PASSED",
+    "gate1": "NOT AUTHORIZED",
+    "research_leg_readiness_determination": "not recorded",
+    "stage2z_package": "frozen and unchanged",
+    "stage2za_package": "frozen and unchanged"
+  },
+  "unresolved_conflicts": {
+    "C-4": "unresolved; documented venue facts and Gate 1 disclosure would not establish venue execution feasibility",
+    "C-6": "unresolved; no measurement-only execution category exists without a separate O-5 decision"
+  },
   "version_identifier": "stage2zb/1.0.0"
 }
