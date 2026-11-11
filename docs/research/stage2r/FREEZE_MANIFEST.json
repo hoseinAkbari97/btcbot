@@ -1,0 +1,320 @@
+{
+  "artifact_set": "Stage 2R owner-supplied D-04 figures record",
+  "blocker_status_after_stage": {
+    "B-01": "open - equity, cumulative loss tolerance and order range recorded; capital restrictions not supplied; allocation distinction unresolved",
+    "B-02": "open",
+    "B-03": "open",
+    "B-04": "open",
+    "B-05": "open",
+    "B-06": "open, deliberately deferred",
+    "B-07": "open, author identified and drafting authorized, no artifact written",
+    "B-08": "closed",
+    "B-09": "closed as an interpretation question",
+    "B-10": "open",
+    "B-11": "open",
+    "B-12": "recorded, not actionable"
+  },
+  "confirmations": {
+    "application_code_modified": false,
+    "backtest_run": false,
+    "bootstrap_run": false,
+    "candidate_promoted": false,
+    "candidate_spec_created": false,
+    "census_run": false,
+    "cost_study_run": false,
+    "d01_or_d02_modified": false,
+    "d04_fully_resolved": false,
+    "d04_resolved": false,
+    "d05_resolved": false,
+    "d06_resolved": false,
+    "d13_resolved": false,
+    "d15_revisited": false,
+    "data_processed_market": false,
+    "dependency_installed": false,
+    "development_validation_or_oos_rows_processed": false,
+    "drawdown_computed": false,
+    "equity_curve_computed": false,
+    "expectancy_computed": false,
+    "experiment_authorized": false,
+    "frozen_artifacts_modified": false,
+    "gate0_artifact_drafting_performed": false,
+    "gate0_artifacts_created": false,
+    "gate0_passed": false,
+    "gate_authorized": false,
+    "historical_analysis_executed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "implementation_created": false,
+    "independence_established": false,
+    "liquidity_study_run": false,
+    "market_data_collected": false,
+    "market_data_processed": false,
+    "monte_carlo_run": false,
+    "new_performance_metric_computed": false,
+    "optimization_run": false,
+    "paper_trade_executed": false,
+    "parameter_tuning_run": false,
+    "pnl_computed": false,
+    "research_code_modified": false,
+    "returns_computed": false,
+    "reviewer_appointed": false,
+    "stage2s_started": false,
+    "strategy_changed": false,
+    "trading_executed": false,
+    "validation_or_oos_accessed": false,
+    "venue_capability_checked": false,
+    "venue_contacted": false,
+    "win_rate_computed": false
+  },
+  "created_utc": "2026-11-11T06:23:39Z",
+  "critical_arithmetic_restated": {
+    "R_definition_unchanged": "R = executed_notional x stop_fraction, per the Stage 2Q Q3 selection; unchanged by this stage",
+    "d01_changed": false,
+    "d02_changed": false,
+    "d02_limits_scaled_to_real_capital": false,
+    "loss_tolerance_share_of_stated_capital": {
+      "derivation": "$30 / $100",
+      "label": "the owner's stated maximum acceptable cumulative loss as a share of the stated $100 strategy capital",
+      "value": 0.3
+    },
+    "method": "arithmetic on recorded values only; no data processed, no metric computed, no distribution fitted, no venue consulted",
+    "order_notional_is_not_risk_capital": true,
+    "order_notional_share_of_stated_capital": {
+      "derivation": "$1 / $100 = 1%; $3 / $100 = 3%",
+      "label": "the $1-$3 practical order range as a share of the stated $100 strategy capital; notional, not risk",
+      "value_range": [
+        0.01,
+        0.03
+      ]
+    },
+    "owner_loss_tolerance_is_not_a_strategy_drawdown_authorization": true,
+    "owner_loss_tolerance_is_personal_and_cumulative": true,
+    "per_trade_risk_limit_created": false,
+    "research_parameters_preserved": {
+      "max_entry_notional_usd": 2500,
+      "note": "the $10,000 research reference and the $2,500 notional cap remain historical research parameters, unchanged and unreinterpreted",
+      "research_equity_usd": 10000
+    },
+    "stop_fraction_selected_or_assumed": false,
+    "unknowns_converted_to_none": false
+  },
+  "d04_status": {
+    "after_stage": "partially resolved - equity, cumulative loss tolerance and order range recorded; allocation distinction and capital restrictions outstanding",
+    "before_stage": "partially resolved - Option A basis chosen, four figures outstanding",
+    "fully_resolved": false,
+    "missing_fields": [
+      "allocation status of the $100 (entire capital or an allocation)",
+      "deposit restrictions",
+      "withdrawal restrictions",
+      "exchange access and account capabilities",
+      "capital availability and transfer restrictions",
+      "owner confirmation of the $1-$3 order-notional interpretation"
+    ],
+    "unknowns_accepted_as_unknown": true,
+    "unknowns_accepted_as_unknown_note": "the governance permits recording unknowns explicitly as unknown; it does not permit that recording to complete Option A, which requires the four constraint statements"
+  },
+  "deliverables": [
+    {
+      "bytes": 12202,
+      "path": "docs/research/stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md",
+      "role": "Record of the owner-supplied D-04 figures (equity, maximum acceptable loss, order range, restrictions), the arithmetic on them, the unresolved distinctions, the D-04 completion evaluation, and the post-stage blocker and checklist status",
+      "sha256": "5ad27398f0bfe1279530afa25c1060194f07e1d7ffec4781e11eb559be57cd1f"
+    }
+  ],
+  "design_scope": {
+    "authorized": [
+      "inspect branch, HEAD, working tree and remote synchronisation",
+      "read the Stage 2Q package and the Stage 2M, 2N, 2O and 2P governance records",
+      "verify frozen manifest hashes without modifying them",
+      "record the owner-supplied D-04 figures with their unresolved distinctions",
+      "state the arithmetic on the recorded values only",
+      "commit and push the Stage 2R record and freeze manifest"
+    ],
+    "prohibited": [
+      "passing Gate 0",
+      "authorizing Gate 1 to 5",
+      "collecting or processing any market data",
+      "backtest, simulation, bootstrap, census or Monte Carlo",
+      "any strategy change",
+      "venue contact or Nobitex capability, minimum-notional, fee, spread or lot-step checks",
+      "cost or liquidity study",
+      "independent audit or reviewer appointment",
+      "drafting or creating Gate 0 artifacts",
+      "modifying D-01, D-02, D-15 or any prior-stage artifact",
+      "mechanically scaling D-02 research-leg limits into live or actual-capital permissions",
+      "converting unknown restrictions into 'none'",
+      "inventing a per-trade risk limit",
+      "initiating Stage 2S",
+      "paper or live trading"
+    ]
+  },
+  "gate0_assessment": {
+    "blocked_rows": [
+      "R-15"
+    ],
+    "not_applicable_rows": [
+      "R-06",
+      "R-23"
+    ],
+    "note": "No row changed status code in this stage. R-08 remains partially satisfied with its description refined: equity, cumulative loss tolerance and order range recorded; allocation distinction and capital restrictions outstanding. The remaining Gate 0 gaps are the outstanding D-04 fields and the three unwritten artifacts; the fourth artifact depends on those fields.",
+    "open_rows": [
+      "R-18",
+      "R-19",
+      "R-20"
+    ],
+    "partially_satisfied_rows": [
+      "R-05",
+      "R-08",
+      "R-10",
+      "R-13",
+      "R-17",
+      "R-22"
+    ],
+    "requirements_blocked_by_another_decision": 1,
+    "requirements_not_applicable": 2,
+    "requirements_open": 3,
+    "requirements_partially_satisfied": 6,
+    "requirements_satisfied": 11,
+    "rows_total": 23,
+    "satisfied_rows": [
+      "R-01",
+      "R-02",
+      "R-03",
+      "R-04",
+      "R-07",
+      "R-09",
+      "R-11",
+      "R-12",
+      "R-14",
+      "R-16",
+      "R-21"
+    ]
+  },
+  "gate0_passed": false,
+  "gate0_verdict": "not passed, not ready to pass",
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "historical_positions_preserved": {
+    "candidate_status_changed": false,
+    "historical_artifacts_modified": false,
+    "historical_verdicts_modified": false,
+    "note": "All historical censuses, gates and verdicts are unchanged and were not re-run. The $10,000 research leg and its limits are untouched."
+  },
+  "manifest_commit_note": "This manifest is committed after the Stage 2R response record. The final repository HEAD is the commit that introduces this file; the manifest cannot contain its own hash.",
+  "nature": "owner-input recording stage only: records the owner-supplied D-04 figures, the arithmetic on them, and the distinctions that keep them separate from the frozen research-leg parameters. Contains no research, no measurement, no venue evidence, and no gate outcome.",
+  "no_performance_claim": "No return, expectancy, win rate, drawdown, tail, equity curve, P&L or feasibility claim is made or implied. No data was processed and no venue evidence was collected. The $1-$3 order range is not validated against any venue limit.",
+  "owner_inputs": {
+    "D-04": {
+      "basis": "Option A - actual deployable capital (selected 2026-11-10, Stage 2Q)",
+      "capital_restrictions": {
+        "capital_availability_and_transfer_restrictions": "unknown / not supplied",
+        "deposits": "unknown / not supplied",
+        "exchange_access_and_account_capabilities": "unknown / not supplied",
+        "note": "the owner asked the research agent to fill the remaining details; no factual information was supplied, so every category is recorded as unknown and none is converted into 'none'",
+        "withdrawals": "unknown / not supplied"
+      },
+      "equity": {
+        "allocation_status": "unresolved - entire available capital versus an allocation is not explicitly established",
+        "amount_usd": 100,
+        "as_of_date": "2026-11-11",
+        "recorded_as": "capital available for this strategy"
+      },
+      "maximum_acceptable_loss": {
+        "amount_usd": 30,
+        "boundary": "cumulative loss",
+        "explicitly_not": [
+          "a 30% strategy drawdown authorization",
+          "a change to D-02",
+          "a per-trade risk limit"
+        ],
+        "percentage_of_stated_capital": 30,
+        "recorded_as": "the owner's personal cumulative loss tolerance"
+      },
+      "practical_order_size_range": {
+        "claimed_to_match_nobitex_limits": false,
+        "interpretation_status": "working interpretation, not a separately confirmed definition",
+        "maximum_usd": 3,
+        "minimum_usd": 1,
+        "recorded_as": "order notionals"
+      }
+    },
+    "presentation": "owner-supplied figures recorded verbatim in substance; supplied facts recorded as supplied, unsupplied facts recorded as unknown, no field filled in by the research agent",
+    "response_date": "2026-11-11"
+  },
+  "owner_values_restated_not_changed": {
+    "D-01": {
+      "annual_target_usd": 250,
+      "mme_definition": "Definition A, net R per executed trade",
+      "mme_value_R": 0.1,
+      "research_equity_usd": 10000
+    },
+    "D-02": {
+      "cvar95_R": 0.5,
+      "max_drawdown_pct_of_prior_peak": 15,
+      "max_entry_notional_usd": 2500,
+      "per_trade_net_loss_cap_R": 1.0,
+      "scope": "research leg"
+    }
+  },
+  "repository": {
+    "artifact_commit_note": "The Stage 2R response record was committed before this manifest was written; both were pushed together after manifest validation succeeded. The manifest cannot contain its own commit or hash; HEAD above is the response-record commit.",
+    "branch": "main",
+    "head_at_manifest_creation": "17bdede",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_clean_at_manifest_creation": true
+  },
+  "self_hash": "45c1a5da718b754c75db5ba9e1238acbbecb5f41ebc3f62642e767ee9c84db4b",
+  "source_artifacts": {
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": {
+      "bytes": 26674,
+      "sha256": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74"
+    },
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": {
+      "bytes": 32727,
+      "sha256": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7"
+    },
+    "docs/research/stage2o/STAGE2O_D01_D02_DECISION_PACKET.md": {
+      "bytes": 30979,
+      "sha256": "d8b16ade03abe742b3b24065a2f9f3842cd97e2cfd4572a7b39a189a0ebade6f"
+    },
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15820,
+      "sha256": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a"
+    },
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": {
+      "bytes": 20991,
+      "sha256": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c"
+    },
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": {
+      "bytes": 17645,
+      "sha256": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d"
+    },
+    "docs/research/stage2q/FREEZE_MANIFEST.json": {
+      "bytes": 12607,
+      "sha256": "db2e0e34dd46c3460e5fbba5fdba5883ac7ae9e975ee5ab96d23ec4141387642"
+    },
+    "docs/research/stage2q/STAGE2Q_D04_REAL_CAPITAL_QUESTION.md": {
+      "bytes": 10474,
+      "sha256": "d3b09860e184292ab47b183bc9992434aa2afbfa233b149b2eaf230ece6cdccb"
+    },
+    "docs/research/stage2q/STAGE2Q_OWNER_RESPONSE_RECORD.md": {
+      "bytes": 15452,
+      "sha256": "b8c7f85c9628904741c9d8fb2b11256f5cb0cd85115a057de4dcf35ba9c7c05e"
+    }
+  },
+  "source_manifest_integrity": {
+    "stage2p": {
+      "entries_checked": 16,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    },
+    "stage2q": {
+      "entries_checked": 15,
+      "files_match": true,
+      "mismatched": [],
+      "self_hash_match": true
+    }
+  },
+  "stage": "2R",
+  "version_identifier": "stage2r/1.0.0"
+}
