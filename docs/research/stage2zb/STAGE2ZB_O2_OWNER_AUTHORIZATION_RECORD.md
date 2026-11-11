@@ -368,3 +368,23 @@ matched the source documents and the supplied report. No material contradiction 
 stage depends on.
 
 ---
+
+## 11. Integrity of this record
+
+1. This record creates no decision and authorizes no activity. It records the owner's `confirm`, the
+   declaration it answers, and the specific reason O-2A is not accepted as authorized.
+2. It edits no adopted or historical document. The Stage 2Z addendum, the Stage 2ZA packet, the O-1
+   record, the boundary, and both freeze manifests are byte-identical to their committed versions.
+3. It adds no owner value, threshold, condition, or exception, and it writes no owner signature, date, or
+   scope on the owner's behalf.
+4. It makes no claim that Gate 0 passed, that Gate 1 was authorized or attempted, or that any research
+   occurred.
+5. It deliberately declines to produce the six execution deliverables the Stage 2ZB instruction lists,
+   because the instruction conditions those on a valid authorization. Only this pending record and its
+   manifest were created.
+6. If the owner later issues the statement in §8, that statement is recorded verbatim in a new record and
+   bound to the same packet hash. This record is then superseded prospectively; it is not edited.
+
+---
+
+**O-2 status: PENDING — authorization form not met. Scope authorized: none. Gate 0: NOT PASSED. Gate 1: NOT AUTHORIZED. No research performed.**
