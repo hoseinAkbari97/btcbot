@@ -136,3 +136,166 @@ It creates no gate, no requirement, no reviewer, no authorization, no evidence, 
 closes nothing.
 
 ---
+
+## 4. Gate 0 assessment per capital base
+
+### 4.1 One gate, one recorded status
+
+Gate 0 remains a single gate with a single recorded verdict. That verdict is **NOT PASSED** and may
+not be recorded as passed on either base. The per-base assessment below explains *which requirements
+apply to which base*; it does not create a second gate and does not change the verdict.
+
+### 4.2 Applicability of the requirements
+
+**Verified fact:** this table is a reading of the requirement titles and scopes as recorded in
+`stage2p/GATE0_READINESS_ASSESSMENT.md` §5 and `stage2p/EVIDENCE_REQUIREMENTS_AND_DEPENDENCIES.md`
+§5. It changes no status code.
+
+| requirement | research-leg base | real-capital base |
+|---|---|---|
+| `R-01` MME | applies — `S` | applies — `S` |
+| `R-02` drawdown limit | applies — `S` | applies — `S` |
+| `R-03` per-trade limit | applies — `S` | applies — `S` |
+| `R-04` tail limit | applies — `S` | applies — `S` |
+| `R-05` liquidity / position size | Gate 1 item — `P` | Gate 1 item — `P` |
+| `R-06` operational risk | N/A (not adopted) | N/A (not adopted) |
+| `R-07` research-leg capital context | applies — `S` | not applicable (its own title scopes it to the research leg) |
+| `R-08` **real-capital** capital context | **not applicable** (its own title scopes it to real capital) | applies — `P` |
+| `R-09` estimands | applies — `S` | applies — `S` |
+| `R-10` venue / cost standard | Gate 1 item — `P` | Gate 1 item — `P` |
+| `R-11` error control | applies — `S` | applies — `S` |
+| `R-12` dependence treatment | applies — `S` | applies — `S` |
+| `R-13` blocking decisions resolved | applies — `S` | applies — `S` (D-04 resolved; T-4 is not a register decision — see §5.4) |
+| `R-14` no silent default | applies — `S` | applies — `S` |
+| `R-15` objective in testable form | applies — **S** (its own text) | applies — **B** (its own text) |
+| `R-16` unit compatibility | applies — `S` | applies — `S` |
+| `R-17`–`R-20` artifacts | apply — `S` | apply — `S` |
+| `R-21` frequency acknowledgment | applies — `S` | applies — `S` |
+| `R-22` independent reviewer | Gate 4 item — `P` | Gate 4 item — `P` |
+| `R-23` deferred D-15 | N/A | N/A |
+
+### 4.3 The research-leg readiness determination
+
+When every requirement marked "applies — `S`" for the research-leg base in §4.2 is satisfied, and
+`R-15` is satisfied for that base per its own text, the record may state:
+
+> **"Gate 0 research-leg inputs complete"** — a **research-leg readiness determination**, not Gate 0
+> passage.
+
+Limits of that determination:
+
+1. It is **not** a Gate 0 pass and may never be written as one.
+2. It satisfies no requirement that is not already marked `S` for the research-leg base.
+3. It does **not** authorize any stage. A named stage authorization under protocol §2.1 remains
+   separately required.
+4. It does **not** apply to `R-05`, `R-10`, or `R-22`, which remain the Gate 1 and Gate 4 items they
+   already are.
+5. It says nothing about real capital.
+
+### 4.4 The real-capital status
+
+For the real-capital base, `R-08` is `P` and `R-15` is `B`. Gate 0 is therefore **NOT PASSED** for
+real capital, and no real-capital claim of any kind may be made. This is unchanged from
+`stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md` §4 and from the owner's W-F statement.
+
+### 4.5 The global verdict
+
+> **Gate 0: NOT PASSED.**
+
+The addendum does not alter that line. It permits, at most, a separately named research-leg readiness
+determination to sit beside it, with the meaning and limits in §4.3.
+
+---
+
+## 5. `R-08` and `R-15` per base
+
+### 5.1 `R-08` — real-capital capital and sizing context
+
+**Verified fact** (`stage2p/GATE0_READINESS_ASSESSMENT.md` §5): `R-08` is titled "Capital and sizing
+context, **real capital**" and its missing evidence is "the owner's real deployable capital, or an
+explicit statement that none is committed."
+
+**Verified fact** (`stage2r/STAGE2R_OWNER_RESPONSE_RECORD.md` §6.2; `stage2t/STAGE2T_DECISION_PACKET.md`
+§3): from Stage 2R onward, `R-08` also carries the real-base per-trade sizing rule, and "T-4c keeps
+`R-08` **P**."
+
+**Proposed reading.** `R-08` applies to the real-capital base only. It is not an input to the
+research-leg readiness determination. It remains `P`, and its requirement is the one recorded from
+Stage 2R/2T onward: the real-capital capital context **and** the real-base per-trade sizing
+convention (T-4). The narrower Stage 2P baseline wording is preserved as history and is not rewritten
+or declared wrong.
+
+**Residual, disclosed.** The 2P and 2R/2T wordings still differ. This addendum does not reconcile them
+for the real-capital base; it confines their effect to that base. See conflict `C-2` in
+`STAGE2Z_CONFLICT_TRACEABILITY_MATRIX.md`.
+
+### 5.2 `R-15` — objective in testable form
+
+**Verified fact** (`stage2p/GATE0_READINESS_ASSESSMENT.md` §5, verbatim): "**S** for the research
+leg; **B** for any real-capital claim".
+
+**Proposed reading.** `R-15` is applied exactly as its own text states, on each base. It is satisfied
+for the research-leg base and remains blocked for the real-capital base. Its recorded status code
+`B` is unchanged; the research-leg determination relies on the row's own `S` half, not on a
+reinterpretation of `B`.
+
+### 5.3 What this does not do
+
+It does not mark `R-08` or `R-15` satisfied, does not change their status codes, and does not close
+any blocker. `B-07` stays closed only in the consolidation sense recorded in
+`stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md` §3.
+
+### 5.4 `T-4` is not a Gate 0 blocking decision
+
+**Verified fact** (`stage2m/OWNER_DECISION_REGISTER.md` §1): the register marks `D-04` **BLOCKING**
+and has no decision ID for a real-capital per-trade sizing convention. T-4 is a Stage 2T decision
+attached to D-04.
+
+**Verified fact** (`stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md` §2): "`R-13` stays
+**S** because it concerns the decisions D-01…D-15, all resolved; the deferred item is the Stage 2T
+decision **T-4**, which is tracked by `R-08`, not by `R-13`."
+
+**Proposed reading.** Protocol §3.3 tests whether "every decision in the owner register that is marked
+**blocking** is resolved". T-4 is not such a decision. It affects Gate 0 only through `R-08` on the
+real-capital base. This records the register's own construction; it does not resolve T-4.
+
+---
+
+## 6. Does an unresolved T-4 prevent research-leg authorization?
+
+### 6.1 The position under the current protocol
+
+**Verified fact** (protocol §3.5): the prohibition is unconditional. Under the protocol as written
+today, an incomplete Gate 0 — including one held incomplete only by `R-08` — bars hypothesis
+registration and strategy data access on any base. **Today, therefore, the unresolved T-4 does
+prevent a research-leg experiment.** That is a statement of current text, not a recommendation.
+
+### 6.2 The proposed position
+
+If the addendum is adopted:
+
+1. The prohibition in protocol §3.5 is scoped to the capital base whose Gate 0 inputs are incomplete.
+2. An incomplete **real-capital** context bars real-capital work and real-capital claims.
+3. It does not bar a **research-leg** stage whose own inputs are complete under §4.3 — but only if a
+   separate, named stage authorization under protocol §2.1 exists, with its own scope, data,
+   prohibitions, and stop condition.
+4. The determination in §4.3 is a precondition, not an authorization.
+
+### 6.3 Why the research leg does not need T-4
+
+**Verified fact** (`stage2s/STAGE2S_A2_RISK_POLICY_DRAFT.md` §1; `stage2p/GATE0_READINESS_ASSESSMENT.md`
+§5 row `R-07`): the research-leg risk rule is already frozen — `1%` fixed-fractional of `$10,000`,
+`1.00R` per-trade cap, `15%` drawdown of prior peak, `CVaR95 = 0.50R`, `$2,500` entry-notional cap.
+None of these references a real-capital sizing convention.
+
+`T-4` answers a different question: how real capital, not research capital, would be sized. Its
+evidence requirements include research outputs (`stage2w/STAGE2W_OWNER_DECISION_PACKET.md` §4), which
+is why the unscoped failure rule creates the loop.
+
+### 6.4 What this section does not do
+
+It does not decide T-4, does not approve any real-capital risk amount or percentage, and does not
+authorize the research leg. T-4 remains **deferred** exactly as recorded in
+`stage2x/STAGE2X_T4_OWNER_DECISION_RECORD.md` §1 and §4.
+
+---
