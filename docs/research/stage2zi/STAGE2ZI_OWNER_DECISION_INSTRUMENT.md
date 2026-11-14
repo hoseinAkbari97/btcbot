@@ -48,6 +48,26 @@ it as "packet §7, issue `I-2`", and the packet's §7 is a table of artifact has
 selection is therefore an owner statement about a question the packet did not ask, and it is legitimate only as
 a confirmation of the `26 bp` label, which is what it is written as.
 
+## 4. Decision 2ZD-4 — the seven values, with their qualifications
+
+Preserve these values exactly. The qualifications are part of the value: a registration that cites `10,000`
+without the "comparability choice" label, or `14 days` without "convention", would overstate the evidential
+base.
+
+| # | field | proposed value | required qualification | owner value |
+|---:|---|---|---|---|
+| 1 | episode definition | maximal contiguous 4 h `budget_ok` run containing the signal instant | mandated by the frozen eligibility rule; dependence adequacy **conditional** on an exit policy | `________________` |
+| 2 | block length | 14 calendar days | **convention**, from Stage 6; not derived from the data or the MME | `________________` |
+| 3 | resample count | 10,000 | a **comparability choice**, explicitly not a protocol mandate | `________________` |
+| 4 | seed | `20240101` | a **reproducibility choice**; arbitrary by construction | `________________` |
+| 5 | embargo | 90 calendar days at each boundary | **derived** from `540 × 4 h`; gives 91 development blocks, and consumes 180 of 792 reserved days | `________________` |
+| 6 | custodian | the human owner, under the logged custody procedure | a **recommendation**; appointment requires the separate instrument and explicit affirmation | `________________` |
+| 7 | opening condition | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | consistent with §2.2 and §8.8; the audit condition is the protocol's own sequence made explicit | `________________` |
+
+**Do not read this table as a claim of statistical adequacy.** Six values are usable as proposed; none is
+invented, and none was fitted to a design effect or an outcome. Two of the seven rest on a single prior
+recommendation, and one creates a role that the governing text does not contain.
+
 **Owner statement (verbatim), if any:** `________________`
 **Conditions or qualifications:** `________________`
 **Effective date (UTC):** `________________`
