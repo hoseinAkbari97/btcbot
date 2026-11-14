@@ -151,3 +151,26 @@ disclosure of reserved content, however small and however well intentioned.
 **Precedent already in this programme.** The four Stage 2ZC boundary inspections and its full-file digests are
 recorded as pre-amendment deviations (`Y-1`, `Y-2`). They are the model for how a deviation is written down: named,
 dated, quantified, and neither concealed nor exaggerated.
+
+## 9. When reserved material may be opened, if ever
+
+**The custody procedure ends before any content is read.** Reset of the ordering:
+
+| moment | what happens | who acts |
+|---|---|---|
+| Gate 2 registration | dates declared, digests computed and logged, split frozen | owner as custodian |
+| Gate 3 | development block only; reserved blocks untouched | analyst, within dev permissions |
+| Gate 4 | the implementation is independently audited; the log and procedure are audited here | auditor |
+| Gate 5 | **the one look**: the validation interval is exported once to a read-only working copy, the export is logged, the frozen analysis runs once | owner exports; analyst runs the frozen plan |
+| Gate 6 | the final research decision; OOS is used only if validation passed the pre-registered criteria | owner |
+
+**Conditions on the one look, all of them:** the Gate 2 freeze has occurred; the Gate 4 audit has no open CRITICAL
+or MAJOR finding (§8.8); the analysis plan is unchanged since the freeze; the export is logged before it happens;
+and the copy's digest is recorded. A second export requires a new pre-registered stage under D-12 — not a new
+request, a new registration.
+
+**If validation fails, OOS is never opened.** That is the governing rule, not a preference: §8.2 allows the OOS
+block to be used "only if validation passes the pre-registered criteria".
+
+**Under `C-N` none of this can begin**, because there is no registered hypothesis for a look to test. The table
+describes a route that a later decision would have to open, not a schedule.
