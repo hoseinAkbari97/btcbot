@@ -44,3 +44,15 @@ the standard an adoption statement meets.
 | what exactly is a prohibited row read | any reserved contact by the analyst, plus any content-bearing operation by anyone | `A-1` |
 | is hashing opaque reserved bytes permitted, prohibited, or separately authorised | prohibited to the analyst; permitted to the custodian only, under a declared procedure and a pre-delivery log | `A-2` |
 | how does §8.2's hash requirement survive | the custodian computes and delivers the digest; §8.2 says so explicitly | `A-3` |
+
+## 4. Proposed text
+
+The wording below is written to be inserted as **§8.2.1** immediately after §8.2, with §8.2's final sentence
+replaced. Nothing else in the protocol is touched.
+
+### A-1 — Definitions
+
+> **§8.2.1 Definitions.** A *reserved interval* is the set of records in a data file whose timestamps fall inside
+> a validation or out-of-sample block. *Reserved contact* is any access to bytes in a reserved interval,
+> whether or not their content is inspected. Under the owner's adopted reading, **any reserved contact by the
+> analyst is a prohibited read**, and "read" in D-12 and addendum §10.4 includes it.
