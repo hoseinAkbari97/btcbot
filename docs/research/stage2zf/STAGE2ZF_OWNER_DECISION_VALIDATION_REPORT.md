@@ -65,3 +65,10 @@ Supporting facts, each checked on the committed revision:
   statement (verbatim)*.
 - The 2M register holds no `2ZD` entry, so no downstream record already carries a decision.
 - `docs/research/stage2ze/` holds one file, the briefing, and it records the recommendation only.
+
+## 5. Open decisions
+
+| ID | question | options | state |
+|---|---|---|---|
+| 2ZD-0 | which next move | `A` / `B` / `C` / `D` | **open** |
+| 2ZD-1 | is hashing a reserved block a "read" | `R-a` / `R-b` / `R-c` / `R-d` | **open** |
