@@ -91,3 +91,18 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 > The declared digest function is SHA-256 over the raw bytes of the interval, from its first byte to its last.
 > Locating the first record at or after a declared boundary timestamp by its timestamp field alone is part of the
 > digest procedure and is limited to one such inspection per file per boundary.
+
+### A-3 — What satisfies the freeze, and what the custodian may deliver
+
+> **Delivery.** The custodian delivers to the record, and to no one else, exactly six items: the digest, the
+> name of the digest function, the byte count streamed, the declared interval's start and end timestamps, and the
+> UTC date of the run. Nothing else crosses the boundary — no row, no field, no count by value, no sequence, no
+> statistic, no indicator, no summary, no sample, and no derived quantity of any kind.
+>
+> **What the freeze consists of.** §8.2's frozen split is satisfied by the owner's declared dates plus the
+> custodian's digests, recorded together in the Gate 2 manifest. No further hash of a reserved interval is
+> required of, or permitted to, the analyst.
+>
+> **What this does not create.** The digest does not certify the contents to the analyst, and it is not a
+> substitute for reading. Its function is identity: it fixes which bytes the split refers to, so that a later
+> inconsistency is detectable. Detecting that inconsistency is the custodian's task, under §A-4.
