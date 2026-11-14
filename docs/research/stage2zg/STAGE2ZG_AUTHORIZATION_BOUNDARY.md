@@ -69,3 +69,17 @@ Even with every option ratified, Gate 2 requires an instrument that:
 3. confirms that `C-D` is the registered primary hypothesis and that no other is tested in the stage;
 4. fixes the exact validation and OOS dates and the two embargoes, so §8.2's freeze has content;
 5. names the custodian, or records that the owner holds the split, satisfying 2ZD-4 field 4.
+Until such an instrument exists and is recorded, Gate 2 is **NOT AUTHORIZED**, whatever this package recommends.
+
+## 6. The boundary this stage itself respected
+
+| item | value |
+|---|---|
+| dataset files streamed | 0 |
+| validation or OOS rows decoded | 0 |
+| reserved bytes hashed | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| cost, spread, depth, fill, or liquidity measurements | 0 |
+| venue contacts, API keys, orders | 0 |
+| owner fields completed anywhere | 0 |
+| frozen documents modified | 0 |
