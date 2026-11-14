@@ -109,3 +109,14 @@ A field left blank is recorded as *not decided*. The agent will not fill it, wil
 as a default, and will not read incompleteness as consent. If a returned statement is internally inconsistent
 — `2ZD-0 = C` with no sub-decisions, or two primaries — the agent will report the defect and stop, as the
 stage requires, rather than repair it.
+
+## 8. What remains unauthorized
+
+Unchanged by this stage, and unchanged by any part of the 2ZF instruction:
+
+- Gate 2 execution, Gate 2 passage, and any Gate 2 registration or verdict.
+- Hypothesis registration, and any research verdict.
+- Reading, decoding, or streaming validation or OOS rows.
+- Hashing reserved blocks; permitted only if the owner's valid decision adopts the applicable interpretation.
+- Feasibility census, backtesting, simulation, parameter fitting, strategy design.
+- Quote sampling, and any cost, spread, depth, slippage, fill, latency, or liquidity measurement.
