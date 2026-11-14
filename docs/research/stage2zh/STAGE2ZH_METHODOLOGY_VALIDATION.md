@@ -162,3 +162,9 @@ audit precedes the look.
 |---|---|---|
 | exit and holding policy | the specification has no exit rule, so dependence adequacy and the embargo's sufficiency are conditional | a registered exit rule fixing maximum holding ≤24 h |
 | authority for 10,000 / `20240101` | precedent only, from one document | disclosure in the registration as a comparability choice |
+| block length basis | convention, not derived from the MME or the data | accepted as a pre-registration disclosure |
+| custodian digest verification | unverifiable by the analyst under `R-b` | Gate 4 procedure audit, and disclosure |
+| planning `σ`, `DE`, `p_exec` | B-11 bars deriving them from a design effect | declaration at registration under `E-2` |
+
+Only the first row blocks a Gate 2 registration. The others are disclosure obligations, and each is satisfied by
+a sentence in the registration rather than by a new decision.
