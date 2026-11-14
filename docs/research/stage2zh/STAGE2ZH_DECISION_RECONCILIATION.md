@@ -17,3 +17,15 @@ sources, and records where it agrees with 2ZG, where it departs, and what the de
 | 2ZG decision record | present | `e3d3dd08…ee3258`, 6,366 bytes |
 | 2ZG boundary | present | `b3c8fc95…0c06a8`, 5,159 bytes |
 | 2ZG manifest | present | `ae55e362…926736`, self-hash `3d7830aa…cf738a`, verified |
+
+The four Stage 2ZG hashes were recomputed from current bytes and match the values reported at the end of that
+stage. The Stage 2ZD manifest's canonical self-hash and its six deliverable hashes were re-verified in Stage
+2ZG and are not re-derived here; this stage reads no dataset file.
+
+## 2. Labels used in this document
+
+- **[F]** verified source fact, quoted or counted, with its section.
+- **[CALC]** arithmetic shown in full, reproducible from the stated inputs.
+- **[REC]** the delegated recommendation under evaluation.
+- **[OPEN]** unresolved; needs evidence or a decision that does not exist yet.
+- **[OWNER]** a formal owner act is required; the agent may draft, never perform.
