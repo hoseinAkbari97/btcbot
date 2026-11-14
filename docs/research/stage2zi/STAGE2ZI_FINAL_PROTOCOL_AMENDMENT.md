@@ -143,3 +143,28 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 
 No other section of the protocol is touched. The amendment adds one numbered subsection and replaces one
 sentence, which is the minimum text that makes `R-b` operative.
+
+## 7. Finding `Y-1` — the pre-amendment deviation, scheduled
+
+**The four Stage 2ZC boundary inspections are recorded here as a pre-amendment deviation. They are not
+grandfathered, not retroactively legitimised, and not removed from the record.**
+
+### 7.1 What the evidence says
+
+| fact | source |
+|---|---|
+| four boundary records were inspected — one per dataset file, four files | `STAGE2ZC_ACCESS_LOG.md` line 202 |
+| what was inspected was the `open_time` string only | same, line 22 |
+| payloads decoded: **0** | same, lines 22 and 203 |
+| the access was disclosed, deliberate, and occurred under a Gate 1 research-leg authorization | same, §0; `STAGE2ZC_GATE1_VERDICT.md` |
+| uniform full-file hashes were also computed over all bytes, including reserved bytes | same, line 21 |
+
+### 7.2 Why it is a deviation
+
+**[R]** Under `R-b` — any reserved contact is a read — both classes of act were reserved contact: reading a
+boundary record's `open_time` field, and streaming the whole file through SHA-256 because the file contains
+reserved bytes. Neither was treated as a read at the time, because `R-b` did not yet exist and D-12 was read as
+prohibiting the reading of *rows*, not the touching of *bytes*.
+
+That is the deviation: **not that the acts were hidden, but that they were performed under a reading the owner
+has since declined to adopt.**
