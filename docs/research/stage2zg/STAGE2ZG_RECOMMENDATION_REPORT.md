@@ -191,3 +191,11 @@ three groups, so it is both unstable and coarse. Calendar month — not linked t
 **[F]** This is the predecessor convention, not a new choice: Stage 6 ran a 14-day block bootstrap
 (`stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md` line 69) and the strategy recommendation fixed 14 days, 10,000
 resamples, seed `20240101` (`STRATEGY_2_RECOMMENDATION.md` line 216).
+**[R]** Adequacy: a block must exceed the dependence range. The holding horizon here is intraday and the
+canonical non-overlap window is 24 h, so 14 days spans fourteen times the longest plausible range; the
+1,277-day development interval yields 91 blocks, enough for a stable bootstrap. Independence from `DE`: the
+number was fixed long before this decision and is not varied here, so it cannot have been tuned.
+
+**Rejected:** 1 day — too short for multi-day clustering and leaves 1,277 near-adjacent blocks. 30 or 90 days
+— fewer than 43 blocks and outside the frozen convention, ending comparability with the recorded work for no
+stated gain.
