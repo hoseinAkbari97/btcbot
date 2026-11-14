@@ -83,3 +83,10 @@ be derived from the stream, and no digest may be compared across blocks until th
 says otherwise: the range-and-hash record §2 states the hashes "are **not** full-file hashes" — each is a
 SHA-256 over development-interval objects only — and §1 states that no row in the reserved remainder "was …
 hashed as part of a block identity".
+
+**[F]** The only recorded reserved-block contact is a boundary probe: one `open_time` string per file, four in
+total, payload decoded zero (`STAGE2ZC_ACCESS_LOG.md`, access table).
+
+**[R]** There is therefore no prior reserved-block *hash* to point to. `R-a` must stand on the text of §8.2
+and the ordinary meaning of "read". The boundary probe is not a precedent either: it is a metadata read the
+access log disclosed, not a hash pass.
