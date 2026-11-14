@@ -128,3 +128,13 @@ Unchanged by this stage, and unchanged by any part of the 2ZF instruction:
 Status restated so a partial reply cannot be mistaken for progress: Gate 0 **NOT PASSED**; Gate 1 **PASSED —
 research leg only**; Gate 2 **NOT AUTHORIZED**; `T-4` **deferred**; `R-08` **`P`**; `R-15` **`B`**; `C-4` and
 `C-6` **unresolved**.
+
+## 9. Integrity and next action
+
+This is a validation-only artifact in `docs/research/stage2zf/`, a new directory. No frozen document was
+touched, no historical decision was rewritten, no commit was amended, no prior manifest was altered. The
+report carries no self-digest: it cannot embed its own SHA-256 and stay verifiable, so its digest is reported
+in the stage's completion message instead.
+
+**Next action, the owner's alone:** return the Stage 2ZE §6 form, or an equivalent statement carrying the same
+identity, selections, date, and signature. Until then, this stage stops here.
