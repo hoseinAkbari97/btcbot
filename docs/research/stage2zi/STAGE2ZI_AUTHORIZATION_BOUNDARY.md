@@ -59,3 +59,17 @@ document that called the exit policy "the only remaining obstacle" while `C-N` s
 matters — it would invite closing #5 and declaring Gate 2 ready.
 
 **Neither is closable here.** #1 needs a candidate decision, and #5 needs a registered rule; both are owner acts.
+
+## 5. What remains unauthorized
+
+- **Gate 2 execution, passage, registration, or verdict** — and under `C-N` no registration is possible yet.
+- **Any reserved contact by the analyst** — no hashing, streaming, decoding, sampling, or inspection, under any
+  reading, until the amendment is adopted and a custodian is appointed.
+- **Hypothesis registration**, including any implied by the phrase "adoption-ready" or "prepare Gate 2".
+- **Candidate substitution, a third candidate, or strategy design** — no candidate is revived by this package.
+- **Feasibility census, backtesting, simulation, parameter fitting, or strategy experiments.**
+- **Cost, spread, fee, depth, slippage, fill, latency, or liquidity measurement**, and any quote sampling.
+- **Venue contact, account access, API keys, orders.**
+- **`T-4`, real-capital sizing, paper trading, live trading.**
+- **Any change to D-01…D-15, A-1…A-4, `26 bp`, the protocol, the addendum, or any verdict.**
+- **Reopening either `FEASIBILITY FAIL` verdict**, or reading either census as if `C-N` had changed it.
