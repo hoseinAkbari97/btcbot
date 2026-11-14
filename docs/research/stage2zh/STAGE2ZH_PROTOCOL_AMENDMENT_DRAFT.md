@@ -107,3 +107,14 @@ recorded here because it remains the smaller change and because a future owner m
 
 It is **not** part of the proposed text. Adopting it would reverse the owner's `R-b` selection, and this stage
 does not reverse selections.
+
+## 7. Finding Y-1 — `R-b` reaches backwards
+
+**[F]** Stage 2ZC inspected "one per file, `open_time` string only" at the boundary, four boundary records in
+total, with "payload decoded = 0" (`STAGE2ZC_ACCESS_LOG.md`). That was disclosed, deliberate, and part of a
+Gate 1 authorization.
+
+**[R]** Under `R-b` as stated — any byte contact is a read — those four inspections were reserved contact. The
+amendment is prospective, so it cannot legitimise them retroactively, and §10.3 forbids retroactive editing of a
+historical artifact. The only honest treatments are to record them as a disclosed pre-amendment deviation, or to
+grandfather them explicitly. This draft does the first and leaves the second to the owner.
