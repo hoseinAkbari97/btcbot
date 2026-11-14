@@ -53,3 +53,14 @@ content.
 - **Cost, spread, depth, slippage, fill, latency, or liquidity measurement**, and any quote sampling.
 - **Venue contact, account access, API keys, orders.**
 - **T-4, real-capital sizing, paper trading, live trading.**
+- **Any change to D-01…D-15, A-1…A-4, `26 bp`, the protocol, the addendum, or any verdict** — the amendment is a
+  draft, and the protocol is untouched.
+- **Reopening either `FEASIBILITY FAIL` verdict**, or creating a third candidate to relieve `C-N`.
+
+## 5. What opening Gate 2 would additionally need
+
+1. A dated opening instrument naming the registration artifacts and the stage scope.
+2. The amendment adopted, and the custodian appointed in writing.
+3. A hypothesis — the one thing `C-N` withholds — which requires a further owner decision.
+4. Declared validation and OOS dates, and the two 90-day embargoes, so §8.2's freeze has content.
+5. A registered exit and holding policy, without which the episode and embargo arguments stay conditional.
