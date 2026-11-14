@@ -17,3 +17,15 @@ authorization boundary, and a manifest.
 **[F]** It also states that the recommendations "are not a fabricated owner signature or a claim that formal
 ratification has already occurred", and forbids Gate 2 execution, data access, censuses, measurement, venue
 contact, and any change to predecessor documents.
+
+## 2. What this stage did
+
+- Recomputed the four Stage 2ZG hashes; all matched.
+- Re-read the protocol, the register, the addendum, the packet, both candidate specifications, both census
+  reports, the 2J plan, the strategy recommendation, and the 2ZC records.
+- Determined that `C-N` is a valid packet option and that it does not breach D-11 (§6 of the reconciliation).
+- Determined that `R-b` is consistent with the protocol, recorded the §10.4 counter-route, and drafted the
+  minimum amendment that makes §8.2 satisfiable under it.
+- Validated the seven 2ZD-4 values against four support tiers, and left the exit-policy dependency open.
+- Recorded finding `Y-1`: under `R-b`, four previously disclosed 2ZC boundary timestamp inspections would count
+  as reserved contact.
