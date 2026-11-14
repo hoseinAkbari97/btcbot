@@ -25,3 +25,13 @@ not an authorization to decide.
 - Recommended one option for each of 2ZD-0, 2ZD-1, 2ZD-2, 2ZD-3, and 2ZD-5; proposed four 2ZD-4 values and left
   the fifth field open; answered Q-1 as an assumption confirmation.
 - Reported three conflicts rather than resolving them by inference.
+- Wrote three documents and a manifest in `docs/research/stage2zg/`; touched nothing else.
+
+## 3. What ratification would resolve
+
+| decision | what it closes |
+|---|---|
+| 2ZD-0 = `C` | opens the Path C package; closes nothing on its own |
+| 2ZD-1 = `R-a` | B-3: Gate 2 may hash and log reserved blocks without decoding |
+| 2ZD-2 = `C-D` | B-1: one primary hypothesis is named (D-11 satisfied) |
+| 2ZD-3 = `S-1` | B-2: the cap-versus-stop rule is fixed; Gate 2 input #6 becomes writable |
