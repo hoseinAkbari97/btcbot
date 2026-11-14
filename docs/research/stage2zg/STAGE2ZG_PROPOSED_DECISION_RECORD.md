@@ -56,3 +56,14 @@ made against those numbers, not a neutral one.
 |---|---|---|
 | selection | `S-1` — `R` is defined by the capped notional and shrinks | recommendation, unratified |
 | conditions | the `$2,500` cap is never exceeded; per-trade loss stays ≤ `1.00R` by construction | recommendation, unratified |
+
+**Consequence carried into the record:** `δ = 0.10R` becomes a smaller currency amount, so the MME is cheaper
+in money, unchanged in `R`, and the required `$250` trade count rises.
+
+## 6. 2ZD-4 — dependence and custody values (packet §6.4)
+
+| parameter | proposed value | status |
+|---|---|---|
+| episode definition | the maximal contiguous 4 h `budget_ok` run containing the signal instant | recommendation, unratified |
+| block length | 14 calendar days, 10,000 resamples, seed `20240101` | recommendation, unratified |
+| embargo length | 90 calendar days at each boundary | recommendation, unratified |
