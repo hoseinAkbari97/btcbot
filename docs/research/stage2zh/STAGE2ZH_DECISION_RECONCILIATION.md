@@ -70,3 +70,12 @@ is that Gate 2 stays blocked until a later candidate decision.
 
 **[F]** Protocol §8.2: "the exact dates and hashes are frozen at Gate 2". D-12 (register) and addendum §10.4:
 no validation or OOS "row" may be read before its gate. The word "read" is nowhere defined.
+**[F]** Protocol §10.4 says: "A pre-registered interpretation may resolve an ambiguity before counting, but it
+must be recorded in the plan and disclosed in the report." This is the counter-argument, and it is real: the
+protocol itself provides an interpretation route, so `R-b`'s premise — that interpretation alone is
+insufficient — is not stated anywhere in the text.
+
+**[R]** The distinction that saves `R-b` from being merely optional: §10.4 sits under "labels and populations"
+and concerns how a *label or population* is read, not whether a *data-access rule* may be relaxed by
+interpretation. An interpretation of §8.2 would bind only the analyst who recorded it and would leave the next
+reader free to interpret the other way; an amendment binds everyone, including a future custodian.
