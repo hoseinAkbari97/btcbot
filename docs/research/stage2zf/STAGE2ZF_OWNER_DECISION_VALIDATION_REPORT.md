@@ -46,3 +46,9 @@ Three further classes were considered and rejected on the same rule:
   recommendation. §2 excludes it by name, and no governance text converts a recommendation into a selection.
 - **The prepared response template.** Stage 2ZE §6 supplies a copy-ready form with every field blank. A blank
   form is an invitation to decide, not a decision.
+- **Assent without identifiers.** No message in the handoff says "OK", "confirmed", or "I agree", and §2 would
+  reject such a message even if it did, because it would carry no decision identifier, no option, no
+  instrument identity, and no date.
+
+No statement in the handoff identifies the packet, its digest, a `2ZD-*` decision, or a selected option.
+**Conclusion: no decision was recorded**, so there are no choices to validate.
