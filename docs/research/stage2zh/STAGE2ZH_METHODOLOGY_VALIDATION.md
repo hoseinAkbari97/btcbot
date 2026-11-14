@@ -76,3 +76,13 @@ acceptable for a pre-registration and must be disclosed as such in the registrat
 
 **[F]** These two values appear in one governing-adjacent document: "episode-cluster bootstrap **and** 14-day
 block bootstrap, 10,000 resamples, seed `20240101`" (`STRATEGY_2_RECOMMENDATION.md` line 216).
+
+**[F]** They appear in **no** other governing source: the protocol's §8.5 requires a reported dependence
+sensitivity but names no resample count; the register's D-09 names none; the 2J pre-registered plan explicitly
+computed no bootstrap (`PRE_REGISTERED_ANALYSIS_PLAN.md` §0, §10); the Stage 6 protocol requires that "random
+seeds are recorded" (line 96) without fixing one.
+
+**[R]** Status: supported as a recorded convention, **not mandated**. Adopting them is legitimate and improves
+reproducibility, but the Gate 2 registration must cite them as chosen for comparability, not as a protocol
+requirement. 10,000 resamples is unremarkable for a percentile interval; the seed is arbitrary by construction
+and its only function is exact reproducibility.
