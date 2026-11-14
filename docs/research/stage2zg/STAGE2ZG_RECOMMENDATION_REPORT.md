@@ -300,3 +300,11 @@ cost-median condition (§6.1).
 
 **[REC] Q-1 = confirm the proxy as a labelled assumption**, replacement plan retained, no `cost_R` computed
 here. **Not authorized:** any measurement, quote sampling, or venue contact.
+
+## 11. Conflicts and findings, in one table
+
+| id | what | effect on this package |
+|---|---|---|
+| `X-1` | candidate D fails the cost-median condition as well as the opportunity floor; B fails only the floor | `C-D` carried but flagged; owner confirmation required with §6.1 in view |
+| `X-2` | packet §6.1 cites a "full-file-hash precedent" the 2ZC record explicitly denies | `R-a` stands on §8.2's text, not on precedent; no packet edit |
+| `X-3` | packet §6.2's note for `C-D` omits D's cost-median failure | presentation gap, corrected in §6.1 here |
