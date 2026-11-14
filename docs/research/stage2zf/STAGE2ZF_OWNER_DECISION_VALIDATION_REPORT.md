@@ -58,3 +58,10 @@ No statement in the handoff identifies the packet, its digest, a `2ZD-*` decisio
 **No owner decision is recorded against the Stage 2ZD packet.** All six decisions are open, no option is
 selected, and no field of the §9 signature block is completed. The packet states the rule this finding
 applies: a blank field is not a decision, a missing reply is not a decision, and silence is not authorization.
+
+Supporting facts, each checked on the committed revision:
+
+- The §9 table shows `________________` in all seven fields, including *I select path (2ZD-0)* and *Owner
+  statement (verbatim)*.
+- The 2M register holds no `2ZD` entry, so no downstream record already carries a decision.
+- `docs/research/stage2ze/` holds one file, the briefing, and it records the recommendation only.
