@@ -148,3 +148,17 @@ reading, not a defect in this proposal, and it should be disclosed at Gate 4 rat
 **[F]** Protocol §2.2 fixes the gate order: Gate 4 (independent implementation verification) precedes Gate 5
 (controlled performance evaluation). §8.2 says the validation look is "one look only; no rule changes after the
 look". The packet §6.4 constrains this field to "after the Gate 2 freeze and at Gate 5 only".
+
+**[R]** The proposed condition adds nothing that contradicts the protocol: requiring the Gate 4 audit to be closed
+before the look is the protocol's own sequence, made explicit. Adding it closes a real gap — §8.8 rejects a
+result if "the implementation audit has an open CRITICAL or MAJOR finding", which can only be checked if the
+audit precedes the look.
+
+**Verdict on field 7:** consistent. No contradiction with §8.2, §8.4, §8.8, or §2.2 was found.
+
+## 9. What remains unresolved
+
+| item | why | what would close it |
+|---|---|---|
+| exit and holding policy | the specification has no exit rule, so dependence adequacy and the embargo's sufficiency are conditional | a registered exit rule fixing maximum holding ≤24 h |
+| authority for 10,000 / `20240101` | precedent only, from one document | disclosure in the registration as a comparability choice |
