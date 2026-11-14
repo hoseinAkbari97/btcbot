@@ -122,6 +122,7 @@ belongs to a later documentation stage, not to this one.
 `$2,500` fixed-notional position limit (`stage2o`, D-02, 2026-11-10).
 
 **[CALC]** Under `S-1`, `R` is set by the capped notional, `R = min($100, $2,500 × stop%)`:
+
 | stop | notional at `1R = $100` | cap binds? | effective `R` | `0.10R` | trades for `$250` |
 |---:|---:|---|---:|---:|---:|
 | 4.00% | $2,500 | exactly at the cap | $100 | $10.00 | 25 |
