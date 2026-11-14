@@ -56,3 +56,12 @@ replaced. Nothing else in the protocol is touched.
 > a validation or out-of-sample block. *Reserved contact* is any access to bytes in a reserved interval,
 > whether or not their content is inspected. Under the owner's adopted reading, **any reserved contact by the
 > analyst is a prohibited read**, and "read" in D-12 and addendum §10.4 includes it.
+
+### A-2 — The custodian exception
+
+> **The custodian.** The owner appoints in writing a *custodian*, who may be the owner. The custodian is the only
+> party permitted reserved contact, and only to compute a cryptographic digest. The contact is limited to
+> streaming the reserved interval's bytes through the declared digest function in file order, without parsing,
+> deserialising, filtering, slicing, sampling, aggregating, interpolating, or summarising, and without decoding
+> any payload. Locating the first record at or after a declared boundary timestamp by its timestamp field alone
+> is part of the digest procedure and is limited to one such inspection per file per boundary.
