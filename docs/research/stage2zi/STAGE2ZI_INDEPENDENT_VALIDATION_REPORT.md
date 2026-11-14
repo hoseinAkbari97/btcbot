@@ -191,3 +191,23 @@ failures of verification, not as passes by omission.
 **The pattern.** Every unverified item is unverified for the same reason: it needs reserved bytes, an outcome, or a
 measurement. None is unverified because of time, and none is being deferred to a later stage of *this* kind. A
 future stage that could verify them would need an authorization this one does not have.
+
+## 10. Discrepancies found
+
+| id | discrepancy | severity | treatment |
+|---|---|---|---|
+| `V-1` | the protocol requires versioned manifests but carries no version string | **material** | the amendment assigns `2.0.0` as a first version and says so; the adopting statement must acknowledge it |
+| `V-2` | the amendment cannot itself edit §8.2, because §10.3 forbids changing a frozen artifact before adoption | low | recorded; the adopting statement must authorize the text change as a separate step |
+| `X-4` | 2ZG cites "packet §7, issue `I-2`" for `Q-1`; the packet has no such issue, no §7 issue list, and no `Q-1` | **material to citation, nil to substance** | the owner decision instrument flags it in the row itself and again in a note |
+| `X-5` | `2ZD-4` has five fields in the packet and seven in the proposal | low, disclosed | the addition is named, and it does not narrow the owner's five |
+| `X-6` | the `90`-day embargo is derived and its agreement with `540 × 4 h` is exact but contingent | low | the registration should record the derivation, not the number |
+| `Y-2` | the 2ZC full-file digests are reserved contact under `R-b`, a consequence 2ZH recorded only for the four boundary inspections | **material** | recorded as a pre-amendment deviation alongside `Y-1`, with the computational/governance distinction stated |
+
+**No discrepancy was resolved by rewriting a governing document.** Each is either disclosed in the instrument that
+depends on it or left for an owner act. That is the rule the brief set, and it is the rule that was followed.
+
+**One correction of the record.** The chat summary that closed Stage 2ZH reported a truncated SHA-256 for the
+reconciliation file that does not match its bytes; the file and manifest both carry
+`9d9e1f5e089a38e44c5009c38eab3bc9160926ff92744d30bfe497ffc0b5314a`. The manifest was verified before use in this
+stage, so no artifact was built on the wrong value, and this note exists because a hash that appears in
+conversation and differs from the file is exactly the kind of thing a later reader should not have to rediscover.
