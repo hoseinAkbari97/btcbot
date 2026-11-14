@@ -37,3 +37,8 @@ contact, and any change to predecessor documents.
 | decision record | 2ZD-0, 2ZD-1 as a selection, 2ZD-2, 2ZD-3, 2ZD-4's seven values, 2ZD-5, Q-1 | B-1 open by decision; B-3 operative only with the amendment |
 | amendment draft | §8.2 becomes satisfiable without analyst contact; the custodian role exists | Gate 2 opening; the custodian appointment |
 | custodian appointment | 2ZD-4 field 6 operative | the digest run, which waits for Gate 2 |
+
+After all three, the Gate 2 blocker list changes shape rather than closing: B-2, B-3, B-4, and B-5 are resolved;
+**B-1 is open by decision** (`C-N` names no hypothesis); B-6 remains document production. Gate 2 therefore
+remains **NOT AUTHORIZED**, and — a new fact — it is not even *registrable*, because §5.2 input #1 has no
+content.
