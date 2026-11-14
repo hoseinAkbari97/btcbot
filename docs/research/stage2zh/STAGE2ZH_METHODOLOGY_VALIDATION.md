@@ -168,3 +168,15 @@ audit precedes the look.
 
 Only the first row blocks a Gate 2 registration. The others are disclosure obligations, and each is satisfied by
 a sentence in the registration rather than by a new decision.
+
+## 10. Summary
+
+| field | value | tier | verdict |
+|---|---|---|---|
+| episode | 4 h `budget_ok` run | mandated | supported; dependence adequacy conditional |
+| block | 14 days | precedent | supported, disclosed as convention |
+| resamples | 10,000 | precedent (thin) | supported, not mandated |
+| seed | `20240101` | precedent (thin) | supported, reproducibility only |
+| embargo | 90 days | derived from 540 × 4 h | supported |
+| custodian | the owner, logged | new role + procedure | supported; digest unverifiable by the analyst |
+| opening | after Gate 2 freeze and Gate 4 audit, at Gate 5 | consistent | supported |
