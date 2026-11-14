@@ -53,3 +53,13 @@ No threshold, population, or verdict is altered, and no third candidate is creat
 Disclosed consequence: at a 2% stop, `R` falls to `$50`, `0.10R` to `$5`, and the `$250` target needs 50 trades
 a year instead of 25. The evidence requirements are unchanged, the `150` floor is unchanged, and `T-5` remains
 open.
+
+## 6. 2ZD-4 — dependence, custody, and opening values
+
+| parameter | proposed value | status |
+|---|---|---|
+| episode definition | maximal contiguous 4 h `budget_ok` run containing the signal instant | recommendation, unratified |
+| block length | 14 calendar days | recommendation, unratified |
+| resampling count | 10,000 | recommendation, unratified |
+| seed | `20240101` | recommendation, unratified |
+| embargo length | 90 calendar days at each boundary | recommendation, unratified |
