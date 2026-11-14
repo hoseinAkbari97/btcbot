@@ -67,3 +67,12 @@ A 14-day block contains 84 4 h buckets and 42 sessions.
 range is at most a few days; 14 days covers it with margin, and 91 blocks is ample for a percentile interval.
 The number is therefore defensible on the mechanism, not merely inherited — but it is inherited as well, and the
 inheritance is what makes it reproducible against the recorded work.
+
+**Weak point stated:** nothing derives 14 from the data or the MME. A reviewer who asks "why not 10 or 20" is
+answered by comparability and by the absence of any other frozen value — not by a statistical optimum. That is
+acceptable for a pre-registration and must be disclosed as such in the registration.
+
+## 5. Fields 3 and 4 — 10,000 resamples and seed `20240101`: **precedent, thin**
+
+**[F]** These two values appear in one governing-adjacent document: "episode-cluster bootstrap **and** 14-day
+block bootstrap, 10,000 resamples, seed `20240101`" (`STRATEGY_2_RECOMMENDATION.md` line 216).
