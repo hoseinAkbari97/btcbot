@@ -43,3 +43,12 @@ Every recommendation below cites one of these; their hashes are in `FREEZE_MANIF
 
 A recommendation is never presented as a finding. Where a fact undercuts a recommendation, the report says
 so in the same section rather than in a footnote.
+
+## 4. Decision 2ZD-0 — recommended: `C`
+
+**[F]** The packet offers four paths (§5). Path C resolves "the protocol interpretation and owner decisions
+first" and authorizes "the §8.2/D-12 ruling plus the four non-data Gate 2 decisions, and a Gate 2
+specification reflecting them".
+
+**[F]** Four of its six blockers need no data: B-1 (candidate), B-2 (cap against tight stops), B-3 (the
+hashing question), B-5 (the dependence numbers). B-4 needs a route rather than data if `E-2` is adopted (§9).
