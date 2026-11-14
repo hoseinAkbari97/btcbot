@@ -76,3 +76,18 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 > **Any reserved contact by the analyst is a prohibited read.** "Read" in D-12 and in addendum §10.4 includes
 > reserved contact. There is no threshold below which contact becomes contact-free, and no exception for contact
 > that produces no comprehensible content.
+
+### A-2 — The single custodian, and digest-only contact
+
+> **The custodian.** The owner appoints in writing exactly one *custodian*, who may be the owner. The custodian
+> is the only party permitted reserved contact. That contact is permitted for one purpose only: to compute a
+> cryptographic digest of a declared reserved interval.
+>
+> Permitted processing is limited to streaming the interval's bytes, in file order and without transformation,
+> through the declared digest function. Prohibited within a digest run: parsing, deserialising, decoding any
+> payload, filtering, slicing, sampling, aggregating, counting by value, interpolating, summarising, plotting,
+> retaining the streamed bytes, and writing any output other than the digest and the byte count.
+>
+> The declared digest function is SHA-256 over the raw bytes of the interval, from its first byte to its last.
+> Locating the first record at or after a declared boundary timestamp by its timestamp field alone is part of the
+> digest procedure and is limited to one such inspection per file per boundary.
