@@ -72,3 +72,10 @@ Supporting facts, each checked on the committed revision:
 |---|---|---|---|
 | 2ZD-0 | which next move | `A` / `B` / `C` / `D` | **open** |
 | 2ZD-1 | is hashing a reserved block a "read" | `R-a` / `R-b` / `R-c` / `R-d` | **open** |
+| 2ZD-2 | primary candidate | `C-B` / `C-D` / `C-N` | **open** |
+| 2ZD-3 | notional cap against the 1.00R limit | `S-1` / `S-2` / `S-3` | **open** |
+| 2ZD-4 | episode, block, embargo, custody, opening condition | five free values | **open** |
+| 2ZD-5 | `σ` / `DE` / `p_exec` route | `E-1` … `E-4` | **open** |
+
+2ZD-1 through 2ZD-5 are Path C sub-decisions. If 2ZD-0 is not `C`, they do not apply and may not be read as
+independent authorizations.
