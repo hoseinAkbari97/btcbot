@@ -150,3 +150,25 @@ development-block diagnostic, not a licence to reuse that number as a planning i
 **No measurement occurred in this stage**, so there is nothing that could have been upgraded. The check is that no
 document says otherwise: `E-2` is called an assumption in every mention, and `26 bp` carries the word "proxy"
 wherever it appears.
+
+## 8. Status claims, checked one by one
+
+Every status asserted by this stage's documents was matched to a source. None was inferred from silence, and none
+was moved.
+
+| status | asserted as | source | verdict |
+|---|---|---|---|
+| Gate 0 | **NOT PASSED** | `stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md` line 42 | **[F]** unchanged; `R-08` `P` and `R-15` `B` still cap it |
+| Gate 1 | **PASSED — research leg only** | `stage2zc/STAGE2ZC_GATE1_VERDICT.md` | **[F]** unchanged |
+| Gate 2 | **NOT AUTHORIZED**, and now **unregistrable** under `C-N` | protocol §5.2 #1, §5.3 | **[D]** the first is standing; the second follows from the empty hypothesis slot |
+| `T-4` | **deferred** | `stage2z/STAGE2Z_AUTHORIZATION_BOUNDARY.md` line 83 | **[F]** unchanged |
+| `T-5` | **open** | `stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md` §T-5 | **[F]** fields blank in the source |
+| `R-08` | **`P`** | `stage2x` line 20 — real capital recorded, sizing convention deferred to `T-4` | **[F]** unchanged |
+| `R-15` | **`B`** | `stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md` line 29 | **[F]** unchanged |
+| `C-4`, `C-6` | **unresolved** | `stage2zc/STAGE2ZC_FINAL_COMPLETION_REPORT.md` lines 195–196 | **[F]** unchanged |
+| protocol | **unamended** | this stage did not edit it; hash matches the value 2ZD recorded | **[F]** unchanged |
+| candidates B and D | **`FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`** | census reports, frozen at `v2.0.0` | **[F]** unchanged; `C-N` does not revisit them |
+
+**No document in this stage claims Gate 0 passed, Gate 2 authorized, or `T-4` resolved.** The closest risk is the
+phrase "adoption-ready", which describes the *form* of an instrument and not the state of a gate; every use of it
+here is paired with "unadopted" or "unsigned".
