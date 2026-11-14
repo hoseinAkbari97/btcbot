@@ -47,3 +47,11 @@ episodes without a failed bucket between them.
 explicitly — "non-overlap is a construction rule; it is not an inferential adjustment"
 (`STATISTICAL_SUFFICIENCY_FRAMEWORK.md` §3.4, item 5) — and D-09 requires the block bootstrap as a second
 treatment precisely because one cluster definition cannot carry the inference alone.
+
+**Condition attached.** The adequacy above rests on accepted trades being short-lived relative to the 24 h
+spacing. That is not a frozen fact: candidate D's specification is a *signal* specification and contains no exit
+rule — it says of the 24 h window that it "is a frequency-conservatism choice, not an exit rule"
+(`CANDIDATE_D_SPEC.md` §9.2). Until the registration fixes an exit and holding policy, the episode definition is
+mandated but its *dependence adequacy* is **[OPEN]**.
+
+## 4. Field 2 — block length: **precedent**
