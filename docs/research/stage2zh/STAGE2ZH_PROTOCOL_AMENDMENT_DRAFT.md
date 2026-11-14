@@ -118,3 +118,16 @@ Gate 1 authorization.
 amendment is prospective, so it cannot legitimise them retroactively, and §10.3 forbids retroactive editing of a
 historical artifact. The only honest treatments are to record them as a disclosed pre-amendment deviation, or to
 grandfather them explicitly. This draft does the first and leaves the second to the owner.
+
+## 8. What adoption requires, and what this draft cannot supply
+
+**[OWNER]** An adoption statement must, at minimum:
+
+1. name this draft by path and by its SHA-256 in `FREEZE_MANIFEST.json`;
+2. state **adopt**, or adopt with listed revisions;
+3. carry a UTC date;
+4. be recorded verbatim, without paraphrase, in a new record created for that purpose;
+5. settle finding `Y-1` — grandfather the four 2ZC inspections, or record them as a pre-amendment deviation.
+
+Until then the protocol's §8.2 is unamended, `R-b` is a selection without an operative text, and §8.2's hash
+requirement has no compliant procedure.
