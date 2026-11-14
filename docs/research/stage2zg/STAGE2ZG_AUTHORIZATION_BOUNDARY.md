@@ -35,3 +35,9 @@ not an authorization to decide.
 | 2ZD-1 = `R-a` | B-3: Gate 2 may hash and log reserved blocks without decoding |
 | 2ZD-2 = `C-D` | B-1: one primary hypothesis is named (D-11 satisfied) |
 | 2ZD-3 = `S-1` | B-2: the cap-versus-stop rule is fixed; Gate 2 input #6 becomes writable |
+| 2ZD-4 | B-5: episode, block, embargo, and opening condition fixed; custody procedure fixed, holder pending |
+| 2ZD-5 = `E-2` | B-4: the route is set; the three values become declared assumptions at registration |
+| Q-1 | the cost basis for Gate 2 is confirmed as a labelled assumption |
+
+With all six, B-1…B-5 are closed and the only remaining Gate 2 blocker is B-6, which is document production by
+a future stage. **Gate 2 would still not be authorized**, and would still not be executable until it is.
