@@ -100,3 +100,12 @@ must carry, at minimum:
 3. five 2ZD-4 values, any of which may be left blank and then stays undecided;
 4. an optional Q-1 statement, which authorizes no measurement;
 5. scope and conditions, a UTC date, and a signature or equivalent.
+
+A signature over this document alone would not adopt the packet's options: the options live in the packet, and
+the record is only a list of what is recommended. An adoption that cites this record must cite the packet too.
+
+## 10. Integrity
+
+- No field of the packet's §9 block was completed, in the packet or here.
+- No owner date, affirmation, or signature appears in this record; every such field reads `—` or `open`.
+- No recommendation above was inferred from a missing owner statement, and none is presented as one.
