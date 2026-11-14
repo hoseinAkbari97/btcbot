@@ -96,3 +96,11 @@ that names only one of them:
 |---|---|---|
 | this record | ratifies the seven selections | change §8.2, or appoint a custodian |
 | the amendment draft | makes `R-b` operative | ratify any selection, or open Gate 2 |
+
+## 10. Integrity
+
+- No packet §9 field was completed, here or in the packet.
+- No owner date, statement, or signature appears; owner fields read `—`.
+- No selection was inferred from a missing statement, and none is presented as one.
+- If the owner adopts a line, the adoption belongs in a separately dated instrument; this file then records what
+  was proposed, not what was decided.
