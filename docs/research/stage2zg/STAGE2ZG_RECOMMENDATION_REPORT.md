@@ -97,3 +97,12 @@ rather than inherited. The packet's §6.1 row is corrected here, in a new docume
 the strongest governance answer, but it needs a custodian role, a trust boundary, and an appointment that do
 not exist today, so a one-line ruling becomes a multi-stage build. `R-d` — no Gate 2. If the owner prefers
 `R-c`, the custody proposal in §8.4 survives that choice unchanged.
+
+## 6. Decision 2ZD-2 — recommended: `C-D`, subject to conflict X-1
+
+**[F]** D-11 adopted option A, one primary hypothesis per stage. The packet §6.2 names Candidate B (24
+canonical opportunities) and Candidate D (34) as the live options, both frozen at `v2.0.0`.
+
+**[F]** Both candidates already failed Stage 2J — `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`
+(`CANDIDATE_B_CENSUS_REPORT.md` §10; `CANDIDATE_D_CENSUS_REPORT.md` §10). Selecting one names a future
+hypothesis; it does not revive it.
