@@ -52,3 +52,11 @@ specification reflecting them".
 
 **[F]** Four of its six blockers need no data: B-1 (candidate), B-2 (cap against tight stops), B-3 (the
 hashing question), B-5 (the dependence numbers). B-4 needs a route rather than data if `E-2` is adopted (§9).
+**[R]** Path C is the only option that can close B-1, B-2, B-3, and B-5 without a guess, and it closes them
+before any outcome exists, so nothing it settles can be informed by one.
+
+**[REC] `2ZD-0 = C`.** It authorizes governance resolution and a Gate 2 *specification*, not Gate 2.
+
+**Rejected:** `A` — Gate 2 cannot pass today (2 of 16 inputs satisfied), so A forces guesses or an implicit
+amendment. `B` — builds the template while leaving the interpretation gap open. `D` — closes nothing;
+legitimate only if the owner intends to pause.
