@@ -69,3 +69,13 @@ in money, unchanged in `R`, and the required `$250` trade count rises.
 | embargo length | 90 calendar days at each boundary | recommendation, unratified |
 | who holds the validation split | custodian procedure proposed; **holder identity left open** | **unresolved — owner appointment** |
 | when the split may be opened | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | recommendation, unratified |
+
+**Unresolved by design:** field 4 names a person or role, which no frozen document supplies and the agent will
+not invent. The procedure is adoptable without it; the field is not.
+
+## 7. 2ZD-5 — `σ`, `DE`, `p_exec` route (packet §6.5)
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `E-2` — labelled pre-registered assumptions with sensitivity ranges | recommendation, unratified |
+| conditions | assumptions declared at Gate 2 registration; labelled as assumptions downstream; planning `DE` not taken from `3.933333` | recommendation, unratified |
