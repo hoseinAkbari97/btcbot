@@ -121,3 +121,24 @@ protection is either strained or amended by silence.
 
 **Recommendation in the packet.** None. Stage 2ZD records the four readings and leaves the choice to the
 owner; it notes only that `R-a` is the reading most consistent with §8.2 and with the 2ZC precedent.
+
+### 3.3 2ZD-2 — which candidate becomes the Gate 2 primary hypothesis
+
+**What is being decided.** Which single frozen candidate a future Gate 2 registers.
+
+**Why it is necessary.** D-11 permits one primary hypothesis per stage and forbids testing more than one.
+A registration naming two primaries violates D-11; one naming none has no hypothesis. Entry, exit,
+eligibility, secondary metrics, failure criteria, and the `p_exec` context all follow from this choice.
+
+| option | candidate | recorded facts |
+|---|---|---|
+| **C-B** | Candidate B — volatility expansion + directional continuation + retest | frozen spec `v2.0.0`; 24 non-overlapping opportunities over 1,277 days; design effect 1.69 |
+| **C-D** | Candidate D — intraday continuation with an HTF volatility budget | frozen spec `v2.0.0`; 34 non-overlapping opportunities; design effect 3.93 |
+| **C-N** | no selection now; both stay unselected | Gate 2 cannot name a primary hypothesis |
+
+**What the option does not do.** The packet states: selecting a candidate "does **not** authorize a
+census, a backtest, or an outcome measurement. It only names the hypothesis a future Gate 2 would
+register." The historical censuses already recorded both as feasibility failures on opportunity count;
+those verdicts stand and are not reopened by a selection.
+
+**Recommendation in the packet.** None. Stage 2ZD does not choose between B and D.
