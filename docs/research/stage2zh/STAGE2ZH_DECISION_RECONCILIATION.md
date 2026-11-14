@@ -61,3 +61,12 @@ amendment rather than an interpretation, and under `C-N` the Gate 2 specificatio
 slot. Path C's text accommodates both — it authorizes a resolution, not a particular mechanism — but the two
 together mean Path C no longer produces a *registrable* Gate 2 package. It produces an amendment plus three
 decisions plus a specification with a hole.
+
+That is not a defect in `C`. It is the honest state after choosing `R-b` and `C-N`: two blockers (B-3, B-1)
+move from "owner decision pending" to "owner decision made, consequence pending", and the consequence for B-1
+is that Gate 2 stays blocked until a later candidate decision.
+
+## 5. Decision 2ZD-1 — `R-b`, with one counter-argument recorded
+
+**[F]** Protocol §8.2: "the exact dates and hashes are frozen at Gate 2". D-12 (register) and addendum §10.4:
+no validation or OOS "row" may be read before its gate. The word "read" is nowhere defined.
