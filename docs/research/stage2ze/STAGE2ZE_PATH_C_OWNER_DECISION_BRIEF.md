@@ -142,3 +142,27 @@ register." The historical censuses already recorded both as feasibility failures
 those verdicts stand and are not reopened by a selection.
 
 **Recommendation in the packet.** None. Stage 2ZD does not choose between B and D.
+
+### 3.4 2ZD-3 — the `$2,500` notional cap when the stop is tight
+
+**What is being decided.** When the frozen `$2,500` fixed-notional cap binds a stop distance below `4%`,
+whether `1R` shrinks with the cap, or the cap is exceeded.
+
+**Why it is necessary.** D-02 fixes a `$2,500` research-leg entry-notional cap and a `1.00R` per-trade
+limit together. Below a `4%` stop the two bind each other: the cap holds only if `R` shrinks, so `1R`
+falls below `$100`, `0.10R` falls below `$10`, and the trade count needed for `$250` rises. Tight stops
+also raise `cost_R`, because the frozen cost formula divides by the stop distance. Gate 2 input #6 (risk
+rules) cannot be written without the answer.
+
+| option | exact meaning in the packet | consequence |
+|---|---|---|
+| **S-1** | `R` is defined by the capped notional, so `R` shrinks and effective risk per trade falls below `$100` | risk stays inside the cap; `0.10R` is worth less than `$10`; the trade count for `$250` rises |
+| **S-2** | the cap is a hard skip: trades whose required notional exceeds `$2,500` are not taken | reduces the opportunity set; keeps `1R = $100` |
+| **S-3** | defer the sizing rule to a later stage | Gate 2 input #6 stays `PARTIAL`; Gate 2 cannot be frozen |
+
+**What it does not do.** It changes no D-02 value, selects no real-capital sizing, and does not decide
+T-4. It fixes a research-leg rule only.
+
+**Recommendation in the packet.** None. The blocker register records the prohibited shortcut — quietly
+scaling the cap with the stop distance to preserve `$100` of risk — and does not choose between S-1 and
+S-2.
