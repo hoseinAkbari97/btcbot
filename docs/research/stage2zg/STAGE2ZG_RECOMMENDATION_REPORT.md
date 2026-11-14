@@ -26,3 +26,11 @@ Every recommendation below cites one of these; their hashes are in `FREEZE_MANIF
   criteria, the three-block split, the embargo requirement, and the one-primary rule.
 - `stage2m/OWNER_DECISION_REGISTER.md` D-02, D-08, D-09, D-10, D-11, D-12 — the adopted standards.
 - `stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md` §3.4 — the pre-specified dependence policy.
+- `stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md` §7.4, §9.2, §10.4 — the adopted
+  controls that constrain this stage.
+- `stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md` §5, §6 — the decision text being recommended on.
+- `stage2e_v2/CANDIDATE_D_SPEC.md` §2.2, §6, §8, §9 — candidate D's session, regime, cost, and non-overlap
+  construction.
+- `stage2j/CANDIDATE_B_CENSUS_REPORT.md` and `CANDIDATE_D_CENSUS_REPORT.md` §5, §6, §10 — the recorded
+  counts, design effects, and verdicts.
+- `stage2zc/` range-and-hash record, access log, and cost-assumption record — the only recorded data contact.
