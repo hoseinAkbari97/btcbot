@@ -90,3 +90,10 @@ total, payload decoded zero (`STAGE2ZC_ACCESS_LOG.md`, access table).
 **[R]** There is therefore no prior reserved-block *hash* to point to. `R-a` must stand on the text of §8.2
 and the ordinary meaning of "read". The boundary probe is not a precedent either: it is a metadata read the
 access log disclosed, not a hash pass.
+**This does not change the recommendation, and it does not weaken it:** an unsupported premise is removed
+rather than inherited. The packet's §6.1 row is corrected here, in a new document, without editing the packet.
+
+**Rejected:** `R-b` — §8.2 becomes unsatisfiable and Gate 2 cannot freeze the split it must freeze. `R-c` —
+the strongest governance answer, but it needs a custodian role, a trust boundary, and an appointment that do
+not exist today, so a one-line ruling becomes a multi-stage build. `R-d` — no Gate 2. If the owner prefers
+`R-c`, the custody proposal in §8.4 survives that choice unchanged.
