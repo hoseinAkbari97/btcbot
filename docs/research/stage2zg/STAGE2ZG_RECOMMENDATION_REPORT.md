@@ -144,3 +144,10 @@ and a `$2,500` fixed-notional position limit (`stage2o/STAGE2O_OWNER_RESPONSE_RE
 
 **[F]** At the recorded `1R = $100`, a `4%` stop consumes the whole `$2,500` cap exactly, so any tighter stop
 makes the cap — not the risk budget — the binding constraint (packet §6.3).
+**[R]** `S-1` defines `R` from the capped notional, so the loss on any trade is `R` — now below `$100`. The
+per-trade limit is met with room to spare and the `$2,500` cap is never exceeded. `S-2` also respects the cap
+but deletes exactly the trades where it binds, which are the tight-stop trades the design depends on: it
+shrinks an opportunity set that is already recorded as insufficient.
+
+**[REC] `2ZD-3 = S-1`.** Consequence accepted: `δ = 0.10R` becomes a smaller absolute amount, so the MME is
+cheaper to meet in currency, no easier to meet in `R`, and a larger `$250` trade count is required.
