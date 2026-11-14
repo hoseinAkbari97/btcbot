@@ -113,7 +113,31 @@
   },
   "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
   "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
-  "self_hash": "d174b908af6dd33b975efa237e597fccdc60ac0c1ba2f25e001a9d14742059a2",
+  "predecessor_manifest_verification": {
+    "procedure": "each predecessor manifest read, its self_hash recomputed with the same canonical procedure, and each referenced deliverable re-hashed and re-sized from current bytes",
+    "stage2zd": {
+      "referenced_hashes_checked": 6,
+      "referenced_hashes_failed": 0,
+      "self_hash": "b902597e6d656c5c0088d124859a91dcbf081bdff8ad4c3d111d8e990dd9d58c",
+      "self_hash_ok": true,
+      "self_hash_recomputed": "b902597e6d656c5c0088d124859a91dcbf081bdff8ad4c3d111d8e990dd9d58c"
+    },
+    "stage2zg": {
+      "referenced_hashes_checked": 3,
+      "referenced_hashes_failed": 0,
+      "self_hash": "3d7830aaae824291aaee959e92d64cae136cd690778c852eadda8a5905cf738a",
+      "self_hash_ok": true,
+      "self_hash_recomputed": "3d7830aaae824291aaee959e92d64cae136cd690778c852eadda8a5905cf738a"
+    },
+    "stage2zh": {
+      "referenced_hashes_checked": 5,
+      "referenced_hashes_failed": 0,
+      "self_hash": "f3910ac7883d92b054c4c62192e71d9513cf92f7e546c2f25ee78ad44d09bd3e",
+      "self_hash_ok": true,
+      "self_hash_recomputed": "f3910ac7883d92b054c4c62192e71d9513cf92f7e546c2f25ee78ad44d09bd3e"
+    }
+  },
+  "self_hash": "8b08188e42fb7267b700daee73b7779cfa128f8ef4eb88af93883c621d740e08",
   "stage": "2ZI",
   "version_identifier": "stage2zi/1.0.0"
 }
