@@ -265,3 +265,10 @@ here (§9).
   recommendations, not decisions. Each field may be set differently or left blank.
 - **Whether the embargo also bars feature lookback** — this proposal says yes, the stricter reading. Adopting
   the looser one is a governance decision, not a methodological one, and it would weaken the §8.2 claim.
+
+## 9. Decision 2ZD-5 — recommended: `E-2`
+
+**[F]** B-11 forbids choosing `σ`, `DE`, or `p_exec` after seeing an outcome or a design effect. Candidate D's
+recorded design effect is `3.933333` — a design effect — so it may be cited as evidence that D is highly
+clustered, but it may not be adopted as the planning value (packet §6.5; `stage2p/OPEN_BLOCKER_REGISTER.md`,
+B-11).
