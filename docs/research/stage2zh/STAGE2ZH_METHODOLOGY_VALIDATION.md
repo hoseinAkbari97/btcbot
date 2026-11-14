@@ -138,3 +138,13 @@ decision, and the analyst is excluded by construction.
 7. **The one look.** At Gate 5 the owner exports the validation interval to a read-only working copy, logs the
    export, and the analyst runs the frozen analysis once. The copy's digest is recorded, and a second export
    requires a new pre-registered stage under D-12.
+
+**Verdict on field 6:** supported as an appointment and as a procedure, with one honest caveat — under `R-b` the
+custodian's digests are unverifiable by anyone but the custodian. That is a structural consequence of the strict
+reading, not a defect in this proposal, and it should be disclosed at Gate 4 rather than papered over.
+
+## 8. Field 7 — opening condition: **consistent**
+
+**[F]** Protocol §2.2 fixes the gate order: Gate 4 (independent implementation verification) precedes Gate 5
+(controlled performance evaluation). §8.2 says the validation look is "one look only; no rule changes after the
+look". The packet §6.4 constrains this field to "after the Gate 2 freeze and at Gate 5 only".
