@@ -86,3 +86,16 @@ seeds are recorded" (line 96) without fixing one.
 reproducibility, but the Gate 2 registration must cite them as chosen for comparability, not as a protocol
 requirement. 10,000 resamples is unremarkable for a percentile interval; the seed is arbitrary by construction
 and its only function is exact reproducibility.
+
+## 6. Field 5 — embargo: **derived**
+
+**[F]** The longest backward-looking window in the frozen rules is the volatility percentile, computed over 540
+consecutive 4 h bars ending at the current bucket (`CANDIDATE_D_SPEC.md` §6).
+
+**[CALC]** `540 × 4 h = 2,160 h = 90 days` exactly. Two boundaries at 90 days consume `180` of the `792` reserved
+days (`[2024-07-01, 2026-09-01)`), leaving `612` lookable days for validation plus OOS.
+
+**[R]** Adequacy against the episode structure: episodes are 4 h runs and the spacing between accepted signals is
+≥24 h, both far shorter than 90 days, so no episode or trade can straddle a boundary. Adequacy against the
+dependence assumption: the embargo is not sized from the dependence structure at all — it is sized from the
+feature lookback, which is the stricter of the two here.
