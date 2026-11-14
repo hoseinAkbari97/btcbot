@@ -17,3 +17,8 @@
 | `docs/research/stage2ze/` briefing | `b07faf7996de9524e789650f52dc05a615f07146ec2039fbcda385e7907be20b` | matches | pass |
 | `docs/research/stage2zd/` packet | `042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42` | matches | pass |
 | `docs/research/stage2zf/` | absent | absent | pass |
+
+The two digests above bind every statement that follows to the exact instruments the owner holds: this report
+checks the packet and the briefing as committed, not an earlier or later revision.
+
+## 2. What was checked, and how
