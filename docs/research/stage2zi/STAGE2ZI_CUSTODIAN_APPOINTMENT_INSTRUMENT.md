@@ -78,3 +78,26 @@ The custodian must not:
 
 **The prohibition binds the description, not only the data.** A custodian who says "validation looks profitable"
 or "there are about the expected number of rows" has delivered a result. Delivery is limited to §3 step 6.
+
+## 5. Required logging
+
+The log is the custodian's evidence of compliance and the only thing the analyst can audit.
+
+| field | content |
+|---|---|
+| run timestamp | UTC date and time, to the minute |
+| file | repository-relative path, or the declared external location if outside the repository |
+| interval | declared start and end timestamps, with the boundary rule stated |
+| algorithm | the digest function, exactly as executed |
+| bytes | byte count streamed |
+| digest | SHA-256 hex, lowercase |
+| operator | the custodian's identity |
+| script | the SHA-256 of the script that ran |
+
+**Rules.** Each entry is committed **before** delivery. The log is append-only: no entry is edited, reordered,
+deleted, or rewritten, and a correction is a new entry naming the entry it corrects. The log is committed with
+the Gate 2 manifest and falls inside the Gate 4 audit scope.
+
+**What the analyst may do with it:** check that entries, declared dates, and manifest hashes agree, and check the
+script hash. What the analyst may **not** do is recompute any digest to confirm it — that is the contact this
+whole instrument exists to prevent.
