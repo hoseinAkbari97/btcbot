@@ -199,3 +199,12 @@ number was fixed long before this decision and is not varied here, so it cannot 
 **Rejected:** 1 day — too short for multi-day clustering and leaves 1,277 near-adjacent blocks. 30 or 90 days
 — fewer than 43 blocks and outside the frozen convention, ending comparability with the recorded work for no
 stated gain.
+
+### 8.3 Embargo length — proposed: 90 calendar days
+
+**Proposed value:** a 90-day gap between development and validation, and between validation and OOS, with no
+signal, trade, or feature window crossing either gap.
+
+**[F]** 540 consecutive 4 h bars is 90 calendar days, and that is the longest backward-looking window in the
+frozen rules: the volatility percentile is computed over 540 4 h bars ending at the current bucket
+(`CANDIDATE_D_SPEC.md` §6).
