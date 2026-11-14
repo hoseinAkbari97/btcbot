@@ -121,3 +121,11 @@ belongs to a later documentation stage, not to this one.
 `$2,500` fixed-notional position limit (`stage2o`, D-02, 2026-11-10).
 
 **[CALC]** Under `S-1`, `R` is set by the capped notional, `R = min($100, $2,500 × stop%)`:
+| stop | notional at `1R = $100` | cap binds? | effective `R` | `0.10R` | trades for `$250` |
+|---:|---:|---|---:|---:|---:|
+| 4.00% | $2,500 | exactly at the cap | $100 | $10.00 | 25 |
+| 2.00% | $5,000 | yes | $50 | $5.00 | 50 |
+| 1.30% | $7,692 | yes | $32.50 | $3.25 | 77 |
+
+**[F]** The recorded arithmetic is `$250 / ($10 per trade) = 25` executed trades/year "under full `1R` risk"
+(`stage2t` §3), and the historical opportunity frequency is "~20/10/7/3 opportunities per year" (same section).
