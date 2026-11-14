@@ -36,3 +36,11 @@ That route exists, and Stage 2ZG preferred it (`R-a`). The owner has chosen the 
 
 **[OWNER]** Adoption cannot be performed here. §10.2 supplies the versioning form; the addendum's §14.1 shows
 the standard an adoption statement meets.
+
+## 3. The three questions the amendment must answer
+
+| question | answer in this draft | clause |
+|---|---|---|
+| what exactly is a prohibited row read | any reserved contact by the analyst, plus any content-bearing operation by anyone | `A-1` |
+| is hashing opaque reserved bytes permitted, prohibited, or separately authorised | prohibited to the analyst; permitted to the custodian only, under a declared procedure and a pre-delivery log | `A-2` |
+| how does §8.2's hash requirement survive | the custodian computes and delivers the digest; §8.2 says so explicitly | `A-3` |
