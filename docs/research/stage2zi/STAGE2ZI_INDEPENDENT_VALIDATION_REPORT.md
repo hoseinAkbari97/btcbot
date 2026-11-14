@@ -113,3 +113,23 @@ future change to the lookback surfaces as a change to the embargo.
 definition's adequacy depends on an exit policy that does not exist (finding `Z-3`), the block length is a
 convention, and the resample count and seed are comparability and reproducibility choices. **Supported is not the
 same as sufficient**, and this stage does not upgrade one into the other.
+
+## 6. `S-1`, checked against D-02
+
+**[F]** D-02 is resolved as option C with research-leg scope: maximum drawdown `15%`, per-trade limit `1.00R`,
+tail limit `0.50R CVaR95`, position-size limit `$2,500` fixed notional, resolved 2026-11-10
+(`STAGE2O_OWNER_RESPONSE_RECORD.md` line 26). The exact rule is `notional_usd ≤ $2,500` at entry (line 259).
+
+**[D]** `S-1` — `R` is defined by the capped notional — satisfies the constraint by construction: if
+`notional = $2,500` then `R = $2,500 × stop%`, and a per-trade loss of `1R` at that notional is inside the cap
+whatever the stop distance. The competing option `S-2` keeps `1R = $100` and skips the trade instead; `S-1` takes
+the trade at smaller size. Neither breaches D-02; they differ in which opportunity set survives.
+
+**Checked for an implicit frequency or profitability claim, and none was found.** The formula
+`R = min($100, $2,500 × stop%)` contains no count, no return, and no probability. Two consequences are stated
+because a reader will otherwise infer the opposite of the truth: when the cap binds, `R` **falls**, so `0.10R` is
+worth less and the number of trades needed for a fixed target **rises**. `S-1` therefore cannot be cited as
+evidence that the objective is reachable; at its most favourable it leaves the objective where it was.
+
+**[OWNER]** The `$250` target itself is `T-5` and is unanswered (`stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md` §T-5,
+fields blank). Nothing in this stage touches it, and `S-1` does not imply anything about it.
