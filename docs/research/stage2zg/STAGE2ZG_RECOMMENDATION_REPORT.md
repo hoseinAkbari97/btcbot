@@ -208,3 +208,11 @@ signal, trade, or feature window crossing either gap.
 **[F]** 540 consecutive 4 h bars is 90 calendar days, and that is the longest backward-looking window in the
 frozen rules: the volatility percentile is computed over 540 4 h bars ending at the current bucket
 (`CANDIDATE_D_SPEC.md` §6).
+**[R]** An embargo must be at least as long as anything that reaches backwards. A 90-day gap ensures the first
+validation decision is computed from validation bars alone, so no feature window, episode, or holding period
+straddles the boundary, and the "no shared information" claim becomes literally true rather than approximately
+true. It is derived from a frozen lookback, not from an outcome or a design effect.
+
+**Rejected:** 24 h — the canonical non-overlap window, enough for trades but not for features, since the first
+validation signal's percentile would still be built from pre-boundary bars. 7 days — no frozen justification
+exists; it is neither the holding horizon nor the lookback.
