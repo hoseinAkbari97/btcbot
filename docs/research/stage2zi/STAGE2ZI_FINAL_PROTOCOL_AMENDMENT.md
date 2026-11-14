@@ -119,3 +119,13 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 >
 > Because the entry precedes delivery, the record cannot be back-filled after a look. The analyst's
 > reserved-contact count remains zero throughout, and the log is the evidence of it — not a claim about it.
+
+### A-5 — Non-derogation
+
+> **No other effect.** This amendment changes who may contact reserved bytes, and what satisfies §8.2's hash
+> requirement. It changes nothing else. It does not alter D-01…D-15, A-1…A-4, the one-look rule, the embargo,
+> the three-block structure, any threshold, any MME, any population, any verdict, or any gate.
+>
+> It creates no permission for the analyst, no research authorization, no Gate 2 opening, and no custodian
+> appointment — the appointment is a separate instrument. Where this section and an earlier restriction differ,
+> the earlier restriction continues to apply; nothing here is to be read as a repeal by implication.
