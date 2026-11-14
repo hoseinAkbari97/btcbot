@@ -27,3 +27,13 @@ recorded convention over a fresh guess is what that instruction asks for. But th
 | 5 | embargo | 90 calendar days at each boundary |
 | 6 | custodian | the human owner, under logged custody |
 | 7 | opening | after the Gate 2 freeze and Gate 4 audit, at Gate 5 only, once |
+
+## 3. Field 1 — episode definition: **mandated**
+
+**[F]** Candidate D assigns each signal "to the maximal `budget_ok == True` 4 h run containing the session signal
+instant", with 212 runs in the development interval (`CANDIDATE_D_CENSUS_REPORT.md` §6). The 4 h volatility
+budget is a frozen eligibility rule of the specification (`CANDIDATE_D_SPEC.md` §6).
+
+**[R]** The cluster unit is not a free choice under D-09 option C: the registered dependence model must be the
+model whose design effect the pre-registration cites, and the recorded diagnostics were computed on this unit.
+Using a different episode at Gate 2 would silently change the quantity `DE` refers to.
