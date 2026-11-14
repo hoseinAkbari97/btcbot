@@ -43,3 +43,19 @@ unsigned and unadopted, and say so in their first line.
 **After all three, the blocker list changes shape rather than closing.** `B-2`, `B-3`, `B-4`, and `B-5` are
 resolved; **`B-1` is open by decision** — `C-N` names no hypothesis — and `B-6` remains document production. Gate 2
 therefore stays **NOT AUTHORIZED**, and it is not *registrable* either, because §5.2 input #1 has no content.
+
+## 4. Where Gate 2 is blocked, in the right order
+
+Two registration inputs are open, and they are not interchangeable.
+
+| input | state | why |
+|---|---|---|
+| #1 hypothesis | **open by decision** | `C-N` selects neither candidate; no third candidate may be invented |
+| #5 exit rules | **open, unresolved** | the candidate specifications are signal specifications and contain no exit rule |
+
+**The order matters.** Input #1 is the one that prevents a registration from existing at all. Input #5 would matter
+as soon as a hypothesis were named, because a registration without an exit rule cannot be complete under §5.3. A
+document that called the exit policy "the only remaining obstacle" while `C-N` stands would be wrong in a way that
+matters — it would invite closing #5 and declaring Gate 2 ready.
+
+**Neither is closable here.** #1 needs a candidate decision, and #5 needs a registered rule; both are owner acts.
