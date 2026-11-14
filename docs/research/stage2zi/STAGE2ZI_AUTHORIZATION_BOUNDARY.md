@@ -73,3 +73,41 @@ matters — it would invite closing #5 and declaring Gate 2 ready.
 - **`T-4`, real-capital sizing, paper trading, live trading.**
 - **Any change to D-01…D-15, A-1…A-4, `26 bp`, the protocol, the addendum, or any verdict.**
 - **Reopening either `FEASIBILITY FAIL` verdict**, or reading either census as if `C-N` had changed it.
+
+## 6. What opening Gate 2 would additionally need
+
+1. A dated opening instrument naming the registration artifacts and the stage scope.
+2. The amendment adopted, and the amended protocol text committed with its own manifest.
+3. A custodian appointed in writing — the appointment is not the recommendation.
+4. A hypothesis, which `C-N` withholds and no agent may supply.
+5. Declared validation and OOS dates, and two 90-day embargoes, so §8.2's freeze has content.
+6. A registered exit and holding policy, without which input #5 and the embargo argument stay conditional.
+
+**Items 1–5 are document production and owner acts. Item 6 is a rule that does not exist yet.**
+
+## 7. This stage's own record
+
+| item | value |
+|---|---:|
+| dataset files streamed | 0 |
+| reserved bytes hashed | 0 |
+| validation or OOS rows decoded | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| cost or liquidity measurements | 0 |
+| quote samples | 0 |
+| venue contacts, API keys, accounts, orders | 0 |
+| predecessor or frozen artifacts modified | 0 |
+| owner fields completed | 0 |
+| gates changed | 0 |
+
+Reads performed: committed repository documents. Hashes computed: this stage's own deliverables, and predecessor
+documents already in the repository. **No dataset file was opened in any mode.**
+
+## 8. Status, unchanged
+
+Gate 0 **NOT PASSED**; Gate 1 **PASSED — research leg only**; Gate 2 **NOT AUTHORIZED** and *unregistrable* under
+`C-N`; `T-4` **deferred**; `R-08` **`P`**; `R-15` **`B`**; `C-4` and `C-6` **unresolved**; real capital **not
+authorized**; `T-5` **open**.
+
+The protocol is unamended, both candidates remain failed, no custodian is appointed, and no hypothesis is
+registered. This stage is three drafts, one validation report, one boundary, and a manifest.
