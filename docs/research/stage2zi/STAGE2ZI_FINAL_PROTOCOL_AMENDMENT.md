@@ -157,13 +157,12 @@ grandfathered, not retroactively legitimised, and not removed from the record.**
 | what was inspected was the `open_time` string only | same, line 22 |
 | payloads decoded: **0** | same, lines 22 and 203 |
 | the access was disclosed, deliberate, and occurred under a Gate 1 research-leg authorization | same, §0; `STAGE2ZC_GATE1_VERDICT.md` |
-| uniform full-file hashes were also computed over all bytes, including reserved bytes | same, line 21 |
+| uniform full-file hashes were also computed over all bytes, including reserved bytes | same, line 21; treated separately in §7.4 |
 
 ### 7.2 Why it is a deviation
 
-**[R]** Under `R-b` — any reserved contact is a read — both classes of act were reserved contact: reading a
-boundary record's `open_time` field, and streaming the whole file through SHA-256 because the file contains
-reserved bytes. Neither was treated as a read at the time, because `R-b` did not yet exist and D-12 was read as
+**[R]** Under `R-b` — any reserved contact is a read — reading a boundary record's `open_time` field was
+reserved contact. It was not treated as a read at the time, because `R-b` did not yet exist and D-12 was read as
 prohibiting the reading of *rows*, not the touching of *bytes*.
 
 That is the deviation: **not that the acts were hidden, but that they were performed under a reading the owner
@@ -173,9 +172,9 @@ has since declined to adopt.**
 
 **It does imply:**
 
-- the analyst's reserved-contact count for this programme is **not zero** on a strict `R-b` accounting. It is four
-timestamp-field inspections plus whole-file digest contact, all disclosed at the time. Any later statement that
-"no reserved byte was ever touched" must be qualified by this section;
+- the analyst's reserved-contact count for this programme is **not zero** on a strict `R-b` accounting — it
+  includes these four timestamp-field inspections, disclosed at the time. Together with §7.4, no later statement
+  that "no reserved byte was ever touched" may be made without this qualification;
 - the boundary record each file contains is now known to exist at a location the analyst has observed, which is
   a minimal fact about the reserved blocks and is disclosed rather than denied;
 - any future Gate 4 audit must read the 2ZC access log alongside this section, because the log's own
