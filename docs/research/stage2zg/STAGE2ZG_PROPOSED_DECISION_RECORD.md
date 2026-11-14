@@ -23,3 +23,13 @@ must contain.
 | date of decision (UTC) | `—` | **not written by the agent** |
 | owner statement (verbatim) | `—` | **not written by the agent** |
 | signature or equivalent | `—` | **not written by the agent** |
+
+Consequence if adopted: the §8.2/D-12 ruling and the four non-data Gate 2 decisions are resolved, and a Gate 2
+specification may be written. Gate 2 is not authorized, not executed, and cannot pass from this alone.
+
+## 3. 2ZD-1 — block-hash interpretation (packet §6.1)
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `R-a` — hash-only contact is not a "read" | recommendation, unratified |
+| conditions | hash-only, no decoding; logged with date, path, block, bytes, digest; digest recorded in the Gate 2 manifest | recommendation, unratified |
