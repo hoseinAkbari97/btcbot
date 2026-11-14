@@ -51,3 +51,11 @@ Ratifying this package would not authorize any of the following. Each needs its 
 - **Hashing any reserved block now.** `R-a` is a proposal pending ratification; this stage hashed no dataset file.
 - **Hypothesis registration or any research verdict.**
 - **Reading, decoding, or streaming validation or OOS rows** — unchanged by every option in the package.
+- **A feasibility census**, including the development-only census `E-1` and `E-3` would need; `E-2` explicitly
+  does not authorize one.
+- **Backtesting, simulation, strategy experiments, or parameter fitting.**
+- **Cost, spread, depth, slippage, fill, latency, or liquidity measurement**, and any quote sampling.
+- **Venue contact, account access, API keys, or orders.**
+- **T-4, real-capital sizing, paper trading, or live trading.**
+- **Any change to D-01…D-15, A-1…A-4, `26 bp`, or any frozen decision or verdict**, including the two
+  `FEASIBILITY FAIL` verdicts.
