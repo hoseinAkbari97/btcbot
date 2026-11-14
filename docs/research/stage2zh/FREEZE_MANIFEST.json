@@ -9,10 +9,10 @@
   "created_utc": "2026-11-14T08:59:22Z",
   "deliverables": [
     {
-      "bytes": 11293,
+      "bytes": 11294,
       "path": "docs/research/stage2zh/STAGE2ZH_DECISION_RECONCILIATION.md",
       "role": "Reconciliation of the changed recommendation set against the authoritative sources: C-N validity under the packet and D-11, R-b consistency with the section 10.4 counter-route recorded, the S-1 risk and frequency arithmetic, and the seven selections with their ratification routes",
-      "sha256": "50b9598a5f437fce025cbfeac92ae2befc7dab1682ffae8aebf3ccfadfa1cfce"
+      "sha256": "9d9e1f5e089a38e44c5009c38eab3bc9160926ff92744d30bfe497ffc0b5314a"
     },
     {
       "bytes": 9225,
@@ -161,11 +161,11 @@
   },
   "repository": {
     "branch": "main",
-    "head_at_manifest_creation": "035ff740a898ce2deb809747cf6d5f6a1a712fa5",
+    "head_at_manifest_creation": "8181613af4d89da8ac3c60576a7772815456985e",
     "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
     "working_tree_at_manifest_creation": "contains only the new Stage 2ZH artifacts"
   },
-  "self_hash": "94efe82e2b3ffe0ca55809f64ceaa5984fd99a293aabdd429dc5e94eea0da1ab",
+  "self_hash": "f3910ac7883d92b054c4c62192e71d9513cf92f7e546c2f25ee78ad44d09bd3e",
   "stage": "2ZH",
   "status_after_stage": {
     "A-1_to_A-4": "unchanged",
