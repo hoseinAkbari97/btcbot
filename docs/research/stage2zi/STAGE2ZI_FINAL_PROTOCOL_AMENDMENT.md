@@ -37,3 +37,15 @@ existing number. This instrument assigns the result of adoption as **`2.0.0`**, 
 of this protocol, differing from the unversioned text by this amendment", and requires the adopting statement to
 record that `2.0.0` is an assigned first version rather than a change from a predecessor. A reader who assumes a
 prior `1.x` existed is being misled, and §10.2 gives the agent no way to invent one.
+
+## 3. Effective date and prospectiveness
+
+**The amendment takes effect on the UTC date written into the adopting statement, and not before it.**
+
+The agent assigns no date. The adopting statement's date is the effective date; the adopting record must state
+it, and this clause is the only place the effective date is defined.
+
+**[F]** The amendment is **prospective only**. It does not alter the governance status of any act performed
+before its effective date, and §10.3 forbids retroactive editing of a historical artifact. In particular it does
+not legitimise the four Stage 2ZC boundary inspections described in §7, and it does not make them compliant
+retroactively — a change that can only be made by an explicit owner act, and one this stage does not propose.
