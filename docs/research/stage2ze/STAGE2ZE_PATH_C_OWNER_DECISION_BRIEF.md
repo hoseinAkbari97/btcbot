@@ -99,3 +99,25 @@ forbidden "read", or a permitted hash-only contact.
 **What the text does not settle.** It never defines "read". Every clause above speaks of *rows*. None
 addresses streaming a block's bytes through a hash function without decoding any row. That is the gap —
 not a missing artifact, and not a data problem.
+
+**The four readings, labelled as readings rather than text.** None of these is adopted. `R-a` through
+`R-d` are the packet's options; the right-hand columns are consequences, not rulings.
+
+| option | reading | §8.2 satisfiable? | enables Gate 2? | cost or residual risk |
+|---|---|---|---|---|
+| **R-a** | hash-only contact is not a "read"; hashing without decoding is permitted | yes, block hashes can be recorded | yes, with the contact logged | the log must be exact; a hash reveals length, not content |
+| **R-b** | any byte contact is a "read" | **no** — §8.2 cannot be met as written | only after an amendment | requires amending §8.2, which the protocol permits only through its own change control |
+| **R-c** | a custodian computes the hashes and delivers only hash values | yes | yes, for the analyst | needs a custodian role, a trust boundary, and a procedural authorization; no custodian is identified |
+| **R-d** | do not decide now; defer Gate 2 | n/a | no | no Gate 2 at all |
+
+**Precedent, not authority.** Stage 2ZC computed full-file SHA-256 values that streamed bytes past
+`2024-07-01T00:00:00Z`, disclosed it in its access log §3.4, and decoded no row. The Stage 2ZD audit
+accepted that disclosure. That is a precedent for `R-a`; it is not a ruling, and it does not bind the
+owner.
+
+**Why this cannot be left implicit.** Under `R-b` Gate 2 cannot produce the artifact §8.2 demands; under
+`R-a` it can. Either way the position must be stated **before** the hash is computed, or the one-look
+protection is either strained or amended by silence.
+
+**Recommendation in the packet.** None. Stage 2ZD records the four readings and leaves the choice to the
+owner; it notes only that `R-a` is the reading most consistent with §8.2 and with the 2ZC precedent.
