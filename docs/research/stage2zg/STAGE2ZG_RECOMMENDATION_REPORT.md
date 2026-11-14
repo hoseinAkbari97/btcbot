@@ -272,3 +272,10 @@ here (§9).
 recorded design effect is `3.933333` — a design effect — so it may be cited as evidence that D is highly
 clustered, but it may not be adopted as the planning value (packet §6.5; `stage2p/OPEN_BLOCKER_REGISTER.md`,
 B-11).
+**[R]** `E-2` is the only route that yields a writable registration without a census: it turns three unknown
+quantities into three declared assumptions, each with a sensitivity range, fixed before any outcome. That is
+also what protocol §5.3 already demands — the sufficiency calculation must be "reproducible from its stated
+assumptions".
+
+**[REC] `2ZD-5 = E-2`**, with the assumption set declared at Gate 2 registration and labelled as an assumption
+in every downstream table, sensitivity range included.
