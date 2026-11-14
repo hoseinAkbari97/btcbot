@@ -13,3 +13,24 @@
 
 > **Research-leg evidence only. Not evidence of Nobitex execution feasibility, not a real-capital
 > return, and not a sizing recommendation.**
+
+---
+
+## 1. Verification performed before briefing
+
+| item | value | result |
+|---|---|---|
+| branch | `main` | as expected |
+| HEAD | `b9d809c2af0af41c8b131eaade4193ceb4a2c18b` | as expected |
+| `origin/main` | `b9d809c2af0af41c8b131eaade4193ceb4a2c18b` | equals HEAD |
+| worktree | clean before this file was created | no pending change |
+| Stage 2ZD packet bytes | 14,986 | matches the recorded byte count |
+| Stage 2ZD packet SHA-256 | `042f0497…e8e42` | **matches** the supplied hash |
+| Stage 2ZD freeze manifest | self-hash `b902597e…d58c` | recomputes |
+| Stage 2ZD deliverable hashes | all six | recompute |
+| Stage 2ZC package | unchanged since `c452b01` | no diff |
+| validation/OOS rows read by this stage | **0** | none |
+
+The packet was read in full, together with the protocol sections it cites (§4.2, §4.3, §5.2, §8.2,
+§8.3, §15), the addendum (§7.4, §8, §10.4), D-08…D-15, the blocker register (B-09, B-10, B-11), and
+the Stage 2ZD requirement matrix and readiness assessment.
