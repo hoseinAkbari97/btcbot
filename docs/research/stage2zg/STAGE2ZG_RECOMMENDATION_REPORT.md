@@ -319,3 +319,10 @@ reading; `X-3` is repaired by this report's own table. None of the three was res
 2. **The custodian appointment** for 2ZD-4 field 4.
 3. **`C-D` or `C-B`**, in the light of `X-1`.
 4. **The planning `DE` and `p_exec` brackets**, which the Gate 2 registration must declare under `E-2`.
+
+If those four are settled, Path C is complete and Gate 2 becomes *preparable* — not authorized, not executable,
+and not passing until the registration is frozen and its own gate is opened.
+
+**No performance claim.** Nothing here establishes an edge, a return, a feasible trade count, or an execution
+route. Both candidates remain at `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`, and Gate 0 remains
+**NOT PASSED**.
