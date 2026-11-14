@@ -140,3 +140,12 @@ requirement has no compliant procedure.
   custodian.
 - It would not change D-12, the one-look rule, the embargo, the three blocks, any threshold, or any verdict.
 - It would not validate the `26 bp` proxy, resolve `C-4` or `C-6`, or affect `T-4`.
+
+## 10. Status
+
+**Draft, unadopted, and unratified.** It records a coherent route from `R-b` to a §8.2 that can be satisfied
+without any analyst contact with reserved bytes. It creates a custodian role that exists nowhere in the
+protocol today — a search of the protocol and the addendum returns no occurrence of the word — and it therefore
+adds a governance object as well as a rule. That is the price of the strict reading, stated plainly.
+
+No reserved byte was read, streamed, decoded, or hashed in producing this draft.
