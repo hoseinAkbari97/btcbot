@@ -166,3 +166,26 @@ T-4. It fixes a research-leg rule only.
 **Recommendation in the packet.** None. The blocker register records the prohibited shortcut — quietly
 scaling the cap with the stop distance to preserve `$100` of risk — and does not choose between S-1 and
 S-2.
+
+### 3.5 2ZD-4 — dependence, block, embargo, and custody numbers
+
+**What is being decided.** Five values the *standards* fix but the *numbers* do not:
+
+| parameter | what it controls | recorded constraint |
+|---|---|---|
+| episode definition | what counts as one dependent episode for clustered errors | must not be fitted to `DE` |
+| block length | the block bootstrap's resampling unit | must not be chosen to minimise `DE` |
+| embargo length | the gap between development, validation, and OOS | part of the §8.2 split |
+| who holds the validation split | custody of the reserved data | a person or a custodian procedure |
+| when the split may be opened | the one-look timing | after the Gate 2 freeze, at Gate 5 only |
+
+**Why it is necessary.** D-09 adopted option C (cluster-robust errors plus block bootstrap,
+disagreement ⇒ inconclusive) and D-12 adopted strict one-look with logging and an embargo. Both are
+standards without parameters; B-10 records the gap. Gate 2 inputs #10 and #14 need the values, and the
+embargo length is part of the split §8.2 requires.
+
+**What it does not do.** It authorizes no look at any block, opens nothing, and does not decide `σ`, `DE`,
+or `p_exec` — those are 2ZD-5.
+
+**Recommendation in the packet.** None, beyond the two prohibitions the blocker register already records:
+no parameter chosen after seeing outcomes, and no block length selected because it minimises `DE`.
