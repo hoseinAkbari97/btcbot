@@ -20,3 +20,11 @@ and its hash; this record cannot become a decision by citation.
 
 Effect if adopted: the amendment route, three sub-decisions, and a Gate 2 specification are authorised. Gate 2
 is not.
+
+## 3. 2ZD-1 — block-hash interpretation
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `R-b` — any byte contact with a reserved block is a read | recommendation, unratified |
+| instrument required | adoption of `STAGE2ZH_PROTOCOL_AMENDMENT_DRAFT.md` as protocol §8.2.1 | **[OWNER]**, separately |
+| condition | no reserved byte is hashed until that adoption is recorded | binding on this stage |
