@@ -106,3 +106,16 @@ canonical opportunities) and Candidate D (34) as the live options, both frozen a
 **[F]** Both candidates already failed Stage 2J — `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`
 (`CANDIDATE_B_CENSUS_REPORT.md` §10; `CANDIDATE_D_CENSUS_REPORT.md` §10). Selecting one names a future
 hypothesis; it does not revive it.
+
+### 6.1 Conflict X-1 — on the recorded criteria, B is the stronger candidate and D is weaker
+
+**[F]** Read side by side, on each report's canonical population:
+
+| quantity | Candidate B (canonical S10) | Candidate D (canonical S9) |
+|---|---:|---:|
+| canonical opportunities | 24 | **34** |
+| design effect | **1.250** | 3.059 |
+| effective units (`N / DE`) | **19.2** | 11.1 |
+| `M_all` at 26 bp | **0.0865** | 0.3226 |
+| cost-median condition (`M_all ≤ 0.20`) | **met** | **failed** |
+| opportunity floor | failed | failed |
