@@ -129,3 +129,17 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 > It creates no permission for the analyst, no research authorization, no Gate 2 opening, and no custodian
 > appointment — the appointment is a separate instrument. Where this section and an earlier restriction differ,
 > the earlier restriction continues to apply; nothing here is to be read as a repeal by implication.
+
+## 6. Consequential edits
+
+| item | effect |
+|---|---|
+| §10.2 version | major; assigned `2.0.0` under finding `V-1` |
+| manifest | adopting the amendment requires a manifest with SHA-256 hashes, byte counts, and a canonical self-hash (§10.2) for the amended protocol text |
+| addendum §10.4 | **no edit**. It restates D-12 ("No validation or OOS row may be read before its gate") and says nothing about hashes, so `R-b` and the addendum already agree |
+| register D-12 | **no edit**. `R-b` adopts the strict reading, so the amendment changes the other instrument, not this one |
+| §8.2 | final sentence replaced (§4); everything else unchanged |
+| D-11, D-09, D-02, `26 bp`, thresholds, verdicts | **no edit**, by `A-5` |
+
+No other section of the protocol is touched. The amendment adds one numbered subsection and replaces one
+sentence, which is the minimum text that makes `R-b` operative.
