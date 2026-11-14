@@ -63,10 +63,10 @@
   },
   "deliverables": [
     {
-      "bytes": 21347,
+      "bytes": 21357,
       "path": "docs/research/stage2zg/STAGE2ZG_RECOMMENDATION_REPORT.md",
       "role": "Delegated recommendations for 2ZD-0, 2ZD-1, 2ZD-2, 2ZD-3 and 2ZD-5 with exact source sections; methodology proposal for the five 2ZD-4 values with rejected alternatives and six adequacy tests; the Q-1 cost confirmation; and the three conflicts X-1 to X-3 recorded instead of resolved",
-      "sha256": "6ccb58381c550eea91fde1ec5eeb4df7ec0d3a24cf590cf729d297d1c0950ad0"
+      "sha256": "09d35c3000e9ef9589bd153c26204da244973ffb774db99eb06a01ddf9cbf99c"
     },
     {
       "bytes": 6366,
@@ -150,11 +150,11 @@
   },
   "repository": {
     "branch": "main",
-    "head_at_manifest_creation": "ca414cd644f3b2700d088b442a146ad646f258f6",
+    "head_at_manifest_creation": "976374cd705ac04c6bcf916b205c8608c752b579",
     "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
     "working_tree_at_manifest_creation": "contains only the new Stage 2ZG artifacts"
   },
-  "self_hash": "25af2196fe036184bc7a0f7251ca94b5ea64852e52c371bfd2a025b9fb021052",
+  "self_hash": "3d7830aaae824291aaee959e92d64cae136cd690778c852eadda8a5905cf738a",
   "stage": "2ZG",
   "status_after_stage": {
     "A-1_to_A-4": "unchanged",
