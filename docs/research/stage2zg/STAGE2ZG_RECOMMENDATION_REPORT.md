@@ -231,3 +231,11 @@ what makes the appointment meaningful; it can be adopted now and filled with a n
 instead of `R-a`, slots into the same procedure with the custodian running the hash pass.
 
 ### 8.5 Opening condition — proposed: after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only
+
+**Proposed value:** the split may be opened only when (i) the Gate 2 registration, analysis plan, and hash
+manifest are frozen and committed, and (ii) the Gate 4 implementation audit is closed with no open `CRITICAL`
+or `MAJOR` finding — and then once only, at Gate 5, under the logged one-look rule.
+
+**[F]** The packet §6.4 already constrains this field to "after the Gate 2 freeze and at Gate 5 only". The
+proposal adds the Gate 4 condition, which is when §5.3's "no outcome data has been observed" and §8.8's
+audit-rejection condition both become checkable.
