@@ -41,3 +41,14 @@ stage. The Stage 2ZD manifest's canonical self-hash and its six deliverable hash
 | 2ZD-4 | four values, custodian open | same values, owner as custodian | custody closes |
 | 2ZD-5 | `E-2` | `E-2` | none |
 | Q-1 | confirm `26 bp` | retain as labelled proxy | none |
+
+Two of the three changes make the programme *stricter*, and both add work rather than remove it:
+
+- `R-b` declines to settle a governance question by interpretation, and therefore requires a versioned
+  amendment to the protocol before Gate 2 can freeze a split.
+- `C-N` declines to register any hypothesis, and therefore leaves Gate 2 unable to pass even after everything
+  else is settled.
+
+Neither is a shortcut. Both are defensible; §5 and §6 say exactly what each costs.
+
+## 4. Decision 2ZD-0 — `C`, unchanged
