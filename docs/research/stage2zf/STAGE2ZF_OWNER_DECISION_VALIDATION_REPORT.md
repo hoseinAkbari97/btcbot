@@ -79,3 +79,10 @@ Supporting facts, each checked on the committed revision:
 
 2ZD-1 through 2ZD-5 are Path C sub-decisions. If 2ZD-0 is not `C`, they do not apply and may not be read as
 independent authorizations.
+
+## 6. The measured-cost question, kept separate
+
+Q-1 is not one of the six. The packet records it as issue I-2 with `owner_decision_required = false`, so it
+stays outside every selection above and is not a prerequisite for 2ZD-0. It remains open all the same: no
+measured-cost figure exists, and the labelled `26 bp` assumption is the only permitted Gate 2 basis unless the
+owner authorizes measurement separately.
