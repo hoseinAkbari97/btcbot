@@ -29,3 +29,15 @@ stage. The Stage 2ZD manifest's canonical self-hash and its six deliverable hash
 - **[REC]** the delegated recommendation under evaluation.
 - **[OPEN]** unresolved; needs evidence or a decision that does not exist yet.
 - **[OWNER]** a formal owner act is required; the agent may draft, never perform.
+
+## 3. What changed from Stage 2ZG, and what it costs
+
+| decision | 2ZG | 2ZH proposed | change |
+|---|---|---|---|
+| 2ZD-0 | `C` | `C` | none |
+| 2ZD-1 | `R-a` | `R-b` | a ruling becomes an amendment |
+| 2ZD-2 | `C-D` | `C-N` | a candidate becomes no candidate |
+| 2ZD-3 | `S-1` | `S-1` | none |
+| 2ZD-4 | four values, custodian open | same values, owner as custodian | custody closes |
+| 2ZD-5 | `E-2` | `E-2` | none |
+| Q-1 | confirm `26 bp` | retain as labelled proxy | none |
