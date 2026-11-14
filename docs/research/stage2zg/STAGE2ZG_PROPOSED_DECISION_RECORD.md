@@ -33,3 +33,14 @@ specification may be written. Gate 2 is not authorized, not executed, and cannot
 |---|---|---|
 | selection | `R-a` — hash-only contact is not a "read" | recommendation, unratified |
 | conditions | hash-only, no decoding; logged with date, path, block, bytes, digest; digest recorded in the Gate 2 manifest | recommendation, unratified |
+
+**Note carried into the record:** the packet's supporting sentence for `R-a` cites a full-file-hash precedent
+that does not exist (report `X-2`). If adopted, the ruling stands on §8.2's own text and this record should not
+be read as endorsing the precedent sentence.
+
+## 4. 2ZD-2 — primary candidate (packet §6.2)
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `C-D` — Candidate D | recommendation, unratified, **subject to `X-1`** |
+| conditions | owner confirmation with the cost-median failure in view, or substitution of `C-B` | recommendation, unratified |
