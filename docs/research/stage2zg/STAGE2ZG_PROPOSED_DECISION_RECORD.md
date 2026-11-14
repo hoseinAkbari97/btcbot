@@ -109,3 +109,5 @@ the record is only a list of what is recommended. An adoption that cites this re
 - No field of the packet's §9 block was completed, in the packet or here.
 - No owner date, affirmation, or signature appears in this record; every such field reads `—` or `open`.
 - No recommendation above was inferred from a missing owner statement, and none is presented as one.
+- If the owner adopts a line, the adoption belongs in a separately dated instrument; this file's history then
+  becomes evidence of what was proposed, not of what was decided.
