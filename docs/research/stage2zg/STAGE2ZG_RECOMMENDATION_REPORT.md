@@ -76,3 +76,10 @@ for a hash it would forbid obtaining by inspection.
 **[REC] `2ZD-1 = R-a`**, with three conditions: hash-only, streamed without decoding; logged with date, path,
 block, bytes, and digest; and recorded in the Gate 2 manifest itself. No row, count, summary, or statistic may
 be derived from the stream, and no digest may be compared across blocks until the relevant gate opens.
+
+### 5.1 Finding X-2 — the cited precedent is not what the packet says it is
+
+**[F]** Packet §6.1 justifies `R-a` by saying "the Stage 2ZC full-file-hash precedent applies". The record
+says otherwise: the range-and-hash record §2 states the hashes "are **not** full-file hashes" — each is a
+SHA-256 over development-interval objects only — and §1 states that no row in the reserved remainder "was …
+hashed as part of a block identity".
