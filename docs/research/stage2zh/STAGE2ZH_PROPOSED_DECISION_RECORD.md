@@ -39,3 +39,13 @@ of `R-b`, not an oversight.
 |---|---|---|
 | selection | `C-N` — no candidate registered now | recommendation, unratified |
 | consequence | Gate 2 cannot name a primary hypothesis; B-1 stays open | stated, not hidden |
+
+Both candidates remain frozen at `v2.0.0` with their `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` verdicts.
+No threshold, population, or verdict is altered, and no third candidate is created.
+
+## 5. 2ZD-3 — notional cap against tight stops
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `S-1` — `R` is set by the capped notional and shrinks | recommendation, unratified |
+| condition | per-trade loss remains ≤ `1.00R`; the `$2,500` cap is never exceeded | arithmetic, verified |
