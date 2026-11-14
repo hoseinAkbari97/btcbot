@@ -210,4 +210,43 @@ depends on it or left for an owner act. That is the rule the brief set, and it i
 reconciliation file that does not match its bytes; the file and manifest both carry
 `9d9e1f5e089a38e44c5009c38eab3bc9160926ff92744d30bfe497ffc0b5314a`. The manifest was verified before use in this
 stage, so no artifact was built on the wrong value, and this note exists because a hash that appears in
-conversation and differs from the file is exactly the kind of thing a later reader should not have to rediscover.
+conversation and differs from the file is exactly the kind of thing a later reader should not have rediscover.
+
+## 11. Unresolved questions, listed as questions
+
+| # | question | who can answer it |
+|---:|---|---|
+| 1 | is any hypothesis to be registered at all, and if so which | owner — `C-N` says not now |
+| 2 | what is the exit and holding policy | owner, via a registered rule; without it the episode and embargo arguments stay conditional |
+| 3 | do `Y-1` and `Y-2` affect the admissibility of any 2ZC-derived result | owner, informed by the Gate 4 audit; this stage cannot investigate it without forbidden contact |
+| 4 | is `Q-1` a decision the packet was meant to ask | owner, and a later documentation stage for the citation |
+| 5 | what version number does the protocol carry today | nobody — it carries none; `2.0.0` is assigned, not inherited |
+| 6 | how is a custodian's digest verified by anyone but the custodian | no answer exists under `R-b`; the trust limit is structural |
+| 7 | does `T-5` keep the `$250` target | owner; fields blank |
+
+## 12. What only the owner can do, after all of this
+
+1. **Adopt the amendment** — dated, hash-named, acknowledging `V-1`, `Y-1`, and `Y-2`, in its own words.
+2. **Ratify the seven selections** — in the decision instrument, or in a separate dated record that names it.
+3. **Appoint the custodian** — signing the appointment instrument; the recommendation is not the act.
+4. **Decide the hypothesis question** — or accept that Gate 2 stays unregistrable, which `C-N` already does.
+5. **Answer `T-5` and the exit policy** if any later stage is to register anything.
+
+None of the five can be performed, inferred, or pre-filled by the agent, and none is performed here.
+
+## 13. This stage's own record
+
+| item | count |
+|---|---:|
+| dataset files streamed | 0 |
+| reserved bytes hashed | 0 |
+| validation or OOS rows decoded | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| cost, spread, fee, depth, liquidity, slippage, fill, latency measurements | 0 |
+| venue contacts, API keys, accounts, orders | 0 |
+| predecessor documents modified | 0 |
+| owner fields completed | 0 |
+| gates changed | 0 |
+
+Reads performed: committed repository documents only. Hashes computed: over this stage's own deliverables and over
+committed predecessor documents — never over a dataset file.
