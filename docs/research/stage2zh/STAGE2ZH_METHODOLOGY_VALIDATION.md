@@ -107,3 +107,13 @@ re-derived. This is the same missing input as §3, and it is the single largest 
 
 **Not claimed:** no dependence range was measured, and no cost was measured. The embargo's justification is a
 declared completeness argument — the first validation decision sees validation bars only — not an empirical one.
+
+## 7. Field 6 — custodian: the owner, under logged custody
+
+**[F]** The protocol and the addendum contain no custodian role: the word does not occur in either. The role is
+created by the amendment draft (`A-2`, `A-4`).
+
+**[R]** Naming the human owner is the only appointment available today — there is no second official with
+credentials, and inventing an institutional custodian would be an agent decision about governance structure. It
+is also the strongest available trust boundary: the party who may see the data is the party who owns the
+decision, and the analyst is excluded by construction.
