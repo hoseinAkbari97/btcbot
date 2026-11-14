@@ -117,3 +117,15 @@ created by the amendment draft (`A-2`, `A-4`).
 credentials, and inventing an institutional custodian would be an agent decision about governance structure. It
 is also the strongest available trust boundary: the party who may see the data is the party who owns the
 decision, and the analyst is excluded by construction.
+
+### 7.1 Proposed custody procedure
+
+1. **Location.** The reserved files sit in a directory readable only by the owner's account. The analyst has no
+   read permission, no copy, and no mounted access. File names may be known; contents may not.
+2. **Declaration.** The owner declares the validation and OOS dates in the Gate 2 registration. Declaring a date
+   requires reading no data — it is a calendar decision.
+3. **Digest run.** The owner runs a committed script, whose SHA-256 is recorded, that streams each file's declared
+   interval through SHA-256 and writes only digests and byte counts. The script must not write parsed rows,
+   counts by value, or any derived series.
+4. **Log before delivery.** The log entry — UTC time, path, interval, algorithm, bytes, digest, operator — is
+   committed *before* the digest is handed over, so the record cannot be back-filled after a look.
