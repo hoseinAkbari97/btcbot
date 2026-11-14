@@ -1,0 +1,690 @@
+{
+  "activity": "O-2A Gate 1 development-block data validity",
+  "data_side_criteria": {
+    "alignment_ohlc_mismatch_buckets": 0,
+    "alignment_volume_mismatches": 0,
+    "all_hashes_match_manifest": true,
+    "all_required_checks_pass": true,
+    "close_time_anomalies_localized": true,
+    "duplicate_free": true,
+    "invalid_ohlc_free": true,
+    "non_positive_price_free": true,
+    "not_closed_free": true,
+    "off_grid_free": true,
+    "registered_gaps_accounted": true,
+    "unaccounted_gap_runs": 0,
+    "validation_or_oos_rows_decoded": 0,
+    "zero_volume_bars_explained": true
+  },
+  "dataset_manifest": {
+    "bytes": 1484,
+    "path": "backend/data/datasets/manifest.json",
+    "sha256": "3b65a633a8e78b92d6c9c2c321592f24a8b01f7d46ab6920d7bc3f3a4372ae25"
+  },
+  "development_interval": {
+    "end_exclusive_utc": "2024-07-01T00:00:00Z",
+    "start_inclusive_utc": "2021-01-01T00:00:00Z"
+  },
+  "prohibited_computations": {
+    "indicators": 0,
+    "opportunities": 0,
+    "outcomes": 0,
+    "pnl": 0,
+    "returns": 0,
+    "signals": 0
+  },
+  "reconciliation": [
+    {
+      "close_mismatches": 0,
+      "complete_buckets": 122510,
+      "examples": [],
+      "gap_affected_buckets": 82,
+      "high_mismatches": 0,
+      "low_mismatches": 0,
+      "lower_timeframe": "5m",
+      "max_missing_members": 3,
+      "members_per_bucket": 3,
+      "missing_members_total": 244,
+      "missing_upper_buckets": 0,
+      "ohlc_mismatch_buckets": 0,
+      "open_mismatches": 0,
+      "price_relative_tolerance": 0.001,
+      "upper_timeframe": "15m",
+      "volume_mismatches": 0,
+      "volume_relative_tolerance": 1e-09
+    },
+    {
+      "close_mismatches": 0,
+      "complete_buckets": 30625,
+      "examples": [],
+      "gap_affected_buckets": 23,
+      "high_mismatches": 0,
+      "low_mismatches": 0,
+      "lower_timeframe": "15m",
+      "max_missing_members": 4,
+      "members_per_bucket": 4,
+      "missing_members_total": 80,
+      "missing_upper_buckets": 0,
+      "ohlc_mismatch_buckets": 0,
+      "open_mismatches": 0,
+      "price_relative_tolerance": 0.001,
+      "upper_timeframe": "1h",
+      "volume_mismatches": 0,
+      "volume_relative_tolerance": 1e-09
+    },
+    {
+      "close_mismatches": 0,
+      "complete_buckets": 7652,
+      "examples": [],
+      "gap_affected_buckets": 10,
+      "high_mismatches": 0,
+      "low_mismatches": 0,
+      "lower_timeframe": "1h",
+      "max_missing_members": 3,
+      "members_per_bucket": 4,
+      "missing_members_total": 16,
+      "missing_upper_buckets": 0,
+      "ohlc_mismatch_buckets": 0,
+      "open_mismatches": 0,
+      "price_relative_tolerance": 0.001,
+      "upper_timeframe": "4h",
+      "volume_mismatches": 0,
+      "volume_relative_tolerance": 1e-09
+    }
+  ],
+  "reserved_non_development_interval": {
+    "end_exclusive_utc": "2026-09-01T00:00:00Z",
+    "start_inclusive_utc": "2024-07-01T00:00:00Z",
+    "status": "not decoded; validation/OOS split not fixed by this stage"
+  },
+  "stage": "2ZC",
+  "timeframes": {
+    "15m": {
+      "bytes": 86193949,
+      "development_block_hash": {
+        "boundary_payload_decoded": 0,
+        "boundary_records_inspected": 1,
+        "bytes_hashed": 52952573,
+        "procedure": "SHA-256 over the UTF-8 bytes of each development-interval JSON object in file order, concatenated without separators",
+        "records_hashed": 122522,
+        "sha256": "6fab3a704fe23f65078a1d29cbd9021b32037d6f39e8b0280f04bcb5849e8775",
+        "timeframe": "15m"
+      },
+      "development_interval": {
+        "end_exclusive_utc": "2024-07-01T00:00:00Z",
+        "expected_grid_slots": 122592,
+        "start_inclusive_utc": "2021-01-01T00:00:00Z"
+      },
+      "gaps": {
+        "gap_runs": 7,
+        "manifest_gap_bars_total": 70,
+        "manifest_gap_count": 7,
+        "matches_manifest": true,
+        "missing_bars_total": 70,
+        "missing_runs": [
+          {
+            "first_missing_open_utc": "2021-02-11T03:45:00Z",
+            "first_present_open_after_utc": "2021-02-11T05:00:00Z",
+            "last_missing_open_utc": "2021-02-11T04:45:00Z",
+            "last_present_open_before_utc": "2021-02-11T03:30:00Z",
+            "missing_bars": 5
+          },
+          {
+            "first_missing_open_utc": "2021-03-06T02:00:00Z",
+            "first_present_open_after_utc": "2021-03-06T03:30:00Z",
+            "last_missing_open_utc": "2021-03-06T03:15:00Z",
+            "last_present_open_before_utc": "2021-03-06T01:45:00Z",
+            "missing_bars": 6
+          },
+          {
+            "first_missing_open_utc": "2021-04-20T02:00:00Z",
+            "first_present_open_after_utc": "2021-04-20T04:30:00Z",
+            "last_missing_open_utc": "2021-04-20T04:15:00Z",
+            "last_present_open_before_utc": "2021-04-20T01:45:00Z",
+            "missing_bars": 10
+          },
+          {
+            "first_missing_open_utc": "2021-04-25T04:15:00Z",
+            "first_present_open_after_utc": "2021-04-25T08:45:00Z",
+            "last_missing_open_utc": "2021-04-25T08:30:00Z",
+            "last_present_open_before_utc": "2021-04-25T04:00:00Z",
+            "missing_bars": 18
+          },
+          {
+            "first_missing_open_utc": "2021-08-13T02:00:00Z",
+            "first_present_open_after_utc": "2021-08-13T06:30:00Z",
+            "last_missing_open_utc": "2021-08-13T06:15:00Z",
+            "last_present_open_before_utc": "2021-08-13T01:45:00Z",
+            "missing_bars": 18
+          },
+          {
+            "first_missing_open_utc": "2021-09-29T07:00:00Z",
+            "first_present_open_after_utc": "2021-09-29T09:00:00Z",
+            "last_missing_open_utc": "2021-09-29T08:45:00Z",
+            "last_present_open_before_utc": "2021-09-29T06:45:00Z",
+            "missing_bars": 8
+          },
+          {
+            "first_missing_open_utc": "2023-03-24T12:45:00Z",
+            "first_present_open_after_utc": "2023-03-24T14:00:00Z",
+            "last_missing_open_utc": "2023-03-24T13:45:00Z",
+            "last_present_open_before_utc": "2023-03-24T12:30:00Z",
+            "missing_bars": 5
+          }
+        ]
+      },
+      "manifest_sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+      "path": "backend/data/datasets/BTCUSDT-15m-20210101-20260901.json",
+      "quality": {
+        "bad_close_time_all_earlier_than_grid_close": true,
+        "bad_close_time_bars": 5,
+        "bad_close_time_detail": [
+          {
+            "close_time_utc": "2021-02-11T03:40:54.773000Z",
+            "delta_seconds": -245.226,
+            "expected_grid_close_utc": "2021-02-11T03:44:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-02-11T03:30:00Z"
+          },
+          {
+            "close_time_utc": "2021-04-25T04:00:58.146000Z",
+            "delta_seconds": -841.853,
+            "expected_grid_close_utc": "2021-04-25T04:14:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-04-25T04:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-08-13T01:59:59Z",
+            "delta_seconds": -0.999,
+            "expected_grid_close_utc": "2021-08-13T01:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-08-13T01:45:00Z"
+          },
+          {
+            "close_time_utc": "2021-12-24T04:59:54.362000Z",
+            "delta_seconds": -5.637,
+            "expected_grid_close_utc": "2021-12-24T04:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-12-24T04:45:00Z"
+          },
+          {
+            "close_time_utc": "2023-03-24T12:39:41.646000Z",
+            "delta_seconds": -318.353,
+            "expected_grid_close_utc": "2023-03-24T12:44:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2023-03-24T12:30:00Z"
+          }
+        ],
+        "duplicate_open_times": 0,
+        "invalid_ohlc_bars": 0,
+        "non_positive_price_bars": 0,
+        "not_closed_bars": 0,
+        "off_grid_open_times": 0,
+        "zero_trade_count_bars": 10,
+        "zero_volume_bars": 10,
+        "zero_volume_bars_flat_and_zero_trade": true,
+        "zero_volume_runs": [
+          {
+            "bars": 5,
+            "distinct_prices": [
+              44582.07
+            ],
+            "end_open_utc": "2021-02-11T03:30:00Z",
+            "flat": true,
+            "start_open_utc": "2021-02-11T02:30:00Z"
+          },
+          {
+            "bars": 5,
+            "distinct_prices": [
+              28080.0
+            ],
+            "end_open_utc": "2023-03-24T12:30:00Z",
+            "flat": true,
+            "start_open_utc": "2023-03-24T11:30:00Z"
+          }
+        ]
+      },
+      "records": {
+        "first_open_utc": "2021-01-01T00:00:00Z",
+        "last_open_utc": "2024-06-30T23:45:00Z",
+        "loader_boundary_open_time_inspected": 1,
+        "loader_boundary_payload_decoded": 0,
+        "loader_duplicate_timestamps": 0,
+        "loader_records_seen": 122523,
+        "loader_stopped_at_boundary": true,
+        "usable": 122512,
+        "yielded": 122522
+      },
+      "segments": {
+        "contiguous_segments": 8,
+        "segment_boundary_count": 7
+      },
+      "sha256": "db4c327baa2f98e240260822be70f42df82779eb2a35792d917974e07f460780",
+      "sha256_matches_manifest": true,
+      "timeframe": "15m"
+    },
+    "1h": {
+      "bytes": 21653180,
+      "development_block_hash": {
+        "boundary_payload_decoded": 0,
+        "boundary_records_inspected": 1,
+        "bytes_hashed": 13302076,
+        "procedure": "SHA-256 over the UTF-8 bytes of each development-interval JSON object in file order, concatenated without separators",
+        "records_hashed": 30634,
+        "sha256": "e90bdab27a362e2b12feb106c8e752ffaa09943b877cc810a712a78b013941eb",
+        "timeframe": "1h"
+      },
+      "development_interval": {
+        "end_exclusive_utc": "2024-07-01T00:00:00Z",
+        "expected_grid_slots": 30648,
+        "start_inclusive_utc": "2021-01-01T00:00:00Z"
+      },
+      "gaps": {
+        "gap_runs": 7,
+        "manifest_gap_bars_total": 14,
+        "manifest_gap_count": 7,
+        "matches_manifest": true,
+        "missing_bars_total": 14,
+        "missing_runs": [
+          {
+            "first_missing_open_utc": "2021-02-11T04:00:00Z",
+            "first_present_open_after_utc": "2021-02-11T05:00:00Z",
+            "last_missing_open_utc": "2021-02-11T04:00:00Z",
+            "last_present_open_before_utc": "2021-02-11T03:00:00Z",
+            "missing_bars": 1
+          },
+          {
+            "first_missing_open_utc": "2021-03-06T02:00:00Z",
+            "first_present_open_after_utc": "2021-03-06T03:00:00Z",
+            "last_missing_open_utc": "2021-03-06T02:00:00Z",
+            "last_present_open_before_utc": "2021-03-06T01:00:00Z",
+            "missing_bars": 1
+          },
+          {
+            "first_missing_open_utc": "2021-04-20T02:00:00Z",
+            "first_present_open_after_utc": "2021-04-20T04:00:00Z",
+            "last_missing_open_utc": "2021-04-20T03:00:00Z",
+            "last_present_open_before_utc": "2021-04-20T01:00:00Z",
+            "missing_bars": 2
+          },
+          {
+            "first_missing_open_utc": "2021-04-25T05:00:00Z",
+            "first_present_open_after_utc": "2021-04-25T08:00:00Z",
+            "last_missing_open_utc": "2021-04-25T07:00:00Z",
+            "last_present_open_before_utc": "2021-04-25T04:00:00Z",
+            "missing_bars": 3
+          },
+          {
+            "first_missing_open_utc": "2021-08-13T02:00:00Z",
+            "first_present_open_after_utc": "2021-08-13T06:00:00Z",
+            "last_missing_open_utc": "2021-08-13T05:00:00Z",
+            "last_present_open_before_utc": "2021-08-13T01:00:00Z",
+            "missing_bars": 4
+          },
+          {
+            "first_missing_open_utc": "2021-09-29T07:00:00Z",
+            "first_present_open_after_utc": "2021-09-29T09:00:00Z",
+            "last_missing_open_utc": "2021-09-29T08:00:00Z",
+            "last_present_open_before_utc": "2021-09-29T06:00:00Z",
+            "missing_bars": 2
+          },
+          {
+            "first_missing_open_utc": "2023-03-24T13:00:00Z",
+            "first_present_open_after_utc": "2023-03-24T14:00:00Z",
+            "last_missing_open_utc": "2023-03-24T13:00:00Z",
+            "last_present_open_before_utc": "2023-03-24T12:00:00Z",
+            "missing_bars": 1
+          }
+        ]
+      },
+      "manifest_sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+      "path": "backend/data/datasets/BTCUSDT-1h-20210101-20260901.json",
+      "quality": {
+        "bad_close_time_all_earlier_than_grid_close": true,
+        "bad_close_time_bars": 5,
+        "bad_close_time_detail": [
+          {
+            "close_time_utc": "2021-02-11T03:40:54.773000Z",
+            "delta_seconds": -1145.226,
+            "expected_grid_close_utc": "2021-02-11T03:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-02-11T03:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-04-25T04:00:58.146000Z",
+            "delta_seconds": -3541.853,
+            "expected_grid_close_utc": "2021-04-25T04:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-04-25T04:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-08-13T01:59:59Z",
+            "delta_seconds": -0.999,
+            "expected_grid_close_utc": "2021-08-13T01:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-08-13T01:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-12-24T04:59:54.362000Z",
+            "delta_seconds": -5.637,
+            "expected_grid_close_utc": "2021-12-24T04:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-12-24T04:00:00Z"
+          },
+          {
+            "close_time_utc": "2023-03-24T12:39:41.646000Z",
+            "delta_seconds": -1218.353,
+            "expected_grid_close_utc": "2023-03-24T12:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2023-03-24T12:00:00Z"
+          }
+        ],
+        "duplicate_open_times": 0,
+        "invalid_ohlc_bars": 0,
+        "non_positive_price_bars": 0,
+        "not_closed_bars": 0,
+        "off_grid_open_times": 0,
+        "zero_trade_count_bars": 2,
+        "zero_volume_bars": 2,
+        "zero_volume_bars_flat_and_zero_trade": true,
+        "zero_volume_runs": [
+          {
+            "bars": 1,
+            "distinct_prices": [
+              44582.07
+            ],
+            "end_open_utc": "2021-02-11T03:00:00Z",
+            "flat": true,
+            "start_open_utc": "2021-02-11T03:00:00Z"
+          },
+          {
+            "bars": 1,
+            "distinct_prices": [
+              28080.0
+            ],
+            "end_open_utc": "2023-03-24T12:00:00Z",
+            "flat": true,
+            "start_open_utc": "2023-03-24T12:00:00Z"
+          }
+        ]
+      },
+      "records": {
+        "first_open_utc": "2021-01-01T00:00:00Z",
+        "last_open_utc": "2024-06-30T23:00:00Z",
+        "loader_boundary_open_time_inspected": 1,
+        "loader_boundary_payload_decoded": 0,
+        "loader_duplicate_timestamps": 0,
+        "loader_records_seen": 30635,
+        "loader_stopped_at_boundary": true,
+        "usable": 30632,
+        "yielded": 30634
+      },
+      "segments": {
+        "contiguous_segments": 8,
+        "segment_boundary_count": 7
+      },
+      "sha256": "52e9ce9b8924bbcb9ed9c69a25017ec5547f7dce6dc79fd70657d9cc7ea8fe69",
+      "sha256_matches_manifest": true,
+      "timeframe": "1h"
+    },
+    "4h": {
+      "bytes": 5455039,
+      "development_block_hash": {
+        "boundary_payload_decoded": 0,
+        "boundary_records_inspected": 1,
+        "bytes_hashed": 3351701,
+        "procedure": "SHA-256 over the UTF-8 bytes of each development-interval JSON object in file order, concatenated without separators",
+        "records_hashed": 7662,
+        "sha256": "5bea6343cf5653ee00c76a1a331d5e17bded591b08c51d995141afa37b893735",
+        "timeframe": "4h"
+      },
+      "development_interval": {
+        "end_exclusive_utc": "2024-07-01T00:00:00Z",
+        "expected_grid_slots": 7662,
+        "start_inclusive_utc": "2021-01-01T00:00:00Z"
+      },
+      "gaps": {
+        "gap_runs": 0,
+        "manifest_gap_bars_total": 0,
+        "manifest_gap_count": 0,
+        "matches_manifest": true,
+        "missing_bars_total": 0,
+        "missing_runs": []
+      },
+      "manifest_sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+      "path": "backend/data/datasets/BTCUSDT-4h-20210101-20260901.json",
+      "quality": {
+        "bad_close_time_all_earlier_than_grid_close": true,
+        "bad_close_time_bars": 5,
+        "bad_close_time_detail": [
+          {
+            "close_time_utc": "2021-02-11T03:40:54.773000Z",
+            "delta_seconds": -1145.226,
+            "expected_grid_close_utc": "2021-02-11T03:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-02-11T00:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-04-20T01:59:59.999000Z",
+            "delta_seconds": -7200.0,
+            "expected_grid_close_utc": "2021-04-20T03:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-04-20T00:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-04-25T04:00:58.146000Z",
+            "delta_seconds": -14341.853,
+            "expected_grid_close_utc": "2021-04-25T07:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-04-25T04:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-08-13T01:59:59Z",
+            "delta_seconds": -7200.999,
+            "expected_grid_close_utc": "2021-08-13T03:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-08-13T00:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-09-29T06:59:59.999000Z",
+            "delta_seconds": -3600.0,
+            "expected_grid_close_utc": "2021-09-29T07:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-09-29T04:00:00Z"
+          }
+        ],
+        "duplicate_open_times": 0,
+        "invalid_ohlc_bars": 0,
+        "non_positive_price_bars": 0,
+        "not_closed_bars": 0,
+        "off_grid_open_times": 0,
+        "zero_trade_count_bars": 0,
+        "zero_volume_bars": 0,
+        "zero_volume_bars_flat_and_zero_trade": true,
+        "zero_volume_runs": []
+      },
+      "records": {
+        "first_open_utc": "2021-01-01T00:00:00Z",
+        "last_open_utc": "2024-06-30T20:00:00Z",
+        "loader_boundary_open_time_inspected": 1,
+        "loader_boundary_payload_decoded": 0,
+        "loader_duplicate_timestamps": 0,
+        "loader_records_seen": 7663,
+        "loader_stopped_at_boundary": true,
+        "usable": 7662,
+        "yielded": 7662
+      },
+      "segments": {
+        "contiguous_segments": 1,
+        "segment_boundary_count": 0
+      },
+      "sha256": "35455c60128b536cfb44bdad0228655659aee0a916deda4f0a3eb30ccc24d0aa",
+      "sha256_matches_manifest": true,
+      "timeframe": "4h"
+    },
+    "5m": {
+      "bytes": 256461100,
+      "development_block_hash": {
+        "boundary_payload_decoded": 0,
+        "boundary_records_inspected": 1,
+        "bytes_hashed": 157550142,
+        "procedure": "SHA-256 over the UTF-8 bytes of each development-interval JSON object in file order, concatenated without separators",
+        "records_hashed": 367563,
+        "sha256": "3807c367ebb081dc8e6c82f9fb332f8201af2e294ae4e5d612497a8454a1a18c",
+        "timeframe": "5m"
+      },
+      "development_interval": {
+        "end_exclusive_utc": "2024-07-01T00:00:00Z",
+        "expected_grid_slots": 367776,
+        "start_inclusive_utc": "2021-01-01T00:00:00Z"
+      },
+      "gaps": {
+        "gap_runs": 7,
+        "manifest_gap_bars_total": 213,
+        "manifest_gap_count": 7,
+        "matches_manifest": true,
+        "missing_bars_total": 213,
+        "missing_runs": [
+          {
+            "first_missing_open_utc": "2021-02-11T03:45:00Z",
+            "first_present_open_after_utc": "2021-02-11T05:00:00Z",
+            "last_missing_open_utc": "2021-02-11T04:55:00Z",
+            "last_present_open_before_utc": "2021-02-11T03:40:00Z",
+            "missing_bars": 15
+          },
+          {
+            "first_missing_open_utc": "2021-03-06T02:00:00Z",
+            "first_present_open_after_utc": "2021-03-06T03:30:00Z",
+            "last_missing_open_utc": "2021-03-06T03:25:00Z",
+            "last_present_open_before_utc": "2021-03-06T01:55:00Z",
+            "missing_bars": 18
+          },
+          {
+            "first_missing_open_utc": "2021-04-20T02:00:00Z",
+            "first_present_open_after_utc": "2021-04-20T04:30:00Z",
+            "last_missing_open_utc": "2021-04-20T04:25:00Z",
+            "last_present_open_before_utc": "2021-04-20T01:55:00Z",
+            "missing_bars": 30
+          },
+          {
+            "first_missing_open_utc": "2021-04-25T04:05:00Z",
+            "first_present_open_after_utc": "2021-04-25T08:45:00Z",
+            "last_missing_open_utc": "2021-04-25T08:40:00Z",
+            "last_present_open_before_utc": "2021-04-25T04:00:00Z",
+            "missing_bars": 56
+          },
+          {
+            "first_missing_open_utc": "2021-08-13T02:00:00Z",
+            "first_present_open_after_utc": "2021-08-13T06:30:00Z",
+            "last_missing_open_utc": "2021-08-13T06:25:00Z",
+            "last_present_open_before_utc": "2021-08-13T01:55:00Z",
+            "missing_bars": 54
+          },
+          {
+            "first_missing_open_utc": "2021-09-29T07:00:00Z",
+            "first_present_open_after_utc": "2021-09-29T09:00:00Z",
+            "last_missing_open_utc": "2021-09-29T08:55:00Z",
+            "last_present_open_before_utc": "2021-09-29T06:55:00Z",
+            "missing_bars": 24
+          },
+          {
+            "first_missing_open_utc": "2023-03-24T12:40:00Z",
+            "first_present_open_after_utc": "2023-03-24T14:00:00Z",
+            "last_missing_open_utc": "2023-03-24T13:55:00Z",
+            "last_present_open_before_utc": "2023-03-24T12:35:00Z",
+            "missing_bars": 16
+          }
+        ]
+      },
+      "manifest_sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "path": "backend/data/datasets/BTCUSDT-5m-20210101-20260901.json",
+      "quality": {
+        "bad_close_time_all_earlier_than_grid_close": true,
+        "bad_close_time_bars": 5,
+        "bad_close_time_detail": [
+          {
+            "close_time_utc": "2021-02-11T03:40:54.773000Z",
+            "delta_seconds": -245.226,
+            "expected_grid_close_utc": "2021-02-11T03:44:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-02-11T03:40:00Z"
+          },
+          {
+            "close_time_utc": "2021-04-25T04:00:58.146000Z",
+            "delta_seconds": -241.853,
+            "expected_grid_close_utc": "2021-04-25T04:04:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-04-25T04:00:00Z"
+          },
+          {
+            "close_time_utc": "2021-08-13T01:59:59Z",
+            "delta_seconds": -0.999,
+            "expected_grid_close_utc": "2021-08-13T01:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-08-13T01:55:00Z"
+          },
+          {
+            "close_time_utc": "2021-12-24T04:59:54.362000Z",
+            "delta_seconds": -5.637,
+            "expected_grid_close_utc": "2021-12-24T04:59:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2021-12-24T04:55:00Z"
+          },
+          {
+            "close_time_utc": "2023-03-24T12:39:41.646000Z",
+            "delta_seconds": -18.353,
+            "expected_grid_close_utc": "2023-03-24T12:39:59.999000Z",
+            "later_than_grid_close": false,
+            "open_utc": "2023-03-24T12:35:00Z"
+          }
+        ],
+        "duplicate_open_times": 0,
+        "invalid_ohlc_bars": 0,
+        "non_positive_price_bars": 0,
+        "not_closed_bars": 0,
+        "off_grid_open_times": 0,
+        "zero_trade_count_bars": 31,
+        "zero_volume_bars": 31,
+        "zero_volume_bars_flat_and_zero_trade": true,
+        "zero_volume_runs": [
+          {
+            "bars": 17,
+            "distinct_prices": [
+              44582.07
+            ],
+            "end_open_utc": "2021-02-11T03:40:00Z",
+            "flat": true,
+            "start_open_utc": "2021-02-11T02:20:00Z"
+          },
+          {
+            "bars": 14,
+            "distinct_prices": [
+              28080.0
+            ],
+            "end_open_utc": "2023-03-24T12:35:00Z",
+            "flat": true,
+            "start_open_utc": "2023-03-24T11:30:00Z"
+          }
+        ]
+      },
+      "records": {
+        "first_open_utc": "2021-01-01T00:00:00Z",
+        "last_open_utc": "2024-06-30T23:55:00Z",
+        "loader_boundary_open_time_inspected": 1,
+        "loader_boundary_payload_decoded": 0,
+        "loader_duplicate_timestamps": 0,
+        "loader_records_seen": 367564,
+        "loader_stopped_at_boundary": true,
+        "usable": 367532,
+        "yielded": 367563
+      },
+      "segments": {
+        "contiguous_segments": 8,
+        "segment_boundary_count": 7
+      },
+      "sha256": "20f8f50d00edae02270e556351c82b90bfe0560bea1d4a1ff10226dd0d027681",
+      "sha256_matches_manifest": true,
+      "timeframe": "5m"
+    }
+  }
+}
