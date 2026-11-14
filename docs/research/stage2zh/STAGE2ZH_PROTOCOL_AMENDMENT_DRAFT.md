@@ -73,3 +73,10 @@ replaced. Nothing else in the protocol is touched.
 > summaries, statistics, indicators, or any derived quantity. §8.2's requirement that "the exact dates and
 > hashes are frozen at Gate 2" is satisfied by the owner's declared dates and the custodian's digests, recorded
 > together in the Gate 2 manifest.
+
+### A-4 — The log, and the audit trail
+
+> **Logging.** Before any delivery, the custodian records: date and time (UTC), file path, declared interval,
+> digest function, bytes streamed, and digest. The log is committed with the Gate 2 manifest, is append-only, and
+> may not be edited after the fact. The analyst's reserved-contact count remains zero throughout, and the log is
+> the evidence of it.
