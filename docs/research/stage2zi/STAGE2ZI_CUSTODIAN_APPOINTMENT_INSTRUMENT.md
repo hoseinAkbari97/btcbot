@@ -101,3 +101,31 @@ the Gate 2 manifest and falls inside the Gate 4 audit scope.
 **What the analyst may do with it:** check that entries, declared dates, and manifest hashes agree, and check the
 script hash. What the analyst may **not** do is recompute any digest to confirm it — that is the contact this
 whole instrument exists to prevent.
+
+## 6. Separation between custody and research analysis
+
+| function | who may hold it |
+|---|---|
+| holding the reserved files and running digests | the custodian |
+| designing, implementing, and running the analysis | the analyst |
+| approving objectives, risk, and stage authorizations | the owner |
+
+**The custodian must not perform the analysis, and the analyst must not perform custody.** Where the owner is also
+the custodian, the overlap is disclosed — protocol §11.1 permits a role overlap only if it is disclosed and the
+audit is performed by someone else. The analyst may not be the custodian under any arrangement, because the whole
+purpose is that the analyst's contact count stays at zero.
+
+**No information may flow from the digest run to the analysis design.** A digest is a string. If the custodian
+notices something during a run, the correct action is to stop and record a deviation (§8), not to mention it.
+
+## 7. Revocation
+
+- **By the owner, at any time, for any reason or none.** Revocation is effective on the UTC date in the revoking
+  statement and does not require the custodian's agreement.
+- **Effect.** Access ends immediately. Any in-progress run stops. The log is preserved in full, including any
+  entries that appear incomplete, and no entry is tidied.
+- **On revocation, the appointment is vacant.** No successor exists until a new instrument is signed; a vacancy is
+  not a delegation to the analyst, and it does not reopen the reserved blocks.
+- **Automatic by operation.** The appointment ends if the amendment is not adopted, if the amendment is repealed,
+  if the custodian becomes the analyst, or at Gate 6, whichever comes first.
+- **Recorded.** Every revocation and reappointment is a dated record naming this instrument by path and hash.
