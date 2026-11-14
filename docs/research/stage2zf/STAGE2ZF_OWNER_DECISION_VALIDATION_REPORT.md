@@ -120,3 +120,7 @@ Unchanged by this stage, and unchanged by any part of the 2ZF instruction:
 - Hashing reserved blocks; permitted only if the owner's valid decision adopts the applicable interpretation.
 - Feasibility census, backtesting, simulation, parameter fitting, strategy design.
 - Quote sampling, and any cost, spread, depth, slippage, fill, latency, or liquidity measurement.
+- Venue contact, account access, API keys, and orders.
+- T-4, real-capital sizing, paper trading, and live trading.
+- Any change to D-01…D-15, A-1…A-4, or any frozen decision without explicit authorization.
+- Treating a Path C selection, if one is later made, as authorization for Gate 2 or any later research.
