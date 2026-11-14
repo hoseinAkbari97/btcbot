@@ -239,3 +239,12 @@ or `MAJOR` finding — and then once only, at Gate 5, under the logged one-look 
 **[F]** The packet §6.4 already constrains this field to "after the Gate 2 freeze and at Gate 5 only". The
 proposal adds the Gate 4 condition, which is when §5.3's "no outcome data has been observed" and §8.8's
 audit-rejection condition both become checkable.
+
+### 8.6 The six tests the proposal was put through
+
+| test | result |
+|---|---|
+| leakage between episodes | none: an episode closes at the first failed 4 h budget, so two episodes cannot share a bucket |
+| dependence between observations | handled by the episode cluster plus the 14-day block bootstrap, which is D-09 option C |
+| temporal ordering | all five values are causal and forward-only; no rule reads a future bar (protocol §8.3) |
+| embargo adequacy | 90 days ≥ the 540-bar lookback and ≫ the 24 h holding window, so nothing straddles a boundary |
