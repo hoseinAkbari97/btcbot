@@ -67,3 +67,5 @@ in money, unchanged in `R`, and the required `$250` trade count rises.
 | episode definition | the maximal contiguous 4 h `budget_ok` run containing the signal instant | recommendation, unratified |
 | block length | 14 calendar days, 10,000 resamples, seed `20240101` | recommendation, unratified |
 | embargo length | 90 calendar days at each boundary | recommendation, unratified |
+| who holds the validation split | custodian procedure proposed; **holder identity left open** | **unresolved — owner appointment** |
+| when the split may be opened | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | recommendation, unratified |
