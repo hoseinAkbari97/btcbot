@@ -69,3 +69,10 @@ neither mentions hashing.
 
 **[F]** The two requirements cannot both hold for a hash over reserved bytes unless hashing is not a read:
 option `R-b` makes §8.2 permanently unsatisfiable without an amendment (packet §6.1, consequence column).
+**[R]** Hashing is whole-block and non-interpretive: SHA-256 consumes bytes and yields a digest from which no
+row can be reconstructed. D-12 uses "read" in the sense of inspecting content — the sense in which §8.2 asks
+for a hash it would forbid obtaining by inspection.
+
+**[REC] `2ZD-1 = R-a`**, with three conditions: hash-only, streamed without decoding; logged with date, path,
+block, bytes, and digest; and recorded in the Gate 2 manifest itself. No row, count, summary, or statistic may
+be derived from the stream, and no digest may be compared across blocks until the relevant gate opens.
