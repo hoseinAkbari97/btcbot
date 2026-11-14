@@ -1,0 +1,35 @@
+{
+  "stage": "2ZI",
+  "version_identifier": "stage2zi/1.0.0",
+  "created_utc": "2026-11-14T09:30:56Z",
+  "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "authorization": {
+    "instrument": "the owner's written Stage 2ZI instruction of 2026-11-14",
+    "decision": "prepare the final separate governance instruments for the outstanding Stage 2ZH decisions",
+    "scope": "docs/research/stage2zi/ only; drafts and instruments only; no data access; no adoption; no appointment; no owner signature, date, or affirmation",
+    "record": "docs/research/stage2zi/STAGE2ZI_AUTHORIZATION_BOUNDARY.md"
+  },
+  "deliverables": [
+    {
+      "path": "docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md",
+      "role": "Adoption-ready major-version amendment of protocol section 8.2: the replaced hash sentence, section 8.2.1 clauses A-1 to A-5, the assigned version 2.0.0 with finding V-1, findings Y-1 and Y-2 as pre-amendment deviations, the rejection of the hash-only variant, and the adoption conditions"
+    },
+    {
+      "path": "docs/research/stage2zi/STAGE2ZI_OWNER_DECISION_INSTRUMENT.md",
+      "role": "The seven proposed selections in decision form with every owner field blank, the seven 2ZD-4 values with their required qualifications, the consequences of C-N, the S-1 non-implication, and the separation from the other two instruments"
+    },
+    {
+      "path": "docs/research/stage2zi/STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md",
+      "role": "The custodian appointment form: access scope, digest-only procedure, prohibited acts, append-only logging, separation from analysis, revocation, incident handling, the single opening point, and blank appointment fields"
+    },
+    {
+      "path": "docs/research/stage2zi/STAGE2ZI_INDEPENDENT_VALIDATION_REPORT.md",
+      "role": "Independent validation of the 2ZH deliverables, the amendment against the versioning rules, the seven selections against the packet, the 2ZD-4 values against their sources, S-1 against D-02, E-2 and 26 bp as assumptions, every gate and register status, the discrepancy list, the NOT VERIFIED list, and the open questions"
+    },
+    {
+      "path": "docs/research/stage2zi/STAGE2ZI_AUTHORIZATION_BOUNDARY.md",
+      "role": "What the stage was authorized to do, what it did, what each instrument would resolve, the correct ordering of the two open Gate 2 inputs, what remains unauthorized, the six requirements for a Gate 2 opening, and the zero-access record"
+    }
+  ]
+}
