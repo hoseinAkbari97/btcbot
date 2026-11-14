@@ -105,4 +105,17 @@ The remainder of §8.2 — the three blocks, their purposes, their access rules,
 >
 > **What this does not create.** The digest does not certify the contents to the analyst, and it is not a
 > substitute for reading. Its function is identity: it fixes which bytes the split refers to, so that a later
-> inconsistency is detectable. Detecting that inconsistency is the custodian's task, under §A-4.
+> inconsistency is detectable. Detecting that inconsistency is the custodian's task, under `A-4`.
+
+### A-4 — The append-only, pre-delivery log
+
+> **Logging.** Every digest run is logged, and the log entry is committed **before** any digest is delivered.
+> Each entry records: the UTC date and time of the run, the file path, the declared interval's endpoints, the
+> digest function, the byte count, the digest, and the operator's identity.
+>
+> The log is append-only. No entry may be edited, reordered, deleted, or reconstructed after the fact; a
+> correction is a new entry that names the entry it corrects. The log is committed with the Gate 2 manifest and
+> is part of the Gate 4 audit scope.
+>
+> Because the entry precedes delivery, the record cannot be back-filled after a look. The analyst's
+> reserved-contact count remains zero throughout, and the log is the evidence of it — not a claim about it.
