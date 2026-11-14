@@ -172,3 +172,22 @@ was moved.
 **No document in this stage claims Gate 0 passed, Gate 2 authorized, or `T-4` resolved.** The closest risk is the
 phrase "adoption-ready", which describes the *form* of an instrument and not the state of a gate; every use of it
 here is paired with "unadopted" or "unsigned".
+
+## 9. NOT VERIFIED, and why each one stops
+
+These were attempted or considered and could not be completed inside this stage's boundary. They are recorded as
+failures of verification, not as passes by omission.
+
+| item | why it cannot be verified here | status |
+|---|---|---|
+| that the custodian's digest matches the reserved bytes | would require recomputing a digest over reserved bytes — the contact `R-b` forbids and this stage prohibits | **NOT VERIFIED** |
+| that a record exists at each declared boundary date | requires opening a reserved interval | **NOT VERIFIED** |
+| whether the four 2ZC boundary timestamps fell strictly inside a reserved interval | the 2ZC log records them as boundary records; the position is not determinable without contact, and the strict reading does not distinguish the cases | **NOT VERIFIED**, and recorded as unresolved in the amendment §7.3 |
+| that the 2ZD-4 values are statistically adequate | adequacy depends on an exit policy that does not exist (`Z-3`), and any empirical check would need reserved data | **NOT VERIFIED**, **[OPEN]** |
+| that `26 bp` is executable on Nobitex | requires execution measurement, which `C-6` leaves unresolved and this stage prohibits | **NOT VERIFIED**, unchanged from 2ZC |
+| that the amendment yields a compliant procedure in practice | no digest run exists, the appointment is unsigned, and the protocol text is unamended | **NOT VERIFIED**, by construction |
+| that `10,000` resamples is sufficient for the block bootstrap | a sufficiency claim would need the outcome distribution | **[OPEN]**, and deliberately not attempted |
+
+**The pattern.** Every unverified item is unverified for the same reason: it needs reserved bytes, an outcome, or a
+measurement. None is unverified because of time, and none is being deferred to a later stage of *this* kind. A
+future stage that could verify them would need an authorization this one does not have.
