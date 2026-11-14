@@ -49,3 +49,30 @@ it, and this clause is the only place the effective date is defined.
 before its effective date, and §10.3 forbids retroactive editing of a historical artifact. In particular it does
 not legitimise the four Stage 2ZC boundary inspections described in §7, and it does not make them compliant
 retroactively — a change that can only be made by an explicit owner act, and one this stage does not propose.
+
+## 4. Replacement of §8.2's final sentence
+
+In §8.2, the sentence
+
+> The exact dates and hashes are frozen at Gate 2.
+
+is replaced by:
+
+> The exact dates are declared by the owner at Gate 2. The hashes are computed by the custodian under §8.2.1 and
+> recorded, with those dates, in the Gate 2 manifest. No other party computes them.
+
+The remainder of §8.2 — the three blocks, their purposes, their access rules, and the embargo — is unchanged.
+
+## 5. New §8.2.1, inserted immediately after §8.2
+
+### A-1 — Reserved contact, defined
+
+> **§8.2.1 Definitions.** A *reserved interval* is the set of records in a data file whose timestamps fall inside
+> a validation or an out-of-sample block. *Reserved contact* is any access to any byte of a reserved interval,
+> whether or not the byte is interpreted, whether the access is whole-file or partial, and whether or not the
+> content is displayed, printed, or retained. Reserved contact includes opening a reserved interval as a stream,
+> reading it into memory, copying or exporting it, hashing it, parsing it, and querying it.
+>
+> **Any reserved contact by the analyst is a prohibited read.** "Read" in D-12 and in addendum §10.4 includes
+> reserved contact. There is no threshold below which contact becomes contact-free, and no exception for contact
+> that produces no comprehensible content.
