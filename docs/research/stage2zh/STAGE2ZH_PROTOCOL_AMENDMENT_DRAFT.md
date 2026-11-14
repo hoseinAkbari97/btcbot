@@ -24,3 +24,15 @@ hash.
 
 **[F]** Protocol §10.4 does permit "a pre-registered interpretation … may resolve an ambiguity before counting".
 That route exists, and Stage 2ZG preferred it (`R-a`). The owner has chosen the other route.
+
+**[R]** Three differences justify the amendment, none of which denies that interpretation was available:
+
+1. **Scope of the record.** §10.4's interpretation is recorded "in the plan" — the registration — so it binds
+   that plan. An amendment binds every future stage, including one run by a different analyst or a custodian.
+2. **Subject matter.** §10.4 sits under "labels and populations"; the question here is a data-access rule, which
+   §10.1 lists separately among the frozen items ("data blocks and access rules").
+3. **Reversibility.** An interpretation can be reinterpreted later without anyone noticing. A versioned
+   amendment cannot: §10.2 requires a new version and a manifest with hashes.
+
+**[OWNER]** Adoption cannot be performed here. §10.2 supplies the versioning form; the addendum's §14.1 shows
+the standard an adoption statement meets.
