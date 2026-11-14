@@ -315,3 +315,28 @@ Recorded by:                          ____________________
 **How to read it back.** Only 2ZD-0 selects a path. Only 2ZD-0 = `C` makes 2ZD-1…2ZD-5 meaningful. `Q-1` is
 optional and changes nothing on its own. An unfilled line is recorded as *not decided*, and cannot be filled
 later by the agent, by inference, or by a later general instruction to proceed.
+
+---
+
+## 7. The recommended path and its limits
+
+**Recommended: 2ZD-0 = `C`.** Stage 2ZD scored it 37/40 on eight owner-relevant dimensions, ahead of D
+(33), B (32), and A (11), and the ranking held under every perturbation except one that rewards inactivity.
+
+**Why, in one paragraph.** Every blocked Gate 2 input is either an owner decision or a rule the text does not
+state. Path C resolves them before any parameter is chosen and before any reserved block is hashed, so the
+one-look protection is closed expressly rather than by implication. It needs no data access, changes no
+threshold, is reversible until an outcome exists, and repeats the Stage 2Y → 2ZA pattern that produced the
+adopted addendum.
+
+**Limits, stated plainly.**
+
+1. It is **not** authorization to execute Gate 2, freeze a registration, or record a Gate 2 verdict.
+2. It does **not** settle `σ`, `DE`, or `p_exec`; choosing `E-1`/`E-3` still needs a separate census stage.
+3. It **cannot** make Gate 2 pass on its own: the artifacts still have to be written and the §5.4 manifest
+   produced.
+4. Its governance-complexity score is 3/5 — it asks the owner to decide a genuinely hard textual question.
+5. It depends on the owner answering 2ZD-4 with methodology, not with numbers fitted to a design effect.
+6. It does not improve the historical opportunity counts, which remain the recorded feasibility failures.
+7. If the owner intends to pause, `D` is legitimate and this brief does not read the commissioning of the
+   stage as intent either way.
