@@ -133,3 +133,20 @@ evidence that the objective is reachable; at its most favourable it leaves the o
 
 **[OWNER]** The `$250` target itself is `T-5` and is unanswered (`stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md` §T-5,
 fields blank). Nothing in this stage touches it, and `S-1` does not imply anything about it.
+
+## 7. `E-2` and `26 bp`, checked for upgrade into evidence
+
+| item | what it is | what it is not | check |
+|---|---|---|---|
+| `E-2` planning `σ`, `DE`, `p_exec` | labelled pre-registered assumptions with sensitivity ranges, declared at registration | an estimate, a census result, or a measured design effect | **[F]** packet §6.5 defines it that way; the proposal adds no measurement |
+| `26 bp` cost basis | a labelled Binance spot proxy retained for planning | a Nobitex cost, a measured spread, or a fee schedule | **[F]** 2ZC cost record labels it; no `cost_R` is computed anywhere in this stage |
+
+**Guarded boundary.** `E-2` and `E-1`/`E-3` differ in exactly one way: `E-1` and `E-3` authorize a
+development-block census. `E-2` authorizes none. Since `B-11` forbids choosing `σ`, `DE`, or `p_exec` after
+seeing an outcome, and since no census is authorized here, the values can only be declared assumptions. The
+registration must carry the label, and the phrase "planning `DE` of `3.933333`" from the candidate-D census is a
+development-block diagnostic, not a licence to reuse that number as a planning input.
+
+**No measurement occurred in this stage**, so there is nothing that could have been upgraded. The check is that no
+document says otherwise: `E-2` is called an assumption in every mention, and `26 bp` carries the word "proxy"
+wherever it appears.
