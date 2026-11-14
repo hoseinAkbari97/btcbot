@@ -340,3 +340,31 @@ adopted addendum.
 6. It does not improve the historical opportunity counts, which remain the recorded feasibility failures.
 7. If the owner intends to pause, `D` is legitimate and this brief does not read the commissioning of the
    stage as intent either way.
+
+---
+
+## 8. What remains unauthorized whatever is answered
+
+- Gate 2 execution, the frozen registration, and any Gate 2 verdict;
+- reading, decoding, or summarizing any validation or OOS row; hashing reserved blocks except under an
+  adopted `R-a`/`R-c` reading;
+- any feasibility census, backtest, simulation, strategy experiment, or parameter fit — including the
+  development-block census `E-1`/`E-3` would eventually need;
+- quote sampling, spread, depth, fee, slippage, fill, latency, or liquidity measurement;
+- venue contact, account access, API keys, or any order;
+- changing `26 bp`, any D-01…D-15 or A-1…A-4 value, or any recorded verdict;
+- Gate 0 passage — it remains **NOT PASSED**;
+- T-4, any real-capital sizing, paper trading, or live trading;
+- treating this briefing, its recommendation, or the Stage 2ZD packet as an owner authorization.
+
+**Status after this stage, unchanged:** Gate 0 `NOT PASSED`; Gate 1 `PASSED — research leg only`; Gate 2
+`NOT AUTHORIZED`; `R-05`/`R-10`/`R-22` `P`; `R-08` `P`; `R-15` `B` for real-capital claims; `T-4` deferred;
+`C-4` and `C-6` unresolved; no real-capital work authorized.
+
+**Integrity of this briefing.**
+
+1. Every decision, option, and quoted sentence is taken from the Stage 2ZD packet or the sources it cites.
+2. No option was selected, no value chosen, and no owner field filled.
+3. The four readings are labelled as readings; the protocol quotations are labelled as text.
+4. No validation or OOS row was read; no census, backtest, or measurement was run.
+5. This briefing authorizes nothing and passes no gate.
