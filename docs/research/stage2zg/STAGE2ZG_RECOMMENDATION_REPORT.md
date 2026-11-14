@@ -151,3 +151,9 @@ shrinks an opportunity set that is already recorded as insufficient.
 
 **[REC] `2ZD-3 = S-1`.** Consequence accepted: `δ = 0.10R` becomes a smaller absolute amount, so the MME is
 cheaper to meet in currency, no easier to meet in `R`, and a larger `$250` trade count is required.
+
+**Rejected:** `S-2` — removes opportunities from a programme that already fails the floor. `S-3` — leaves Gate
+2 input #6 `PARTIAL` and Gate 2 unfreezable.
+
+**Not authorized by this choice:** no sizing is applied to real capital, no position is computed, and the
+Gate 0 `$250`/`$10` arithmetic is not revised.
