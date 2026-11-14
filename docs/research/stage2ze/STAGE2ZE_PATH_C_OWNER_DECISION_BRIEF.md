@@ -34,3 +34,22 @@
 The packet was read in full, together with the protocol sections it cites (§4.2, §4.3, §5.2, §8.2,
 §8.3, §15), the addendum (§7.4, §8, §10.4), D-08…D-15, the blocker register (B-09, B-10, B-11), and
 the Stage 2ZD requirement matrix and readiness assessment.
+
+---
+
+## 2. The decisions, exactly as the packet poses them
+
+The packet asks for **six** recorded decisions and leaves a **seventh question** outside them.
+
+| id | packet section | question, as the packet states it | options |
+|---|---|---|---|
+| **2ZD-0** | §5 | which path is selected | `A`, `B`, `C`, `D` |
+| **2ZD-1** | §6.1 | "is computing a SHA-256 over a reserved validation or OOS block a 'read' that D-12 forbids, or a permitted hash-only contact?" | `R-a`, `R-b`, `R-c`, `R-d` |
+| **2ZD-2** | §6.2 | "which single candidate is the Gate 2 primary hypothesis?" | `C-B`, `C-D`, `C-N` |
+| **2ZD-3** | §6.3 | when the `$2,500` cap binds a stop distance below `4%`, "does `1R` shrink with the cap, or is the cap exceeded?" | `S-1`, `S-2`, `S-3` |
+| **2ZD-4** | §6.4 | the numeric parameters D-09/D-12 leave open: episode definition, block length, embargo length, who holds the validation split, when it may be opened | owner values |
+| **2ZD-5** | §6.5 | "how are the three sample-sufficiency inputs obtained?" (`σ`, `DE`, `p_exec`) | `E-1`…`E-4` |
+| **Q-1** | not in §6 | whether measured venue cost is required before Gate 2 — Stage 2ZD's interpretation issue I-2 | no packet option; confirmation only |
+
+Each remains **undecided**. A blank field is not a decision; the packet's §0 rule is that silence,
+"continue", or accepting this commit selects nothing.
