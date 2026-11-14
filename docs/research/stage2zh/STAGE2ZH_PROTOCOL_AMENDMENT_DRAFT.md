@@ -80,3 +80,18 @@ replaced. Nothing else in the protocol is touched.
 > digest function, bytes streamed, and digest. The log is committed with the Gate 2 manifest, is append-only, and
 > may not be edited after the fact. The analyst's reserved-contact count remains zero throughout, and the log is
 > the evidence of it.
+
+### A-5 — Non-derogation
+
+> **No other effect.** This amendment does not change D-01…D-15, A-1…A-4, the one-look rule, the embargo, the
+> three-block structure, any threshold, any verdict, or any gate. It changes who may contact reserved bytes and
+> what §8.2's hash requirement is satisfied by, and nothing else.
+
+## 5. Consequential edits
+
+- **§10.2 version.** A rule is changed, so this is a major version: `2.0.0` from the protocol's current version.
+  A manifest carrying SHA-256 hashes, byte counts, and a canonical self-hash is required by §10.2.
+- **No edit to the addendum.** Its §10.4 restates D-12 ("no validation or OOS row may be read") and does not
+  mention hashes, so it is consistent with `R-b` as written.
+- **No edit to D-12.** The adopted reading is already the strict one; the amendment changes the *other*
+  instrument.
