@@ -110,3 +110,14 @@ to be "complete and internally consistent", so with `C-N` Gate 2 cannot pass, an
 - the Gate 2 specification retains an explicitly empty hypothesis slot, and may not be filled by the agent;
 - no candidate is replaced by the other to satisfy the one-primary rule — which is precisely the cosmetic fix
   `C-N` refuses.
+
+**[OPEN]** Sheet one of the Gate 2 requirement matrix (input #1) is now unsatisfiable by construction, so the
+matrix must be rewritten to show it as *deferred by decision* rather than *awaiting a decision*. That rewrite
+belongs to a later documentation stage, not to this one.
+
+## 7. Decision 2ZD-3 — `S-1`: consistent with D-02, and it makes the target harder
+
+**[F]** D-02 is resolved as option C: maximum drawdown 15%, per-trade limit `1.00R`, tail limit `0.50R CVaR95`,
+`$2,500` fixed-notional position limit (`stage2o`, D-02, 2026-11-10).
+
+**[CALC]** Under `S-1`, `R` is set by the capped notional, `R = min($100, $2,500 × stop%)`:
