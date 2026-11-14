@@ -308,3 +308,14 @@ here. **Not authorized:** any measurement, quote sampling, or venue contact.
 | `X-1` | candidate D fails the cost-median condition as well as the opportunity floor; B fails only the floor | `C-D` carried but flagged; owner confirmation required with §6.1 in view |
 | `X-2` | packet §6.1 cites a "full-file-hash precedent" the 2ZC record explicitly denies | `R-a` stands on §8.2's text, not on precedent; no packet edit |
 | `X-3` | packet §6.2's note for `C-D` omits D's cost-median failure | presentation gap, corrected in §6.1 here |
+
+No conflict found requires changing a recommended option to keep the package coherent. `X-1` changes the
+*confidence* in `C-D`, not its admissibility; `X-2` removes a supporting claim from `R-a` without touching the
+reading; `X-3` is repaired by this report's own table. None of the three was resolved by inference.
+
+## 12. What still needs an owner decision
+
+1. **Ratification of this package** — without it, every `[REC]` above stays a recommendation.
+2. **The custodian appointment** for 2ZD-4 field 4.
+3. **`C-D` or `C-B`**, in the light of `X-1`.
+4. **The planning `DE` and `p_exec` brackets**, which the Gate 2 registration must declare under `E-2`.
