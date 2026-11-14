@@ -279,3 +279,10 @@ assumptions".
 
 **[REC] `2ZD-5 = E-2`**, with the assumption set declared at Gate 2 registration and labelled as an assumption
 in every downstream table, sensitivity range included.
+**Why no numbers are proposed here.** Any `DE` this report proposed would be chosen by an author who has read
+`3.933333`, so it could not be certified independent of it. The defensible move is to fix the rule — declare,
+label, bracket — now, and make the declaration a Gate 2 registration act with its own disclosure, rather than
+smuggle a number into a recommendation and call it pre-registered.
+
+**Rejected:** `E-1` and `E-3` — both need a census authorization this stage cannot give, and both still leave
+`p_exec` to B-04. `E-4` — leaves Gate 2 input #11 `BLOCKED`.
