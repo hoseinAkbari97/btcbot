@@ -175,3 +175,10 @@ satisfied, containing the signal instant, closed at the first 4 h bucket where i
 **[F]** That run is already the frozen cluster unit: candidate D assigns each signal "to the maximal
 `budget_ok == True` 4 h run containing the session signal instant", with 212 such runs in the development
 interval (`CANDIDATE_D_CENSUS_REPORT.md` §6).
+**[R]** Three reasons: it is causal — the run is knowable at the signal instant and looks no further ahead;
+it is the mechanism's own unit, since the budget is what makes an intraday continuation eligible at all; and
+it is the unit the recorded design-effect diagnostics were computed on, so the registered dependence model and
+the pre-registered `DE` describe one object instead of two.
+
+**Rejected:** the UTC session — the recorded session-id view gives a grouped design effect of 15.13 over only
+three groups, so it is both unstable and coarse. Calendar month — not linked to the mechanism, and 12 groups.
