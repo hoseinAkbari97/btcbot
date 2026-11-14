@@ -99,3 +99,11 @@ days (`[2024-07-01, 2026-09-01)`), leaving `612` lookable days for validation pl
 ≥24 h, both far shorter than 90 days, so no episode or trade can straddle a boundary. Adequacy against the
 dependence assumption: the embargo is not sized from the dependence structure at all — it is sized from the
 feature lookback, which is the stricter of the two here.
+
+**Residual risk, stated:** if the registered exit policy allowed a holding period beyond 24 h, a trade could span
+a boundary regardless of the embargo, because the embargo bounds *when a signal may occur*, not *how long a
+position lives*. Under any intraday policy the risk is nil; under a multi-day policy the 90 days would need to be
+re-derived. This is the same missing input as §3, and it is the single largest open item in 2ZD-4.
+
+**Not claimed:** no dependence range was measured, and no cost was measured. The embargo's justification is a
+declared completeness argument — the first validation decision sees validation bars only — not an empirical one.
