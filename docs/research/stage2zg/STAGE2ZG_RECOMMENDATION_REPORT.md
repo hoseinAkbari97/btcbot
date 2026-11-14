@@ -60,3 +60,12 @@ before any outcome exists, so nothing it settles can be informed by one.
 **Rejected:** `A` — Gate 2 cannot pass today (2 of 16 inputs satisfied), so A forces guesses or an implicit
 amendment. `B` — builds the template while leaving the interpretation gap open. `D` — closes nothing;
 legitimate only if the owner intends to pause.
+
+## 5. Decision 2ZD-1 — recommended: `R-a`
+
+**[F]** Protocol §8.2 requires that "the exact dates and hashes are frozen at Gate 2". D-12 (register) and
+addendum §10.4 forbid reading "any validation or OOS row" before its gate. Neither text defines "read", and
+neither mentions hashing.
+
+**[F]** The two requirements cannot both hold for a hash over reserved bytes unless hashing is not a read:
+option `R-b` makes §8.2 permanently unsatisfiable without an amendment (packet §6.1, consequence column).
