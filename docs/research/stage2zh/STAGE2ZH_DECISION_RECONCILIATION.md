@@ -52,3 +52,12 @@ Two of the three changes make the programme *stricter*, and both add work rather
 Neither is a shortcut. Both are defensible; §5 and §6 say exactly what each costs.
 
 ## 4. Decision 2ZD-0 — `C`, unchanged
+
+**[F]** Path C is "resolve the protocol interpretation and owner decisions first" and authorizes "the §8.2/D-12
+ruling plus the four non-data Gate 2 decisions, and a Gate 2 specification reflecting them" (packet §5).
+
+**[REC]** `2ZD-0 = C`, as in 2ZG. **Consistency check:** under `R-b` the "ruling" is delivered as a proposed
+amendment rather than an interpretation, and under `C-N` the Gate 2 specification carries an empty hypothesis
+slot. Path C's text accommodates both — it authorizes a resolution, not a particular mechanism — but the two
+together mean Path C no longer produces a *registrable* Gate 2 package. It produces an amendment plus three
+decisions plus a specification with a hole.
