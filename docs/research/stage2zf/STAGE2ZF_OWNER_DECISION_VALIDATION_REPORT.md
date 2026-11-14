@@ -52,3 +52,9 @@ Three further classes were considered and rejected on the same rule:
 
 No statement in the handoff identifies the packet, its digest, a `2ZD-*` decision, or a selected option.
 **Conclusion: no decision was recorded**, so there are no choices to validate.
+
+## 4. Finding
+
+**No owner decision is recorded against the Stage 2ZD packet.** All six decisions are open, no option is
+selected, and no field of the §9 signature block is completed. The packet states the rule this finding
+applies: a blank field is not a decision, a missing reply is not a decision, and silence is not authorization.
