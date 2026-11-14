@@ -86,3 +86,10 @@ Q-1 is not one of the six. The packet records it as issue I-2 with `owner_decisi
 stays outside every selection above and is not a prerequisite for 2ZD-0. It remains open all the same: no
 measured-cost figure exists, and the labelled `26 bp` assumption is the only permitted Gate 2 basis unless the
 owner authorizes measurement separately.
+
+## 7. The exact response required
+
+The owner must supply a statement that (a) names the packet and its digest, (b) selects 2ZD-0, (c) if `C`,
+selects 2ZD-1, 2ZD-2, 2ZD-3 and 2ZD-5 and gives the five 2ZD-4 values, (d) states any scope and conditions, and
+(e) carries a date in UTC and a signature or equivalent. The Stage 2ZE §6 form is exactly this shape and can
+be returned filled in.
