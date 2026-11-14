@@ -95,3 +95,15 @@ replaced. Nothing else in the protocol is touched.
   mention hashes, so it is consistent with `R-b` as written.
 - **No edit to D-12.** The adopted reading is already the strict one; the amendment changes the *other*
   instrument.
+
+## 6. The alternative that was not adopted
+
+A shorter amendment would define "read" as a content-bearing operation only, permitting the analyst to stream
+reserved bytes through SHA-256 with no parsing. That is `R-a` written as text instead of as a ruling. It is
+recorded here because it remains the smaller change and because a future owner may prefer it:
+
+> **Alternative A-1′.** *Reserved contact that streams bytes through a declared digest function without parsing,
+> aggregating, or decoding is not a read.*
+
+It is **not** part of the proposed text. Adopting it would reverse the owner's `R-b` selection, and this stage
+does not reverse selections.
