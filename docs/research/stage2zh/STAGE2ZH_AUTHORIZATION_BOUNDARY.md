@@ -64,3 +64,19 @@ content.
 3. A hypothesis — the one thing `C-N` withholds — which requires a further owner decision.
 4. Declared validation and OOS dates, and the two 90-day embargoes, so §8.2's freeze has content.
 5. A registered exit and holding policy, without which the episode and embargo arguments stay conditional.
+
+## 6. This stage's own record
+
+| item | value |
+|---|---|
+| dataset files streamed | 0 |
+| reserved bytes hashed | 0 |
+| validation or OOS rows decoded | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| valuation or cost measurements | 0 |
+| venue contacts, API keys, orders | 0 |
+| predecessor documents modified | 0 |
+| owner fields completed | 0 |
+| gates changed | 0 |
+
+## 7. Status, unchanged
