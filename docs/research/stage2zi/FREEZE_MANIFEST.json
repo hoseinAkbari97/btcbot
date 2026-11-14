@@ -214,11 +214,12 @@
     "branch": "main",
     "changed_paths": "docs/research/stage2zi/ only",
     "head_at_manifest_creation": "b299295422dbfa91477b2de4d66f4a52a795ebe6",
+    "head_at_manifest_creation_note": "this is the commit onto which the manifest was written; the final HEAD is one commit later and is reported in the stage completion report",
     "head_at_stage_start": "de4a3f0adf48f6e628650fece3b5fee243b79991",
     "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
     "working_tree_at_manifest_creation": "contains only the new Stage 2ZI artifacts"
   },
-  "self_hash": "f07fc259d2b60ba7c7235434808dbbdb5418646c0e7e63a68b48a811cefbb95f",
+  "self_hash": "6a9694d66ae7af5b0a9195bd83fda02408fc06332e69f806749b85e5b769c84c",
   "stage": "2ZI",
   "status_after_stage": {
     "A-1_to_A-4": "unchanged",
