@@ -59,3 +59,22 @@ presented as if it did.
 **One honest consequence.** Under this design the digest is checkable by the custodian and **not** by the analyst,
 whose only check is the internal consistency of the log and manifest. That trust limit is structural, not
 procedural, and the Gate 4 audit must record it rather than assume it away.
+
+## 4. Prohibited acts, itemised
+
+The custodian must not:
+
+- **parse** — read structure, split fields, interpret types, or build rows, tables, or frames from reserved bytes;
+- **decode** — decompress, decrypt, deserialise, or otherwise turn bytes into values;
+- **inspect** — view, print, display, diff, or sample reserved content, and must not inspect a boundary record
+  beyond the single timestamp-field location permitted in §3 step 4;
+- **analyse** — compute any indicator, statistic, count by value, distribution, return, or comparison over reserved
+  bytes, and must not form or record an opinion about what they contain;
+- **disclose** — deliver, quote, describe, hint at, or characterise reserved content to the analyst or to anyone
+  else, including by way of "it looked fine", "the file is intact", or any similar reassurance, which is itself an
+  observation about the data;
+- **retain** — keep a copy, cache, snapshot, working file, backup, or derivative of reserved bytes outside the
+  custodian's own directory, or place one in the repository.
+
+**The prohibition binds the description, not only the data.** A custodian who says "validation looks profitable"
+or "there are about the expected number of rows" has delivered a result. Delivery is limited to §3 step 6.
