@@ -260,3 +260,28 @@ permits contact is not an amendment of `R-b`, it is its reversal.
 It is recorded because a future owner may prefer it and should be able to see that the choice was visible here,
 not overlooked. It is deliberately written to be recognisable as `R-a`, so that adopting it would be a recorded
 reversal rather than a silent one.
+
+## 10. What this amendment would not authorise, even if adopted
+
+- It would not open Gate 2, register a hypothesis, or create a registrable Gate 2 input.
+- It would not permit the analyst to stream, hash, parse, or approach any reserved byte — that is what it
+  forbids, and `A-5` says so.
+- It would not appoint a custodian. The appointment is a separate instrument, even where the owner is the
+  custodian.
+- It would not resolve the `2ZD` selections, validate the `26 bp` proxy, resolve `C-4` or `C-6`, or affect
+  `T-4` or `T-5`.
+- It would not make the analyst's digests verifiable. Under `A-2`–`A-4` the custodian's digest can be checked by
+the custodian; the analyst's check is the log's internal consistency, not the bytes.
+- It would not change the historical status of any act performed before its effective date (§3, §7).
+
+## 11. Status
+
+**Adoption-ready, unadopted, and not effective.** It replaces one sentence of §8.2 and adds §8.2.1 (`A-1`–`A-5`).
+It creates a custodian role that appears nowhere in the protocol today, which is the price of the strict reading
+stated plainly rather than absorbed silently.
+
+Until the owner signs, the protocol's §8.2 is unamended, `R-b` remains a selection without operative text, and
+§8.2's hash requirement has no compliant procedure. Nothing in this document has been applied to the protocol
+file, which this stage did not modify.
+
+No reserved byte was read, streamed, decoded, or hashed in producing this instrument.
