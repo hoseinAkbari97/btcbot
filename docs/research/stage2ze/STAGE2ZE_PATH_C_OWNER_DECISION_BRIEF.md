@@ -53,3 +53,29 @@ The packet asks for **six** recorded decisions and leaves a **seventh question**
 
 Each remains **undecided**. A blank field is not a decision; the packet's §0 rule is that silence,
 "continue", or accepting this commit selects nothing.
+
+---
+
+## 3. Decision by decision
+
+### 3.1 2ZD-0 — which path is selected
+
+**What is being decided.** Which of four next moves the programme takes. Nothing else on this page
+takes effect until this is recorded.
+
+**Why it is necessary.** Gate 2 cannot be executed today: Stage 2ZD found two inputs `SATISFIED` of
+sixteen, four `BLOCKED`, ten `PARTIAL`, no §5.4 artifact complete, and a textual gap it cannot close
+itself. Without a selection, the programme simply stops at the end of Stage 2ZD.
+
+| option | exact meaning in the packet | authorizes | restricts |
+|---|---|---|---|
+| **A** | Authorize Gate 2 execution now | a Gate 2 stage that attempts to freeze the registration and record a verdict | "does not waive the four blocked inputs"; would force guesses or an implicit amendment |
+| **B** | Prepare a Gate 2 specification only | a template, the 16-input table, artifact skeletons, decision list | no voting, no sample-sufficiency numbers, no split, no Gate 2 verdict, no data access |
+| **C** | Resolve the protocol interpretation and owner decisions first | the §8.2/D-12 ruling plus the four non-data Gate 2 decisions, and a Gate 2 specification reflecting them | no census, no data access, no Gate 2 execution, no parameter chosen without an authorized route |
+| **D** | Defer | nothing; the programme pauses | closes no blocker; authorizes nothing |
+
+**Recommendation in the packet.** Path C, with Path B as its permitted output and the `σ`/`DE`/`p_exec`
+route posed separately.
+
+**What no option does.** No option passes Gate 0, authorizes real capital, revisits T-4, or changes any
+frozen value. Option A does not make the blocked inputs exist.
