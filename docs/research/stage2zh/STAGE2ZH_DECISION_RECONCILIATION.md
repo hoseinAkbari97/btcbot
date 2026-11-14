@@ -161,3 +161,16 @@ matters more under `C-N`: with no hypothesis registered, the cost basis is not b
 conclusion, so there is even less reason to characterise it as evidence.
 
 ## 10. The seven selections, with status
+
+| item | selection | source status | ratification |
+|---|---|---|---|
+| 2ZD-0 | `C` | in packet §5 | **[OWNER]** |
+| 2ZD-1 | `R-b` | in packet §6.1; needs §8.2 amendment | **[OWNER]** + amendment adoption |
+| 2ZD-2 | `C-N` | in packet §6.2; valid under D-11 | **[OWNER]** |
+| 2ZD-3 | `S-1` | in packet §6.3; consistent with D-02 | **[OWNER]** |
+| 2ZD-4 | four numbers + owner custodian | methodology doc §3 | **[OWNER]**, one field conditional |
+| 2ZD-5 | `E-2` | in packet §6.5 | **[OWNER]** |
+| Q-1 | retain labelled proxy | 2ZC cost record §1 | **[OWNER]**, optional |
+
+No row is marked adopted. The stage's own documents are proposals, and the manifest records
+`ratified: false` for the whole set.
