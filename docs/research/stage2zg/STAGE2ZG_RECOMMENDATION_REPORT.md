@@ -136,3 +136,11 @@ closes nothing.
 
 **What no selection does:** it authorizes no census, changes no `FEASIBILITY FAIL` verdict, and establishes no
 edge for either candidate.
+
+## 7. Decision 2ZD-3 — recommended: `S-1`
+
+**[F]** D-02 is resolved as option C: maximum drawdown 15%, per-trade limit `1.00R`, tail limit `0.50R CVaR95`,
+and a `$2,500` fixed-notional position limit (`stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md`, D-02, 2026-11-10).
+
+**[F]** At the recorded `1R = $100`, a `4%` stop consumes the whole `$2,500` cap exactly, so any tighter stop
+makes the cap — not the risk budget — the binding constraint (packet §6.3).
