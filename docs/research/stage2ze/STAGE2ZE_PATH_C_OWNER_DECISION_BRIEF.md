@@ -219,3 +219,31 @@ route decision is not itself that authorization.
 
 **Recommendation in the packet.** None. Stage 2ZD poses the question and notes that the answer is either a
 census authorization or an owner-approved assumption.
+
+---
+
+## 4. The separate measured-cost question (Q-1)
+
+This is **not** one of the six packet decisions. Stage 2ZD listed it as interpretation issue I-2 and
+recorded `owner_decision_required = false`.
+
+**What the text explicitly says.** §4.3: cost evidence is "either measured or explicitly labelled as an
+assumption with a plan to replace it". §4.2 input 5 allows a "documented plan" to collect it. Two branches
+are written into the protocol; there is no ambiguity about their existence.
+
+**What was taken.** Stage 2ZC took the second branch: `26 bp` is labelled a Binance spot proxy in the frozen
+specifications, a dated replacement plan (R-0…R-5) was added, and no measurement is claimed. Its verdict §6.2
+records that a strict reading requiring measurement at Gate 1 would reverse the Gate 1 result.
+
+**Why it does not block Gate 2.** §5.2 and §5.3 ask for a primary estimand, statistical methods, and a
+reproducible sufficiency calculation. Neither asks for a cost measurement. D-06's p95 conservative-cost rule
+can only apply once a cost *distribution* exists, and Gate 2 does not create one.
+
+**What stays fixed.** `26 bp` is unchanged, remains a proxy, and may never be described as a Nobitex cost or
+as execution evidence. Replacing it requires the R-4 plan under a new authorization; measuring spread, depth,
+fees, or slippage is not authorized now.
+
+**What the owner may record.** Either (i) a confirmation that the labelled assumption is the permitted
+research-leg basis for Gate 2 and that no cost, execution, or real-capital claim may cite it; or (ii) an
+instruction that measurement must precede Gate 2 — which is an O-3/O-4-type authorization, outside Path C,
+and would delay Gate 2.
