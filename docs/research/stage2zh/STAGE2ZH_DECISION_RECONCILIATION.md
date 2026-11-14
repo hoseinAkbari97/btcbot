@@ -88,3 +88,12 @@ owner has preferred the one that changes the text.
 **What `R-b` costs:** §8.2's hash requirement becomes unachievable by the analyst, so Gate 2 cannot freeze its
 split until an amendment is adopted (§6 of the amendment draft). No reserved byte may be hashed in the
 meantime — including by this stage.
+
+## 6. Decision 2ZD-2 — `C-N`: valid under the packet
+
+**[F]** Packet §6.2 offers three options: `C-B`, `C-D`, and `C-N` — "no selection now; keep both as
+unselected", with the consequence "Gate 2 cannot name a primary hypothesis". `C-N` is therefore an option in
+the instrument itself, not a write-in.
+
+**[F]** D-11 adopted option A: "One primary hypothesis — test one pre-registered hypothesis; all else
+exploratory". The rule caps the number of primaries at one.
