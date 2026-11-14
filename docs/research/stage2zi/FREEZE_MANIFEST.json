@@ -113,6 +113,17 @@
   },
   "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
   "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
+  "open_items": [
+    "adoption of the amendment under protocol section 10.2, with a dated owner statement naming its hash and acknowledging finding V-1",
+    "ratification of the seven selections in a dated instrument",
+    "appointment of the custodian in writing, even where the owner is the custodian",
+    "settlement of finding Y-1 and finding Y-2 as recorded pre-amendment deviations, without grandfathering unless stated",
+    "a hypothesis, which C-N withholds and without which Gate 2 cannot be registered at all",
+    "a registered exit and holding policy, which becomes decisive once a hypothesis is named",
+    "the committed text change to section 8.2 and its own manifest, which adoption must authorize (finding V-2)",
+    "the planning DE and p_exec brackets at registration under E-2",
+    "an answer to T-5 on the 250 target"
+  ],
   "predecessor_manifest_verification": {
     "procedure": "each predecessor manifest read, its self_hash recomputed with the same canonical procedure, and each referenced deliverable re-hashed and re-sized from current bytes",
     "stage2zd": {
@@ -167,7 +178,30 @@
     "ratified": false,
     "status": "proposed and unratified; no owner field completed anywhere"
   },
-  "self_hash": "3250d830537536c4144ac5d99efb8d5a8a3b4715254d112040f7d0d8cc682133",
+  "self_hash": "a5b24585b75778341b2dabbce0d699dcc6064c295f56f43aea8cbe074c6c298f",
   "stage": "2ZI",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "C-4": "unresolved",
+    "C-6": "unresolved",
+    "D-01_to_D-15": "unchanged",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked for real-capital claims",
+    "T-4": "deferred",
+    "T-5": "open",
+    "candidates": "both FEASIBILITY FAIL - INSUFFICIENT OPPORTUNITIES, frozen at v2.0.0",
+    "cost_basis_26bp": "unchanged and unmeasured",
+    "custodian_role": "defined only in the draft amendment; no custodian appointed",
+    "gate0": "NOT PASSED",
+    "gate1": "PASSED - research leg only (Stage 2ZC, unchanged)",
+    "gate2": "NOT AUTHORIZED",
+    "gate2_blockers": "B-1 open by decision (C-N names no hypothesis); B-2, B-3, B-4, B-5 resolve only on the owner acts; B-6 document production; the exit and holding policy remains an open registration input distinct from B-1",
+    "gate2_registrable": false,
+    "protocol_version": "unchanged; the amendment is unadopted and assigns 2.0.0 only on adoption",
+    "real_capital_work": "not authorized",
+    "stage2zd_package": "frozen and unchanged",
+    "stage2zg_package": "unchanged",
+    "stage2zh_package": "unchanged"
+  },
   "version_identifier": "stage2zi/1.0.0"
 }
