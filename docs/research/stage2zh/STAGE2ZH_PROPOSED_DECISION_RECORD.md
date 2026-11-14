@@ -86,3 +86,13 @@ verified by the analyst under `R-b`.
 |---|---|---|
 | cost basis | retain `26 bp` as a labelled, unmeasured Binance spot proxy | recommendation, unratified |
 | condition | never described as measured, observed, or Nobitex-specific; replacement plan retained | recommendation, unratified |
+
+## 9. Two instruments, not one
+
+This record proposes selections. The amendment draft proposes text. They cannot be adopted by a single signature
+that names only one of them:
+
+| instrument | what adoption does | what it does not |
+|---|---|---|
+| this record | ratifies the seven selections | change §8.2, or appoint a custodian |
+| the amendment draft | makes `R-b` operative | ratify any selection, or open Gate 2 |
