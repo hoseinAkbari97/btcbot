@@ -100,3 +100,7 @@ Per decision, the minimum that counts as a selection:
 - **2ZD-1** — one option, `R-a` … `R-d`, taken as an interpretation ruling on §8.2 and D-12, not as a read
   authorization.
 - **2ZD-2** — one candidate; D-11's one-primary rule rules out naming two.
+- **2ZD-3** — one option, `S-1`, `S-2`, or `S-3`, keeping the `$2,500` cap and the `1.00R` limit in their
+  recorded relationship rather than floating either.
+- **2ZD-4** — five values, each a decision in its own right; a blank stays undecided.
+- **2ZD-5** — one option; `E-1` or `E-3` authorize a route only, never a census.
