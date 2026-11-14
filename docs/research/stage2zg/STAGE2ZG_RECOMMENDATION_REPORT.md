@@ -119,3 +119,12 @@ hypothesis; it does not revive it.
 | `M_all` at 26 bp | **0.0865** | 0.3226 |
 | cost-median condition (`M_all ≤ 0.20`) | **met** | **failed** |
 | opportunity floor | failed | failed |
+
+**[R]** D wins on raw count by ten signals and loses on every other row: a design effect 2.4× larger, 40%
+fewer effective units, and a cost-median failure B does not have. D therefore fails **two** pre-declared
+conditions and B fails **one**. On the recorded evidence, `C-D` is the weaker selection.
+
+**[F]** The packet's §6.2 note for `C-D` records "34 historical opportunities; design effect 3.93" and omits
+the cost-median failure. That omission is what makes the option look cost-neutral; it is a presentation gap
+in the packet, not a contradiction of its text, and it is corrected in the table above rather than by editing
+the packet.
