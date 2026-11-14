@@ -247,3 +247,26 @@ fees, or slippage is not authorized now.
 research-leg basis for Gate 2 and that no cost, execution, or real-capital claim may cite it; or (ii) an
 instruction that measurement must precede Gate 2 — which is an O-3/O-4-type authorization, outside Path C,
 and would delay Gate 2.
+
+---
+
+## 5. Which decisions do what
+
+The distinction matters: resolving an interpretation changes what a future stage **may** do; authorizing a
+stage permits work **now**.
+
+| decision | kind | effect if recorded | work it authorizes by itself |
+|---|---|---|---|
+| **2ZD-0** = `C` | authorization | opens the Path C stage: record decisions and produce a Gate 2 specification | the Path C stage, within its stated scope |
+| **2ZD-0** = `A` | authorization | opens a Gate 2 attempt | a Gate 2 stage that cannot pass on today's evidence |
+| **2ZD-0** = `B` | authorization | opens a specification-only stage | a template and decision list, no verdict |
+| **2ZD-0** = `D` | deferral | nothing changes | nothing |
+| **2ZD-1** | interpretation | fixes whether a future Gate 2 may hash reserved blocks | **none** — it sets the rule, not the work |
+| **2ZD-2** | selection | names the Gate 2 primary hypothesis | **none** — no census, no backtest, no outcome |
+| **2ZD-3** | rule choice | fixes the research-leg sizing rule | **none** — document-level only |
+| **2ZD-4** | parameter choice | fixes dependence, embargo, and custody values | **none**; `R-c`-style custody would need its own procedural authorization |
+| **2ZD-5** | route choice | fixes how `σ`/`DE`/`p_exec` will be obtained | **none**; `E-1`/`E-3` need a separate census authorization |
+| **Q-1** | confirmation | confirms the cost assumption is the permitted basis, or orders measurement first | **none**; measurement would need its own authorization |
+
+**Reading of this table.** Only 2ZD-0 grants anything. The other five are preconditions that make a future
+Gate 2 writable; none of them starts Gate 2, and none of them touches market data.
