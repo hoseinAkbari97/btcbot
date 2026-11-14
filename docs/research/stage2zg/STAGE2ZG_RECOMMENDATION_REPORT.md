@@ -250,3 +250,9 @@ audit-rejection condition both become checkable.
 | embargo adequacy | 90 days ≥ the 540-bar lookback and ≫ the 24 h holding window, so nothing straddles a boundary |
 | custody and access separation | the analyst holds no read access, and hash-only delivery is logged by the custodian |
 | outcome influence | no value is derived from an outcome, a `DE`, or a validation or OOS result; §8.3's lookback is a design constant |
+
+The last row is the one that needed the most care, and it is a claim about provenance rather than about
+mathematics: the block length and the episode rule predate the 2J design effect and were not varied in
+producing this report, and the embargo comes from a specification constant. None of the three can be traced to
+an outcome. The two quantities that *are* outcome-adjacent — `σ` and `DE` — are deliberately not given values
+here (§9).
