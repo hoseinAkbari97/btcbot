@@ -218,3 +218,27 @@ the reason it must be stated.
 **Consequence for this amendment.** After it takes effect, no analyst may recompute those digests. Only the
 custodian may, under `A-2` and `A-4`. Verification of an existing full-file digest therefore becomes a
 custodian task, not an analyst task.
+
+## 8. What adoption requires
+
+**[OWNER]** An adopting statement must, at minimum:
+
+1. identify this instrument by path and by the SHA-256 recorded in `docs/research/stage2zi/FREEZE_MANIFEST.json`;
+2. state **adopt**, or adopt with the revisions listed;
+3. carry a UTC date, which becomes the effective date under §3;
+4. record the version as `2.0.0`, acknowledging finding `V-1` (the protocol was previously unversioned);
+5. acknowledge `Y-1` and `Y-2` as recorded pre-amendment deviations, without grandfathering them unless the
+   statement says so explicitly and in its own words;
+6. be recorded verbatim, without agent paraphrase, in a record created for that purpose;
+7. be accompanied by a manifest for the amended protocol text carrying SHA-256 hashes, byte counts, and a
+   canonical self-hash, as §10.2 requires.
+
+A statement that does not name the hash adopts nothing, because the text could otherwise change afterwards
+(addendum §14.1 sets this standard). **The agent may not create, infer, pre-fill, or paraphrase that
+statement.**
+
+**Independence of instruments.** Adopting this amendment does **not** ratify `2ZD-0`, `2ZD-1`, `2ZD-2`,
+`2ZD-3`, `2ZD-4`, `2ZD-5`, or `Q-1`; it does not appoint a custodian; and it does not open Gate 2. Each is a
+separate instrument, and `STAGE2ZI_OWNER_DECISION_INSTRUMENT.md` and
+`STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md` say so from their own side. A signature on one is not a signature
+on another.
