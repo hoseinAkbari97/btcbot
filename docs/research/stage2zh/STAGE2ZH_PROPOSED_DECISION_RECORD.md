@@ -49,3 +49,7 @@ No threshold, population, or verdict is altered, and no third candidate is creat
 |---|---|---|
 | selection | `S-1` — `R` is set by the capped notional and shrinks | recommendation, unratified |
 | condition | per-trade loss remains ≤ `1.00R`; the `$2,500` cap is never exceeded | arithmetic, verified |
+
+Disclosed consequence: at a 2% stop, `R` falls to `$50`, `0.10R` to `$5`, and the `$250` target needs 50 trades
+a year instead of 25. The evidence requirements are unchanged, the `150` floor is unchanged, and `T-5` remains
+open.
