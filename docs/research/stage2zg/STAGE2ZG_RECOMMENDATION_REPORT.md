@@ -128,3 +128,11 @@ conditions and B fails **one**. On the recorded evidence, `C-D` is the weaker se
 the cost-median failure. That omission is what makes the option look cost-neutral; it is a presentation gap
 in the packet, not a contradiction of its text, and it is corrected in the table above rather than by editing
 the packet.
+
+**Position taken here:** `C-D` is carried as the delegated recommendation and is **not** silently changed to
+`C-B`. A conflict is reported, not repaired. The owner must confirm `C-D` with X-1 in view, or choose `C-B`,
+which would make the package internally consistent with the feasibility record. `C-N` remains available and
+closes nothing.
+
+**What no selection does:** it authorizes no census, changes no `FEASIBILITY FAIL` verdict, and establishes no
+edge for either candidate.
