@@ -270,3 +270,48 @@ stage permits work **now**.
 
 **Reading of this table.** Only 2ZD-0 grants anything. The other five are preconditions that make a future
 Gate 2 writable; none of them starts Gate 2, and none of them touches market data.
+
+---
+
+## 6. Copy-ready owner response template
+
+Everything below is the owner's to complete. The agent has filled none of it. A blank field is an
+undecided item, not a default.
+
+```
+STAGE 2ZE — OWNER RESPONSE
+
+Instrument:        docs/research/stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md
+Instrument SHA-256: 042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42
+Date (UTC):        ____________________
+Owner statement (verbatim):
+"______________________________________________________________________________"
+
+2ZD-0  path selected:                 [ ] A   [ ] B   [ ] C   [ ] D
+
+   -- complete the following only if 2ZD-0 = C; each is independent --
+2ZD-1  block-hash reading:            [ ] R-a  [ ] R-b  [ ] R-c  [ ] R-d
+2ZD-2  primary candidate:             [ ] C-B  [ ] C-D  [ ] C-N
+2ZD-3  notional-cap rule:             [ ] S-1  [ ] S-2  [ ] S-3
+2ZD-4  episode definition:            ____________________
+       block length:                  ____________________
+       embargo length:                ____________________
+       who holds the validation split:____________________
+       when it may be opened:         ____________________
+2ZD-5  sample-input route:            [ ] E-1  [ ] E-2  [ ] E-3  [ ] E-4
+
+Q-1    measured cost (optional):
+       [ ] confirm the labelled 26 bp assumption is the permitted Gate 2 basis
+       [ ] measurement must precede Gate 2 (this is an O-3/O-4-type authorization)
+       [ ] no statement
+
+Scope of this decision:               _________________________________________________
+Conditions or qualifications:         _________________________________________________
+Decisions intentionally left open:    _________________________________________________
+Signature or equivalent:              ____________________
+Recorded by:                          ____________________
+```
+
+**How to read it back.** Only 2ZD-0 selects a path. Only 2ZD-0 = `C` makes 2ZD-1…2ZD-5 meaningful. `Q-1` is
+optional and changes nothing on its own. An unfilled line is recorded as *not decided*, and cannot be filled
+later by the agent, by inference, or by a later general instruction to proceed.
