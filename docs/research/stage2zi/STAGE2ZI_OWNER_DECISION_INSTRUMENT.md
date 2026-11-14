@@ -104,6 +104,12 @@ not breach D-11, because a rule capping primaries at one is satisfied by zero.
 Selecting `E-2` and retaining the `26 bp` proxy keep both as **labelled assumptions**. Neither becomes an
 estimate, an observation, or a measurement by being selected, and no `cost_R` is computed from either.
 
+**On `S-1`, one clarification.** It is a sizing rule, not an evidence rule. It keeps every per-trade loss at or
+below `1R` and never exceeds the `$2,500` cap, and it changes nothing about the minimum evidence required. It also
+supports no frequency or profitability claim: when the cap binds, `R` falls and the same `$250` target needs *more*
+trades, not fewer. A registration may cite `S-1` as the risk rule and must not cite it as a reason the objective is
+within reach.
+
 ## 7. Owner fields, and the standard they meet
 
 | field | value |
