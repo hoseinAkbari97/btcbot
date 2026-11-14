@@ -65,3 +65,15 @@ open.
 | embargo length | 90 calendar days at each boundary | recommendation, unratified |
 | validation-split custodian | the human owner, under the logged custody procedure | recommendation, unratified; appointment is a separate owner act |
 | when the split may be opened | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | recommendation, unratified |
+
+Support tier for each value is recorded in `STAGE2ZH_METHODOLOGY_VALIDATION.md` §10: one mandated, one derived,
+three precedent, one a new role. Two disclosures belong with the selection — that 10,000 and the seed come from
+a single prior recommendation rather than a protocol requirement, and that the custodian's digests cannot be
+verified by the analyst under `R-b`.
+
+## 7. 2ZD-5 — `σ`, `DE`, `p_exec` route
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `E-2` — labelled pre-registered assumptions with sensitivity ranges | recommendation, unratified |
+| condition | declaration at Gate 2 registration; planning `DE` not taken from `3.933333` | recommendation, unratified |
