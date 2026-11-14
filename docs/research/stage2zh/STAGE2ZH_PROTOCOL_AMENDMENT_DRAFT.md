@@ -65,3 +65,11 @@ replaced. Nothing else in the protocol is touched.
 > deserialising, filtering, slicing, sampling, aggregating, interpolating, or summarising, and without decoding
 > any payload. Locating the first record at or after a declared boundary timestamp by its timestamp field alone
 > is part of the digest procedure and is limited to one such inspection per file per boundary.
+
+### A-3 — What the custodian may deliver, and what §8.2 then means
+
+> **Delivery.** The custodian delivers only: the digest, the digest function, the byte count, the declared
+> interval endpoints, and the date. The custodian must not deliver row content, record counts by value,
+> summaries, statistics, indicators, or any derived quantity. §8.2's requirement that "the exact dates and
+> hashes are frozen at Gate 2" is satisfied by the owner's declared dates and the custodian's digests, recorded
+> together in the Gate 2 manifest.
