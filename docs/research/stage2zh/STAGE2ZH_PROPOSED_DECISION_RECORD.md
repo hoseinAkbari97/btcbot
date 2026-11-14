@@ -77,3 +77,12 @@ verified by the analyst under `R-b`.
 |---|---|---|
 | selection | `E-2` — labelled pre-registered assumptions with sensitivity ranges | recommendation, unratified |
 | condition | declaration at Gate 2 registration; planning `DE` not taken from `3.933333` | recommendation, unratified |
+
+`E-2` authorises no data access, and under `C-N` there is no registered hypothesis for such a census to serve.
+
+## 8. Q-1 — cost basis
+
+| field | proposed value | status |
+|---|---|---|
+| cost basis | retain `26 bp` as a labelled, unmeasured Binance spot proxy | recommendation, unratified |
+| condition | never described as measured, observed, or Nobitex-specific; replacement plan retained | recommendation, unratified |
