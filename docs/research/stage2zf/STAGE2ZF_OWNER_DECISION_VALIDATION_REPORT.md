@@ -22,3 +22,10 @@ The two digests above bind every statement that follows to the exact instruments
 checks the packet and the briefing as committed, not an earlier or later revision.
 
 ## 2. What was checked, and how
+
+Searched for an owner statement in five places, in this order:
+
+1. The handoff message that opened this stage, read verbatim rather than summarized.
+2. Every file mentioning a `2ZD-*` identifier: a tree-wide search returned two files only — the 2ZD packet
+   itself, and the 2ZE briefing that restates it.
+3. The Stage 2M owner decision register, searched for `2zd` and `stage2zd`: no match.
