@@ -33,3 +33,9 @@ Searched for an owner statement in five places, in this order:
 5. `git log` since `30e6efc`: no later commit exists, so no response record was committed after the briefing.
 
 The search is complete for the repository: no file records a response, and no commit adds one.
+
+## 3. Statements examined, and why each fails the §2 test
+
+The stage instruction itself — "do this and commit and push", together with the 2ZF brief — selects no option.
+It authorizes this validation, which is precisely what §2 prescribes when no decision exists. It names no
+decision identifier, no option, no date, and no scope.
