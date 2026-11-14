@@ -55,3 +55,15 @@ rule — it says of the 24 h window that it "is a frequency-conservatism choice,
 mandated but its *dependence adequacy* is **[OPEN]**.
 
 ## 4. Field 2 — block length: **precedent**
+
+**[F]** Stage 6 ran "episode-cluster intervals and a 14-calendar-day block bootstrap of trade" statistics
+(`stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md` line 69). No protocol section, register decision, or 2J-plan clause
+fixes a block length; the 2J plan ran no bootstrap at all.
+
+**[CALC]** Development interval `[2021-01-01, 2024-07-01)` is 1,277 days; `1,277 / 14 = 91.2`, so 91 whole blocks.
+A 14-day block contains 84 4 h buckets and 42 sessions.
+
+**[R]** Adequacy argument: the block must exceed the range over which outcomes co-move. With intraday exits the
+range is at most a few days; 14 days covers it with margin, and 91 blocks is ample for a percentile interval.
+The number is therefore defensible on the mechanism, not merely inherited — but it is inherited as well, and the
+inheritance is what makes it reproducible against the recorded work.
