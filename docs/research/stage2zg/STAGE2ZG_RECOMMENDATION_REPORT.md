@@ -248,3 +248,5 @@ audit-rejection condition both become checkable.
 | dependence between observations | handled by the episode cluster plus the 14-day block bootstrap, which is D-09 option C |
 | temporal ordering | all five values are causal and forward-only; no rule reads a future bar (protocol §8.3) |
 | embargo adequacy | 90 days ≥ the 540-bar lookback and ≫ the 24 h holding window, so nothing straddles a boundary |
+| custody and access separation | the analyst holds no read access, and hash-only delivery is logged by the custodian |
+| outcome influence | no value is derived from an outcome, a `DE`, or a validation or OOS result; §8.3's lookback is a design constant |
