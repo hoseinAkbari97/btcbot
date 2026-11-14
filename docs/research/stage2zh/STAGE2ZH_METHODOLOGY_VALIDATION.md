@@ -180,3 +180,9 @@ a sentence in the registration rather than by a new decision.
 | embargo | 90 days | derived from 540 × 4 h | supported |
 | custodian | the owner, logged | new role + procedure | supported; digest unverifiable by the analyst |
 | opening | after Gate 2 freeze and Gate 4 audit, at Gate 5 | consistent | supported |
+
+**Six of seven values are usable as proposed.** None is invented here, none was fitted to a design effect or to
+an outcome, and the one that genuinely blocks a registration is not a value in this table at all — it is the
+missing exit and holding policy that would make the episode and embargo arguments unconditional.
+
+No valuation, count, or dependence quantity was computed in producing this document.
