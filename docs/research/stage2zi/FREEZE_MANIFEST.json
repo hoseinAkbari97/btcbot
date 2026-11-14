@@ -1,35 +1,46 @@
 {
-  "stage": "2ZI",
-  "version_identifier": "stage2zi/1.0.0",
-  "created_utc": "2026-11-14T09:30:56Z",
-  "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
-  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
   "authorization": {
-    "instrument": "the owner's written Stage 2ZI instruction of 2026-11-14",
     "decision": "prepare the final separate governance instruments for the outstanding Stage 2ZH decisions",
-    "scope": "docs/research/stage2zi/ only; drafts and instruments only; no data access; no adoption; no appointment; no owner signature, date, or affirmation",
-    "record": "docs/research/stage2zi/STAGE2ZI_AUTHORIZATION_BOUNDARY.md"
+    "instrument": "the owner's written Stage 2ZI instruction of 2026-11-14",
+    "record": "docs/research/stage2zi/STAGE2ZI_AUTHORIZATION_BOUNDARY.md",
+    "scope": "docs/research/stage2zi/ only; drafts and instruments only; no data access; no adoption; no appointment; no owner signature, date, or affirmation"
   },
+  "created_utc": "2026-11-14T09:30:56Z",
   "deliverables": [
     {
+      "bytes": 18069,
       "path": "docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md",
-      "role": "Adoption-ready major-version amendment of protocol section 8.2: the replaced hash sentence, section 8.2.1 clauses A-1 to A-5, the assigned version 2.0.0 with finding V-1, findings Y-1 and Y-2 as pre-amendment deviations, the rejection of the hash-only variant, and the adoption conditions"
+      "role": "Adoption-ready major-version amendment of protocol section 8.2: the replaced hash sentence, section 8.2.1 clauses A-1 to A-5, the assigned version 2.0.0 with finding V-1, findings Y-1 and Y-2 as pre-amendment deviations, the rejection of the hash-only variant, and the adoption conditions",
+      "sha256": "973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c"
     },
     {
+      "bytes": 10082,
       "path": "docs/research/stage2zi/STAGE2ZI_OWNER_DECISION_INSTRUMENT.md",
-      "role": "The seven proposed selections in decision form with every owner field blank, the seven 2ZD-4 values with their required qualifications, the consequences of C-N, the S-1 non-implication, and the separation from the other two instruments"
+      "role": "The seven proposed selections in decision form with every owner field blank, the seven 2ZD-4 values with their required qualifications, the consequences of C-N, the S-1 non-implication, and the separation from the other two instruments",
+      "sha256": "c7f6eebf5fb6e58d04606ee3ceb1ef8b5619e2b22319483f30006e805a996232"
     },
     {
+      "bytes": 13254,
       "path": "docs/research/stage2zi/STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md",
-      "role": "The custodian appointment form: access scope, digest-only procedure, prohibited acts, append-only logging, separation from analysis, revocation, incident handling, the single opening point, and blank appointment fields"
+      "role": "The custodian appointment form: access scope, digest-only procedure, prohibited acts, append-only logging, separation from analysis, revocation, incident handling, the single opening point, and blank appointment fields",
+      "sha256": "4db9d1b0a9498624bdedf545a963f7469237677691195822ca66a5d194b5aa22"
     },
     {
+      "bytes": 20154,
       "path": "docs/research/stage2zi/STAGE2ZI_INDEPENDENT_VALIDATION_REPORT.md",
-      "role": "Independent validation of the 2ZH deliverables, the amendment against the versioning rules, the seven selections against the packet, the 2ZD-4 values against their sources, S-1 against D-02, E-2 and 26 bp as assumptions, every gate and register status, the discrepancy list, the NOT VERIFIED list, and the open questions"
+      "role": "Independent validation of the 2ZH deliverables, the amendment against the versioning rules, the seven selections against the packet, the 2ZD-4 values against their sources, S-1 against D-02, E-2 and 26 bp as assumptions, every gate and register status, the discrepancy list, the NOT VERIFIED list, and the open questions",
+      "sha256": "fe7a3fde126b3ff942654943204b543b79136ba9c5c24aa0f9e84d81af18d3e8"
     },
     {
+      "bytes": 6871,
       "path": "docs/research/stage2zi/STAGE2ZI_AUTHORIZATION_BOUNDARY.md",
-      "role": "What the stage was authorized to do, what it did, what each instrument would resolve, the correct ordering of the two open Gate 2 inputs, what remains unauthorized, the six requirements for a Gate 2 opening, and the zero-access record"
+      "role": "What the stage was authorized to do, what it did, what each instrument would resolve, the correct ordering of the two open Gate 2 inputs, what remains unauthorized, the six requirements for a Gate 2 opening, and the zero-access record",
+      "sha256": "4cb3cd86987edc22f591656fd30bc916a7d4b23efd4a67c3b9f7935a1a259f39"
     }
-  ]
+  ],
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
+  "self_hash": "2f716b0ebc4722ed0a987ad36fca0cbf7dde93bd24811ad2cd211fe8443844f0",
+  "stage": "2ZI",
+  "version_identifier": "stage2zi/1.0.0"
 }
