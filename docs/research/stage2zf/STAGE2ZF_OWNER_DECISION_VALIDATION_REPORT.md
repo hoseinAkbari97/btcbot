@@ -29,3 +29,7 @@ Searched for an owner statement in five places, in this order:
 2. Every file mentioning a `2ZD-*` identifier: a tree-wide search returned two files only — the 2ZD packet
    itself, and the 2ZE briefing that restates it.
 3. The Stage 2M owner decision register, searched for `2zd` and `stage2zd`: no match.
+4. The packet's own §9 signature block, re-read on the committed revision.
+5. `git log` since `30e6efc`: no later commit exists, so no response record was committed after the briefing.
+
+The search is complete for the repository: no file records a response, and no commit adds one.
