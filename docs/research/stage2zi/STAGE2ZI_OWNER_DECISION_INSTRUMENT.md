@@ -28,3 +28,29 @@ owner's. **A filled proposal is not a decision; only a completed owner field is.
 **Separation, stated from this side.** Adopting the amendment ratifies nothing here; signing here adopts no
 amendment. A single signature that names only one of the three instruments adopts only that one. If the owner
 intends a single act, the statement must say so and name all three by path and hash.
+
+## 3. The seven decisions
+
+Proposed values are recommendations. The `owner selection` column is the decision, and it is empty.
+
+| # | decision | proposed value | packet reference | owner selection |
+|---:|---|---|---|---|
+| 1 | 2ZD-0 — path | **C** — resolve interpretation and decisions first | §5 | `________________` |
+| 2 | 2ZD-1 — reserved-data reading | **R-b** — any byte contact is a read; requires the amendment | §6.1 | `________________` |
+| 3 | 2ZD-2 — primary candidate | **C-N** — neither B nor D selected | §6.2 | `________________` |
+| 4 | 2ZD-3 — sizing rule | **S-1** — `R` shrinks when the `$2,500` cap binds | §6.3 | `________________` |
+| 5 | 2ZD-4 — dependence and custody | the seven values in §4 below | §6.4 | `________________` |
+| 6 | 2ZD-5 — `σ`, `DE`, `p_exec` route | **E-2** — labelled pre-registered assumptions | §6.5 | `________________` |
+| 7 | Q-1 — cost basis | retain `26 bp` as an unmeasured, labelled Binance proxy | **not a packet field** — introduced by 2ZG §10; see finding `X-4` | `________________` |
+
+Row 7 needs a word of warning: `Q-1` appears nowhere in the 2ZD packet. It was raised by Stage 2ZG, which cited
+it as "packet §7, issue `I-2`", and the packet's §7 is a table of artifact hashes with no issue list. The
+selection is therefore an owner statement about a question the packet did not ask, and it is legitimate only as
+a confirmation of the `26 bp` label, which is what it is written as.
+
+**Owner statement (verbatim), if any:** `________________`
+**Conditions or qualifications:** `________________`
+**Effective date (UTC):** `________________`
+
+A blank row is not a decision. Selecting some rows and not others ratifies only the selected rows, and leaves the
+rest exactly as they are.
