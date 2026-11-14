@@ -129,3 +129,13 @@ belongs to a later documentation stage, not to this one.
 
 **[F]** The recorded arithmetic is `$250 / ($10 per trade) = 25` executed trades/year "under full `1R` risk"
 (`stage2t` §3), and the historical opportunity frequency is "~20/10/7/3 opportunities per year" (same section).
+
+**[R]** `S-1` satisfies D-02 on both counts — per-trade loss is `R`, which is at most `$100`, and the cap is
+never exceeded — so the risk rule is sound. The economic consequence runs the other way: a tighter stop halves
+`R`, halves `0.10R`, and doubles the trade count needed for the same `$250`, from 25 to 50 at a 2% stop.
+
+**[R]** That does not argue against `S-1`; it argues against using `S-1` as a frequency argument. The
+minimum-evidence requirements are unchanged, the `150` floor is unchanged, and 50 trades a year against a
+recorded 20-at-best frequency is a stronger reason to doubt the objective than to lower the bar.
+
+**[OWNER]** The `$250` target itself is decision `T-5` and remains open; this stage does not touch it.
