@@ -174,3 +174,14 @@ conclusion, so there is even less reason to characterise it as evidence.
 
 No row is marked adopted. The stage's own documents are proposals, and the manifest records
 `ratified: false` for the whole set.
+
+## 11. What only the owner can do
+
+1. **Adopt the amendment.** It is a major version change under §10.2, and adoption requires a written
+   statement naming the document and its hash (`STAGE2Z_..._ADDENDUM.md` §14.1 sets the standard).
+2. **Ratify the seven selections** in an instrument that names the packet and its hash.
+3. **Record the custodian appointment** — naming the human owner as custodian is a decision, not a default.
+4. **Accept that Gate 2 stays blocked on B-1** until a later candidate decision, which `C-N` deliberately
+   postpones.
+
+None of the four can be performed, inferred, or pre-filled by this stage.
