@@ -242,3 +242,21 @@ statement.**
 separate instrument, and `STAGE2ZI_OWNER_DECISION_INSTRUMENT.md` and
 `STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md` say so from their own side. A signature on one is not a signature
 on another.
+
+## 9. The variant that is not proposed, and why
+
+A shorter amendment would define "read" as a content-bearing operation only, letting the analyst stream reserved
+bytes through SHA-256 with no parsing:
+
+> **Alternative A-1′.** *Reserved contact that streams bytes through a declared digest function without parsing,
+> aggregating, or decoding is not a read.*
+
+**This is not part of the proposed text.** It recreates `R-a` under different wording: the analyst would again be
+the party computing the digest, the prohibition would again depend on the analyst's restraint inside the hash
+loop, and the difference between the two readings would collapse to a description of the same act. The brief for
+this stage forbids exactly that, and so does the logic of `R-b`: if any byte contact is a read, an amendment that
+permits contact is not an amendment of `R-b`, it is its reversal.
+
+It is recorded because a future owner may prefer it and should be able to see that the choice was visible here,
+not overlooked. It is deliberately written to be recognisable as `R-a`, so that adopting it would be a recorded
+reversal rather than a silent one.
