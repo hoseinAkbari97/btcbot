@@ -64,3 +64,29 @@ protocol version would be describing a history that does not exist.
 this stage did not do and could not do: §10.3 forbids changing a frozen artifact, and the amendment is unadopted.
 The adopting statement therefore has to authorize the text change as a separate step. A reader who expects this
 document to have already altered §8.2 will find that it has not.
+
+## 4. The seven selections, checked against the packet
+
+Each proposed selection was matched to the packet text it claims to come from. The identifiers are the packet's
+own, and the option letters are the packet's own.
+
+| selection | packet location | the option is in the instrument | verdict |
+|---|---|---|---|
+| `2ZD-0 = C` | §5, path table | yes — path C, "resolve the protocol interpretation and owner decisions first" | **[F]** present |
+| `2ZD-1 = R-b` | §6.1, reading table | yes — "any byte contact is a read" | **[F]** present |
+| `2ZD-2 = C-N` | §6.2, candidate table | yes — "no selection now; keep both as unselected" | **[F]** present |
+| `2ZD-3 = S-1` | §6.3, rule table | yes — `R` shrinks with the capped notional | **[F]** present |
+| `2ZD-4` | §6.4, parameter table | the packet asks for five fields; the proposal supplies seven, adding resample count and seed | **[D]** a superset, not a substitution |
+| `2ZD-5 = E-2` | §6.5, route table | yes — "labelled pre-registered assumptions" with sensitivity ranges | **[F]** present |
+| `Q-1` | **not in the packet** | no — the packet has no `Q-1` and no §7 issue list | **[F]** missing; see `X-4` |
+
+**Finding `X-4`.** Stage 2ZG introduced `Q-1` as "measured cost (packet §7, issue `I-2`)". The packet's §7 is a
+table of artifact hashes, and a full text search of `stage2zd/` returns **no** occurrence of `Q-1`, `I-2`, or any
+cost question. `Q-1` is therefore a legitimate question that the packet does not ask. Nothing about the proposed
+answer depends on the citation — it is the `26 bp` label from the 2ZC cost record — but the reference chain is
+broken and the owner decision instrument says so rather than repeating it.
+
+**Finding `X-5`.** `2ZD-4` as the packet writes it has five fields (episode, block, embargo, custody, opening).
+Stage 2ZH and 2ZI add two — the resample count and the seed — because the registration cannot be reproduced
+without them. The addition is disclosed, and it does not narrow the owner's five. It does mean that a signature on
+`2ZD-4` covers seven values, two of which the packet never asked for.
