@@ -14,3 +14,12 @@ agent has written no date, no signature, and no verbatim owner words, and has co
 This record cannot become a decision by being cited, merged, or quoted. Adoption requires a separate
 instrument that identifies the packet, the option, the scope, the date, and the signature — §9 states what that
 must contain.
+
+## 2. 2ZD-0 — path (packet §5)
+
+| field | proposed value | status |
+|---|---|---|
+| selected path | `C` | recommendation, unratified |
+| date of decision (UTC) | `—` | **not written by the agent** |
+| owner statement (verbatim) | `—` | **not written by the agent** |
+| signature or equivalent | `—` | **not written by the agent** |
