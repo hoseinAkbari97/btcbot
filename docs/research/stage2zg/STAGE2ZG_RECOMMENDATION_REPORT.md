@@ -225,3 +225,9 @@ consume 180 of them and leave 612 days of lookable data for validation plus OOS.
 **Proposed procedure:** a named custodian — possibly the owner — alone holds read access to the reserved
 remainder; the analyst holds none; the custodian delivers hash values under `R-a` and never rows; each delivery
 is logged with date, block, bytes, digest, and purpose; no delivery may precede §8.5's opening conditions.
+**Why a procedure and not a name:** a name is not derivable from any frozen document. It is an owner
+appointment — a person, a role, and a written delegation — and the agent will not supply one. The procedure is
+what makes the appointment meaningful; it can be adopted now and filled with a name later. `R-c`, if chosen
+instead of `R-a`, slots into the same procedure with the custodian running the hash pass.
+
+### 8.5 Opening condition — proposed: after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only
