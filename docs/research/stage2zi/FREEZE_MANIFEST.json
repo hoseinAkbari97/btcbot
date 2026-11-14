@@ -137,7 +137,37 @@
       "self_hash_recomputed": "f3910ac7883d92b054c4c62192e71d9513cf92f7e546c2f25ee78ad44d09bd3e"
     }
   },
-  "self_hash": "8b08188e42fb7267b700daee73b7779cfa128f8ef4eb88af93883c621d740e08",
+  "proposed_selections": {
+    "2ZD-0": "C",
+    "2ZD-1": "R-b (operative only after the amendment is adopted)",
+    "2ZD-2": "C-N (valid under packet section 6.2; D-11 caps primaries at one, which zero satisfies)",
+    "2ZD-3": "S-1",
+    "2ZD-4": {
+      "block_length_days": 14,
+      "custodian": "the human owner under the logged custody procedure (recommendation, not appointment)",
+      "embargo_days": 90,
+      "episode_definition": "maximal contiguous 4h budget_ok run",
+      "opening": "after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged",
+      "resample_count": 10000,
+      "seed": "20240101",
+      "support_tiers": {
+        "block": "precedent",
+        "custodian": "new role",
+        "embargo": "derived from 540 x 4h",
+        "episode": "mandated",
+        "opening": "consistent",
+        "resample_count": "precedent-thin",
+        "seed": "precedent-thin"
+      }
+    },
+    "2ZD-5": "E-2",
+    "Q-1": "retain 26 bp as a labelled unmeasured proxy (question introduced by Stage 2ZG; not a packet field)",
+    "amendment_adopted": false,
+    "custodian_appointed": false,
+    "ratified": false,
+    "status": "proposed and unratified; no owner field completed anywhere"
+  },
+  "self_hash": "3250d830537536c4144ac5d99efb8d5a8a3b4715254d112040f7d0d8cc682133",
   "stage": "2ZI",
   "version_identifier": "stage2zi/1.0.0"
 }
