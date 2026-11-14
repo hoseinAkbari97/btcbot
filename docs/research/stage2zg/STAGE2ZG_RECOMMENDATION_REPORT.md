@@ -286,3 +286,10 @@ smuggle a number into a recommendation and call it pre-registered.
 
 **Rejected:** `E-1` and `E-3` — both need a census authorization this stage cannot give, and both still leave
 `p_exec` to B-04. `E-4` — leaves Gate 2 input #11 `BLOCKED`.
+
+## 10. Q-1 — recommended: confirm the labelled `26 bp` as the Gate 2 assumption
+
+**[F]** `26 bp` round trip (`0.0026`) is the frozen Binance spot proxy for "fees plus adverse execution",
+explicitly "not a Nobitex measurement" (`CANDIDATE_B_SPEC.md` §8; `CANDIDATE_D_SPEC.md` §8;
+`STAGE2ZC_COST_ASSUMPTION_RECORD.md` §1). Protocol §4.3 accepts measured cost **or** a labelled assumption with
+a replacement plan; Stage 2ZC took the second branch.
