@@ -157,3 +157,12 @@ cheaper to meet in currency, no easier to meet in `R`, and a larger `$250` trade
 
 **Not authorized by this choice:** no sizing is applied to real capital, no position is computed, and the
 Gate 0 `$250`/`$10` arithmetic is not revised.
+
+## 8. Decision 2ZD-4 — proposed methodology values
+
+The packet §6.4 asks for five values and forbids fitting any of them to `DE`. The method here is to take each
+value from a construction already frozen in the candidate specification or the adopted statistics policy,
+state why it suits the mechanism, and record what the alternative would cost.
+
+A value is proposed only where the frozen text supports one. Where it does not, the field stays open and the
+missing governance decision is named — §8.7.
