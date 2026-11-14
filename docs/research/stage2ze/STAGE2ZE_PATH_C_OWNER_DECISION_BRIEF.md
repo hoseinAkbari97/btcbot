@@ -189,3 +189,33 @@ or `p_exec` — those are 2ZD-5.
 
 **Recommendation in the packet.** None, beyond the two prohibitions the blocker register already records:
 no parameter chosen after seeing outcomes, and no block length selected because it minimises `DE`.
+
+### 3.6 2ZD-5 — how `σ`, `DE`, and `p_exec` are obtained
+
+**What is being decided.** The route by which the three sample-sufficiency inputs are produced, not their
+values. The formula chain is already fixed:
+
+```
+N_ind ≈ (z_{1-α/2} + z_{1-β})² σ² / δ²      N_obs ≈ N_ind × DE      required_opportunities ≈ N_obs / p_exec
+```
+
+With `δ = 0.10R`, `σ = 1R`, α 5% two-sided, and 80% power, `N_ind ≈ 785`. That is arithmetic on stated
+assumptions, not a requirement, and not a forecast.
+
+**Why it is necessary.** §5.3 criterion 3 asks that the calculation be reproducible from its stated
+assumptions. B-11 records that `σ`, `DE`, and `p_exec` are unset, and forbids choosing them after seeing an
+outcome or a design effect. Without a route, Gate 2 input #11 stays `BLOCKED`.
+
+| option | exact meaning in the packet | consequence |
+|---|---|---|
+| **E-1** | authorize a development-block-only census to estimate `σ` and `DE` | needs a new stage authorization, a dev-only boundary, and a no-outcome rule; `p_exec` still needs B-04 |
+| **E-2** | adopt labelled pre-registered assumptions with sensitivity ranges, before any outcome | no data access; assumptions must be disclosed as assumptions, never as estimates |
+| **E-3** | hybrid — census for `σ`/`DE`, assumption for `p_exec` until `C-6` is resolved | keeps the registration writable without an execution route; `p_exec` stays an assumption |
+| **E-4** | defer the route decision | Gate 2 input #11 stays `BLOCKED` |
+
+**What no option does.** No option here reads validation/OOS data. E-1 and E-3 are development-block only.
+None selects a value for the owner. Choosing E-1 or E-3 **requires a separate census authorization**; the
+route decision is not itself that authorization.
+
+**Recommendation in the packet.** None. Stage 2ZD poses the question and notes that the answer is either a
+census authorization or an owner-approved assumption.
