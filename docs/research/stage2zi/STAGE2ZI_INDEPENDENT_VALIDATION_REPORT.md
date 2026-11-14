@@ -41,3 +41,26 @@ inspection of this stage.
 
 **[F]** The five Stage 2ZH deliverables were hashed and compared to their manifest: all five matched, byte for
 byte and in size. **No Stage 2ZH claim failed its own hash check.**
+
+## 3. The amendment, checked against the protocol and its versioning rules
+
+| check | result |
+|---|---|
+| §8.2 exists and contains the sentence being replaced | **[F]** "The exact dates and hashes are frozen at Gate 2" is the final sentence of §8.2 |
+| §10.2 permits amendment by version | **[F]** "a major version changes a rule"; every version needs a manifest with hashes, byte counts, and a self-hash |
+| §10.2 supplies a version to increment | **[F] no.** The protocol carries **no version string** in its header, its 896 lines, or its manifest. Recorded as finding `V-1` |
+| the amendment changes one rule and nothing else | **[D]** one sentence replaced, one subsection added; `A-5` states non-derogation explicitly |
+| the amendment removes the analyst's hash duty or the hash requirement | **[D] neither.** The duty moves to the custodian; the requirement survives via `A-3` |
+| the amendment legalises the hash-only workaround | **[F] no.** `A-1′` is recorded as *not proposed*, and the analyst's contact stays prohibited |
+| §10.3 (no retroactive editing) is respected | **[F]** §3 makes the amendment prospective; `Y-1` and `Y-2` are recorded, not grandfathered |
+| the addendum needs an edit | **[F] no.** Addendum §10.4 restates D-12 and is silent on hashes, so it agrees with `R-b` |
+
+**Finding `V-1`, restated for the record.** §10.2 requires semantic versions and a manifest per version, but the
+protocol has never carried a version. The amendment therefore assigns `2.0.0` as "the first versioned form", and
+the adopting statement must say so. An adopting statement that presents `2.0.0` as an increment from an earlier
+protocol version would be describing a history that does not exist.
+
+**Finding `V-2`.** The amended protocol would have to be committed as an edit to the protocol file itself, which
+this stage did not do and could not do: §10.3 forbids changing a frozen artifact, and the amendment is unadopted.
+The adopting statement therefore has to authorize the text change as a separate step. A reader who expects this
+document to have already altered §8.2 will find that it has not.
