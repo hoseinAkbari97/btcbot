@@ -216,3 +216,12 @@ true. It is derived from a frozen lookback, not from an outcome or a design effe
 **Rejected:** 24 h — the canonical non-overlap window, enough for trades but not for features, since the first
 validation signal's percentile would still be built from pre-boundary bars. 7 days — no frozen justification
 exists; it is neither the holding horizon nor the lookback.
+
+**Cost accepted:** the reserved remainder is 792 days (`[2024-07-01, 2026-09-01)`); two 90-day embargoes
+consume 180 of them and leave 612 days of lookable data for validation plus OOS.
+
+### 8.4 Validation-split custody — proposed: a written custodian procedure; the holder left open
+
+**Proposed procedure:** a named custodian — possibly the owner — alone holds read access to the reserved
+remainder; the analyst holds none; the custodian delivers hash values under `R-a` and never rows; each delivery
+is logged with date, block, bytes, digest, and purpose; no delivery may precede §8.5's opening conditions.
