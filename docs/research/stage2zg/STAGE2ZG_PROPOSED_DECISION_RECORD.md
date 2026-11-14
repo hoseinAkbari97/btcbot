@@ -44,3 +44,15 @@ be read as endorsing the precedent sentence.
 |---|---|---|
 | selection | `C-D` — Candidate D | recommendation, unratified, **subject to `X-1`** |
 | conditions | owner confirmation with the cost-median failure in view, or substitution of `C-B` | recommendation, unratified |
+
+**Disclosure required in any ratification:** Candidate D fails both the opportunity floor (`34 < 150`) and the
+cost-median condition (`M_all = 0.3226 > 0.20`), while Candidate B fails only the floor. D's design effect is
+`3.059` against B's `1.250`, so B offers more effective units on fewer signals. Selecting D is an owner choice
+made against those numbers, not a neutral one.
+
+## 5. 2ZD-3 — notional cap against tight stops (packet §6.3)
+
+| field | proposed value | status |
+|---|---|---|
+| selection | `S-1` — `R` is defined by the capped notional and shrinks | recommendation, unratified |
+| conditions | the `$2,500` cap is never exceeded; per-trade loss stays ≤ `1.00R` by construction | recommendation, unratified |
