@@ -129,3 +129,25 @@ notices something during a run, the correct action is to stop and record a devia
 - **Automatic by operation.** The appointment ends if the amendment is not adopted, if the amendment is repealed,
   if the custodian becomes the analyst, or at Gate 6, whichever comes first.
 - **Recorded.** Every revocation and reappointment is a dated record naming this instrument by path and hash.
+
+## 8. Incident handling
+
+An **incident** is any reserved contact outside §3, any delivery beyond §3 step 6, any missing or late log entry,
+any script run without a recorded hash, any copy of reserved bytes outside the custodian's directory, or any
+disclosure of reserved content, however small and however well intentioned.
+
+1. **Stop.** The run, the delivery, and the conversation about it stop immediately.
+2. **Record.** A dated incident record states what happened, when, by whom, what was contacted, and what left the
+   custodian. It is written from the evidence, not from recollection, and it is committed rather than filed
+   privately.
+3. **Disclose.** The incident is disclosed to the owner, and to the Gate 4 auditor at the audit. It is **not**
+   disclosed to the analyst as content — the analyst learns that an incident occurred and its governance
+   consequence, not what was seen.
+4. **Assess.** Whether the incident affects admissibility of any result is the owner's question, informed by the
+   Gate 4 audit. This instrument does not decide it, and an incident is not by itself a verdict on the data.
+5. **Do not repair the record.** The log is not rewritten to look complete, no entry is back-filled, and no
+   incident is resolved by later editing. §10.3 forbids exactly that.
+
+**Precedent already in this programme.** The four Stage 2ZC boundary inspections and its full-file digests are
+recorded as pre-amendment deviations (`Y-1`, `Y-2`). They are the model for how a deviation is written down: named,
+dated, quantified, and neither concealed nor exaggerated.
