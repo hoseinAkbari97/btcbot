@@ -42,3 +42,14 @@ After all three, the Gate 2 blocker list changes shape rather than closing: B-2,
 **B-1 is open by decision** (`C-N` names no hypothesis); B-6 remains document production. Gate 2 therefore
 remains **NOT AUTHORIZED**, and — a new fact — it is not even *registrable*, because §5.2 input #1 has no
 content.
+
+## 4. What remains unauthorized
+
+- **Gate 2 execution, passage, registration, or verdict** — and under `C-N` no registration is possible yet.
+- **Any reserved contact by the analyst**: no hashing, streaming, decoding, or sampling of validation or OOS
+  bytes, under any reading, until an amendment exists and appoints a custodian.
+- **Hypothesis registration**, including any implied by the phrase "prepare Gate 2".
+- **Feasibility census, backtesting, simulation, parameter fitting, strategy experiments.**
+- **Cost, spread, depth, slippage, fill, latency, or liquidity measurement**, and any quote sampling.
+- **Venue contact, account access, API keys, orders.**
+- **T-4, real-capital sizing, paper trading, live trading.**
