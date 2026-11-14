@@ -29,3 +29,11 @@ contact, and any change to predecessor documents.
 - Validated the seven 2ZD-4 values against four support tiers, and left the exit-policy dependency open.
 - Recorded finding `Y-1`: under `R-b`, four previously disclosed 2ZC boundary timestamp inspections would count
   as reserved contact.
+
+## 3. What adoption of the two instruments would resolve
+
+| instrument | resolves | leaves |
+|---|---|---|
+| decision record | 2ZD-0, 2ZD-1 as a selection, 2ZD-2, 2ZD-3, 2ZD-4's seven values, 2ZD-5, Q-1 | B-1 open by decision; B-3 operative only with the amendment |
+| amendment draft | §8.2 becomes satisfiable without analyst contact; the custodian role exists | Gate 2 opening; the custodian appointment |
+| custodian appointment | 2ZD-4 field 6 operative | the digest run, which waits for Gate 2 |
