@@ -129,3 +129,12 @@ decision, and the analyst is excluded by construction.
    counts by value, or any derived series.
 4. **Log before delivery.** The log entry — UTC time, path, interval, algorithm, bytes, digest, operator — is
    committed *before* the digest is handed over, so the record cannot be back-filled after a look.
+5. **Delivery.** Only the digest, algorithm, byte count, and interval appear in the Gate 2 manifest. No row,
+   count, summary, or statistic leaves the custodian.
+6. **Verification, and its limit.** The analyst can verify that the log and the manifest agree and that the script
+   hash matches. The analyst **cannot** verify the digest against the bytes without the contact `R-b` forbids.
+   The trust boundary is therefore explicit and single-person: the Gate 4 audit checks the procedure and the
+   log, not the bytes.
+7. **The one look.** At Gate 5 the owner exports the validation interval to a read-only working copy, logs the
+   export, and the analyst runs the frozen analysis once. The copy's digest is recorded, and a second export
+   requires a new pre-registered stage under D-12.
