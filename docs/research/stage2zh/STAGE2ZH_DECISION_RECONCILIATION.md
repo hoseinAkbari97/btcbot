@@ -151,3 +151,13 @@ The four numeric values are unchanged, and §3 of the methodology document recor
 supported by — including the two that rest on a prior recommendation rather than on a protocol requirement.
 
 ## 9. Decisions 2ZD-5 and Q-1 — unchanged
+
+**[REC]** `2ZD-5 = E-2`, unchanged. `E-2` authorises no data access, and under `R-b` that is doubly true: a
+development-block census is a byte contact with a sanctioned block, which `R-b` does not touch, but the
+prohibition on reserved contact stands either way.
+
+**[REC]** `Q-1`: retain `26 bp` as a labelled, unmeasured Binance proxy. Unchanged from 2ZG, and the label
+matters more under `C-N`: with no hypothesis registered, the cost basis is not being used to reach any
+conclusion, so there is even less reason to characterise it as evidence.
+
+## 10. The seven selections, with status
