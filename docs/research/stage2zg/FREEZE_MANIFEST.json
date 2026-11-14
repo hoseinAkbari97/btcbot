@@ -1,0 +1,179 @@
+{
+  "authorization": {
+    "date": "2026-11-14",
+    "decision": "delegated recommendation instruction: substantive recommendations for the unresolved Stage 2ZD decisions, plus formalization preparation",
+    "instrument": "the owner's written Stage 2ZG instruction of 2026-11-14",
+    "record": "docs/research/stage2zg/STAGE2ZG_AUTHORIZATION_BOUNDARY.md",
+    "scope": "docs/research/stage2zg/ only; recommendations only; no Gate 2 execution; no data access; no owner signature, date, or affirmation"
+  },
+  "conflicts": [
+    {
+      "blocks_nothing": true,
+      "id": "X-1",
+      "summary": "Candidate D fails the cost-median condition (M_all 0.3226 > 0.20) as well as the opportunity floor; Candidate B fails only the floor and has the lower design effect (1.250 versus 3.059)",
+      "treatment": "C-D carried as recommended and flagged; owner confirmation or substitution of C-B required"
+    },
+    {
+      "blocks_nothing": true,
+      "id": "X-2",
+      "summary": "Stage 2ZD packet section 6.1 cites a Stage 2ZC full-file-hash precedent; the Stage 2ZC record states its hashes are not full-file hashes and that no reserved row was hashed",
+      "treatment": "R-a rests on protocol section 8.2 text; no packet edit; predecessor unchanged"
+    },
+    {
+      "blocks_nothing": true,
+      "id": "X-3",
+      "summary": "Stage 2ZD packet section 6.2 note for C-D omits the cost-median failure",
+      "treatment": "corrected in the Stage 2ZG report section 6.1"
+    }
+  ],
+  "created_utc": "2026-11-14T08:42:38Z",
+  "delegated_recommendations": {
+    "ratified": false,
+    "recommended": {
+      "2ZD-0": {
+        "option": "C",
+        "selection_kind": "path"
+      },
+      "2ZD-1": {
+        "conditions": "hash-only, no decoding, logged, digest recorded in the Gate 2 manifest",
+        "option": "R-a"
+      },
+      "2ZD-2": {
+        "flag": "conflict X-1: candidate D also fails the cost-median condition",
+        "option": "C-D"
+      },
+      "2ZD-3": {
+        "option": "S-1"
+      },
+      "2ZD-4": {
+        "block_length": "14 calendar days, 10000 resamples, seed 20240101",
+        "custodian": "written custodian procedure proposed; holder identity left open",
+        "embargo_length": "90 calendar days at each boundary",
+        "episode_definition": "maximal contiguous 4h budget_ok run containing the signal instant",
+        "opening_condition": "after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged"
+      },
+      "2ZD-5": {
+        "option": "E-2"
+      },
+      "Q-1": {
+        "option": "confirm the labelled 26 bp Binance spot proxy as the permitted Gate 2 assumption"
+      }
+    },
+    "status": "recommendation pending formal owner ratification; no field of the packet signature block was completed"
+  },
+  "deliverables": [
+    {
+      "bytes": 21347,
+      "path": "docs/research/stage2zg/STAGE2ZG_RECOMMENDATION_REPORT.md",
+      "role": "Delegated recommendations for 2ZD-0, 2ZD-1, 2ZD-2, 2ZD-3 and 2ZD-5 with exact source sections; methodology proposal for the five 2ZD-4 values with rejected alternatives and six adequacy tests; the Q-1 cost confirmation; and the three conflicts X-1 to X-3 recorded instead of resolved",
+      "sha256": "6ccb58381c550eea91fde1ec5eeb4df7ec0d3a24cf590cf729d297d1c0950ad0"
+    },
+    {
+      "bytes": 6366,
+      "path": "docs/research/stage2zg/STAGE2ZG_PROPOSED_DECISION_RECORD.md",
+      "role": "The proposed selections in the Stage 2ZD packet's own field format, each labelled as an unratified recommendation, with no owner date, statement, or signature and 2ZD-4 field 4 left unresolved",
+      "sha256": "e3d3dd080f2a1e5a6496a4668fb759220e460b2612452911e47ed2a9c4ee3258"
+    },
+    {
+      "bytes": 5159,
+      "path": "docs/research/stage2zg/STAGE2ZG_AUTHORIZATION_BOUNDARY.md",
+      "role": "What the stage was authorized to do, what it did, what ratification would resolve, what it would not authorize, the separate instrument Gate 2 execution needs, and the stage's own zero-access record",
+      "sha256": "b3c8fc95c49aa8bde91b3b9fc42cdaa9ba0fd2b18d175038da28f68d920c06a8"
+    }
+  ],
+  "governing_sources": {
+    "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41",
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+    "docs/research/stage2j/CANDIDATE_B_CENSUS_REPORT.md": "e987e27ae6815f86d0ce0ac921b08e9ec8a0a12df9282a51ee780a40edd6a7f1",
+    "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md": "07291ef379746a435eb05ec4dcc43252807287d2b29092135ded04c381188251",
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74",
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058",
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5",
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7",
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a",
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d",
+    "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "docs/research/stage2zc/STAGE2ZC_ACCESS_LOG.md": "e7dfeabd8f48bb866e4a45028e600c8851953156d0cf3618d279279538590e4e",
+    "docs/research/stage2zc/STAGE2ZC_COST_ASSUMPTION_RECORD.md": "b9513cab3447745dab21a5ff0dd94b66be017f5c6ee33d5bff16e8b2c463e47e",
+    "docs/research/stage2zc/STAGE2ZC_DEVELOPMENT_VALIDATION_OOS_RANGE_AND_HASH_RECORD.md": "6410622670ddb5fee46a6e4a0b2509e9a1c134b41aa2bffa607ed79d038e5d5f",
+    "docs/research/stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md": "042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42",
+    "docs/research/stage2ze/STAGE2ZE_PATH_C_OWNER_DECISION_BRIEF.md": "b07faf7996de9524e789650f52dc05a615f07146ec2039fbcda385e7907be20b",
+    "docs/research/stage2zf/STAGE2ZF_OWNER_DECISION_VALIDATION_REPORT.md": "f74054bc953293bacb6fb2c74cb950aedfaa86b644046d7b76626cd86f63d3ff"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Delegated recommendation and formalization preparation only: a recommendation for each unresolved Stage 2ZD decision with exact source sections, a methodology proposal for the five Stage 2ZD-4 values, a proposed but unratified decision record, and an authorization boundary. No validation or OOS row read; no dataset file streamed or hashed; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No owner signature, date, affirmation, or status change.",
+  "no_access_confirmations": {
+    "api_called": false,
+    "api_key_issued_or_used": false,
+    "census_or_backtest_or_simulation_run": false,
+    "cost_or_spread_or_depth_measured": false,
+    "dataset_files_streamed_by_this_stage": 0,
+    "expectancy_or_pnl_or_returns_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate2_authorized": false,
+    "gate2_executed": false,
+    "order_placed_modified_or_cancelled": false,
+    "owner_decision_created_or_inferred": false,
+    "owner_signature_or_date_written": false,
+    "paper_or_live_trading": false,
+    "parameter_fit_run": false,
+    "quote_sampling_performed": false,
+    "real_capital_work_performed": false,
+    "reserved_block_bytes_hashed": 0,
+    "sizing_convention_applied_to_capital": false,
+    "stage2zd_files_modified": false,
+    "stage2ze_files_modified": false,
+    "stage2zf_files_modified": false,
+    "t4_revisited": false,
+    "validation_or_oos_rows_decoded": 0,
+    "venue_contacted": false
+  },
+  "no_performance_claim": "No expected return, profitability, achievable income, execution-feasibility, or real-capital claim is made. Both candidates remain at FEASIBILITY FAIL - INSUFFICIENT OPPORTUNITIES, and the 26 bp proxy is an assumption and not a measured cost.",
+  "open_items": [
+    "ratification of the recommendation package",
+    "custodian appointment for the 2ZD-4 custody field",
+    "C-D or C-B in the light of X-1",
+    "the planning DE and p_exec brackets, declared at Gate 2 registration under E-2"
+  ],
+  "predecessor_manifest_verification": {
+    "note": "the Stage 2ZD manifest's canonical self-hash was recomputed with the declared procedure, and each of its referenced deliverable path-and-sha256 pairs was re-hashed from current bytes",
+    "stage2zd": {
+      "referenced_hashes_checked": 6,
+      "referenced_hashes_failed": 0,
+      "self_hash": "b902597e6d656c5c0088d124859a91dcbf081bdff8ad4c3d111d8e990dd9d58c",
+      "self_hash_ok": true,
+      "self_hash_recomputed": "b902597e6d656c5c0088d124859a91dcbf081bdff8ad4c3d111d8e990dd9d58c"
+    },
+    "stage2ze": "no freeze manifest was produced (one report); the report's hash is recorded in governing_sources",
+    "stage2zf": "no freeze manifest was produced (one validation report); the report's hash is recorded in governing_sources"
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "ca414cd644f3b2700d088b442a146ad646f258f6",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_at_manifest_creation": "contains only the new Stage 2ZG artifacts"
+  },
+  "self_hash": "25af2196fe036184bc7a0f7251ca94b5ea64852e52c371bfd2a025b9fb021052",
+  "stage": "2ZG",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "C-4": "unresolved",
+    "C-6": "unresolved",
+    "D-01_to_D-15": "unchanged",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked for real-capital claims",
+    "T-4": "deferred",
+    "cost_basis_26bp": "unchanged",
+    "gate0": "NOT PASSED",
+    "gate1": "PASSED - research leg only (Stage 2ZC, unchanged)",
+    "gate2": "NOT AUTHORIZED",
+    "gate2_blockers_closed": 0,
+    "gate2_blockers_open": "B-1 to B-6 (each recommended, none ratified)",
+    "real_capital_work": "not authorized",
+    "stage2zd_package": "frozen and unchanged",
+    "stage2ze_package": "unchanged",
+    "stage2zf_package": "unchanged"
+  },
+  "version_identifier": "stage2zg/1.0.0"
+}
