@@ -97,3 +97,16 @@ the instrument itself, not a write-in.
 
 **[F]** D-11 adopted option A: "One primary hypothesis — test one pre-registered hypothesis; all else
 exploratory". The rule caps the number of primaries at one.
+
+**Determination: `C-N` is valid.** It does not violate D-11 — a rule that forbids *more than one* primary is
+satisfied by zero — and it is not a refusal to decide, because it decides that no candidate is registered now.
+What it does not do is leave Gate 2 unchanged: §5.2 #1 requires a hypothesis and §5.3 requires the registration
+to be "complete and internally consistent", so with `C-N` Gate 2 cannot pass, and B-1 stays open.
+
+**What `C-N` means in practice:**
+
+- neither candidate is registered, promoted, or revived; both stay frozen at `v2.0.0` with their
+  `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` verdicts untouched;
+- the Gate 2 specification retains an explicitly empty hypothesis slot, and may not be filled by the agent;
+- no candidate is replaced by the other to satisfy the one-primary rule — which is precisely the cosmetic fix
+  `C-N` refuses.
