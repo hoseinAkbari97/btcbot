@@ -196,3 +196,25 @@ whether the four inspected `open_time` values fall strictly inside a reserved in
 boundary. The 2ZC log records them as boundary records; the strict reading does not distinguish the two cases,
 because both are contact. A reader should treat the exact position as unresolved rather than assume the more
 favourable case.
+
+### 7.4 Finding `Y-2` — the full-file digests are reserved contact too
+
+**[F]** Stage 2ZC also computed SHA-256 over **every byte of every dataset file**, not only over development
+blocks, and recorded those digests as the files' identity (`STAGE2ZC_ACCESS_LOG.md` line 21;
+`STAGE2ZC_DEVELOPMENT_VALIDATION_OOS_RANGE_AND_HASH_RECORD.md`). That was permitted under the reading then in
+force and is the same act Stage 2ZH proposed to forbid.
+
+**[R]** Under `R-b`, streaming a file whose bytes include a reserved interval is reserved contact, even though
+the output is a single digest and no byte was interpreted. Stage 2ZH recorded `Y-1` for the four boundary
+inspections and did not extend it here; this stage records the extension as a **new finding**, because the
+consequence is different in kind: the four inspections produced a timestamp fact, while these digests produced
+no content at all.
+
+**Treatment.** Same as `Y-1`: recorded, not grandfathered, not retroactively legitimised, and not erased. The
+digests remain valid as file identity — their *computational* value is untouched — while their *governance*
+status is a pre-amendment deviation. This distinction is the reason the finding is not catastrophic and is also
+the reason it must be stated.
+
+**Consequence for this amendment.** After it takes effect, no analyst may recompute those digests. Only the
+custodian may, under `A-2` and `A-4`. Verification of an existing full-file digest therefore becomes a
+custodian task, not an analyst task.
