@@ -175,6 +175,7 @@ satisfied, containing the signal instant, closed at the first 4 h bucket where i
 **[F]** That run is already the frozen cluster unit: candidate D assigns each signal "to the maximal
 `budget_ok == True` 4 h run containing the session signal instant", with 212 such runs in the development
 interval (`CANDIDATE_D_CENSUS_REPORT.md` §6).
+
 **[R]** Three reasons: it is causal — the run is knowable at the signal instant and looks no further ahead;
 it is the mechanism's own unit, since the budget is what makes an intraday continuation eligible at all; and
 it is the unit the recorded design-effect diagnostics were computed on, so the registered dependence model and
@@ -191,6 +192,7 @@ three groups, so it is both unstable and coarse. Calendar month — not linked t
 **[F]** This is the predecessor convention, not a new choice: Stage 6 ran a 14-day block bootstrap
 (`stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md` line 69) and the strategy recommendation fixed 14 days, 10,000
 resamples, seed `20240101` (`STRATEGY_2_RECOMMENDATION.md` line 216).
+
 **[R]** Adequacy: a block must exceed the dependence range. The holding horizon here is intraday and the
 canonical non-overlap window is 24 h, so 14 days spans fourteen times the longest plausible range; the
 1,277-day development interval yields 91 blocks, enough for a stable bootstrap. Independence from `DE`: the
@@ -208,6 +210,7 @@ signal, trade, or feature window crossing either gap.
 **[F]** 540 consecutive 4 h bars is 90 calendar days, and that is the longest backward-looking window in the
 frozen rules: the volatility percentile is computed over 540 4 h bars ending at the current bucket
 (`CANDIDATE_D_SPEC.md` §6).
+
 **[R]** An embargo must be at least as long as anything that reaches backwards. A 90-day gap ensures the first
 validation decision is computed from validation bars alone, so no feature window, episode, or holding period
 straddles the boundary, and the "no shared information" claim becomes literally true rather than approximately
@@ -225,6 +228,7 @@ consume 180 of them and leave 612 days of lookable data for validation plus OOS.
 **Proposed procedure:** a named custodian — possibly the owner — alone holds read access to the reserved
 remainder; the analyst holds none; the custodian delivers hash values under `R-a` and never rows; each delivery
 is logged with date, block, bytes, digest, and purpose; no delivery may precede §8.5's opening conditions.
+
 **Why a procedure and not a name:** a name is not derivable from any frozen document. It is an owner
 appointment — a person, a role, and a written delegation — and the agent will not supply one. The procedure is
 what makes the appointment meaningful; it can be adopted now and filled with a name later. `R-c`, if chosen
@@ -249,7 +253,7 @@ audit-rejection condition both become checkable.
 | temporal ordering | all five values are causal and forward-only; no rule reads a future bar (protocol §8.3) |
 | embargo adequacy | 90 days ≥ the 540-bar lookback and ≫ the 24 h holding window, so nothing straddles a boundary |
 | custody and access separation | the analyst holds no read access, and hash-only delivery is logged by the custodian |
-| outcome influence | no value is derived from an outcome, a `DE`, or a validation or OOS result; §8.3's lookback is a design constant |
+| outcome influence | no value is derived from an outcome, a `DE`, or a validation or OOS result; the 540-bar lookback is a design constant |
 
 The last row is the one that needed the most care, and it is a claim about provenance rather than about
 mathematics: the block length and the episode rule predate the 2J design effect and were not varied in
@@ -272,6 +276,7 @@ here (§9).
 recorded design effect is `3.933333` — a design effect — so it may be cited as evidence that D is highly
 clustered, but it may not be adopted as the planning value (packet §6.5; `stage2p/OPEN_BLOCKER_REGISTER.md`,
 B-11).
+
 **[R]** `E-2` is the only route that yields a writable registration without a census: it turns three unknown
 quantities into three declared assumptions, each with a sensitivity range, fixed before any outcome. That is
 also what protocol §5.3 already demands — the sufficiency calculation must be "reproducible from its stated
@@ -279,6 +284,7 @@ assumptions".
 
 **[REC] `2ZD-5 = E-2`**, with the assumption set declared at Gate 2 registration and labelled as an assumption
 in every downstream table, sensitivity range included.
+
 **Why no numbers are proposed here.** Any `DE` this report proposed would be chosen by an author who has read
 `3.933333`, so it could not be certified independent of it. The defensible move is to fix the rule — declare,
 label, bracket — now, and make the declaration a Gate 2 registration act with its own disclosure, rather than
