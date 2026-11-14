@@ -182,3 +182,12 @@ the pre-registered `DE` describe one object instead of two.
 
 **Rejected:** the UTC session — the recorded session-id view gives a grouped design effect of 15.13 over only
 three groups, so it is both unstable and coarse. Calendar month — not linked to the mechanism, and 12 groups.
+
+### 8.2 Block length — proposed: 14 calendar days
+
+**Proposed value:** the moving-block bootstrap resamples contiguous 14-day blocks, 10,000 resamples, seed
+`20240101`.
+
+**[F]** This is the predecessor convention, not a new choice: Stage 6 ran a 14-day block bootstrap
+(`stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md` line 69) and the strategy recommendation fixed 14 days, 10,000
+resamples, seed `20240101` (`STRATEGY_2_RECOMMENDATION.md` line 216).
