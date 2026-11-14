@@ -79,3 +79,12 @@ insufficient — is not stated anywhere in the text.
 and concerns how a *label or population* is read, not whether a *data-access rule* may be relaxed by
 interpretation. An interpretation of §8.2 would bind only the analyst who recorded it and would leave the next
 reader free to interpret the other way; an amendment binds everyone, including a future custodian.
+
+**Verdict on consistency:** `R-b` is **consistent** with the protocol — nothing in it forbids amendment, and
+§10.2 provides the versioning mechanism — and it is the stronger of the two routes. It is **not required** by
+the text, and a future reader should not be told that interpretation was unavailable. Both were available; the
+owner has preferred the one that changes the text.
+
+**What `R-b` costs:** §8.2's hash requirement becomes unachievable by the analyst, so Gate 2 cannot freeze its
+split until an amendment is adopted (§6 of the amendment draft). No reserved byte may be hashed in the
+meantime — including by this stage.
