@@ -293,3 +293,10 @@ smuggle a number into a recommendation and call it pre-registered.
 explicitly "not a Nobitex measurement" (`CANDIDATE_B_SPEC.md` §8; `CANDIDATE_D_SPEC.md` §8;
 `STAGE2ZC_COST_ASSUMPTION_RECORD.md` §1). Protocol §4.3 accepts measured cost **or** a labelled assumption with
 a replacement plan; Stage 2ZC took the second branch.
+**[R]** Gate 2 needs a cost basis for input #8 and the failure criteria; it does not need a measured one.
+Confirming the proxy keeps the valuation frozen and the claim boundary intact. It must not be described as
+observed, measured, or Nobitex-specific, and it must not be relaxed — at `26 bp` candidate D already fails the
+cost-median condition (§6.1).
+
+**[REC] Q-1 = confirm the proxy as a labelled assumption**, replacement plan retained, no `cost_R` computed
+here. **Not authorized:** any measurement, quote sampling, or venue contact.
