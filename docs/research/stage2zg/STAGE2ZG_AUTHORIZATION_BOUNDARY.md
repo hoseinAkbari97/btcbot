@@ -59,3 +59,13 @@ Ratifying this package would not authorize any of the following. Each needs its 
 - **T-4, real-capital sizing, paper trading, or live trading.**
 - **Any change to D-01…D-15, A-1…A-4, `26 bp`, or any frozen decision or verdict**, including the two
   `FEASIBILITY FAIL` verdicts.
+
+## 5. The separate authorization Gate 2 execution needs
+
+Even with every option ratified, Gate 2 requires an instrument that:
+
+1. opens the stage by date and scope, naming the registration artifacts it may write;
+2. adopts `R-a` (or `R-c`) explicitly as the block-hash basis, with the log fields it requires;
+3. confirms that `C-D` is the registered primary hypothesis and that no other is tested in the stage;
+4. fixes the exact validation and OOS dates and the two embargoes, so §8.2's freeze has content;
+5. names the custodian, or records that the owner holds the split, satisfying 2ZD-4 field 4.
