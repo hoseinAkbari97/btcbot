@@ -79,3 +79,13 @@ not invent. The procedure is adoptable without it; the field is not.
 |---|---|---|
 | selection | `E-2` — labelled pre-registered assumptions with sensitivity ranges | recommendation, unratified |
 | conditions | assumptions declared at Gate 2 registration; labelled as assumptions downstream; planning `DE` not taken from `3.933333` | recommendation, unratified |
+
+`E-2` authorizes no data access. The three values it implies are not written here; they are a Gate 2
+registration act with their own disclosure.
+
+## 8. Q-1 — measured cost (packet §7, issue `I-2`)
+
+| field | proposed value | status |
+|---|---|---|
+| cost basis | confirm the labelled `26 bp` Binance spot proxy as the permitted Gate 2 assumption | recommendation, unratified |
+| conditions | never described as measured, observed, or Nobitex-specific; replacement plan retained | recommendation, unratified |
