@@ -168,3 +168,32 @@ prohibiting the reading of *rows*, not the touching of *bytes*.
 
 That is the deviation: **not that the acts were hidden, but that they were performed under a reading the owner
 has since declined to adopt.**
+
+### 7.3 What the deviation does and does not imply
+
+**It does imply:**
+
+- the analyst's reserved-contact count for this programme is **not zero** on a strict `R-b` accounting. It is four
+timestamp-field inspections plus whole-file digest contact, all disclosed at the time. Any later statement that
+"no reserved byte was ever touched" must be qualified by this section;
+- the boundary record each file contains is now known to exist at a location the analyst has observed, which is
+  a minimal fact about the reserved blocks and is disclosed rather than denied;
+- any future Gate 4 audit must read the 2ZC access log alongside this section, because the log's own
+  classification of those acts as permitted is no longer the governing classification.
+
+**It does not imply:**
+
+- that any validation or OOS *value, price, return, or outcome* was observed. No payload was decoded, and this
+  stage found no evidence that one was;
+- that any unrelated Stage 2ZC result is invalid. The deviation concerns the *status of an access*, not the
+  *quality of a computation*. Whether it affects admissibility of any downstream result is a question this
+  stage **cannot answer**, because the only arguments either way would require exactly the access `R-b`
+  forbids. It is recorded as **[OPEN]** and left to the owner and to Gate 4;
+- that the acts can be made compliant by this amendment. §3 makes the amendment prospective; the status of a
+  past act is unchanged by it.
+
+**Preserved uncertainty, stated plainly.** This stage does not know, and cannot find out within its boundary,
+whether the four inspected `open_time` values fall strictly inside a reserved interval or exactly on its
+boundary. The 2ZC log records them as boundary records; the strict reading does not distinguish the two cases,
+because both are contact. A reader should treat the exact position as unresolved rather than assume the more
+favourable case.
