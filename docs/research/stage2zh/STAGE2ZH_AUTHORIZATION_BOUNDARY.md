@@ -80,3 +80,9 @@ content.
 | gates changed | 0 |
 
 ## 7. Status, unchanged
+
+Gate 0 **NOT PASSED**; Gate 1 **PASSED — research leg only**; Gate 2 **NOT AUTHORIZED**; `T-4` **deferred**;
+`R-08` **`P`**; `R-15` **`B`**; `C-4` and `C-6` **unresolved**; real capital **not authorized**; `T-5` **open**.
+
+The protocol is unamended, both candidates remain failed, and no hypothesis is registered. This stage is a
+reconciliation and a set of drafts.
