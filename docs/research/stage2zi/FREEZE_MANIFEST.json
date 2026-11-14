@@ -38,9 +38,82 @@
       "sha256": "4cb3cd86987edc22f591656fd30bc916a7d4b23efd4a67c3b9f7935a1a259f39"
     }
   ],
+  "findings": [
+    {
+      "id": "V-1",
+      "summary": "the protocol requires semantic versions and a manifest per version but carries no version string anywhere in its 896 lines",
+      "treatment": "the amendment assigns 2.0.0 as the first versioned form; the adopting statement must acknowledge that no 1.x existed"
+    },
+    {
+      "id": "V-2",
+      "summary": "the amendment cannot itself edit section 8.2, because section 10.3 forbids changing a frozen artifact before adoption",
+      "treatment": "recorded; the adopting statement must authorize the text change as a separate step"
+    },
+    {
+      "id": "X-4",
+      "summary": "Stage 2ZG cites packet section 7 issue I-2 for Q-1, but the packet contains no Q-1, no I-2, and no issue list in section 7",
+      "treatment": "flagged in the owner decision instrument row and note; the substance of Q-1 (the 26 bp label) is unaffected"
+    },
+    {
+      "id": "X-5",
+      "summary": "2ZD-4 has five fields in the packet and seven in the proposal, the additions being the resample count and the seed",
+      "treatment": "disclosed as a superset; it does not narrow the owner's five fields"
+    },
+    {
+      "id": "X-6",
+      "summary": "the 90-day embargo is derived from 540 x 4h and its agreement is exact but contingent on the lookback staying in 4h bars",
+      "treatment": "the registration should record the derivation rather than the number"
+    },
+    {
+      "id": "Y-1",
+      "summary": "under R-b the four disclosed Stage 2ZC boundary open_time inspections are reserved contact; the amendment is prospective and does not legitimise them retroactively",
+      "treatment": "recorded as a pre-amendment deviation; not grandfathered, not erased, not minimised"
+    },
+    {
+      "id": "Y-2",
+      "summary": "the Stage 2ZC full-file SHA-256 digests also touched reserved bytes and are reserved contact under R-b; their computational value is untouched while their governance status is a pre-amendment deviation",
+      "treatment": "recorded as a pre-amendment deviation; after the amendment only the custodian may recompute them"
+    },
+    {
+      "id": "Z-1",
+      "summary": "protocol section 10.4 permits a pre-registered interpretation to resolve an ambiguity, so R-b is the stricter route rather than the only route",
+      "treatment": "carried unchanged from Stage 2ZH"
+    },
+    {
+      "id": "Z-2",
+      "summary": "10,000 resamples and seed 20240101 appear in one prior recommendation only",
+      "treatment": "carried unchanged; the registration must disclose them as a comparability and reproducibility choice"
+    },
+    {
+      "id": "Z-3",
+      "summary": "no candidate specification contains an exit or holding rule, so dependence adequacy and embargo sufficiency stay conditional",
+      "treatment": "carried unchanged; a separate unresolved registration requirement, not the only one while C-N stands"
+    }
+  ],
+  "governing_sources": {
+    "docs/research/STRATEGY_2_RECOMMENDATION.md": "a8538b4000143bc21085f42794fe5f1c3a4e9cb2bc4305c2160e30aece3aa25a",
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+    "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md": "07291ef379746a435eb05ec4dcc43252807287d2b29092135ded04c381188251",
+    "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e",
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74",
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058",
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5",
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a",
+    "docs/research/stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md": "5963a9375b85be4f7be45dc672815d5fcedd25997fcddbde6a0279f00f2d2e0a",
+    "docs/research/stage2v/STAGE2V_GATE0_REASSESSMENT_AND_COMPLETION_REPORT.md": "8731fe745166b12714fa3d5f5dc46338ddb21c4f4c760a920b97a2aa15179078",
+    "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8",
+    "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "docs/research/stage2zc/STAGE2ZC_ACCESS_LOG.md": "e7dfeabd8f48bb866e4a45028e600c8851953156d0cf3618d279279538590e4e",
+    "docs/research/stage2zc/STAGE2ZC_COST_ASSUMPTION_RECORD.md": "b9513cab3447745dab21a5ff0dd94b66be017f5c6ee33d5bff16e8b2c463e47e",
+    "docs/research/stage2zc/STAGE2ZC_FINAL_COMPLETION_REPORT.md": "af72a0729ad9f146ca1a99c7c3526b4b939f0d7e7668b25c507e15d2bc996526",
+    "docs/research/stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md": "042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42",
+    "docs/research/stage2zg/STAGE2ZG_RECOMMENDATION_REPORT.md": "09d35c3000e9ef9589bd153c26204da244973ffb774db99eb06a01ddf9cbf99c",
+    "docs/research/stage2zh/STAGE2ZH_PROTOCOL_AMENDMENT_DRAFT.md": "089902e97387829121e73930db03d501df743906f4cecf5eba805c3f921a1c3c",
+    "stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md": "7603680d323e5d31463bb7d98027414892bee0f1133f15b2669fdcb0e1657f08"
+  },
   "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
   "nature": "Governance instrument preparation only: one final protocol amendment, one owner decision instrument, one custodian appointment instrument, one independent validation report, and one authorization boundary. No reserved byte read, streamed, decoded, or hashed; no dataset file opened; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
-  "self_hash": "2f716b0ebc4722ed0a987ad36fca0cbf7dde93bd24811ad2cd211fe8443844f0",
+  "self_hash": "d174b908af6dd33b975efa237e597fccdc60ac0c1ba2f25e001a9d14742059a2",
   "stage": "2ZI",
   "version_identifier": "stage2zi/1.0.0"
 }
