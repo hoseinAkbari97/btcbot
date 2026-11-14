@@ -139,3 +139,15 @@ minimum-evidence requirements are unchanged, the `150` floor is unchanged, and 5
 recorded 20-at-best frequency is a stronger reason to doubt the objective than to lower the bar.
 
 **[OWNER]** The `$250` target itself is decision `T-5` and remains open; this stage does not touch it.
+
+## 8. Decision 2ZD-4 — reconciled, not re-derived
+
+The five values and their evidential status are examined field by field in
+`STAGE2ZH_METHODOLOGY_VALIDATION.md`. In reconciliation terms only one thing changed from 2ZG: the custodian is
+now named as the human owner. That closes the field 2ZG left open, and it is consistent with `R-b`, because a
+custodian who is not the analyst is exactly the party the amendment can authorise to compute a digest.
+
+The four numeric values are unchanged, and §3 of the methodology document records what each is and is not
+supported by — including the two that rest on a prior recommendation rather than on a protocol requirement.
+
+## 9. Decisions 2ZD-5 and Q-1 — unchanged
