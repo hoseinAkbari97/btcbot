@@ -63,3 +63,5 @@ open.
 | resampling count | 10,000 | recommendation, unratified |
 | seed | `20240101` | recommendation, unratified |
 | embargo length | 90 calendar days at each boundary | recommendation, unratified |
+| validation-split custodian | the human owner, under the logged custody procedure | recommendation, unratified; appointment is a separate owner act |
+| when the split may be opened | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | recommendation, unratified |
