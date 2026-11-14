@@ -93,3 +93,10 @@ The owner must supply a statement that (a) names the packet and its digest, (b) 
 selects 2ZD-1, 2ZD-2, 2ZD-3 and 2ZD-5 and gives the five 2ZD-4 values, (d) states any scope and conditions, and
 (e) carries a date in UTC and a signature or equivalent. The Stage 2ZE §6 form is exactly this shape and can
 be returned filled in.
+
+Per decision, the minimum that counts as a selection:
+
+- **2ZD-0** — one letter, `A`, `B`, `C`, or `D`.
+- **2ZD-1** — one option, `R-a` … `R-d`, taken as an interpretation ruling on §8.2 and D-12, not as a read
+  authorization.
+- **2ZD-2** — one candidate; D-11's one-primary rule rules out naming two.
