@@ -70,6 +70,7 @@ is that Gate 2 stays blocked until a later candidate decision.
 
 **[F]** Protocol §8.2: "the exact dates and hashes are frozen at Gate 2". D-12 (register) and addendum §10.4:
 no validation or OOS "row" may be read before its gate. The word "read" is nowhere defined.
+
 **[F]** Protocol §10.4 says: "A pre-registered interpretation may resolve an ambiguity before counting, but it
 must be recorded in the plan and disclosed in the report." This is the counter-argument, and it is real: the
 protocol itself provides an interpretation route, so `R-b`'s premise — that interpretation alone is
@@ -178,7 +179,8 @@ No row is marked adopted. The stage's own documents are proposals, and the manif
 ## 11. What only the owner can do
 
 1. **Adopt the amendment.** It is a major version change under §10.2, and adoption requires a written
-   statement naming the document and its hash (`STAGE2Z_..._ADDENDUM.md` §14.1 sets the standard).
+   statement naming the document and its hash (`stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md`
+   §14.1 sets the standard).
 2. **Ratify the seven selections** in an instrument that names the packet and its hash.
 3. **Record the custodian appointment** — naming the human owner as custodian is a decision, not a default.
 4. **Accept that Gate 2 stays blocked on B-1** until a later candidate decision, which `C-N` deliberately
