@@ -174,3 +174,35 @@ block to be used "only if validation passes the pre-registered criteria".
 
 **Under `C-N` none of this can begin**, because there is no registered hypothesis for a look to test. The table
 describes a route that a later decision would have to open, not a schedule.
+
+## 10. Appointment record — blank
+
+This table is the appointment. Empty, it appoints nobody.
+
+| field | value |
+|---|---|
+| I appoint as custodian (name or role) | `________________` |
+| The custodian is the owner, or is a third party | `________________` |
+| The protocol amendment this appointment depends on, by path and SHA-256 | `________________` |
+| I confirm the custodian is not the analyst | `________________` |
+| I disclose any role overlap (§11.1) | `________________` |
+| Access granted, in my words | `________________` |
+| Conditions or qualifications | `________________` |
+| Owner statement (verbatim) | `________________` |
+| Effective date (UTC) | `________________` |
+| Recorded by | `________________` |
+
+**The agent has filled no field.** No name, date, identity, signature, or affirmation appears in this document.
+Where the recommended appointee is the owner, the recommendation is a statement about who *could* hold the role,
+not a statement that anyone does.
+
+## 11. Integrity
+
+- No custodian exists under the current protocol; the role is created only by the unadopted amendment.
+- This instrument appoints no one, and a reader must not take the presence of a named recommended appointee in
+  this file, or in `STAGE2ZH_METHODOLOGY_VALIDATION.md` §7, as an appointment.
+- It is separate from the owner decision instrument: selecting `2ZD-4`'s custodian field is a recommendation about
+  who should hold the role, and signing here is the act that confers it.
+- It authorises no access to any dataset, no research, and no Gate 2 activity.
+
+No reserved byte was read, streamed, decoded, or hashed in producing this instrument.
