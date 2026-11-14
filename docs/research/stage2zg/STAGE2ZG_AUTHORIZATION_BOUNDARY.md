@@ -16,3 +16,12 @@ signature, claim a formal owner decision has been signed, or bypass any formal r
 
 So the authorization is: read the governing documents, recommend, validate, and write in a new directory. It is
 not an authorization to decide.
+
+## 2. What this stage did
+
+- Read committed documents only: the protocol, the register, the statistical framework, the addendum, the 2ZD
+  packet, the candidate specifications, the two 2J census reports, and the 2ZC records.
+- Recomputed the governing hashes and recorded them in `FREEZE_MANIFEST.json`.
+- Recommended one option for each of 2ZD-0, 2ZD-1, 2ZD-2, 2ZD-3, and 2ZD-5; proposed four 2ZD-4 values and left
+  the fifth field open; answered Q-1 as an assumption confirmation.
+- Reported three conflicts rather than resolving them by inference.
