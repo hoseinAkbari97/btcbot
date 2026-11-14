@@ -256,3 +256,12 @@ mathematics: the block length and the episode rule predate the 2J design effect 
 producing this report, and the embargo comes from a specification constant. None of the three can be traced to
 an outcome. The two quantities that *are* outcome-adjacent — `σ` and `DE` — are deliberately not given values
 here (§9).
+
+### 8.7 What remains unresolved in 2ZD-4
+
+- **Custodian identity** — needs an owner appointment: a person, a role, and a written delegation. The
+  procedure is proposed; the name is not the agent's to give.
+- **Adoption of the three proposed numbers** — `90`-day embargo, `14`-day block, and the episode rule are
+  recommendations, not decisions. Each field may be set differently or left blank.
+- **Whether the embargo also bars feature lookback** — this proposal says yes, the stricter reading. Adopting
+  the looser one is a governance decision, not a methodological one, and it would weaken the §8.2 claim.
