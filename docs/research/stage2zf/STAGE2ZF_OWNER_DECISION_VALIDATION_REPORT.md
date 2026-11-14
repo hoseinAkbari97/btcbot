@@ -104,3 +104,8 @@ Per decision, the minimum that counts as a selection:
   recorded relationship rather than floating either.
 - **2ZD-4** — five values, each a decision in its own right; a blank stays undecided.
 - **2ZD-5** — one option; `E-1` or `E-3` authorize a route only, never a census.
+
+A field left blank is recorded as *not decided*. The agent will not fill it, will not adopt the recommendation
+as a default, and will not read incompleteness as consent. If a returned statement is internally inconsistent
+— `2ZD-0 = C` with no sub-decisions, or two primaries — the agent will report the defect and stop, as the
+stage requires, rather than repair it.
