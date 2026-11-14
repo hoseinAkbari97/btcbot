@@ -41,3 +41,13 @@ not an authorization to decide.
 
 With all six, B-1…B-5 are closed and the only remaining Gate 2 blocker is B-6, which is document production by
 a future stage. **Gate 2 would still not be authorized**, and would still not be executable until it is.
+
+## 4. What these recommendations do not authorize
+
+Ratifying this package would not authorize any of the following. Each needs its own instrument.
+
+- **Gate 2 execution, passage, registration, or verdict.** `2ZD-0 = C` authorizes a *specification*; `R-a`
+  authorizes a hash procedure *when a Gate 2 is opened*, not the opening.
+- **Hashing any reserved block now.** `R-a` is a proposal pending ratification; this stage hashed no dataset file.
+- **Hypothesis registration or any research verdict.**
+- **Reading, decoding, or streaming validation or OOS rows** — unchanged by every option in the package.
