@@ -1,0 +1,191 @@
+{
+  "authorization": {
+    "date": "2026-11-14",
+    "decision": "delegated recommendation instruction: reconcile a changed recommendation set, validate the 2ZD-4 values, and prepare a protocol amendment",
+    "instrument": "the owner's written Stage 2ZH instruction of 2026-11-14",
+    "record": "docs/research/stage2zh/STAGE2ZH_AUTHORIZATION_BOUNDARY.md",
+    "scope": "docs/research/stage2zh/ only; drafts and reconciliation only; no data access; no amendment adoption; no owner signature, date, or affirmation"
+  },
+  "created_utc": "2026-11-14T08:59:22Z",
+  "deliverables": [
+    {
+      "bytes": 11293,
+      "path": "docs/research/stage2zh/STAGE2ZH_DECISION_RECONCILIATION.md",
+      "role": "Reconciliation of the changed recommendation set against the authoritative sources: C-N validity under the packet and D-11, R-b consistency with the section 10.4 counter-route recorded, the S-1 risk and frequency arithmetic, and the seven selections with their ratification routes",
+      "sha256": "50b9598a5f437fce025cbfeac92ae2befc7dab1682ffae8aebf3ccfadfa1cfce"
+    },
+    {
+      "bytes": 9225,
+      "path": "docs/research/stage2zh/STAGE2ZH_PROTOCOL_AMENDMENT_DRAFT.md",
+      "role": "The minimum protocol section 8.2 amendment that makes R-b operative: definitions of reserved contact, the custodian role, delivery limits, the access log, non-derogation, the rejected hash-only variant, and finding Y-1 on the Stage 2ZC boundary probes",
+      "sha256": "089902e97387829121e73930db03d501df743906f4cecf5eba805c3f921a1c3c"
+    },
+    {
+      "bytes": 12456,
+      "path": "docs/research/stage2zh/STAGE2ZH_METHODOLOGY_VALIDATION.md",
+      "role": "Field-by-field validation of the seven Stage 2ZD-4 values against four support tiers, the leakage and artificial-independence tests, the 90-day embargo derivation, the custody procedure with its trust limit, and the unresolved exit-policy dependency",
+      "sha256": "d0462ccfeb3ccd55821c6e91a1ec76288d8fe2e32285d610db1fce0e0e5b3963"
+    },
+    {
+      "bytes": 5451,
+      "path": "docs/research/stage2zh/STAGE2ZH_PROPOSED_DECISION_RECORD.md",
+      "role": "The seven proposed selections in the Stage 2ZD packet's field format, each labelled unratified, with the amendment and custodian dependencies disclosed and no owner date, statement, or signature",
+      "sha256": "970c6498574c439d5409e6811a92f508f47e77e71f0e00fe9ac9e3ba2f615960"
+    },
+    {
+      "bytes": 4944,
+      "path": "docs/research/stage2zh/STAGE2ZH_AUTHORIZATION_BOUNDARY.md",
+      "role": "What the stage was authorized to do, what it did, what the two instruments would resolve, what remains unauthorized, the five requirements a Gate 2 opening would still need, and the stage's own zero-access record",
+      "sha256": "75052eda68b634eab309c92d75dd42cfd2d4fadb24da6617eb1fee48f043bd6e"
+    }
+  ],
+  "findings": [
+    {
+      "id": "Y-1",
+      "summary": "Under R-b any byte contact is a read, so the four disclosed Stage 2ZC boundary open_time inspections count as reserved contact; the amendment is prospective and cannot legitimise them retroactively",
+      "treatment": "recorded as a pre-amendment deviation; grandfathering left to the owner"
+    },
+    {
+      "id": "Z-1",
+      "summary": "Protocol section 10.4 permits a pre-registered interpretation to resolve an ambiguity, so R-b is the stricter route rather than the only route",
+      "treatment": "recorded; R-b still preferred for scope, subject matter, and versioning reasons"
+    },
+    {
+      "id": "Z-2",
+      "summary": "10,000 resamples and seed 20240101 appear in one prior recommendation only, not in the protocol, the register, the 2J plan, or the Stage 6 protocol",
+      "treatment": "marked precedent-thin; the registration must disclose them as a comparability choice"
+    },
+    {
+      "id": "Z-3",
+      "summary": "Candidate D's specification contains no exit or holding rule, so episode adequacy and embargo sufficiency are conditional on the registered holding policy",
+      "treatment": "left open; it is the only item that blocks a Gate 2 registration"
+    }
+  ],
+  "governing_sources": {
+    "docs/research/STRATEGY_2_RECOMMENDATION.md": "a8538b4000143bc21085f42794fe5f1c3a4e9cb2bc4305c2160e30aece3aa25a",
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+    "docs/research/stage2j/CANDIDATE_D_CENSUS_REPORT.md": "07291ef379746a435eb05ec4dcc43252807287d2b29092135ded04c381188251",
+    "docs/research/stage2j/PRE_REGISTERED_ANALYSIS_PLAN.md": "4b19858f7c9cf07c04209ff7c07864cc0fc5de41d64bf6a3e2a6bee604b0306e",
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74",
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058",
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5",
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a",
+    "docs/research/stage2t/STAGE2T_DECISION_PACKET.md": "231dc4631d70ab2d4b5b8b1ad758a3a20d053657cd447f7532c1f28d63b7cf70",
+    "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "docs/research/stage2zc/STAGE2ZC_ACCESS_LOG.md": "e7dfeabd8f48bb866e4a45028e600c8851953156d0cf3618d279279538590e4e",
+    "docs/research/stage2zc/STAGE2ZC_DEVELOPMENT_VALIDATION_OOS_RANGE_AND_HASH_RECORD.md": "6410622670ddb5fee46a6e4a0b2509e9a1c134b41aa2bffa607ed79d038e5d5f",
+    "docs/research/stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md": "042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42",
+    "docs/research/stage2ze/STAGE2ZE_PATH_C_OWNER_DECISION_BRIEF.md": "b07faf7996de9524e789650f52dc05a615f07146ec2039fbcda385e7907be20b",
+    "docs/research/stage2zf/STAGE2ZF_OWNER_DECISION_VALIDATION_REPORT.md": "f74054bc953293bacb6fb2c74cb950aedfaa86b644046d7b76626cd86f63d3ff",
+    "docs/research/stage2zg/FREEZE_MANIFEST.json": "ae55e3623b9bce5a11e4a87e414c2f673d4710c08151b0ad377a900376926736",
+    "docs/research/stage2zg/STAGE2ZG_RECOMMENDATION_REPORT.md": "09d35c3000e9ef9589bd153c26204da244973ffb774db99eb06a01ddf9cbf99c",
+    "stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md": "7603680d323e5d31463bb7d98027414892bee0f1133f15b2669fdcb0e1657f08"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "nature": "Decision reconciliation, methodology validation, and governance draft preparation only. No reserved byte read, streamed, decoded, or hashed; no dataset file streamed; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. No predecessor document modified; no protocol or addendum text changed; no gate moved.",
+  "no_access_confirmations": {
+    "amendment_adopted": false,
+    "api_called": false,
+    "api_key_issued_or_used": false,
+    "census_or_backtest_or_simulation_run": false,
+    "cost_or_spread_or_depth_measured": false,
+    "custodian_appointed": false,
+    "dataset_files_streamed_by_this_stage": 0,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate2_authorized": false,
+    "gate2_executed": false,
+    "hypothesis_registered": false,
+    "order_placed_modified_or_cancelled": false,
+    "owner_decision_created_or_inferred": false,
+    "owner_signature_or_date_written": false,
+    "paper_or_live_trading": false,
+    "parameter_fit_run": false,
+    "protocol_file_modified": false,
+    "quote_sampling_performed": false,
+    "real_capital_work_performed": false,
+    "reserved_block_bytes_hashed": 0,
+    "stage2zg_files_modified": false,
+    "t4_revisited": false,
+    "validation_or_oos_rows_decoded": 0,
+    "venue_contacted": false
+  },
+  "no_performance_claim": "No expected return, profitability, achievable income, execution-feasibility, or real-capital claim is made. Both candidates remain at FEASIBILITY FAIL - INSUFFICIENT OPPORTUNITIES; no hypothesis is registered; 26 bp is an unmeasured assumption.",
+  "open_items": [
+    "adoption of the amendment draft under protocol section 10.2, with a dated owner statement naming its hash",
+    "ratification of the seven selections",
+    "the custodian appointment, even where the owner is the custodian",
+    "settlement of finding Y-1",
+    "a registered exit and holding policy",
+    "the planning DE and p_exec brackets at registration under E-2",
+    "the hypothesis C-N withholds, without which Gate 2 cannot be registered"
+  ],
+  "predecessor_manifest_verification": {
+    "note": "the Stage 2ZG manifest's canonical self-hash was recomputed with the declared procedure, and each referenced deliverable path-and-sha256 pair was re-hashed from current bytes",
+    "stage2zg": {
+      "referenced_hashes_checked": 3,
+      "referenced_hashes_failed": 0,
+      "self_hash": "3d7830aaae824291aaee959e92d64cae136cd690778c852eadda8a5905cf738a",
+      "self_hash_ok": true,
+      "self_hash_recomputed": "3d7830aaae824291aaee959e92d64cae136cd690778c852eadda8a5905cf738a"
+    }
+  },
+  "proposed_selections": {
+    "2ZD-0": "C",
+    "2ZD-1": "R-b (requires the amendment draft to be adopted)",
+    "2ZD-2": "C-N (valid under the packet; D-11 forbids more than one primary, not zero)",
+    "2ZD-3": "S-1",
+    "2ZD-4": {
+      "block_length_days": 14,
+      "custodian": "the human owner under the logged custody procedure",
+      "embargo_days": 90,
+      "episode_definition": "maximal contiguous 4h budget_ok run",
+      "opening": "after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged",
+      "resample_count": 10000,
+      "seed": "20240101",
+      "support_tiers": {
+        "block": "precedent",
+        "custodian": "new role",
+        "embargo": "derived from 540 x 4h",
+        "episode": "mandated",
+        "opening": "consistent",
+        "resample_count": "precedent-thin",
+        "seed": "precedent-thin"
+      }
+    },
+    "2ZD-5": "E-2",
+    "Q-1": "retain 26 bp as a labelled unmeasured proxy",
+    "amendment_adopted": false,
+    "ratified": false,
+    "status": "proposal pending formal owner ratification; no protocol text changed; no custodian appointed"
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "035ff740a898ce2deb809747cf6d5f6a1a712fa5",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_at_manifest_creation": "contains only the new Stage 2ZH artifacts"
+  },
+  "self_hash": "94efe82e2b3ffe0ca55809f64ceaa5984fd99a293aabdd429dc5e94eea0da1ab",
+  "stage": "2ZH",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "C-4": "unresolved",
+    "C-6": "unresolved",
+    "D-01_to_D-15": "unchanged",
+    "R-08": "P - partially satisfied",
+    "R-15": "B - blocked for real-capital claims",
+    "T-4": "deferred",
+    "T-5": "open",
+    "cost_basis_26bp": "unchanged and unmeasured",
+    "gate0": "NOT PASSED",
+    "gate1": "PASSED - research leg only (Stage 2ZC, unchanged)",
+    "gate2": "NOT AUTHORIZED",
+    "gate2_blockers": "B-1 open by decision (C-N); B-2, B-3, B-4, B-5 resolved only on adoption; B-6 document production",
+    "gate2_registrable": false,
+    "protocol_version": "unchanged; the amendment is a draft",
+    "real_capital_work": "not authorized",
+    "stage2zd_package": "frozen and unchanged",
+    "stage2zg_package": "unchanged"
+  },
+  "version_identifier": "stage2zh/1.0.0"
+}
