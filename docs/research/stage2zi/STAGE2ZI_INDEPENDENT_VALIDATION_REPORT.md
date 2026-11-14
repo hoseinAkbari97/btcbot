@@ -90,3 +90,26 @@ broken and the owner decision instrument says so rather than repeating it.
 Stage 2ZH and 2ZI add two — the resample count and the seed — because the registration cannot be reproduced
 without them. The addition is disclosed, and it does not narrow the owner's five. It does mean that a signature on
 `2ZD-4` covers seven values, two of which the packet never asked for.
+
+## 5. The 2ZD-4 values, checked against their sources
+
+| value | source checked | what the source actually says | verdict |
+|---|---|---|---|
+| episode = maximal contiguous 4 h `budget_ok` run | `CANDIDATE_D_CENSUS_REPORT.md` §6; `CANDIDATE_D_SPEC.md` §6 | the maximal `budget_ok == True` 4 h run containing the signal instant; 212 runs | **[F]** matches |
+| block = 14 calendar days | `stage6_rebuild_v2/STAGE6_V2_PROTOCOL.md` line 69 | "14-calendar-day block bootstrap" | **[F]** matches; a convention, not a requirement |
+| 10,000 resamples | `STRATEGY_2_RECOMMENDATION.md` line 216 | "10,000 resamples" | **[F]** matches; appears in no protocol, register, 2J plan, or Stage 6 requirement |
+| seed `20240101` | same line | "seed `20240101`" | **[F]** matches; same single-source status |
+| embargo = 90 days | `CANDIDATE_D_SPEC.md` §6 (540-bar lookback) | `540 × 4 h = 2,160 h = 90 days` | **[D]** arithmetic exact; derived, not mandated |
+| custodian = the owner | protocol and addendum, full text | the word "custodian" **does not occur** in either | **[F]** new role; **[OWNER]** appointment |
+| opening = after Gate 2 freeze and Gate 4 audit, at Gate 5 | protocol §2.2, §8.2, §8.8; packet §6.4 | §2.2 orders Gate 4 before Gate 5; §8.8 rejects on an open CRITICAL/MAJOR finding | **[D]** consistent; the audit condition is the protocol's sequence made explicit |
+
+**Finding `X-6`.** The `90`-day figure is the only 2ZD-4 value that is neither inherited nor mandated but
+**derived**, and its derivation is a coincidence that happens to be exact: `540` bars of `4 h` is `2,160` hours,
+which is `90` days to the hour. If the lookback were `540` bars of a different timeframe, or the embargo expressed
+in bars, the agreement would break. The registration should record the derivation rather than the number, so that a
+future change to the lookback surfaces as a change to the embargo.
+
+**What is not claimed.** None of these checks establishes that the values are statistically adequate. The episode
+definition's adequacy depends on an exit policy that does not exist (finding `Z-3`), the block length is a
+convention, and the resample count and seed are comparability and reproducibility choices. **Supported is not the
+same as sufficient**, and this stage does not upgrade one into the other.
