@@ -68,6 +68,28 @@ base.
 invented, and none was fitted to a design effect or an outcome. Two of the seven rest on a single prior
 recommendation, and one creates a role that the governing text does not contain.
 
+## 5. Consequences of `C-N`, if it is selected
+
+**Neither candidate is selected.** Candidate B and candidate D remain frozen at `v2.0.0` with their
+`FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` verdicts untouched. Neither is promoted, revived, or replaced,
+and no third candidate is created to fill the gap.
+
+| consequence | stated plainly |
+|---|---|
+| Gate 2 cannot be registered | protocol §5.2 input #1 is a hypothesis; `C-N` supplies none, and §5.3 requires the registration to be complete |
+| the hypothesis input is unresolved **by choice** | this is a decision, not an omission and not a missing reply |
+| Gate 2 is unauthorized **and** unregistrable | the first is a standing prohibition, the second is a new fact created by this selection |
+| no strategy-design work is authorized | not by `2ZD-0 = C`, not by `C-N`, and not by anything in this package |
+
+**On the exit and holding policy.** The missing exit rule is **not** the only remaining obstacle while `C-N`
+stands. It matters only if a hypothesis is later selected, because it is a Gate 2 input #5 for a registration
+that does not exist. Listing it as "the one thing blocking Gate 2" while no hypothesis is named would invert the
+order of the obstruction. Both are open; the hypothesis slot is the one that is open first.
+
+**What `C-N` is not.** It is not a vote against either candidate's evidence, and it does not reopen either
+verdict. It is a refusal to register a hypothesis now, which is a legitimate option in the packet (§6.2) and does
+not breach D-11, because a rule capping primaries at one is satisfied by zero.
+
 **Owner statement (verbatim), if any:** `________________`
 **Conditions or qualifications:** `________________`
 **Effective date (UTC):** `________________`
