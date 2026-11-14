@@ -90,6 +90,47 @@ order of the obstruction. Both are open; the hypothesis slot is the one that is 
 verdict. It is a refusal to register a hypothesis now, which is a legitimate option in the packet (§6.2) and does
 not breach D-11, because a rule capping primaries at one is satisfied by zero.
 
+## 6. What this package does not authorize, whichever way it is decided
+
+- **Gate 2 execution, registration, passage, or verdict.** No selection here opens Gate 2.
+- **Any reserved contact by the analyst** — no hashing, streaming, decoding, sampling, or inspection.
+- **Candidate substitution, strategy design, or a third candidate.**
+- **Census, backtest, simulation, parameter fitting, or performance calculation.**
+- **Cost, spread, fee, depth, liquidity, slippage, fill, or latency measurement.**
+- **API access, venue contact, account access, credentials, or orders.**
+- **Paper or live trading, `T-4`, or real-capital sizing.**
+- **Any change to D-01…D-15, A-1…A-4, `26 bp`, the one-look rule, the embargo, a threshold, or a verdict.**
+
+Selecting `E-2` and retaining the `26 bp` proxy keep both as **labelled assumptions**. Neither becomes an
+estimate, an observation, or a measurement by being selected, and no `cost_R` is computed from either.
+
+## 7. Owner fields, and the standard they meet
+
+| field | value |
+|---|---|
+| I have read `STAGE2ZD_OWNER_DECISION_PACKET.md` | `________________` |
+| I select path (2ZD-0) | `________________` |
+| My sub-decisions (2ZD-1…2ZD-5, Q-1) | `________________` |
+| Conditions or qualifications | `________________` |
+| Owner statement (verbatim) | `________________` |
+| Effective date (UTC) | `________________` |
+| Recorded by | `________________` |
+
+Only the owner may complete these fields. Addendum §14.1 sets the standard a valid statement meets: it identifies
+the document by path and hash, states the decision in its own words, carries a date, and is recorded verbatim
+without agent paraphrase.
+
+**The agent has completed no field, added no date, and written no statement. A blank field is not a decision; a
+missing reply is not a decision; silence is not an authorization.**
+
+## 8. Integrity
+
+- No owner identity, signature, date, or affirmation appears anywhere in this document.
+- No selection is presented as made, and none is inferred from the absence of a statement.
+- The packet's own §9 signature block remains blank and unedited.
+- If the owner signs, the signature belongs in a separately dated record; this instrument then becomes evidence
+of what was proposed, not of what was decided.
+
 **Owner statement (verbatim), if any:** `________________`
 **Conditions or qualifications:** `________________`
 **Effective date (UTC):** `________________`
