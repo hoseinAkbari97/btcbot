@@ -166,3 +166,12 @@ state why it suits the mechanism, and record what the alternative would cost.
 
 A value is proposed only where the frozen text supports one. Where it does not, the field stays open and the
 missing governance decision is named — §8.7.
+
+### 8.1 Episode definition — proposed: the 4 h `budget_ok` regime run
+
+**Proposed value:** one episode is the maximal contiguous run of 4 h buckets in which the volatility budget is
+satisfied, containing the signal instant, closed at the first 4 h bucket where it fails.
+
+**[F]** That run is already the frozen cluster unit: candidate D assigns each signal "to the maximal
+`budget_ok == True` 4 h run containing the session signal instant", with 212 such runs in the development
+interval (`CANDIDATE_D_CENSUS_REPORT.md` §6).
