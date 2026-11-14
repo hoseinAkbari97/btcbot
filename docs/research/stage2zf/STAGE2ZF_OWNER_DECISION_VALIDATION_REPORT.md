@@ -124,3 +124,7 @@ Unchanged by this stage, and unchanged by any part of the 2ZF instruction:
 - T-4, real-capital sizing, paper trading, and live trading.
 - Any change to D-01…D-15, A-1…A-4, or any frozen decision without explicit authorization.
 - Treating a Path C selection, if one is later made, as authorization for Gate 2 or any later research.
+
+Status restated so a partial reply cannot be mistaken for progress: Gate 0 **NOT PASSED**; Gate 1 **PASSED —
+research leg only**; Gate 2 **NOT AUTHORIZED**; `T-4` **deferred**; `R-08` **`P`**; `R-15` **`B`**; `C-4` and
+`C-6` **unresolved**.
