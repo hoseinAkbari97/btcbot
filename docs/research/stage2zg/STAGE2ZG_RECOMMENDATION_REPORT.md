@@ -34,3 +34,12 @@ Every recommendation below cites one of these; their hashes are in `FREEZE_MANIF
 - `stage2j/CANDIDATE_B_CENSUS_REPORT.md` and `CANDIDATE_D_CENSUS_REPORT.md` §5, §6, §10 — the recorded
   counts, design effects, and verdicts.
 - `stage2zc/` range-and-hash record, access log, and cost-assumption record — the only recorded data contact.
+
+## 3. How the report separates three kinds of statement
+
+- **[F] source fact** — quoted or counted from a committed document, with its section.
+- **[R] reasoning** — an inference from those facts, stated so it can be argued with.
+- **[REC] recommendation** — a choice proposed for the owner, which binds nobody until ratified.
+
+A recommendation is never presented as a finding. Where a fact undercuts a recommendation, the report says
+so in the same section rather than in a footnote.
