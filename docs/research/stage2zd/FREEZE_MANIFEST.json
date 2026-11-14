@@ -1,0 +1,264 @@
+{
+  "authorization": {
+    "date": "2026-11-14",
+    "decision": "owner Stage 2ZD instruction (documentation, audit, and decision preparation only)",
+    "instrument": "the owner's written Stage 2ZD instruction of 2026-11-14",
+    "record": "docs/research/stage2zd/STAGE2ZD_AUTHORIZATION_BOUNDARY.md",
+    "scope": "docs/research/stage2zd/ only; no Gate 2 execution; no data access"
+  },
+  "blockers": {
+    "B-1": "no single primary candidate selected (D-11) - owner decision",
+    "B-2": "$2,500 cap versus tight stops (B-09) - owner decision",
+    "B-3": "is hashing a validation/OOS block a prohibited read (protocol section 8.2 versus D-12) - owner interpretation",
+    "B-4": "sigma, DE, and p_exec unset (B-11) - evidence or owner-approved assumption",
+    "B-5": "episode, block, and embargo numbers and one-look logistics (B-10) - owner decision",
+    "B-6": "no Gate 2 registration or manifest exists - document production"
+  },
+  "created_utc": "2026-11-14T07:26:46Z",
+  "deliverables": [
+    {
+      "bytes": 33074,
+      "path": "docs/research/stage2zd/STAGE2ZD_GATE1_EVIDENCE_AUDIT.md",
+      "role": "Independent audit of the Stage 2ZC Gate 1 verdict: six protocol section 4.3 criteria, dataset and manifest hash bindings, gap accounting, reconciliation, boundary separation, cost-assumption label, zero validation/OOS access, and the three recorded strict readings",
+      "sha256": "7ace928e0ed77dc1d7920466a1b427662470ffe917c63e2781329c5321818174"
+    },
+    {
+      "bytes": 19385,
+      "path": "docs/research/stage2zd/STAGE2ZD_GATE2_REQUIREMENT_MATRIX.md",
+      "role": "Row-level reconstruction of the sixteen protocol section 5.2 inputs, the six section 5.3 pass criteria, the five section 5.4 artifacts, the section 8.2 data separation, and the D-08 to D-14 constraints, each with required evidence, current evidence, status, access need, authorization need, and dependencies",
+      "sha256": "209c33213ac240192a2796ffa9bc9b55b987717b9bd91b3ec21ad6639bd76241"
+    },
+    {
+      "bytes": 15419,
+      "path": "docs/research/stage2zd/STAGE2ZD_GATE2_READINESS_ASSESSMENT.md",
+      "role": "Gate 2 readiness verdict NOT READY; four readiness levels; the six blockers in dependency order; what is not a Gate 2 blocker; the inherited interpretation findings; the contamination-risk assessment; and the conditions that would change the verdict",
+      "sha256": "5e264fc4de1784601d6d060110a6dc26e897f197158468a31040f5e25fdab2ce"
+    },
+    {
+      "bytes": 12965,
+      "path": "docs/research/stage2zd/STAGE2ZD_PATH_COMPARISON_AND_RECOMMENDATION.md",
+      "role": "Scored comparison of Paths A to D on eight owner-relevant dimensions with one recommendation (Path C), a sensitivity analysis, and the exact scope Path C would and would not authorize",
+      "sha256": "2c2d344b18290e58963fcf026733b0f6b04601888461fdf98acd40fea400a132"
+    },
+    {
+      "bytes": 14986,
+      "path": "docs/research/stage2zd/STAGE2ZD_OWNER_DECISION_PACKET.md",
+      "role": "Blank-field owner decision packet: recommended path, path selection, five Path C sub-decisions, exact artifact hashes, exact authorization scopes, and the explicit rule that silence or ambiguity is not authorization",
+      "sha256": "042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42"
+    },
+    {
+      "bytes": 8097,
+      "path": "docs/research/stage2zd/STAGE2ZD_AUTHORIZATION_BOUNDARY.md",
+      "role": "What Stage 2ZD was authorized to do, what it did, what remains unauthorized, prerequisites for each future activity, and the boundary any next authorization must respect",
+      "sha256": "1f293a8c27594ec80833379f65a53acd71635907af1be4785637003704ae704e"
+    }
+  ],
+  "gate1_audit": {
+    "audit_result": "CONFIRMED on the recorded evidence",
+    "criteria_supported": 6,
+    "criteria_total": 6,
+    "dataset_restreamed": false,
+    "presentation_discrepancies_recorded": 2,
+    "reason_no_rerun": "existing committed evidence is hash-bound, deterministic, and internally consistent; re-streaming would add non-development byte contact for no audit gain",
+    "substantive_contradictions_found": 0,
+    "validation_script_rerun": false,
+    "verdict_audited": "PASSED - research leg only",
+    "verdict_record": "docs/research/stage2zc/STAGE2ZC_GATE1_VERDICT.md",
+    "verdict_sha256": "86aa62382fd2ceafddb4802eb094b69e96ffa256515043ac957a72fa76ee2f31"
+  },
+  "gate2_readiness": {
+    "data_split_nameable": false,
+    "executable_today": false,
+    "registration_freezable": false,
+    "sample_sufficiency_computable": false,
+    "specification_preparable": true,
+    "verdict": "NOT READY"
+  },
+  "gate2_requirements": {
+    "artifacts_complete": 0,
+    "artifacts_total": 5,
+    "inputs_blocked": 4,
+    "inputs_not_applicable": 0,
+    "inputs_partial": 10,
+    "inputs_satisfied": 2,
+    "inputs_total": 16,
+    "inputs_unknown": 0,
+    "pass_criteria_blocked": 3,
+    "pass_criteria_partial": 2,
+    "pass_criteria_satisfied": 1,
+    "pass_criteria_total": 6
+  },
+  "governing_sources": {
+    "docs/research/stage2e_v2/CANDIDATE_B_SPEC.md": "790e7801edde94932203469303ceab2610c8ff4233d4bc24b107289e7da5ea41",
+    "docs/research/stage2e_v2/CANDIDATE_D_SPEC.md": "63e629e0b27103367e16a7b69a122e7be654b07e8a4e6aa204596da10ec391fa",
+    "docs/research/stage2m/OWNER_DECISION_REGISTER.md": "f67fa8de5e197a7391f84dd722a71803d57436e43e001b0151ce372c0a637f74",
+    "docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md": "be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058",
+    "docs/research/stage2m/STATISTICAL_SUFFICIENCY_FRAMEWORK.md": "237d5c277e572c0af05ab0d5f0f0bcab5451943724f980991f9f6d2ccabdd8f5",
+    "docs/research/stage2n/OWNER_DECISION_RESOLUTION_RECORD.md": "d57fb69f114f6c31a300b7a6145233f60b0da91c80fde9a51ec7b0e6847756c7",
+    "docs/research/stage2o/STAGE2O_OWNER_RESPONSE_RECORD.md": "5e99e2aca9ed2dd715c816b4aa81f06c4168a1be4b98895e4687c4c766b4b88a",
+    "docs/research/stage2p/GATE0_READINESS_ASSESSMENT.md": "bae14a2e6141c86b68243e6c0f063f2e7a8aac4b7f5b60c619c96a45debbb02c",
+    "docs/research/stage2p/OPEN_BLOCKER_REGISTER.md": "1cb668e3d4f6101976d14b267f0da4eaf40f7eb10409407cc0bd5e38afbcc05d",
+    "docs/research/stage2x/STAGE2X_GOVERNANCE_STATUS_RECORD.md": "17f7c3b9e10174be68f09d68b278fbd363e4b3d5c34d48ee11184eedb3cb21f8",
+    "docs/research/stage2y/STAGE2Y_PATH_COMPARISON_AND_RECOMMENDATION.md": "35e271d519b38df44d872d99799d1d4fbd08f4c2ff5d992f2df435a46391978b",
+    "docs/research/stage2z/STAGE2Z_CONFLICT_TRACEABILITY_MATRIX.md": "e8e4dbb7e7c8be2faee5a0859b73a2223bd42703047189cfc1e7bb04cf108266",
+    "docs/research/stage2z/STAGE2Z_PROPOSED_RESEARCH_AND_REAL_CAPITAL_GATE_ADDENDUM.md": "b88db1e8c42e4574ca6cfad87d7c3698671ca7f19dc8c1041df687f3d22436dc",
+    "docs/research/stage2zc/STAGE2ZC_GATE1_VERDICT.md": "86aa62382fd2ceafddb4802eb094b69e96ffa256515043ac957a72fa76ee2f31"
+  },
+  "hashing_procedure": "SHA256 over the UTF-8 canonical JSON encoding (json.dumps, sort_keys=True, separators=(',',':'), ensure_ascii=False) of this object with the self_hash field removed. The file is written with indent=2, sort_keys=True and a trailing newline.",
+  "interpretation_issues": [
+    {
+      "blocks_gate2": true,
+      "id": "I-1",
+      "owner_decision_required": true,
+      "question": "the exact validation and OOS dates and hashes are frozen at Gate 2 (protocol section 8.2), while no validation or OOS row may be read before its gate (D-12, addendum section 10.4); whether hashing is a read is not settled",
+      "readings": [
+        "R-a hash-only contact permitted",
+        "R-b any byte contact prohibited",
+        "R-c custodian computes hashes",
+        "R-d defer Gate 2"
+      ]
+    },
+    {
+      "id": "I-2",
+      "note": "prudent confirmation only; Gate 2 does not require measured cost",
+      "owner_decision_required": false,
+      "question": "protocol section 4.3 permits cost evidence that is measured OR a labelled assumption with a replacement plan; Stage 2ZC took the second branch and the strict reading would reverse Gate 1"
+    },
+    {
+      "id": "I-3",
+      "note": "no owner decision needed for a research-leg Gate 2; needed before any execution-feasibility or real-capital claim",
+      "owner_decision_required": false,
+      "question": "venue specification completeness is a required input but not a listed pass criterion; P-5 disclosure is the adopted control"
+    }
+  ],
+  "nature": "Decision-preparation only: independent audit of the Stage 2ZC Gate 1 result against the actual repository, reconstruction of the exact Gate 2 requirements, a Gate 2 readiness assessment, a scored comparison of four next paths, a blank-field owner decision packet, and an authorization boundary. No validation or OOS row read; no census, backtest, simulation, parameter fit, strategy experiment, cost or liquidity measurement, quote sampling, venue contact, order, or real-capital sizing. Gate 2 is not authorized and is not executed.",
+  "no_access_confirmations": {
+    "api_called": false,
+    "api_key_issued_or_used": false,
+    "census_or_backtest_or_simulation_run": false,
+    "cost_or_spread_or_depth_measured": false,
+    "dataset_files_streamed_by_this_stage": 0,
+    "dataset_manifest_inspected_metadata_only": true,
+    "expectancy_or_pnl_or_returns_computed": false,
+    "frozen_artifacts_modified": false,
+    "gate0_passed": false,
+    "gate2_authorized": false,
+    "gate2_executed": false,
+    "order_placed_modified_or_cancelled": false,
+    "owner_decision_created_or_inferred": false,
+    "paper_or_live_trading": false,
+    "parameter_fit_run": false,
+    "quote_sampling_performed": false,
+    "real_capital_work_performed": false,
+    "signal_or_indicator_or_count_computed": false,
+    "sizing_convention_selected": false,
+    "slippage_or_fill_or_latency_measured": false,
+    "stage2z_files_modified": false,
+    "stage2za_files_modified": false,
+    "stage2zb_files_modified": false,
+    "stage2zc_files_modified": false,
+    "strategy_or_candidate_designed": false,
+    "t4_revisited": false,
+    "validation_or_oos_rows_decoded": 0,
+    "validation_or_oos_rows_hashed_by_this_stage": 0,
+    "venue_contacted": false
+  },
+  "no_performance_claim": "No expected return, profitability, achievable income, execution-feasibility, or real-capital claim is made. This stage is decision preparation only.",
+  "path_recommendation": {
+    "follow_on": "B - prepare a Gate 2 specification only",
+    "max_score": 40,
+    "note": "Path D's score is inflated by compliance-by-inaction and is not recommended; it remains legitimate only if the owner intends to pause",
+    "recommended": "C - resolve the protocol interpretation and the Gate 2 owner decisions first",
+    "scores": {
+      "A_authorize_gate2": 11,
+      "B_specification_only": 32,
+      "C_resolve_interpretation_first": 37,
+      "D_defer": 33
+    }
+  },
+  "predecessor_manifest_verification": {
+    "note": "each predecessor manifest's canonical self-hash was recomputed with the declared procedure, and every referenced path-and-sha256 pair was re-hashed from current bytes; all matched",
+    "stage2e_v2": {
+      "referenced_hashes_checked": 13,
+      "referenced_hashes_failed": 0,
+      "self_hash": "751831e2fed6b406cdaf701d342fe6891eccab337a5e32f6d68e5a279ff13a93",
+      "self_hash_ok": true
+    },
+    "stage2m": {
+      "referenced_hashes_checked": 27,
+      "referenced_hashes_failed": 0,
+      "self_hash": "6469d6a417681c9a6615d08ede9059a48aa104ab301c5bd42a17e4b24f54b0a9",
+      "self_hash_ok": true
+    },
+    "stage2p": {
+      "referenced_hashes_checked": 16,
+      "referenced_hashes_failed": 0,
+      "self_hash": "cbbbbae0e07a9695f19cac7d8b5b2601b8279616ef3daca26bb47afa9c76a19c",
+      "self_hash_ok": true
+    },
+    "stage2y": {
+      "referenced_hashes_checked": 20,
+      "referenced_hashes_failed": 0,
+      "self_hash": "105a65aa133da41452862867b79de1636ccc90a5156a5b4dc03f9d66653cb037",
+      "self_hash_ok": true
+    },
+    "stage2z": {
+      "referenced_hashes_checked": 28,
+      "referenced_hashes_failed": 0,
+      "self_hash": "cc29845ebf95560df6ecbedce3a37a890c3f2c37a8f8e10683c91ab86367d45b",
+      "self_hash_ok": true
+    },
+    "stage2za": {
+      "referenced_hashes_checked": 32,
+      "referenced_hashes_failed": 0,
+      "self_hash": "1ea961bf3582df73294ceab454550d84d6ee6dbf1589cc6c3881d2986b6e01a1",
+      "self_hash_ok": true
+    },
+    "stage2zb": {
+      "referenced_hashes_checked": 33,
+      "referenced_hashes_failed": 0,
+      "self_hash": "99458ec8c02dfb21ed2699f045ea4e632ae5bdfe159c4ea0c01215bb500d721a",
+      "self_hash_ok": true
+    },
+    "stage2zc": {
+      "referenced_hashes_checked": 30,
+      "referenced_hashes_failed": 0,
+      "self_hash": "1e1614596407f4983f37c33a54ad675002c7b1210b8981613e464015a13925a2",
+      "self_hash_ok": true
+    }
+  },
+  "repository": {
+    "branch": "main",
+    "head_at_manifest_creation": "c452b014d8652dc909c1483b3404e06966d322b2",
+    "remote": "origin git@github.com:hoseinAkbari97/btcbot.git",
+    "working_tree_at_manifest_creation": "contains only the new Stage 2ZD artifacts"
+  },
+  "self_hash": "b902597e6d656c5c0088d124859a91dcbf081bdff8ad4c3d111d8e990dd9d58c",
+  "stage": "2ZD",
+  "status_after_stage": {
+    "A-1_to_A-4": "unchanged",
+    "C-4": "unresolved",
+    "C-6": "unresolved",
+    "D-01_to_D-15": "unchanged",
+    "O-1": "ADOPTED 2026-11-11 (unchanged)",
+    "O-2": "O-2A ACCEPTED 2026-11-14 and complete (unchanged)",
+    "R-05": "P",
+    "R-08": "P - partially satisfied",
+    "R-10": "P",
+    "R-15": "B - blocked for real-capital claims",
+    "R-22": "P",
+    "T-4": "deferred",
+    "checklist": "16 S / 4 P / 0 O / 1 B / 2 N/A",
+    "cost_basis_26bp": "unchanged",
+    "gate0": "NOT PASSED",
+    "gate0_research_leg_inputs": "complete (Stage 2ZC determination, unchanged)",
+    "gate1": "PASSED - research leg only (Stage 2ZC, unchanged)",
+    "gate2": "NOT AUTHORIZED",
+    "real_capital_work": "not authorized",
+    "stage2z_package": "frozen and unchanged",
+    "stage2za_package": "frozen and unchanged",
+    "stage2zb_package": "frozen and unchanged",
+    "stage2zc_package": "frozen and unchanged"
+  },
+  "version_identifier": "stage2zd/1.0.0"
+}
