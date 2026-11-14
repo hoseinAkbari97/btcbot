@@ -89,3 +89,14 @@ registration act with their own disclosure.
 |---|---|---|
 | cost basis | confirm the labelled `26 bp` Binance spot proxy as the permitted Gate 2 assumption | recommendation, unratified |
 | conditions | never described as measured, observed, or Nobitex-specific; replacement plan retained | recommendation, unratified |
+
+## 9. What a valid ratification must contain
+
+The packet's §9 block is where a decision is recorded, and this record does not pre-fill it. A valid instrument
+must carry, at minimum:
+
+1. the packet path and SHA-256, so it is bound to the version that was read;
+2. one letter for 2ZD-0, and — only if `C` — one option each for 2ZD-1, 2ZD-2, 2ZD-3, 2ZD-5;
+3. five 2ZD-4 values, any of which may be left blank and then stays undecided;
+4. an optional Q-1 statement, which authorizes no measurement;
+5. scope and conditions, a UTC date, and a signature or equivalent.
