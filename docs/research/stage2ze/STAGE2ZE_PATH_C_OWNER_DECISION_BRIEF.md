@@ -79,3 +79,23 @@ route posed separately.
 
 **What no option does.** No option passes Gate 0, authorizes real capital, revisits T-4, or changes any
 frozen value. Option A does not make the blocked inputs exist.
+
+### 3.2 2ZD-1 — the §8.2 / D-12 block-hash interpretation
+
+**What is being decided.** Whether computing a SHA-256 over a reserved validation or OOS block is a
+forbidden "read", or a permitted hash-only contact.
+
+**What the adopted text says explicitly** — quoted, not paraphrased:
+
+| source | text | what it settles |
+|---|---|---|
+| protocol §8.2 | "The exact dates and hashes are frozen at Gate 2." | block hashes must be fixed **at Gate 2** |
+| protocol §8.2 | "An embargo or purge period separates them so that overlapping holding periods do not leak information across the boundary." | the split needs an embargo |
+| protocol §5.2 #14 | "**Data-access plan:** development, validation, OOS, and the one-look rule." | the plan must name all three blocks |
+| protocol §15 | "reading, decoding, or summarizing validation or OOS rows outside an authorized Gate 5 stage" (prohibited) | the prohibition is written about **rows** |
+| D-12 (strict one-look) | one validation look, one OOS look, access logged, embargo required, extra looks only as a new stage | no row may be read before its gate |
+| addendum §10.4 | "No validation or OOS row may be read before its gate." | same, restated |
+
+**What the text does not settle.** It never defines "read". Every clause above speaks of *rows*. None
+addresses streaming a block's bytes through a hash function without decoding any row. That is the gap —
+not a missing artifact, and not a data problem.
