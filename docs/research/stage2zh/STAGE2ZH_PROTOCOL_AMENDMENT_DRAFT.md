@@ -131,3 +131,12 @@ grandfather them explicitly. This draft does the first and leaves the second to 
 
 Until then the protocol's §8.2 is unamended, `R-b` is a selection without an operative text, and §8.2's hash
 requirement has no compliant procedure.
+
+## 9. What the amendment would not authorise, even if adopted
+
+- It would not open Gate 2. Gate 2 needs a separate opening instrument, and under `C-N` it has no hypothesis.
+- It would not permit the analyst to hash, stream, or approach any reserved byte — that is what it forbids.
+- It would not appoint a custodian. The appointment is a separate owner act, even where the owner is the
+  custodian.
+- It would not change D-12, the one-look rule, the embargo, the three blocks, any threshold, or any verdict.
+- It would not validate the `26 bp` proxy, resolve `C-4` or `C-6`, or affect `T-4`.
