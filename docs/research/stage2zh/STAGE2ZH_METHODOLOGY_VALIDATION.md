@@ -37,3 +37,13 @@ budget is a frozen eligibility rule of the specification (`CANDIDATE_D_SPEC.md` 
 **[R]** The cluster unit is not a free choice under D-09 option C: the registered dependence model must be the
 model whose design effect the pre-registration cites, and the recorded diagnostics were computed on this unit.
 Using a different episode at Gate 2 would silently change the quantity `DE` refers to.
+
+**Leakage test.** An episode closes at the first 4 h bucket in which the budget fails, so no bucket belongs to
+two episodes and no episode spans a failure. Within the canonical population, accepted signals are ≥24 h apart
+(`CANDIDATE_D_CENSUS_REPORT.md` §5), which is six 4 h buckets — so two accepted trades cannot sit in adjacent
+episodes without a failed bucket between them.
+
+**Artificial-independence test.** The episode unit does not claim independence. The sufficiency framework says so
+explicitly — "non-overlap is a construction rule; it is not an inferential adjustment"
+(`STATISTICAL_SUFFICIENCY_FRAMEWORK.md` §3.4, item 5) — and D-09 requires the block bootstrap as a second
+treatment precisely because one cluster definition cannot carry the inference alone.
