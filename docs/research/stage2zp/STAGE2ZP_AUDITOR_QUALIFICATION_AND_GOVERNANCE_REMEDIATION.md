@@ -343,3 +343,30 @@ already satisfied by this assessment being committed.
 
 ---
 
+## 5. Proposed H1 design-stage boundary
+
+**[D]** This section proposes the **scope boundary** for a future design stage ("H1"). It defines what the stage may
+and may not do, and what must be complete before Gate 2 registration. **[F] It proposes no actual trading
+hypothesis** — no mechanism, no signal, no rule. **[F]** Gate 2 remains **NOT AUTHORIZED**; this is preparation only.
+
+### 5.1 What counts as a genuinely new mechanism
+
+- **[D]** A new mechanism must differ in its **economic source of return**, not merely in parameter values, symbol,
+  timeframe, or naming. **[F]** §7.3 requirement 2 forbids the auditor from having chosen the candidate; the same
+  logic requires the candidate to be genuinely distinct from the closed ones.
+- **[D]** A candidate that reduces to candidate B's or D's logic under any parameter setting is **the same candidate**
+  and stays closed.
+- **[F]** Both closed candidates failed at v2.0.0 on `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`
+  (`B`=24 opps, `D`=34, vs. required 150; frozen Stage 2J rule `N<150` or `M_all>0.20`).
+
+### 5.2 Preventing reuse of failed-candidate evidence as new evidence
+
+- **[D]** The new hypothesis may not cite B's or D's censuses, backtests, or opportunity counts as evidence of
+  feasibility. **[F]** Those artifacts remain valid only as *historical records of a closed candidate*.
+- **[D]** Any census for the new hypothesis must be a fresh, separately authorized run under the §8.2.1 reserved
+  discipline, with its own manifest, and may not pool data windows with the closed candidates.
+- **[F]** The frozen feasibility thresholds (`N_ind`, `N_obs`, `required_opportunities`, the `N<150` /
+  `M_all>0.20` rule) remain **binding**; H1 may not relax or reinterpret them.
+
+---
+
