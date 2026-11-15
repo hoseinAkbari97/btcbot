@@ -219,4 +219,45 @@ disclosure/signature · **?** unverified or unknown.
 engagement. **[D]** M1–M3 and M5 are marked **~** for all candidates because they are satisfied *prima facie* (no
 prior involvement with this private project) but must be confirmed in writing.
 
+### 4.2 Mandatory qualification failures
+
+**[F]** No candidate shows a **hard** mandatory failure on the public record: none is the owner-custodian or the
+implementer (M1), and none has any disclosed prior involvement (M2, M3). **[D]** Therefore no candidate is eliminated
+on mandatory grounds yet; all remain **unverified**, not **failed**.
+
+### 4.3 Qualifications supported by evidence
+
+- **[V]** A, B, C: published, peer-reviewed work directly on backtest overfitting, multiple-testing control, and
+  out-of-sample inference (M8 strongly supported).
+- **[V]** D, E: public service scope covering independent validation and audit-ready reporting (M6, M9 plausible).
+
+### 4.4 Unverified claims requiring direct confirmation
+
+- **[U]** Every candidate's availability, fee basis, and willingness to work from frozen artifacts (M5, M6).
+- **[U]** D and E: the **identity and credentials of the specific individual** who would perform the audit.
+- **[U]** A, B, C: whether an academic would accept a scoped external-specialist-review engagement under §7.7.
+- **[U]** All: time commitment, turnaround, and whether they can sign the §7.3.6 attestation and the §11.3 disclosure.
+
+### 4.5 Potential conflicts requiring disclosure
+
+- **[D]** A: institutional employment (ADIA) and prior firm ownership may constrain capacity or create perceived
+  conflicts.
+- **[D]** D: the firm also builds models; an implementation/audit separation must be scoped so the auditor did not
+  build the artifact under audit.
+- **[D]** B, C, E: no conflict disclosed, but none can be excluded without the §11.3 disclosure.
+
+### 4.6 Recommendation
+
+**[D]** On the current record, **no candidate is sufficiently supported to be declared qualified, independent,
+available, or appointed**. Two defensible paths, in order of preference:
+
+1. **Preferred:** engage a **named individual with published multiple-testing expertise** (A, B, or C) as a scoped
+   **external specialist reviewer** under §7.7, paired with the project's own reproducible synthetic tests. This
+   maximizes M8 (the project's hardest statistical requirement) while keeping the engagement small.
+2. **Alternative:** engage a **boutique independent-validation practice** (D or E) for a full §7.4-scope audit with
+   audit-ready deliverables, subject to confirming the individual auditor's identity and statistical depth.
+
+**[F]** Whichever path is chosen, the first act is the owner's, not the agent's: the owner must send the §5 outreach
+package and obtain a signed disclosure. **[D]** Until then, `AN-1` remains **outstanding**.
+
 ---
