@@ -71,3 +71,98 @@ disclosure, finding classification, re-audit, and the Stage 2L precedent).
 artifacts; this stage freezes nothing and changes nothing frozen. One report is the whole deliverable set.
 
 ---
+
+## 2. Independent auditor qualification specification
+
+**[F]** Protocol §5.2 input #15 requires the registration document to contain "the independent auditor and the scope
+of Gate 4". **[F]** Protocol §7.3 fixes six independence requirements; §7.4 fixes the audit scope; §11.3 fixes the
+conflict-of-interest disclosure; §7.7 fixes the minimum defensible standard when no external professional auditor is
+available. **[D]** The specification below restates those requirements as qualification criteria. It is a
+specification, **not** an appointment, and it names no person.
+
+### 2.1 Independence from the owner-custodian — **mandatory**
+
+- **[F]** The auditor must **not** be the owner-custodian. `A-2` makes the custodian the only party permitted
+  reserved contact, and §11.1 requires the audit to be performed by **someone other than** the custodian where a role
+  overlap exists. **[D]** Hossein Akbari is the owner-custodian and **cannot** serve as this auditor.
+- **[F]** The auditor must also not be the analyst/implementer (§11.1: "An implementer cannot audit their own work").
+- **[D]** Independence is a property of the **relationship**, not of the tool or the conversation (§11.7): a different
+  model, a new conversation, or a separate agent does not by itself create independence.
+
+### 2.2 No prior involvement in the work under review — **mandatory**
+
+**[F]** §7.3 requires: (1) no prior implementation involvement (did not design, write, review, or report on the
+implementation); (2) no decision involvement (did not choose the candidate, threshold, population, or verdict rule).
+**[D]** For the Stage 2ZP path, the auditor must have had no part in any prior candidate design, census, or verdict —
+including candidates B and D.
+
+### 2.3 Relevant quantitative research and statistical expertise — **required, per §7.7**
+
+**[F]** §7.7's alternatives differ in what they can establish: an external professional auditor provides arms-length
+review and domain expertise; a separate reviewer may lack domain expertise; a second agent may share training biases.
+**[D]** The auditor must be able to assess: cluster-robust and block-bootstrap dependence handling (D-09), the
+sample-sufficiency chain (`N_ind`, `N_obs`, `required_opportunities`), the design-effect and `p_exec` assumptions
+under `E-2`, cost arithmetic (`cost_R`, the `26 bp` proxy, the `$2,500` cap geometry), and the verdict logic.
+
+### 2.4 Ability to inspect frozen artifacts and governance evidence — **required**
+
+**[F]** §7.2 and §7.4 require access to the frozen specification and config, source code and version hashes, the test
+suite and synthetic fixtures, the data manifest and alignment report, recorded outputs and logs, a
+specification-to-code trace, and the governance records. **[F]** §11.2 lists the auditor's inputs and permits
+synthetic tests and inspection of code and aggregate outputs. **[D]** The auditor must be able to work from the
+**frozen artifacts**, not from an implementer's undocumented assumptions (§7.3 requirement 4).
+
+### 2.5 Confidentiality and data-access obligations — **mandatory**
+
+**[F]** §11.2: "The auditor may not access validation or OOS data unless the audit scope explicitly requires it and
+the owner authorizes it." **[D]** The auditor's default posture is **no reserved-data access**; any exception is a
+written, owner-authorized, scope-limited act under protocol §8.2.1. **[D]** The auditor must keep confidential any
+non-public artifact reviewed and must not disclose reserved content beyond what the authorized scope permits.
+
+### 2.6 Conflict-of-interest disclosure — **mandatory**
+
+**[F]** §11.3 requires disclosure of: any prior involvement in design, implementation, or reporting; any financial or
+employment interest in the outcome; any relationship with the implementer or owner that could affect judgment; and
+the scope and limits of the auditor's expertise. **[F]** §7.3 requirement 6 requires a signed statement of
+independence listing the evidence reviewed. **[D]** The disclosure is made before the audit and updated if it
+changes.
+
+### 2.7 Required audit deliverables and evidence standards — **mandatory**
+
+**[F]** §7.4 fixes the audit scope (traceability, synthetic testing, temporal correctness, data alignment, cost and
+capital arithmetic, non-overlap, diagnostics, verdict logic, reproducibility, provenance). **[F]** §7.5 and §11.5
+fix the finding scale (`CRITICAL`/`MAJOR`/`MINOR`/`OBSERVATION`), each finding carrying an ID, location, the
+requirement it violates, explanation, impact, proof status, historical-conclusion impact, evidence, and a recommended
+resolution. **[F]** §11.5: CRITICAL and MAJOR findings **block the next gate**; MINOR findings require owner sign-off
+and a remediation plan; OBSERVATION items are recorded for a future version. **[F]** §11.6: the audit report, hashes,
+and owner decisions are versioned and never deleted, and the audit record is part of the stage's freeze manifest.
+**[F]** §11.7 requires the report to state who performed the audit, their prior involvement, what they reviewed, what
+they could and could not verify, and what independence limitations remain.
+
+### 2.8 Explicit prohibition on unauthorized reserved-data access — **mandatory**
+
+**[F]** Under §8.2.1, the analyst's reserved contact is zero and the custodian is the only party permitted reserved
+contact, for declared digest runs only. **[D]** The auditor is **not** a second custodian: the auditor may inspect
+frozen artifacts, code, logs, and aggregate outputs, but may **not** stream, hash, parse, or decode reserved bytes
+unless a separate owner authorization explicitly widens the audit scope under §11.2. **[D]** Any reserved contact by
+the auditor outside such an authorization is an **incident** under the custodian instrument §8, handled by stop,
+record-from-evidence, disclosure, and no repair of the record.
+
+### 2.9 Qualification summary
+
+| # | criterion | class | source |
+|---|---|---|---|
+| 1 | not the owner-custodian; not the analyst/implementer | mandatory | §11.1, `A-2` |
+| 2 | no prior implementation or decision involvement | mandatory | §7.3 |
+| 3 | quantitative research / statistical expertise | required | §7.7 |
+| 4 | access to frozen artifacts and governance evidence | required | §7.2, §7.4, §11.2 |
+| 5 | confidentiality; default no reserved-data access | mandatory | §11.2, §8.2.1 |
+| 6 | signed conflict-of-interest / independence disclosure | mandatory | §7.3, §11.3 |
+| 7 | deliverables in the §7.5/§11.5 finding format; §11.6 retention | mandatory | §7.5, §11.5, §11.6 |
+| 8 | no unauthorized reserved-data access | mandatory | §8.2.1, §11.2 |
+
+**[F] No person, qualification, consent, or appointment is supplied here.** The specification is a standard, not a
+nomination.
+
+---
+
