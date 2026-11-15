@@ -368,5 +368,38 @@ hypothesis** — no mechanism, no signal, no rule. **[F]** Gate 2 remains **NOT 
 - **[F]** The frozen feasibility thresholds (`N_ind`, `N_obs`, `required_opportunities`, the `N<150` /
   `M_all>0.20` rule) remain **binding**; H1 may not relax or reinterpret them.
 
+### 5.3 Documenting a new hypothesis before any census or backtest
+
+- **[D]** H1 must produce a **pre-registration hypothesis document** before any data contact, stating: the economic
+  rationale, the mechanism, the entry/exit and holding rules, the population, the expected opportunity count and its
+  basis, and the falsification criterion. **[F]** §5.2 inputs #1 (hypothesis) and #5 (exit/holding policy) are exactly
+  the two currently-open inputs, so both must be fully specified here.
+- **[F]** The document must name the frozen feasibility thresholds it will be judged against and the verdict rule it
+  accepts in advance.
+
+### 5.4 Exit/holding policy specification
+
+- **[F]** §5.2 input #5 requires an explicit exit/holding policy. **[D]** H1 must state holding horizon, exit trigger,
+  stop/take rules (if any), non-overlap definition, and how the policy is fixed before the census. **[F]** The policy
+  is frozen before validation and may not be tuned on validation or OOS data.
+
+### 5.5 Binding economic objective and thresholds
+
+- **[F]** The economic objective and the seven recorded owner decisions (`2ZD-0`=C, `2ZD-1`=R-b, `2ZD-2`=C-N,
+  `2ZD-3`=S-1, `2ZD-4`=the seven values with qualifications, `2ZD-5`=E-2, `Q-1`=retain `26 bp` as an unmeasured
+  Binance proxy) remain in force and are **not reopened** by H1.
+- **[F]** Cost arithmetic (`cost_R`, the `26 bp` proxy, the `$2,500` cap geometry) and the `E-2` design-effect and
+  `p_exec` assumptions are binding inputs, not tunable knobs.
+
+### 5.6 What must be complete before Gate 2 registration
+
+- **[D]** A pre-registration hypothesis document (mechanism, exit/holding policy, population, expected opportunities,
+  falsification criterion) — inputs #1 and #5.
+- **[D]** A named independent auditor and the Gate 4 scope — input #15 (see §2 and §3; the `D1` tension must be
+  clarified first).
+- **[F]** Resolution of the remaining §5.2 inputs and the live blockers (`C-4`/`C-6`, `T-5`, `R-08`=`P`, `R-15`=`B`).
+- **[D]** Only when all sixteen inputs are satisfied may the owner authorize Gate 2. **[F] H1 itself is not
+  authorized by this stage.**
+
 ---
 
