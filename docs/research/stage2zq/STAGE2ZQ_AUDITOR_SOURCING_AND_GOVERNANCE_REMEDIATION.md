@@ -132,4 +132,20 @@ has had any involvement in this private project; the mandatory step is the candi
 `https://people.duke.edu/~charvey/Research/Published_Papers/P120_Backtesting.PDF` ·
 `https://people.duke.edu/~charvey/backtesting/` · `https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2345489`
 
+### 3.3 Candidate C — Dr. David H. Bailey
+
+| field | value |
+|---|---|
+| public profile | mathematician and computer scientist; Senior Scientist, Lawrence Berkeley National Laboratory (retired); formerly NASA Ames **[V]** |
+| qualifications | PhD in mathematics (Stanford, 1976); B.S. mathematics (BYU); Sidney Fernbach, Chauvenet, Gordon Bell, and Levi L. Conant awards **[V]** |
+| relevant work | co-author of "Pseudo-mathematics and financial charlatanism: the effects of backtest overfitting on out-of-sample performance" (Notices of the AMS, 2014) and "The Probability of Backtest Overfitting"; maintains the Mathematical Investor blog **[V]** |
+| quantitative expertise | statistical overfitting, false-discovery risk, and the misuse of mathematics in finance; numerical analysis and high-precision computation **[V]** |
+| independence from this project | none — no prior involvement in this private project **[D]** |
+| potential conflicts | retired, so capacity may be favourable; no current commercial quant role disclosed **[V]** |
+| availability | **[OPEN]** — personal site was unreachable (HTTP 503) at check time; no service offering confirmed |
+| mandatory-criteria fit | expertise M-statistical: strong on overfitting/false discovery; independence M1–M3: satisfied pending disclosure; COI M4: appears low but requires disclosure; availability: unknown |
+
+**Sources:** `https://en.wikipedia.org/wiki/David_H._Bailey_(mathematician)` · `https://www.davidhbailey.com/`
+(unreachable this session) · `https://www.mathinvestor.org/` · DOI `10.1090/noti1105`
+
 ---
