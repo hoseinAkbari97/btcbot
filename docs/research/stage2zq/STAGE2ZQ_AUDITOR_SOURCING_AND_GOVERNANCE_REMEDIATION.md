@@ -342,4 +342,36 @@ statement of what could not be verified.
 >
 > **Name:** `______________________`  **Date:** `______________`
 
+### 5.4 Qualification and independence declaration (draft)
+
+> I, `______________________`, declare that, to the best of my knowledge:
+>
+> - I am **not** the owner or the data custodian of this programme, and I am **not** the analyst/implementer.
+> - I had **no prior involvement** in designing, coding, reviewing, or reporting the artifacts under review.
+> - I had **no part** in choosing the candidate, thresholds, population, or verdict rule.
+> - I have **no** financial, employment, or personal interest in the outcome, and no undisclosed conflict.
+> - I will work from the **frozen artifacts**, not from the implementer's undocumented assumptions.
+> - I can inspect the specification, code, tests, logs, and outputs, and can run synthetic tests.
+> - I will keep non-public artifacts confidential and will **not** access reserved validation or out-of-sample data
+>   without written owner authorization.
+> - My relevant expertise is: `______________________`.
+> - Evidence I reviewed: `______________________`.
+>
+> **Signature:** `______________________`  **Date:** `______________`
+
+### 5.5 Scope and compensation discussion outline (draft)
+
+**[D]** This outline frames the conversation; it commits no budget and promises no payment.
+
+- **Scope:** which artifacts are in scope; whether the review is a full §7.4 audit or a §7.7 scoped specialist review.
+- **Effort:** estimated days, milestones, and turnaround.
+- **Deliverables:** the written report, its finding format, and the hashes to be recorded.
+- **Access:** what will be shared, and the explicit reserved-data prohibition.
+- **Confidentiality:** NDA terms and data-handling.
+- **Independence:** the signed declaration of §5.4 before work begins.
+- **Compensation:** **[OPEN]** — to be agreed; no amount is stated or promised here.
+- **Termination:** how either side may end the engagement, and how the record is preserved.
+
+**[F]** All of §5 is **DRAFT — NOT SENT**. No message has been transmitted and no candidate has been contacted.
+
 ---
