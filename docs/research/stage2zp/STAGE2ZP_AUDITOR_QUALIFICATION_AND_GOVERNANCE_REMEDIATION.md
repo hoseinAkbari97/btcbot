@@ -166,3 +166,25 @@ nomination.
 
 ---
 
+## 3. Draft appointment instrument — **DRAFT — NOT APPOINTED**
+
+> **DRAFT — NOT APPOINTED.** This is an unexecuted template. Its existence appoints no one, grants no access, and
+> creates no obligation. Every field is blank. It is modeled on the custodian appointment instrument
+> (`stage2zi/STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md`) but is not that instrument and does not amend it.
+
+### 3.1 Parties
+
+- **Owner-custodian:** Hossein Akbari (recorded, `stage2zn/STAGE2ZN_CUSTODIAN_APPOINTMENT_RECORD.md`).
+- **Independent auditor (candidate):** `______________________` — name, professional affiliation, and contact left
+  **blank**.
+- **Role:** independent Gate 4 auditor under protocol §7 and §11.
+
+### 3.2 Recitals
+
+- **[F]** Protocol §5.2 input #15 requires the independent auditor and the Gate 4 scope to be named in the Gate 2
+  registration document.
+- **[F]** Protocol §7.3 and §11.1 require the auditor to be independent of the owner-custodian and the implementer.
+- **[D]** The owner-custodian cannot serve as auditor; the candidate named above must satisfy §2 in full.
+
+---
+
