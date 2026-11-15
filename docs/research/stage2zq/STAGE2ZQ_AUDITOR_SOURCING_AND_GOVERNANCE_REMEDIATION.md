@@ -115,4 +115,21 @@ has had any involvement in this private project; the mandatory step is the candi
 · `https://www.adialab.ae/bios/professor-marcos-lopez-de-prado` · `https://orcid.org/0000-0002-4107-3797` ·
 `https://www.risk.net/author/marcos-lopez-de-prado`
 
+### 3.2 Candidate B — Prof. Campbell R. Harvey
+
+| field | value |
+|---|---|
+| public profile | Professor of Finance, Duke University Fuqua School of Business; Research Associate, NBER **[V]** |
+| qualifications | PhD; long-standing empirical-asset-pricing and econometrics academic **[V]** |
+| relevant work | co-author of "Backtesting" (Journal of Portfolio Management), a multiple-testing framework that computes the "haircut" Sharpe ratio and multiple-testing-adjusted return hurdles; author of "…and the Cross-Section of Expected Returns" **[V]** |
+| quantitative expertise | multiple-testing control, false-discovery control, and factor/anomaly inference — directly applicable to the project's `N<150` / `M_all>0.20` feasibility logic **[V]** |
+| independence from this project | none — no prior involvement in this private project **[D]** |
+| potential conflicts | full-time academic and editorial roles; consulting/availability unknown **[U]** |
+| availability | **[OPEN]** — public page lists contact details but no independent-review service offering |
+| mandatory-criteria fit | expertise M-statistical: strong; independence M1–M3: satisfied pending disclosure; COI M4: requires disclosure; availability: unknown |
+
+**Sources:** `https://people.duke.edu/~charvey/` ·
+`https://people.duke.edu/~charvey/Research/Published_Papers/P120_Backtesting.PDF` ·
+`https://people.duke.edu/~charvey/backtesting/` · `https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2345489`
+
 ---
