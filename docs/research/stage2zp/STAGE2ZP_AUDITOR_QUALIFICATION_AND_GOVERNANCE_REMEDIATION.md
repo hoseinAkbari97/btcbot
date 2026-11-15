@@ -403,3 +403,33 @@ hypothesis** — no mechanism, no signal, no rule. **[F]** Gate 2 remains **NOT 
 
 ---
 
+## 6. Updated blocker matrix
+
+**[D]** Status of each gate and live dependency as of this stage. **[F]** No status is changed by Stage 2ZP; the
+matrix is a restatement with the auditor items made explicit.
+
+| gate / item | status | blocking cause | owner act needed |
+|---|---|---|---|
+| Gate 0 | **NOT PASSED** | prior-stage gap | yes |
+| Gate 1 | **PASSED (research leg only)** | — | no |
+| Gate 2 | **NOT AUTHORIZED / unregistrable** | input #1 (`C-N` hypothesis withheld), input #5 (exit/holding), input #15 (auditor not appointed) | yes |
+| Gate 4 | not reached | `AN-1` auditor outstanding | yes |
+| `AN-1` independent auditor | **outstanding** | no candidate identified; §2/§3 prepared only | yes |
+| `C-N` (hypothesis) | withheld | owner decision `2ZD-2` | yes |
+| exit/holding policy (input #5) | unresolved | not yet specified | yes |
+| `C-4` / `C-6` | unresolved | prior-stage open items | yes |
+| `T-4` | **deferred** | — | later |
+| `T-5` | **open** | — | yes |
+| `R-08` | `P` | — | yes |
+| `R-15` | `B` | — | yes |
+| candidate B | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** | 24 opps vs. 150 | closed permanently |
+| candidate D | **FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES** | 34 opps vs. 150 | closed permanently |
+| protocol | **2.0.0 adopted** (effective 2026-11-15 UTC) | — | no |
+| custodian | **Hossein Akbari (owner-custodian)** | — | no |
+| real capital | **not authorized** | — | yes |
+
+**[D]** Stage 2ZP changes no cell. Its only effect is to convert the abstract `AN-1` dependency into a prepared
+specification (§2) and an unexecuted draft instrument (§3).
+
+---
+
