@@ -323,4 +323,23 @@ in writing.
 **Deliverables and evidence standard.** A written audit report, versioned hashes of the artifacts reviewed, and a clear
 statement of what could not be verified.
 
+### 5.3 Conflict-of-interest questionnaire (draft)
+
+> Answer each item; "none" is an acceptable answer. Attach detail where "yes".
+>
+> 1. Have you ever designed, implemented, reviewed, or reported on this programme or its artifacts? `______`
+> 2. Did you take part in choosing any candidate, threshold, population, or verdict rule? `______`
+> 3. Do you hold any financial, employment, or ownership interest that could be affected by the outcome? `______`
+> 4. Do you have any personal or professional relationship with the owner or the implementer that could affect your
+>    judgment? `______`
+> 5. Have you provided paid or unpaid services to the owner or the implementer in the last three years? `______`
+> 6. Do you have any downstream commercial interest in the result (e.g., a product or fund that would benefit)?
+>    `______`
+> 7. What is the scope and limit of your statistical / quantitative expertise? `______`
+> 8. Are you able to keep non-public artifacts confidential and to avoid reserved-data access without written
+>    authorization? `______`
+> 9. Any other matter a reasonable reader would want disclosed? `______`
+>
+> **Name:** `______________________`  **Date:** `______________`
+
 ---
