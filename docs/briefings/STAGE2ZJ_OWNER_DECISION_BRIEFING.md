@@ -185,3 +185,26 @@ Input #1 is the one that prevents a registration from existing **at all**. Input
 hypothesis were named, because a registration without an exit rule cannot be complete under §5.3. Calling the exit
 policy "the only thing blocking Gate 2" while `C-N` stands would invert the obstruction. **Neither is closable here:**
 #1 needs a candidate decision and #5 needs a registered rule, and both are owner acts.
+
+## 7. Adoptable now, versus open that must stay open
+
+**Decisions the owner can make now (owner acts, document production):**
+
+1. **Adopt the amendment** — dated, hash-named, acknowledging `V-1`, `Y-1`, and `Y-2`.
+2. **Ratify the seven selections** — in the decision instrument, or in a separate dated record naming it.
+3. **Appoint the custodian** — signing the appointment instrument; the recommendation is not the act.
+
+**Decisions that must remain open:**
+
+- **The hypothesis.** `C-N` withholds it by decision, and no third candidate may be invented. Gate 2 stays
+  **unregistrable** until a candidate is named, and even then it stays **unauthorized** until a dated opening exists.
+- **The exit and holding policy.** A rule that does not exist yet; required for any registration to be complete.
+- **`T-5`.** The `$250`/2.5% real-capital objective expression; fields blank.
+- **Whether `Y-1` and `Y-2` affect admissibility** of any Stage 2ZC-derived result — owner, informed by Gate 4.
+- **The `Q-1` citation question** — the packet never asked it (`X-4`); a later documentation stage could repair the
+  reference.
+- **How a custodian's digest is verified by anyone but the custodian** — no answer exists under `R-b`; the trust limit
+  is structural.
+
+**Nothing here is authorized by being listed.** Adopting all three instruments still leaves Gate 2 **NOT AUTHORIZED**
+and, under `C-N`, **unregistrable**; the blocker list changes shape rather than closing.
