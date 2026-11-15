@@ -49,3 +49,36 @@ by a manifest for the amended protocol text carrying SHA-256 hashes, byte counts
 **Two consequences stated plainly.** A statement that does not name the hash adopts nothing (addendum §14.1). And
 because §10.3 forbids editing a frozen artifact before adoption (finding `V-2`), the amended protocol **text** is not
 changed by this instrument: adoption has to authorize that text change as a separate step.
+
+## 2. The owner decision instrument — hash and the seven proposed selections
+
+**Instrument:** `docs/research/stage2zi/STAGE2ZI_OWNER_DECISION_INSTRUMENT.md`
+**SHA-256:** `c7f6eebf5fb6e58d04606ee3ceb1ef8b5619e2b22319483f30006e805a996232` (10082 bytes)
+**Status:** unsigned draft. Every owner field is blank; a filled proposal is **not** a decision.
+
+| # | decision | proposed value | practical consequence |
+|---:|---|---|---|
+| 1 | `2ZD-0` — path | **C** — resolve interpretation and decisions first | keeps work on governance, not data; authorizes no research |
+| 2 | `2ZD-1` — reserved-data reading | **R-b** — any byte contact is a read | analyst may not hash/stream reserved bytes; operative only after the amendment is adopted |
+| 3 | `2ZD-2` — primary candidate | **C-N** — neither B nor D selected | Gate 2 cannot be registered; both candidates stay failed and frozen |
+| 4 | `2ZD-3` — sizing rule | **S-1** — `R` shrinks when the `$2,500` cap binds | keeps every per-trade loss ≤ `1R` inside the cap; supports no frequency claim |
+| 5 | `2ZD-4` — dependence and custody | the seven values in the table below | fixes the dependence/embargo parameters; custody field is a recommendation, not an appointment |
+| 6 | `2ZD-5` — `σ`, `DE`, `p_exec` route | **E-2** — labelled pre-registered assumptions | no data access; the values stay assumptions with sensitivity ranges |
+| 7 | `Q-1` — cost basis | retain `26 bp` as an unmeasured, labelled Binance proxy | keeps a planning label, not a measurement; **not a packet field** (finding `X-4`) |
+
+**The seven `2ZD-4` values, with their required qualifications:**
+
+| # | field | proposed value | qualification that is part of the value |
+|---:|---|---|---|
+| 1 | episode definition | maximal contiguous 4 h `budget_ok` run containing the signal instant | mandated by the frozen eligibility rule; dependence adequacy **conditional** on an exit policy |
+| 2 | block length | 14 calendar days | **convention**, from Stage 6; not derived from the data or the MME |
+| 3 | resample count | 10,000 | a **comparability choice**, explicitly not a protocol mandate |
+| 4 | seed | `20240101` | a **reproducibility choice**; arbitrary by construction |
+| 5 | embargo | 90 calendar days at each boundary | **derived** from `540 × 4 h`; gives 91 development blocks, consumes 180 of 792 reserved days |
+| 6 | custodian | the human owner, under the logged custody procedure | a **recommendation**; appointment needs the separate instrument |
+| 7 | opening condition | after the Gate 2 freeze and the Gate 4 audit, at Gate 5 only, once, logged | consistent with §2.2 and §8.8 |
+
+**Two caveats the owner should hold.** Row 7 (`Q-1`) is a legitimate question the 2ZD packet never asked — it appears
+nowhere in `stage2zd/` — so selecting it is a confirmation of the `26 bp` label, not a packet decision. And `2ZD-4`
+is a **superset**: the packet asks for five fields; the proposal supplies seven, adding the resample count and seed
+(finding `X-5`).
