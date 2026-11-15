@@ -60,3 +60,58 @@ the manifest's own `self_hash` recomputes to its stored value `6a9694d6…69c84c
 
 **[F]** The protocol and addendum hashes match the values their own stages recorded; the packet and 2ZG hashes match
 the Stage 2ZI manifest's `governing_sources`.
+
+---
+
+## 4. Predecessor manifests, verified
+
+**[F]** Each predecessor manifest's self-hash was recomputed under the same canonical procedure — SHA-256 over
+`json.dumps(obj, sort_keys=True, separators=(',',':'), ensure_ascii=False)` with the self-hash field removed:
+
+| manifest | stored self-hash | recomputed | result |
+|---|---|---|---|
+| `stage2zi/FREEZE_MANIFEST.json` | `6a9694d6…69c84c` | matches | **verifies** |
+| `stage2zh/FREEZE_MANIFEST.json` | `f3910ac7…09bd3e` | matches | **verifies** |
+| `stage2zg/FREEZE_MANIFEST.json` | `3d7830aa…5cf738a` | matches | **verifies** |
+| `stage2zd/FREEZE_MANIFEST.json` | `b902597e…dd9d58c` | matches | **verifies** |
+| `stage2zc/FREEZE_MANIFEST.json` | `1e161459…13925a2` | matches | **verifies** |
+| `stage2z/FREEZE_MANIFEST.json` | `cc29845e…367d45b` | matches | **verifies** |
+
+No predecessor artifact was modified by this stage.
+
+---
+
+## 5. The three acts, validated
+
+### 5.1 Owner decisions — validated as recorded
+
+**[F]** The seven selections in `STAGE2ZK_OWNER_DECISION_RECORD.md` §2 are identical, value for value, to the seven
+proposed selections in the Stage 2ZI owner decision instrument §3, and the `2ZD-4` values and qualifications in §3
+match the instrument's §4 table. **[D]** The owner's message is a valid object for those selections: it confirms the
+list presented immediately before it, and no other option set is named.
+
+**[F]** The record discloses the one formality limitation — the message names neither the instrument path nor its
+hash — and offers a cure, following the Stage 2ZA O-1 precedent. **[D]** The limitation does not change any decision,
+because the hash condition exists to prevent post-decision text substitution, and the instrument hash was
+independently re-verified (`c7f6eebf…a996232`).
+
+### 5.2 Protocol adoption — validated as pending
+
+**[F]** The amendment §8 requires seven elements, and the owner's message meets condition 6 (recorded verbatim) but
+not conditions 1, 3, 4, or 5. **[F]** The amendment's own text states that a statement which does not name the hash
+adopts nothing, and amendment §3 forbids the agent from assigning the effective date. **[D]** Requirements 4 and 5 —
+acknowledging `V-1`, and acknowledging `Y-1` and `Y-2` — are owner judgements that cannot be inferred from the
+message or from any context. Adoption is therefore correctly recorded as **pending**, and the protocol is correctly
+left unmodified.
+
+**[F]** The protocol file is byte-identical to its committed version (`be5a61bf…34c058`, 39850 bytes); §8.2 still
+contains the sentence the amendment would replace, and no §8.2.1 exists. **[F]** No versioned protocol artifact and
+no amended-protocol manifest were produced.
+
+### 5.3 Custodian appointment — validated as pending
+
+**[F]** The appointment instrument states that its §10 table is the act, and that selecting `2ZD-4`'s custody field is
+a recommendation. The owner's message names no custodian and states none of the table's fields. **[D]** The
+appointment is correctly recorded as **not made**. **[F]** Independently, the instrument is void while the amendment
+is unadopted, so no valid appointment could exist today.
+
