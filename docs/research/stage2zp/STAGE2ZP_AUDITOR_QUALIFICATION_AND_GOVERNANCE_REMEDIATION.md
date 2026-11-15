@@ -186,5 +186,28 @@ nomination.
 - **[F]** Protocol §7.3 and §11.1 require the auditor to be independent of the owner-custodian and the implementer.
 - **[D]** The owner-custodian cannot serve as auditor; the candidate named above must satisfy §2 in full.
 
+### 3.3 Independence declaration (auditor-signed, blank)
+
+The auditor declares, by signature below, that they satisfy every mandatory criterion in §2:
+
+- **[F]** no prior implementation involvement and no decision involvement in the work under review (§7.3);
+- **[F]** no financial, employment, or personal interest in the outcome (§7.3, §11.3);
+- **[F]** a signed statement of independence listing the evidence reviewed (§7.3 requirement 6);
+- **[D]** not the owner-custodian, not the implementer, and not an agent re-labeled to appear independent (§11.1, §11.7).
+
+**Signature:** `______________________`  **Date:** `______________`
+
+### 3.4 Scope and responsibilities
+
+- **[F]** Perform the Gate 4 audit against the §7.4 scope: specification-to-code trace, synthetic testing, temporal
+  correctness, data alignment, cost and capital arithmetic, non-overlap, diagnostics, verdict logic, reproducibility,
+  and provenance.
+- **[F]** Report findings in the §7.5/§11.5 format, each with ID, location, requirement violated, explanation, impact,
+  proof status, historical-conclusion impact, evidence, and recommended resolution.
+- **[F]** Classify findings; CRITICAL/MAJOR block the next gate; MINOR requires owner sign-off and a remediation plan;
+  OBSERVATION is recorded for a future version.
+- **[F]** State in the report who performed the audit, their prior involvement, what was reviewed, what could and could
+  not be verified, and what independence limitations remain (§11.7).
+
 ---
 
