@@ -312,5 +312,34 @@ owner-approved edit, and the pre-edit text stays recoverable in git history.
 **Owner authorization required?** **[D]** Yes — editing the adopted protocol's header is a protocol change; it
 requires explicit owner authorization and should be recorded as a versioned header correction, not a silent edit.
 
+### 4.3 `D3` — adoption record's incorporation-by-reference to an uncommitted prepared statement
+
+**Exact source text.**
+
+- **[F]** Adoption record §1: the owner's affirmation reads "…including all acknowledgements and qualifications in the
+  statement."
+- **[F]** Adoption record, *By reference*: "The affirmation incorporates, by the phrase *'including all
+  acknowledgements and qualifications in the statement'*, the prepared Statement 1 of Stage 2ZM/2ZL, whose
+  acknowledgements (`V-1`, `V-2`, the manifest requirement, `Y-1`, `Y-2`) are set out in §3."
+- **[F]** No `docs/research/stage2zl/` or `docs/research/stage2zm/` directory exists in the repository, and no commit
+  message references Stage 2ZL or Stage 2ZM.
+
+**Impact.** **[D]** The adoption record asserts that the affirmation incorporates a "prepared Statement 1 of Stage
+2ZM/2ZL", but that statement is **not in the repository**. **[F]** The adoption record itself partially mitigates this:
+it says the acknowledgements "are set out in §3", so the *substance* of the incorporated items is reproduced inside
+the record. **[D]** The remaining gap is **provenance**: a future auditor cannot independently verify that §3's
+reproduction matches the original prepared statement, because the original is absent.
+
+**Smallest defensible remediation.** **[D]** Do **not** fabricate or retro-add a Stage 2ZL/2ZM document. Two
+defensible options, in order of least change: (a) add a one-line **provenance note** to the adoption record (owner
+act) stating that the referenced Stage 2ZL/2ZM statement was a session-local preparation with no committed artifact,
+and that §3 of the record is the authoritative transcription; or (b) leave the record as-is and record the gap as an
+**`OBSERVATION`** for the future auditor to weigh under §11.4 (historical evidence unavailable ⇒ cannot be fully
+reproduced). **[D]** Option (a) is the smallest change that restores auditability; option (b) is the smallest change
+that changes nothing.
+
+**Owner authorization required?** **[D]** Yes for (a) — it edits a committed record; **(b) requires no change** and is
+already satisfied by this assessment being committed.
+
 ---
 
