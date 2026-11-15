@@ -118,3 +118,31 @@ and the development block under the ordinary permissions any analyst has. Nothin
 **One structural trust limit, stated honestly:** under `R-b` the custodian's digest is checkable by the custodian and
 **not** by the analyst, whose only check is the internal consistency of the log and manifest. The Gate 4 audit must
 record this, not assume it away.
+
+## 4. The two deviations — `Y-1` and `Y-2`, in plain words
+
+Both are **pre-amendment deviations**: acts that were permitted under the reading then in force, but that the
+stricter `R-b` reading classifies as reserved contact. Neither is grandfathered, neither is retroactively legitimised,
+and neither is erased.
+
+**`Y-1` — the four boundary inspections.** In Stage 2ZC, four boundary records were inspected — one per dataset file,
+four files. What was inspected was the **`open_time` string only**; **zero payloads were decoded**, and the access was
+disclosed and deliberate. Under `R-b`, reading even that timestamp field is reserved contact. So the analyst's
+reserved-contact count for this programme is **not zero** on a strict accounting. The deviation is not that the acts
+were hidden — they were disclosed at the time — but that they were performed under a reading the owner has since
+declined to adopt. What it does **not** imply: that any validation or OOS *value, price, return, or outcome* was seen.
+What stays **unresolved**: whether those four timestamps fell strictly inside a reserved interval or exactly on its
+boundary — the position cannot be determined without the contact `R-b` forbids, and a reader should not assume the
+favourable case.
+
+**`Y-2` — the full-file digests.** Stage 2ZC also computed SHA-256 over **every byte of every dataset file**, including
+reserved bytes, and recorded those digests as each file's identity. Under `R-b`, streaming a file whose bytes include
+a reserved interval is reserved contact **even though no byte was interpreted**. The consequence differs in kind from
+`Y-1`: the four inspections produced a timestamp fact, while these digests produced **no content at all**. Their
+*computational* value is untouched — they remain valid as file identity — while their *governance* status is a
+pre-amendment deviation. After the amendment takes effect, **no analyst may recompute those digests**; verification of
+an existing full-file digest becomes a custodian task.
+
+**The common point.** Both deviations change the *status of an access*, not the *quality of a computation*. Whether
+they affect the admissibility of any Stage 2ZC-derived result is a question this briefing **cannot answer**, because
+the only arguments either way would need exactly the access `R-b` forbids. It is left to the owner and to Gate 4.
