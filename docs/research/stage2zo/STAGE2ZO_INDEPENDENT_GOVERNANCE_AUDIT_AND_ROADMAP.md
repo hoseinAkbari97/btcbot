@@ -247,3 +247,46 @@ named** — §2.5), and #16 version and hashes (produced last).
 | `Y-1`/`Y-2` admissibility | question | **[OPEN]** — owner, informed by Gate 4 | no | yes |
 
 ---
+
+## 4. Comparison of paths A–D
+
+| dimension | **A — stop and preserve** | **B — new hypothesis via a design stage** | **C — revisit the existing family** | **D — resolve governance/operational blockers first** |
+|---|---|---|---|---|
+| **what it accomplishes** | freezes the record; ends spend; preserves every artifact and verdict | could satisfy input **#1** with a genuinely new, falsifiable mechanism; the only route that can make a registration exist | would re-open B or D without a new mechanism | closes the cheap administrative gaps (#15 auditor, header, ambiguities) |
+| **what it cannot do** | produce a registrable hypothesis; reach Gate 2 | invent the mechanism for free — designing one is not evidence one exists; cannot relax thresholds or reuse B/D evidence | cannot re-register a `FEASIBILITY FAIL` candidate without new evidence and an owner reversal — barred by `C-N`, D-11, §10.3 | cannot supply #1 (a hypothesis) or #5 (a rule); governance work cannot invent either |
+| **required owner authorization** | none (it is the default) | **yes** — a new stage authorization (§2.3 "authorize a new hypothesis"; Gate 0/§3.5 limits stand) | **yes** — a formal reversal of `C-N` and a re-opened verdict, which the record does not support | **yes** for the auditor (a person is an owner act); a minor-version clarification if desired |
+| **data-access implications** | none | design needs none; a later Gate 3 feasibility check would need a **development-block** census under separate authorization | would need a new census on development data — i.e. re-running failed evidence | none |
+| **statistical / economic risk** | none — but the programme stalls with two failed candidates | a new hypothesis may also fail feasibility; risk of data-mined hypotheses; must respect D-11 (one primary) | high: relabeling a failed candidate would manufacture a result from evidence already known to fail | low; but it produces no hypothesis and so cannot, alone, reach Gate 2 |
+| **can it reach a valid Gate 2 registration?** | **no** — by construction | **yes, in principle** — hypothesis + exit policy + declared dates + custodian digests + named auditor = a complete registration | **no** — not on the current record | **no** — it is a prerequisite for B, not a substitute |
+
+**[D] The decisive comparison.** Only **B** can satisfy input #1 without violating `C-N`, D-11, or a frozen verdict.
+**D** is necessary but insufficient; **A** is the honest fallback; **C** is unavailable.
+
+---
+
+## 5. Recommended path and rationale
+
+**[REC] Path B**, sequenced **behind** the administrative closures of **D**, and **only** as a future
+owner-authorized stage — **not started here**.
+
+**Why B is superior.**
+
+1. **It is the only route that can close the primary blocker.** Input #1 is a hypothesis; `C-N` withholds it by
+   decision, and no agent may invent one. A separately authorized research-design stage is the sole mechanism the
+   protocol provides (§2.3) that can name a genuinely new mechanism without breaching D-11 or a frozen verdict.
+2. **It reuses no failed evidence and relaxes no threshold.** A new family is a new object; B and D stay frozen and
+   failed. This is the difference between B and C.
+3. **It costs no restricted data at the design step.** The hypothesis and its exit policy can be written with zero
+   reserved contact; the custodian's first digest run comes later, at registration, and only if the owner proceeds.
+
+**Why not A, C, or D alone.** **A** abandons the direction while the governance machinery is intact and the marginal
+cost of one more design attempt is low; it is the correct terminal choice **only** if the owner declines to fund a
+new hypothesis. **C** is barred: the two candidates failed on a frozen rule, and re-registering one would reuse
+failed evidence and/or relax a threshold — both prohibited. **D** alone cannot close #1 or #5; it is B's mandatory
+precursor, not its replacement.
+
+**The condition stated plainly.** If the owner will not authorize a new hypothesis, the honest recommendation is
+**A — stop and preserve** — not a relabeled candidate. Either way, **Gate 2 remains NOT AUTHORIZED and
+unregistrable** at the end of this stage.
+
+---
