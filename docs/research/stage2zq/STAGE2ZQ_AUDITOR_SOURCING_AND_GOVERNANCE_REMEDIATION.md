@@ -148,4 +148,19 @@ has had any involvement in this private project; the mandatory step is the candi
 **Sources:** `https://en.wikipedia.org/wiki/David_H._Bailey_(mathematician)` · `https://www.davidhbailey.com/`
 (unreachable this session) · `https://www.mathinvestor.org/` · DOI `10.1090/noti1105`
 
+### 3.4 Candidate D — QuantDesigned (independent quant finance consultancy)
+
+| field | value |
+|---|---|
+| public profile | "Quants on Demand for Financial Markets"; independent quantitative finance consultancy, APAC-based, works globally and remotely **[V]** |
+| qualifications | "Senior-led. Vendor-neutral. Implementation-focused."; states senior specialist delivery **[S]** |
+| relevant service scope | Quant & Finance covers "Pricing, risk, models, **validation** and alpha research"; Additional Services includes "Independent validation, due diligence and candidate vetting"; explicitly offers a "robust backtesting engine that controls for overfitting and produces reliable out-of-sample performance metrics" **[V]** |
+| independence | states "no downstream implementation dependency, no introducer fees, and no reseller relationships that would create a conflict of interest"; all engagements under NDA **[V]** |
+| potential conflicts | none disclosed; the same firm also builds models, so an implementation-audit separation would need to be scoped explicitly **[D]** |
+| availability | **[OPEN]** — offers engagements by enquiry; no named principal retrieved this session |
+| mandatory-criteria fit | expertise: relevant validation service; independence: states no downstream COI; **individual auditor identity and credentials [U]**; deliverables format would need to be mapped to §7.5/§11.5 |
+
+**Sources:** `https://www.quantdesigned.com/` · `https://www.quantdesigned.com/additional-services.html` ·
+`https://www.quantdesigned.com/quant.html`
+
 ---
