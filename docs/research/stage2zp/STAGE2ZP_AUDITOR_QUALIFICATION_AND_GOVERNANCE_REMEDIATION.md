@@ -259,3 +259,34 @@ signs it and the named auditor accepts.
 
 ---
 
+## 4. Governance discrepancy assessment
+
+**[D]** This section assesses the three discrepancies reported by Stage 2ZO. It **quotes** the exact source text,
+states the impact, recommends the **smallest defensible remediation**, and states whether owner authorization is
+required. **[F]** No historical record and no protocol text is edited by this stage.
+
+### 4.1 `D1` — auditor appointment timing (Gate 2 input #15 vs. "blocks nothing before Gate 4")
+
+**Exact source text.**
+
+- **[F]** Protocol §5.2 input #15 (line 225): "**Audit plan:** the independent auditor and the scope of Gate 4."
+- **[F]** Custodian appointment record §4 (line 108):
+  "the dependency blocks nothing before Gate 4, and it does not reopen the reserved blocks."
+
+**Impact.** **[D]** The two statements are in tension. §5.2 #15 is a **Gate 2 registration input**: under §5.2 the
+registration document must name the auditor, so an unappointed auditor is a **blocker at Gate 2**, not only at
+Gate 4. **[F]** The custodian record's own §4 (line 107) also says "no auditor is appointed, named, or invented here;
+appointing one is a separate owner act." **[D]** Practical effect: Gate 2 is currently unregistrable not only because
+of `C-N` (hypothesis withheld) and the unresolved exit/holding policy, but also because input #15 cannot be filled.
+
+**Smallest defensible remediation.** **[D]** Do **not** edit either record. Add a one-line **clarification** in a
+future owner-approved governance note (or in the next stage's record) stating that the custodian record's "blocks
+nothing before Gate 4" is scoped to *reserved-data and research blocks* and does not override §5.2 #15's requirement
+that the auditor be named at Gate 2 registration. **[D]** The clarifying note is prospective; the original wording
+stays for audit.
+
+**Owner authorization required?** **[D]** Yes — any governance note that interprets the custodian record is an owner
+act; the research agent may only propose it.
+
+---
+
