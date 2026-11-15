@@ -163,4 +163,24 @@ has had any involvement in this private project; the mandatory step is the candi
 **Sources:** `https://www.quantdesigned.com/` · `https://www.quantdesigned.com/additional-services.html` ·
 `https://www.quantdesigned.com/quant.html`
 
+### 3.5 Candidate E — MEG Analytics (independent model validation)
+
+| field | value |
+|---|---|
+| public profile | London-based quantitative consultancy (Canary Wharf); works with UK, DACH, and global teams **[V]** |
+| qualifications | "Highly skilled and experienced quants with deep expertise in quantitative disciplines, data science and financial modelling" **[S]** |
+| relevant service scope | "independent model validation and quantitative consulting across valuation and risk models for banks, asset managers and **hedge funds**"; deliverables include "model validation report (regulatory-grade or internal)", "methodology and assumptions review", "benchmarking and **backtesting** evidence", and "limitations and remediation plan" **[V]** |
+| independence | markets the work as "independent model validation"; separate from the client's development team **[V]** |
+| potential conflicts | none disclosed; primary focus is bank/regulatory model risk (VaR, FRTB, XVA), not strategy/backtest overfitting, so domain fit is partial **[D]** |
+| availability | **[OPEN]** — enquiry-based; public contact `info@meg-analytics.com` **[V]** |
+| mandatory-criteria fit | expertise: relevant validation craft; **individual auditor identity and statistical-multiple-testing depth [U]**; deliverables map well to §7.5/§11.5 |
+
+**Sources:** `https://meg-analytics.com/quantitative_consulting/` · `https://meg-analytics.com/about_us/`
+
+**[O] Further providers seen but not shortlisted** (service pages not fully verified this session): Alef Analytics
+(`https://alefanalytics.org/`), MetriQA (`https://www.metriqa.nl/`), AuditQuant (`https://auditquant.com/about-us/`),
+and independent consultant Francisco Matilla Serrano (`https://www.fmatillaserrano.com/`). **[D]** Alef Analytics and
+MetriQA are bank/credit model-validation practices (partial domain fit); AuditQuant and Matilla Serrano are
+algorithmic/execution-focused and would fit an execution-review scope rather than the statistics of backtest overfitting.
+
 ---
