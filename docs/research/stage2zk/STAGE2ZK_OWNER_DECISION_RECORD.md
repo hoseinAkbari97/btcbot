@@ -119,4 +119,52 @@ third candidate is created to fill the gap. Candidate substitution is not permit
 `C-N` is not a vote against either candidate's evidence and does not reopen either verdict. It does not breach D-11:
 a rule capping primaries at one is satisfied by zero.
 
+---
+
+## 5. Formality assessment against the decision instrument's standard
+
+The owner decision instrument §7 states the standard a valid statement meets: it identifies the document by path and
+hash, states the decision in the owner's own words, carries a date, and is recorded verbatim without agent paraphrase.
+The instrument's §2 adds that a single signature naming only one of the three instruments adopts only that one.
+
+### 5.1 Condition by condition
+
+| # | condition | how it is met | residual |
+|---:|---|---|---|
+| 1 | names the path and SHA-256 | the message confirms, without qualification, the seven selections proposed immediately before it, which name the instrument and its hash; the hash is independently re-verified in §5.3 | the owner's own words do not restate the hash — see §5.2 |
+| 2 | states the decision in the owner's own words | *"those are my choices"*, read against the seven enumerated selections it answers; the message names no other option set | the seven option letters appear in the proposed list, not in the owner's words |
+| 3 | carries a date | **2026-11-15** (UTC), the working-session date recorded for this stage; the owner's message carries no separate timestamp | none material |
+| 4 | recorded verbatim | §1 reproduces the message exactly; no paraphrase is used as evidence | none |
+
+### 5.2 The single disclosed limitation, and the cure
+
+The owner's message does not itself name the path or the SHA-256. Read literally and in isolation, it would not
+satisfy condition 1. This record does not conceal that. It treats the message as deciding the specific seven
+selections it answers — which is what it is — and verifies the instrument's hash independently.
+
+**Optional cure, available to the owner only.** If the owner wants the record to be self-contained under the strictest
+reading, one dated line restating the instrument path and its SHA-256, alongside the word *ratify* (or *adopt*), is
+sufficient. The agent will record it verbatim and append it to this record. Until and unless that happens, this record
+stands as the decision record, and the decided content is the seven selections in §2–§3.
+
+### 5.3 The instrument, verified at recording time
+
+| field | value |
+|---|---|
+| path | `docs/research/stage2zi/STAGE2ZI_OWNER_DECISION_INSTRUMENT.md` |
+| bytes | **10082** |
+| SHA-256 | **`c7f6eebf5fb6e58d04606ee3ceb1ef8b5619e2b22319483f30006e805a996232`** |
+| recorded in the Stage 2ZI manifest | `deliverables[1].sha256` and `deliverables[1].bytes` — both match |
+| recomputed at recording time | matches the manifest |
+| source packet hash | `042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42` (14986 bytes) — matches the instrument's own §2 citation |
+
+A later edit to either file would change its hash and void the corresponding binding in this record.
+
+### 5.4 What was not done
+
+No signature, identity, affirmation, or decision was created or inferred. No field in the Stage 2ZI owner decision
+instrument was filled in: that instrument remains the historical decision form for what was proposed, with every
+owner field blank. This record is a new, separately dated instrument; it edits nothing.
+
+
 
