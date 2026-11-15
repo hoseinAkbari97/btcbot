@@ -288,5 +288,29 @@ stays for audit.
 **Owner authorization required?** **[D]** Yes — any governance note that interprets the custodian record is an owner
 act; the research agent may only propose it.
 
+### 4.2 `D2` — protocol header ("proposed protocol requiring owner approval" with adopted `Version: 2.0.0`)
+
+**Exact source text.**
+
+- **[F]** Protocol header (lines 4–7): "**Status:** proposed protocol requiring owner approval. It authorizes no
+  experiment, candidate, or data access." followed by "**Version:** 2.0.0 — first versioned form, assigned on
+  adoption 2026-11-15 (UTC) under finding `V-1`".
+- **[F]** The same header's `Version:` line cites `stage2zn/STAGE2ZN_PROTOCOL_ADOPTION_RECORD.md`, which records the
+  adoption.
+
+**Impact.** **[D]** The header carries **two statuses at once**: a `Status:` line that says *proposed*, and a
+`Version:` line that says *assigned on adoption*. A reader cannot tell from the header alone whether the protocol is
+adopted or merely proposed. **[D]** The `Version: 2.0.0` line is unambiguous that adoption occurred; the `Status:`
+line is stale relative to it.
+
+**Smallest defensible remediation.** **[D]** Change **only the `Status:` line** to a status consistent with adoption
+— e.g. "**Status:** adopted 2026-11-15 (UTC) as version 2.0.0; it authorizes no experiment, candidate, or data
+access until the applicable gate is registered and approved." This is a one-line edit to a header, not a change to
+any normative rule, threshold, or decision. **[D]** It must not be done by the research agent unilaterally; it is an
+owner-approved edit, and the pre-edit text stays recoverable in git history.
+
+**Owner authorization required?** **[D]** Yes — editing the adopted protocol's header is a protocol change; it
+requires explicit owner authorization and should be recorded as a versioned header correction, not a silent edit.
+
 ---
 
