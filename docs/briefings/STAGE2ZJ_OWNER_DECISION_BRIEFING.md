@@ -23,3 +23,29 @@ stored value. The governing sources match the manifest as well: `stage2m/RESEARC
 `042f04970c3b72c3fcbee617e2d85d1aa75ccd16a0c1ea4c984fbc4ae7fe8e42`, and `stage2zg/STAGE2ZG_RECOMMENDATION_REPORT.md`
 `09d35c3000e9ef9589bd153c26204da244973ffb774db99eb06a01ddf9cbf99c`. Nothing in the Stage 2ZI set has changed since it
 was frozen.
+
+## 1. The amendment — version, hash, and what adoption requires
+
+**Instrument:** `docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md`
+**SHA-256:** `973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c` (18069 bytes)
+**Status:** adoption-ready draft. **Not adopted. Not effective.**
+
+- **Version created:** `2.0.0`, class **major** (protocol §10.2, "a major version changes a rule").
+- **Finding `V-1`:** the protocol carries **no version string** anywhere in its 896 lines. `2.0.0` is therefore
+  *assigned* as "the first versioned form of this protocol", **not** an increment from a prior `1.x`. An adopting
+  statement that presents it as an increment would describe a history that does not exist.
+- **What it changes, and only this:** the final sentence of §8.2 ("The exact dates and hashes are frozen at Gate 2")
+  is replaced, and a new §8.2.1 (`A-1`–`A-5`) is inserted. `A-5` states non-derogation: nothing else moves.
+- **Trigger:** proposed selection `2ZD-1 = R-b` — any byte contact with a reserved block is a read. Under `R-b`,
+  §8.2's hash requirement has no compliant procedure until this amendment supplies one (the custodian).
+
+**The adopting statement must, at minimum (amendment §8):** (1) identify the instrument by path and by the SHA-256
+above; (2) state **adopt**, or adopt with the revisions listed; (3) carry a UTC date, which becomes the effective
+date (§3); (4) record the version as `2.0.0` and acknowledge `V-1`; (5) acknowledge `Y-1` and `Y-2` as recorded
+pre-amendment deviations, **without grandfathering them unless the statement says so explicitly and in its own
+words**; (6) be recorded verbatim, without agent paraphrase, in a record created for that purpose; (7) be accompanied
+by a manifest for the amended protocol text carrying SHA-256 hashes, byte counts, and a canonical self-hash.
+
+**Two consequences stated plainly.** A statement that does not name the hash adopts nothing (addendum §14.1). And
+because §10.3 forbids editing a frozen artifact before adoption (finding `V-2`), the amended protocol **text** is not
+changed by this instrument: adoption has to authorize that text change as a separate step.
