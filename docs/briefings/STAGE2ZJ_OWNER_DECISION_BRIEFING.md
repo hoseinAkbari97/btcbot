@@ -274,3 +274,25 @@ date, signature, or consent is supplied here.
 >
 > I understand this instrument authorizes no access to any dataset, no research, and no Gate 2 activity, and that the
 > custodian's reserved contact is limited to digest runs under `A-2`–`A-4`.
+
+## 10. This briefing's own record
+
+| item | value |
+|---|---:|
+| instruments adopted | 0 |
+| instruments signed | 0 |
+| custodians appointed | 0 |
+| owner fields completed | 0 |
+| frozen artifacts modified | 0 |
+| reserved bytes read, streamed, decoded, or hashed | 0 |
+| dataset files opened | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| venue contacts, API keys, orders | 0 |
+| gates changed | 0 |
+
+Reads performed: committed repository documents only. Hashes computed: the six Stage 2ZI artifacts and the governing
+sources named above — never over a dataset file. This briefing adopts nothing, appoints nobody, and changes no
+authorization boundary; the protocol remains unamended, both candidates remain failed, no custodian is appointed, and
+Gate 2 remains **NOT AUTHORIZED** and, under `C-N`, **unregistrable**.
+
+**Stop.** The decisions above belong to the owner.
