@@ -375,3 +375,31 @@ statement of what could not be verified.
 **[F]** All of §5 is **DRAFT — NOT SENT**. No message has been transmitted and no candidate has been contacted.
 
 ---
+
+## 6. D1–D3 remediation proposals
+
+**[F]** This section restates the three Stage 2ZO discrepancies and proposes the **smallest defensible remediation**
+for each. **[F] It edits no historical record and no protocol text.** **[D]** Each proposal is text the *owner* may
+adopt; the agent only drafts it.
+
+### 6.1 `D1` — auditor timing: append-only clarification
+
+**Exact source text.**
+
+- **[F]** Protocol §5.2 input #15: "**Audit plan:** the independent auditor and the scope of Gate 4."
+- **[F]** Custodian appointment record §4: "the dependency blocks nothing before Gate 4, and it does not reopen the
+  reserved blocks."
+
+**Proposed remediation — append-only.** **[D]** Append the following clarification to a *new* governance note (not by
+editing the 2ZN record):
+
+> *Clarification (`D1`).* The Stage 2ZN custodian record's statement that the missing auditor "blocks nothing before
+> Gate 4" is scoped to **reserved-data and research blocks**. It does not override protocol §5.2 input #15, which makes
+> the independent auditor and the Gate 4 scope a **Gate 2 registration input**. Gate 2 therefore remains unregistrable
+> until an auditor is named. The original 2ZN wording is preserved unchanged.
+
+**[D]** This is append-only: the original record and its hash are untouched, and the clarification is prospective.
+
+**Owner authorization required?** **[D]** Yes — it interprets a committed record and is an owner act.
+
+---
