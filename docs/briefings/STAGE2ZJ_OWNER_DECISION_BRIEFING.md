@@ -223,3 +223,23 @@ and, under `C-N`, **unregistrable**; the blocker list changes shape rather than 
 **The single line to hold.** Only two of the six actions touch a boundary, and both touch it the same narrow way:
 they move reserved contact from "nobody" to "the custodian, for digests only." Every other action is a decision or a
 document, not a permission.
+
+## 9. The exact statements the owner would need to affirm
+
+The three statements below are **separate instruments**. A signature on one is not a signature on another; a single
+act that adopts all three must say so and name all three by path and hash. Blanks are the owner's to fill — no name,
+date, signature, or consent is supplied here.
+
+### Instrument 1 — Amendment adoption statement
+
+> I have read `docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md`, SHA-256
+> `973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c`. I **adopt** it, or I adopt it with the
+> revisions listed below. Effective date (UTC): `________________`.
+>
+> I record the version as **`2.0.0`**, acknowledging finding `V-1`: the protocol was previously unversioned, so
+> `2.0.0` is an assigned first version and not an increment from a prior `1.x`. I acknowledge findings `Y-1` and
+> `Y-2` as recorded pre-amendment deviations, and I `[do / do not]` grandfather them. I authorize the corresponding
+> change to §8.2 of the protocol text as a separate step (finding `V-2`), and the amended protocol text is
+> accompanied by a manifest carrying SHA-256 hashes, byte counts, and a canonical self-hash.
+>
+> Revisions (if any): `________________`. Recorded verbatim by: `________________`.
