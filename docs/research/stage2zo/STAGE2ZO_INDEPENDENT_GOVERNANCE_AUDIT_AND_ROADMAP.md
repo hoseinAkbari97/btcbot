@@ -186,3 +186,64 @@ exists: dates (owner) → digests (custodian) → Gate 2 manifest is a sequence,
 **[D] No contradiction or circular dependency was found that changes a gate, a decision, or an authorization.**
 
 ---
+
+## 3. Blocker matrix and diagnosis
+
+### 3.1 Why Gate 2 is unregistrable, in the correct order
+
+**[F]** Gate 2 registration requires all sixteen §5.2 inputs to be present and complete (§5.3 criterion 1). Two
+inputs are open, and they are **not interchangeable**:
+
+| input | state | why it blocks |
+|---|---|---|
+| **#1 Hypothesis** | **open by decision** (`C-N`) | §5.2 input #1 is a hypothesis; `C-N` selects neither candidate and no third candidate may be invented, so no registration can **exist** |
+| **#5 Exit rules** | **open, unresolved** (`Z-3`) | the candidate specs are signal specs and contain no exit/holding rule, so a registration cannot be **complete** |
+
+**[D]** Input #1 is the primary obstruction — it prevents a registration from existing at all. Input #5 would matter
+the moment a hypothesis were named. Calling the exit policy "the only blocker" while `C-N` stands would invert the
+obstruction.
+
+### 3.2 Is `C-N` the correct reading of the owner's decision? — **[PASS]**
+
+**[F]** `2ZD-2 = C-N` is recorded as the owner's choice in Stage 2ZK, from the owner's verbatim words read against
+the seven selections. **[F]** The Stage 2ZD packet defines `C-N` as "no selection now; keep both as unselected — Gate
+2 cannot name a primary hypothesis". **[D]** The reading is correct and consistent: `C-N` withholds the hypothesis by
+decision, does not reopen either verdict, and does not breach D-11 (a one-primary cap is satisfied by zero). No
+discrepancy.
+
+### 3.3 Should the two failed candidates stay permanently closed? — **[D] Yes, on the current record**
+
+**[F]** Both candidates failed at Stage 2J under the **frozen** decision rule (`N < 150` or `M_all > 0.20`): B with
+24 opportunities and D with 34 (against 150), recorded `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` and frozen at
+`v2.0.0`. **[D]** A genuinely **different** research family may be considered under the protocol (§2.3 permits the
+owner to "authorize a new hypothesis"), but a failed candidate may **not** be re-registered by relabeling: that
+would reuse failed evidence and/or relax a frozen threshold, both prohibited (§10.3, §15). Reopening a verdict is an
+owner act that the present record does not contain.
+
+### 3.4 What is still required before a new hypothesis can be registered
+
+**[F]** Beyond #1 and #5, the remaining §5.2 gaps are: #6 risk/sizing (now writable — `S-1` fixed the cap-versus-stop
+interpretation), #7 numeric regime definitions, #9 secondary-metric table, #10 dependence numerics (now supplied by
+`2ZD-4`), #11/#12 sample-sufficiency and feasibility criteria (`E-2` supplies the assumptions at registration), #13
+failure list, #14 data-access plan (mechanism now exists via the custodian), #15 audit plan (**the auditor must be
+named** — §2.5), and #16 version and hashes (produced last).
+
+### 3.5 Mandatory versus conservative
+
+**[D]** Only the items below block a Gate 2 registration. The rest are conservative or belong to later gates.
+
+| blocker | type | mandatory? | restricted data? | owner act? |
+|---|---|---|---|---|
+| #1 hypothesis (`C-N`) | decision | **mandatory** | no | yes |
+| #5 exit/holding policy | rule | **mandatory** | no | yes |
+| #15 independent auditor (`AN-1`) | person | **mandatory** | no | yes |
+| #16 frozen spec + hash manifest | document | **mandatory** | no | no (produced by the stage) |
+| #7 regime numerics, #9 metrics, #13 failure list | document | **mandatory** | no | no |
+| #11/#12 sample sufficiency under `E-2` | assumption | **mandatory** | no (if `E-2`) | yes (declaration) |
+| #14 dates + custodian digests | procedure | **mandatory** | **yes** (digest-only) | yes (dates) |
+| `26 bp` not measured | cost proxy | **not blocking** — Gate 2 needs a cost basis, not a measured one | no | no |
+| `C-4` / `C-6` venue, execution | venue | **not blocking** if no execution claim is made | venue | no |
+| `T-4` / `T-5` real capital | capital | **not blocking** Gate 2 | no | yes (later) |
+| `Y-1`/`Y-2` admissibility | question | **[OPEN]** — owner, informed by Gate 4 | no | yes |
+
+---
