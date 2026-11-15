@@ -53,3 +53,30 @@ are reproduced in §2 exactly as proposed. §5 assesses the exchange against the
 **The separate adoption sentence.** The same owner instruction also accepted the recommendation to adopt the Stage 2ZI
 protocol amendment. It is recorded here only as reported, in the owner's own terms as conveyed, and is assessed
 separately in `STAGE2ZK_PROTOCOL_ADOPTION_RECORD.md`; no adoption wording is invented here.
+
+---
+
+## 2. The seven selected decisions
+
+Recorded exactly as listed in the owner instruction. Each value is the one proposed in the Stage 2ZI owner decision
+instrument §3; the owner added no qualification and removed none.
+
+| # | decision | owner's choice | packet reference | practical consequence |
+|---:|---|---|---|---|
+| 1 | `2ZD-0` — path | **C** — resolve the protocol interpretation and owner decisions first | §5 | keeps work on governance, not data; authorizes no research |
+| 2 | `2ZD-1` — reserved-data reading | **R-b** — any byte contact with a reserved block is a read | §6.1 | the analyst may not hash, stream, or inspect reserved bytes; operative only after the amendment is adopted |
+| 3 | `2ZD-2` — primary candidate | **C-N** — neither candidate B nor candidate D selected | §6.2 | Gate 2 cannot be registered; both candidates stay failed and frozen |
+| 4 | `2ZD-3` — sizing rule | **S-1** — `R` shrinks when the `$2,500` cap binds | §6.3 | keeps every per-trade loss at or below `1R` inside the cap; supports no frequency or profitability claim |
+| 5 | `2ZD-4` — dependence and custody | accept all seven proposed values, preserving their qualifications (§3 below) | §6.4 | fixes the dependence and embargo parameters; the custody field remains a recommendation, not an appointment |
+| 6 | `2ZD-5` — `σ`, `DE`, `p_exec` route | **E-2** — labelled pre-registered assumptions with sensitivity ranges | §6.5 | no data access; the values stay assumptions, never estimates |
+| 7 | `Q-1` — cost basis | retain `26 bp` strictly as an unmeasured Binance proxy assumption | **not a packet field** — introduced by Stage 2ZG; see finding `X-4` | keeps a planning label, not a measurement; no `cost_R` is computed from it |
+
+**Two qualifications on the list itself, preserved.**
+
+- Row 7 (`Q-1`) is not a Stage 2ZD packet field. The packet contains no `Q-1`, no issue `I-2`, and no issue list in
+  its §7 (finding `X-4`). The selection is therefore an owner statement about a question the packet did not ask, and
+  it is recorded strictly as a confirmation of the `26 bp` label.
+- Row 5 (`2ZD-4`) is a **superset**: the packet asks for five fields, and the accepted proposal supplies seven,
+  adding the resample count and the seed (finding `X-5`). The addition is disclosed and does not narrow the packet's
+  five fields.
+
