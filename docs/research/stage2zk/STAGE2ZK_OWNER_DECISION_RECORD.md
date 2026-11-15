@@ -166,5 +166,69 @@ No signature, identity, affirmation, or decision was created or inferred. No fie
 instrument was filled in: that instrument remains the historical decision form for what was proposed, with every
 owner field blank. This record is a new, separately dated instrument; it edits nothing.
 
+---
+
+## 6. Unresolved matters preserved
+
+Recording the seven decisions resolves none of the following. Each is stated as it stands.
+
+- **The hypothesis.** `C-N` withholds it by decision, and no third candidate may be invented. Gate 2 stays
+  unregistrable until a candidate is named, and unauthorized until a dated opening exists.
+- **The exit and holding policy.** No candidate specification contains an exit or holding rule (finding `Z-3`), so
+  the episode-definition and embargo arguments stay conditional. It is Gate 2 registration input **#5**.
+- **`T-5`.** The real-capital expression of the annual objective remains open; the source record
+  (`docs/research/stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md` §T-5) has blank fields.
+- **`T-4`.** Deferred.
+- **`R-08`.** `P` — partially satisfied; real-capital sizing convention deferred.
+- **`R-15`.** `B` — blocked for real-capital claims.
+- **`C-4` and `C-6`.** Unresolved.
+- **`Y-1` and `Y-2`.** Whether the two pre-amendment deviations affect the admissibility of any Stage 2ZC-derived
+  result is an owner question informed by the Gate 4 audit; this record does not answer it.
+- **The custodian's digest verification.** No verification path exists for anyone but the custodian; the trust limit
+  is structural.
+
+**`S-1` is a sizing rule, not evidence.** It keeps every per-trade loss at or below `1R` inside the `$2,500` cap and
+changes nothing about the minimum evidence required. It supports no frequency or profitability claim; when the cap
+binds, `R` falls and the same target needs *more* trades, not fewer. It is not evidence that any objective is within
+reach. **`E-2` and `26 bp` remain labelled assumptions** — neither becomes an estimate, an observation, or a
+measurement by being selected, and no `cost_R` is computed from `26 bp`, which is not a measured Nobitex cost.
+
+---
+
+## 7. Governance status after this record
+
+| item | status | changed by this record? |
+|---|---|---|
+| the seven Stage 2ZI selections | **RECORDED as the owner's decisions** (this record) | yes — from unratified proposals to recorded decisions |
+| Stage 2ZI protocol amendment | **NOT ADOPTED — pending the statement in `STAGE2ZK_PROTOCOL_ADOPTION_RECORD.md`** | no |
+| custodian | **NOT APPOINTED — pending the statement in `STAGE2ZK_CUSTODIAN_APPOINTMENT_RECORD.md`** | no |
+| Gate 0 | **NOT PASSED** | no |
+| Gate 1 | **PASSED — research leg only** (Stage 2ZC, unchanged) | no |
+| Gate 2 | **NOT AUTHORIZED** and **unregistrable** under `C-N` | no |
+| candidates B and D | **`FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`**, frozen at `v2.0.0` | no |
+| `T-4` / `T-5` | deferred / open | no |
+| `R-08` / `R-15` | `P` / `B` | no |
+| `C-4` / `C-6` | unresolved | no |
+| `D-01…D-15`, `A-1…A-4`, `26 bp`, thresholds, verdicts | unchanged | no |
+| protocol and addendum text | unmodified | no |
+
+---
+
+## 8. Integrity of this record
+
+1. This record creates no data access, no research authorization, and no Gate 2 opening. It records the owner's
+   words and the seven selections they decide.
+2. It edits no adopted, frozen, or historical document. The Stage 2ZI instruments, the Stage 2ZD packet, the protocol,
+   the addendum, and the owner decision register are byte-identical to their committed versions.
+3. It adds no owner value, threshold, condition, or exception, and writes no owner signature or date on the owner's
+   behalf. The owner's message carried no date; the date in the header is the recording date.
+4. It makes no claim that Gate 0 passed, that Gate 2 was authorized or registered, that the amendment was adopted, or
+   that a custodian was appointed.
+5. It deliberately does not fill the Stage 2ZI owner decision instrument's fields; that instrument remains evidence
+   of what was proposed.
+6. If the owner issues the one-line cure in §5.2, it is recorded verbatim in an appended note and bound to the same
+   instrument hash. This record is not otherwise edited.
+
+
 
 
