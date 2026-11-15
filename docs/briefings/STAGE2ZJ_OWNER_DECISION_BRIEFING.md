@@ -163,3 +163,25 @@ third candidate is created to fill the gap.
 **What `C-N` is not.** It is not a vote against either candidate's evidence, and it does not reopen either verdict. It
 is a refusal to register a hypothesis now, which is a legitimate option in the packet (§6.2) and does not breach D-11,
 because a rule capping primaries at one is satisfied by zero.
+
+## 6. The questions still open — `T-5` and the exit/holding policy
+
+**`T-5` — the real-capital expression of the annual objective.** The source record
+(`stage2t/STAGE2T_OWNER_RESPONSE_RECORD.md` §T-5) is **blank** and awaiting an owner answer. The owner options are
+recorded there as: `T-5a` keep `$250`; `T-5b` keep the 2.5% ratio (`$2.50`); `T-5c` research-reference only; `T-5d`
+custom. No agent may answer it, and nothing in Stage 2ZI touches it. Selecting `S-1` implies nothing about it.
+
+**The exit and holding policy.** No candidate specification contains an exit or holding rule (finding `Z-3`), so the
+episode-definition and embargo arguments stay **conditional**. It is Gate 2 registration input **#5**.
+
+**The order of the two obstructions matters, and they are not interchangeable:**
+
+| input | state | why |
+|---|---|---|
+| #1 hypothesis | **open by decision** | `C-N` selects neither candidate; no third candidate may be invented |
+| #5 exit rules | **open, unresolved** | the candidate specs are signal specs and contain no exit rule |
+
+Input #1 is the one that prevents a registration from existing **at all**. Input #5 would matter as soon as a
+hypothesis were named, because a registration without an exit rule cannot be complete under §5.3. Calling the exit
+policy "the only thing blocking Gate 2" while `C-N` stands would invert the obstruction. **Neither is closable here:**
+#1 needs a candidate decision and #5 needs a registered rule, and both are owner acts.
