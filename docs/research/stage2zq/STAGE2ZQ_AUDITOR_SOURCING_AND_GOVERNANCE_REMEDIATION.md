@@ -422,4 +422,29 @@ the owner prefers to preserve the exact adopted bytes, the alternative is to rec
 **Owner authorization required?** **[D]** Yes — editing the adopted protocol is a protocol change and must be recorded
 as a versioned header correction, not a silent edit.
 
+### 6.3 `D3` — missing prepared statement: provenance clarification
+
+**Exact source text.**
+
+- **[F]** Adoption record §1: the owner's affirmation — "I adopt the Stage 2ZI final protocol amendment, version 2.0.0,
+  with SHA-256 `973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c`, including all acknowledgements and
+  qualifications in the statement."
+- **[F]** Adoption record, *By reference*: "The affirmation incorporates … the prepared Statement 1 of Stage 2ZM/2ZL,
+  whose acknowledgements (`V-1`, `V-2`, the manifest requirement, `Y-1`, `Y-2`) are set out in §3."
+- **[F]** No `stage2zl/` or `stage2zm/` artifact exists in the repository.
+
+**Proposed remediation — provenance clarification.** **[D]** Append (do not rewrite) the following note, preserving the
+verbatim affirmation and its hash:
+
+> *Provenance clarification (`D3`).* The "prepared Statement 1 of Stage 2ZM/2ZL" referenced above was a session-local
+> preparation with **no committed repository artifact**. The authoritative transcription of the incorporated
+> acknowledgements (`V-1`, `V-2`, the manifest requirement, `Y-1`, `Y-2`) is §3 of this adoption record. The owner's
+> affirmation and the amendment hash `973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c` are unchanged.
+
+**[F]** No document is fabricated, backdated, or retro-added. **[D]** If the owner prefers no edit at all, the gap is
+already recorded here as an `OBSERVATION` for the future auditor to weigh under §11.4.
+
+**Owner authorization required?** **[D]** Yes for the note (it edits a committed record); **no** if the owner leaves the
+record as-is, since the gap is now documented in this stage.
+
 ---
