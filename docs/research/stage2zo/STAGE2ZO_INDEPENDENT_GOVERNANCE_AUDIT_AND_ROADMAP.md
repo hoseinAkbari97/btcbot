@@ -290,3 +290,101 @@ precursor, not its replacement.
 unregistrable** at the end of this stage.
 
 ---
+
+## 6. Minimal ordered roadmap
+
+Each step names its prerequisite, whether owner authorization is required, whether restricted data is involved, and
+its completion criterion. Related administrative work is combined where governance permits. Steps are ordered; the
+roadmap does **not** start any research stage.
+
+### Governance
+
+| # | step | prerequisite | owner auth? | restricted data? | completion criterion |
+|---|---|---|---|---|---|
+| **G1** | Appoint the independent Gate 4 auditor (close `AN-1`) | none | **yes** | no | a dated owner record naming an auditor who is **not** the custodian and had no prior design/implementation involvement; closes §5.2 input #15 |
+| **G2** | Reconcile the `A-2`-vs-§11.2 tension, the stale header line, and the non-committed statement gap — via one recorded clarification | none | yes for a minor version; agent may record the disclosure | no | a dated record resolving all three points, or formally disclosing them; **not blocking** |
+| **G3** | Decide `T-5` (real-capital objective expression) and record `T-4` as deferred | none | **yes** | no | a dated owner answer; **not blocking Gate 2**, needed only for real capital |
+
+### Hypothesis design (only if the owner authorizes a new hypothesis)
+
+| # | step | prerequisite | owner auth? | restricted data? | completion criterion |
+|---|---|---|---|---|---|
+| **H1** | Authorize a research-design stage for a **new** mechanism | owner decision | **yes** | no | a dated authorization naming the stage scope; no candidate substitution, no reopening B/D |
+| **H2** | Propose **one** falsifiable mechanism + entry rules, rationale independent of the data | H1 | no | no | a candidate specification (not yet a registration); satisfies input #1's content |
+| **H3** | Register the **exit/holding policy** (close #5) | H2 | **yes** (it becomes a frozen rule) | no | a written exit/holding rule consistent with D-02 and the `$2,500` cap |
+
+### Data and statistical
+
+| # | step | prerequisite | owner auth? | restricted data? | completion criterion |
+|---|---|---|---|---|---|
+| **S1** | Declare the validation/OOS dates and the two 90-day embargoes | H2, H3 | **yes** | no (declaring a date reads no data) | declared dates + embargoes recorded (input #14) |
+| **S2** | Custodian computes the reserved-block SHA-256 digests | S1 + custodian appointed | no (custodian acts) | **YES — digest-only, logged before delivery** | the pre-delivery log entry committed, then the six delivery items in the Gate 2 manifest |
+| **S3** | Complete the sample-sufficiency and feasibility calculation under `E-2` | H2 | **yes** (declaration) | no | inputs #11/#12 complete and reproducible with sensitivity |
+| **S4** | Freeze the registration, spec, config, analysis plan, and hash manifest | S1–S3, H2, H3 | no (document production) | no | a frozen Gate 2 registration + hash manifest (inputs #9, #13, #16; §5.4 artifacts) |
+
+### Venue and execution
+
+| # | step | prerequisite | owner auth? | restricted data? | completion criterion |
+|---|---|---|---|---|---|
+| **V1** | **None required for Gate 2.** `C-4`/`C-6` stay unresolved and do not block a registration provided **no** execution or real-capital claim is made | — | — | — | a future, separate venue stage if execution feasibility is ever claimed — **not** part of Gate 2 |
+
+### Independent audit
+
+| # | step | prerequisite | owner auth? | restricted data? | completion criterion |
+|---|---|---|---|---|---|
+| **A1** | Gate 4 audit by the auditor from **G1** | Gate 2 registration + Gate 3 | no (already appointed) | limited (protocol §11.2) | a Gate 4 report with no open CRITICAL or MAJOR finding |
+
+**[D] The shortest defensible chain to a registrable Gate 2:** `G1` → (owner decides to continue) → `H1` → `H2` +
+`H3` → `S1` → `S2` → `S3` → `S4`. Everything before `H1` is administrative and data-free; `S2` is the **only** step
+that touches reserved bytes, and it is custodian-only and digest-only.
+
+---
+
+## 7. What remains unauthorized after this stage
+
+This stage authorizes **nothing**. In particular, it does **not** authorize:
+
+- **Gate 2** registration, execution, passage, or verdict — and under `C-N` no registration is possible yet.
+- **Any reserved contact by the analyst** — no hashing, streaming, decoding, sampling, or inspection; the custodian
+  is the only permitted party, and only for logged digest runs.
+- **A new hypothesis or candidate** — none is named, selected, or substituted here.
+- **Strategy design, candidate selection, or revision.**
+- **A census, backtest, simulation, parameter fit, or statistical experiment.**
+- **Cost, spread, fee, depth, slippage, fill, latency, or liquidity measurement**, and any quote sampling.
+- **Venue contact, account access, API keys, or orders.**
+- **`T-4`, real-capital sizing, paper trading, or live trading.**
+- **Any change to `D-01…D-15`, `A-1…A-4`, `26 bp`, the protocol, the addendum, any threshold, or any verdict.**
+- **Reopening either `FEASIBILITY FAIL` verdict**, or reading either census as if `C-N` had changed it.
+
+**`S-1`, `E-2`, and `26 bp` are not evidence.** `S-1` supports no frequency or profitability claim and relaxes no
+feasibility threshold; `E-2` values and `26 bp` remain labelled, unmeasured assumptions.
+
+---
+
+## 8. This stage's own record
+
+| item | value |
+|---|---:|
+| dataset files opened or streamed | 0 |
+| reserved bytes read, streamed, hashed, parsed, or decoded | 0 |
+| Stage 2ZC full-file digests recomputed | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| cost, spread, depth, liquidity, slippage, fill, or latency measurements | 0 |
+| quote samples | 0 |
+| venue contacts, API keys, accounts, orders | 0 |
+| candidates selected, substituted, or modified | 0 |
+| frozen thresholds, cost assumptions, or owner decisions changed | 0 |
+| predecessor or frozen artifacts modified | 0 |
+| gates changed or opened | 0 |
+| documents created | 1 (this report) |
+| manifests created | 0 (not required by the governing protocol — see §1) |
+
+Reads performed: committed repository documents only. Hashes computed: over committed documents, never over a
+dataset file. **[F]** The status at the end of this stage is unchanged: Gate 0 **NOT PASSED**; Gate 1 **PASSED —
+research leg only**; Gate 2 **NOT AUTHORIZED** and **unregistrable** under `C-N`; both candidates **`FEASIBILITY
+FAIL — INSUFFICIENT OPPORTUNITIES`** at `v2.0.0`; `T-4` **deferred**; `T-5` **open**; `R-08` **`P`**; `R-15` **`B`**;
+`C-4`/`C-6` **unresolved**; protocol **2.0.0 adopted**; custodian **Hossein Akbari (owner-custodian)**; independent
+Gate 4 auditor **still outstanding**; no hypothesis registered; real capital **not authorized**.
+
+**Stop.** The decisions this report frames belong to the owner.
+
