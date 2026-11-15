@@ -184,3 +184,39 @@ MetriQA are bank/credit model-validation practices (partial domain fit); AuditQu
 algorithmic/execution-focused and would fit an execution-review scope rather than the statistics of backtest overfitting.
 
 ---
+
+## 4. Ranking against the mandatory criteria
+
+**[F]** The mandatory criteria are drawn from protocol §7.3 (independence requirements), §7.7 (minimum defensible
+standard), §11.1 (separation of duties), §11.2 (auditor access), and §11.3 (conflict-of-interest disclosure).
+
+| id | mandatory criterion | source |
+|---|---|---|
+| M1 | not the owner-custodian; not the analyst/implementer | §11.1 |
+| M2 | no prior implementation involvement | §7.3.1 |
+| M3 | no decision involvement (candidate, threshold, population, verdict) | §7.3.2 |
+| M4 | no conflict of interest (financial, employment, personal) | §7.3.3 |
+| M5 | works from frozen artifacts, not the implementer's assumptions | §7.3.4 |
+| M6 | can inspect specs, code, tests, logs, outputs; can run synthetic tests | §7.3.5 |
+| M7 | signs an independence attestation listing evidence reviewed | §7.3.6 |
+| M8 | statistical expertise: dependence, multiple testing, error control | §7.7, §2.3 |
+| M9 | confidentiality; no unauthorized reserved-data access | §11.2, §8.2.1 |
+
+### 4.1 Ranking matrix
+
+**[D]** Legend: **✔** supported by public evidence · **~** conditionally satisfied, pending the candidate's own
+disclosure/signature · **?** unverified or unknown.
+
+| candidate | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9 | overall |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A López de Prado | ~ | ~ | ~ | ? | ~ | ~ | ? | ✔ | ~ | highest expertise; availability unknown |
+| B Harvey | ~ | ~ | ~ | ? | ~ | ~ | ? | ✔ | ~ | high expertise; availability unknown |
+| C Bailey | ~ | ~ | ~ | ~ | ~ | ~ | ? | ✔ | ~ | high expertise; retired; availability unknown |
+| D QuantDesigned | ~ | ~ | ~ | ~ | ~ | ~ | ? | ? | ✔ | best service fit; individual identity unknown |
+| E MEG Analytics | ~ | ~ | ~ | ~ | ~ | ~ | ? | ? | ✔ | good service fit; domain partly regulatory |
+
+**[F]** No candidate scores **✔** on M7 (attestation), because an attestation can only be given by the candidate on
+engagement. **[D]** M1–M3 and M5 are marked **~** for all candidates because they are satisfied *prima facie* (no
+prior involvement with this private project) but must be confirmed in writing.
+
+---
