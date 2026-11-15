@@ -261,3 +261,37 @@ available, or appointed**. Two defensible paths, in order of preference:
 package and obtain a signed disclosure. **[D]** Until then, `AN-1` remains **outstanding**.
 
 ---
+
+## 5. Draft outreach package — **DRAFT — NOT SENT**
+
+> **DRAFT — NOT SENT.** These templates have not been sent to anyone. Sending them, and any disclosure of project
+> material, is an owner act. No private repository content or confidential data is included.
+
+### 5.1 Invitation (draft)
+
+> **Subject: Invitation to act as an independent reviewer for a quantitative research programme**
+>
+> Dear `______________________`,
+>
+> I am looking for an independent reviewer for a systematic-trading research programme. The reviewer would provide an
+> arms-length assessment of frozen research artifacts and the statistics behind a trading hypothesis, before any
+> historical result is accepted.
+>
+> Two points define the role:
+>
+> - **Independence.** The reviewer must be independent of the programme owner and of the research/implementation. The
+>   owner, who also acts as data custodian, cannot serve as the reviewer, and anyone who designed, coded, or decided the
+>   candidate, thresholds, population, or verdict rule is ineligible.
+> - **Scope.** The review covers the frozen specification, code, tests, data manifest, recorded outputs, and the
+>   statistics (dependence handling, multiple-testing control, sample sufficiency, and the verdict logic). It does not
+>   require access to reserved validation or out-of-sample data.
+>
+> The engagement would be remote and clearly scoped. Before any work, I would ask for a signed conflict-of-interest and
+> independence declaration. Compensation is open to discussion and is not pre-committed.
+>
+> If this is of interest, I would be glad to share a one-page role description and a short questionnaire.
+>
+> Kind regards,
+> `______________________` (owner)
+
+---
