@@ -208,3 +208,18 @@ policy "the only thing blocking Gate 2" while `C-N` stands would invert the obst
 
 **Nothing here is authorized by being listed.** Adopting all three instruments still leaves Gate 2 **NOT AUTHORIZED**
 and, under `C-N`, **unregistrable**; the blocker list changes shape rather than closing.
+
+## 8. Each proposed owner action — practical consequence and boundary effect
+
+| owner action | practical consequence | does it change an authorization boundary? |
+|---|---|---|
+| **Adopt the amendment** | §8.2 becomes satisfiable without analyst contact, and the custodian role gains a definition; the amended text still has to be committed with its own manifest (`V-2`) | **Yes, narrowly.** It changes *who may contact reserved bytes* (only the custodian) and *what satisfies §8.2's freeze*. It creates **no** analyst permission, no research authorization, and no Gate 2 opening |
+| **Ratify the seven selections** | records the governance choices; `R-b` is operative only once the amendment is adopted; `C-N` keeps Gate 2 unregistrable; `S-1` is a sizing rule with no frequency claim; `E-2` and `26 bp` stay labelled assumptions | **No.** It authorizes no data access, no census, no backtest, no strategy design, and does not open Gate 2 |
+| **Appoint the custodian** | makes `2ZD-4`'s custody field operative, and only if the amendment is adopted first or at the same time; the appointment is void otherwise | **Yes, narrowly.** It creates the one party permitted reserved contact, strictly for digest runs under `A-2`–`A-4`. The analyst's contact stays at zero. It is **not** a licence to research |
+| **Decide the hypothesis question** | if a candidate is named, Gate 2 becomes *registrable* (still not authorized); if `C-N` is kept, Gate 2 stays unregistrable | **No by itself.** Naming a hypothesis does not authorize data access or a Gate 2 execution |
+| **Answer `T-5`** | fixes the real-capital objective expression (`$250`, 2.5%, research-reference, or custom) | **No.** It changes no access rule; it sets a target |
+| **Register the exit/holding policy** | closes Gate 2 input #5 so a future registration can be complete | **No.** It is a rule for a registration that does not yet exist |
+
+**The single line to hold.** Only two of the six actions touch a boundary, and both touch it the same narrow way:
+they move reserved contact from "nobody" to "the custodian, for digests only." Every other action is a decision or a
+document, not a permission.
