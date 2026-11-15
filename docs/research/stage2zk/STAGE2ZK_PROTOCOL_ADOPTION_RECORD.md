@@ -82,3 +82,59 @@ statement, and not before it. The agent assigns no date."*
 formalities: the owner may or may not accept the `V-1` characterisation, and may or may not accept that `Y-1` and
 `Y-2` are deviations. Those are the owner's to state, and the agent cannot infer them.
 
+---
+
+## 4. Why the O-1 formality limitation is not carried into this act
+
+On 2026-11-11 the owner adopted the Stage 2Z addendum with the two-word reply `I confirm`, and
+`stage2za/STAGE2ZA_O1_OWNER_ADOPTION_RECORD.md` recorded it as **ADOPTED** while disclosing a single formality
+limitation. That treatment does not transfer here, for the reasons the Stage 2ZB O-2 record already set out:
+
+| dimension | Stage 2Z O-1 | this amendment |
+|---|---|---|
+| governing requirement | addendum §14.1: name the document by path and SHA256, state adopt, carry a date | amendment §8: the same, **plus** record version `2.0.0` and acknowledge `V-1`, **plus** acknowledge `Y-1` and `Y-2` |
+| what the statement had to identify | a text whose content already contained every boundary | a **versioning characterisation and two recorded deviations** that live outside the text |
+| can the missing element be inferred from context? | the hash condition's purpose is served by independent verification | **no** — whether the owner accepts `V-1`, `Y-1`, and `Y-2` is the owner's own statement, and nothing in the message addresses them |
+| consequence of misreading | a documentary adoption of text that could otherwise be substituted | recording an adoption and a version that the owner never acknowledged, and silently deciding the deviation question |
+
+The `O-1` record itself flagged that the owner's words did not restate the hash and offered a one-line cure. Here the
+gap is larger and cannot be cured by independent verification alone, because two of the missing elements are owner
+judgements about the record. Carrying the limitation forward would make the agent, not the owner, the author of the
+`V-1`, `Y-1`, and `Y-2` acknowledgements.
+
+**Two narrow readings are rejected.** (1) *"O-1 was accepted on two words, so this must be."* The two instruments set
+different conditions, and this one requires owner acknowledgements O-1 did not. (2) *"The owner accepted adoption, so
+the acknowledgements are implied."* Acceptance of a recommendation to adopt is not an acknowledgement of `V-1`, `Y-1`,
+or `Y-2`; the amendment requires those in the statement, in the owner's own words.
+
+---
+
+## 5. The missing owner statement, prepared (pending affirmation)
+
+This is **not** written in the owner's voice as if already affirmed. It is the exact statement the amendment requires,
+labelled as pending. It becomes effective only if the owner issues it, and the agent will then record it verbatim.
+
+```
+Decision: ADOPT the Stage 2ZI final protocol amendment.
+Instrument: docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md
+SHA-256: 973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c
+Version: 2.0.0 — I acknowledge finding V-1: the protocol was previously unversioned, so 2.0.0 is an
+         assigned first version and not an increment from a prior 1.x.
+Deviations: I acknowledge findings Y-1 and Y-2 as recorded pre-amendment deviations. I do not
+         grandfather them unless I say so here in my own words: ______________________
+Protocol text change: I authorize the corresponding change to section 8.2 of
+         docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md as a separate step, and I require a
+         manifest for the amended protocol text carrying SHA-256 hashes, byte counts, and a canonical
+         self-hash, as section 10.2 requires.
+Effective date (UTC): ______________________
+```
+
+**Other valid answers.** A narrower statement that adopts the amendment but declines to grandfather `Y-1`/`Y-2`, or
+that adopts with listed revisions, is valid under §8 and will be recorded as written. A decision **not** to adopt is
+also valid and will be recorded verbatim; it leaves §8.2 unamended and `R-b` without operative text.
+
+**On receipt**, the agent will: record the statement verbatim; create the versioned protocol artifact by applying the
+amendment's exact §4 replacement and §5 insertion to the protocol text; produce a manifest for the amended protocol
+text under §10.2; and verify the amended protocol's hashes and byte counts. Nothing of that is done now.
+
+
