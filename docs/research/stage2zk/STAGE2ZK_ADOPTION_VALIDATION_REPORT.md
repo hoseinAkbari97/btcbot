@@ -115,3 +115,67 @@ a recommendation. The owner's message names no custodian and states none of the 
 appointment is correctly recorded as **not made**. **[F]** Independently, the instrument is void while the amendment
 is unadopted, so no valid appointment could exist today.
 
+---
+
+## 6. Which of the three acts are complete, and which are pending
+
+| act | state | reason |
+|---|---|---|
+| **Owner decisions (`2ZD-0`…`Q-1`)** | **COMPLETE — recorded** | the owner affirmed all seven; the record discloses the one formality limitation and offers a cure |
+| **Protocol amendment adoption** | **PENDING — not adopted** | amendment §8 conditions 1, 3, 4, 5 unmet; `V-1`, `Y-1`, `Y-2` acknowledgements cannot be inferred |
+| **Custodian appointment** | **PENDING — not made** | the instrument requires a separate named appointment; also void while the amendment is unadopted |
+
+**The complete act's boundary.** Recording the seven decisions changes no authorization boundary. It authorizes no
+data access, no census, no backtest, no strategy design, and no Gate 2 opening. `R-b` remains a selection without
+operative text until the amendment is adopted.
+
+---
+
+## 7. NOT VERIFIED, and why each stops
+
+| item | why it cannot be verified here | status |
+|---|---|---|
+| that the owner accepts finding `V-1` | requires the owner's own acknowledgement in the adopting statement | **NOT VERIFIED** — pending |
+| that the owner accepts `Y-1` and `Y-2` as pre-amendment deviations | requires the owner's own words; the agent may not infer it | **NOT VERIFIED** — pending |
+| the effective date of any adoption | amendment §3 reserves it to the owner's statement | **NOT VERIFIED** — pending |
+| that the custodian will be the owner | the appointment is a separate owner act not yet issued | **NOT VERIFIED** — pending |
+| that the custodian's digest matches the reserved bytes | would require recomputing a digest over reserved bytes — the contact `R-b` forbids | **NOT VERIFIED** |
+| whether the four Stage 2ZC boundary timestamps fell strictly inside a reserved interval | not determinable without forbidden contact; the strict reading does not distinguish the cases | **NOT VERIFIED**, recorded as unresolved |
+| that the `2ZD-4` values are statistically adequate | adequacy depends on an exit policy that does not exist (`Z-3`) | **NOT VERIFIED**, **[OPEN]** |
+| that `26 bp` is executable on Nobitex | requires execution measurement, which `C-6` leaves unresolved | **NOT VERIFIED** |
+
+**The pattern.** Every unverified item needs either the owner's own statement or reserved bytes. None is unverified
+because of time, and none is being deferred to a later stage of this kind.
+
+---
+
+## 8. This stage's own record
+
+| item | count |
+|---|---:|
+| dataset files streamed | 0 |
+| reserved bytes hashed | 0 |
+| validation or OOS rows decoded | 0 |
+| censuses, backtests, simulations, parameter fits | 0 |
+| cost, spread, fee, depth, liquidity, slippage, fill, latency measurements | 0 |
+| quote samples | 0 |
+| venue contacts, API keys, accounts, orders | 0 |
+| predecessor or frozen artifacts modified | 0 |
+| protocol text changed | 0 |
+| owner fields completed in a predecessor | 0 |
+| owner signatures or dates invented | 0 |
+| gates changed | 0 |
+
+Reads performed: committed repository documents only. Hashes computed: over this stage's own deliverables and over
+committed predecessor documents — never over a dataset file.
+
+---
+
+## 9. Integrity of this report
+
+1. It ratifies nothing, adopts nothing, appoints nobody, and authorizes no activity.
+2. It changes no source. Every artifact it cites is byte-identical to its committed version.
+3. It records no owner acknowledgement that the owner did not make, and treats the two incomplete acts as pending.
+4. It makes no claim that Gate 0 passed, that Gate 2 was authorized or registered, or that any research occurred.
+
+
