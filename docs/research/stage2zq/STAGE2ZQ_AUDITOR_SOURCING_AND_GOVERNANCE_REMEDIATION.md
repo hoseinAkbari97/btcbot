@@ -199,7 +199,7 @@ standard), §11.1 (separation of duties), §11.2 (auditor access), and §11.3 (c
 | M5 | works from frozen artifacts, not the implementer's assumptions | §7.3.4 |
 | M6 | can inspect specs, code, tests, logs, outputs; can run synthetic tests | §7.3.5 |
 | M7 | signs an independence attestation listing evidence reviewed | §7.3.6 |
-| M8 | statistical expertise: dependence, multiple testing, error control | §7.7, §2.3 |
+| M8 | statistical expertise: dependence, multiple testing, error control | §7.7; 2ZP §2.3 |
 | M9 | confidentiality; no unauthorized reserved-data access | §11.2, §8.2.1 |
 
 ### 4.1 Ranking matrix
