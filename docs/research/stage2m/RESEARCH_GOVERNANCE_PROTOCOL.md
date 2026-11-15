@@ -4,6 +4,8 @@
 **Status:** proposed protocol requiring owner approval. It authorizes no experiment, candidate, or
 data access.
 **Date:** 2026-11-09 (UTC)
+**Version:** 2.0.0 — first versioned form, assigned on adoption 2026-11-15 (UTC) under finding `V-1` (see
+`docs/research/stage2zn/STAGE2ZN_PROTOCOL_ADOPTION_RECORD.md`).
 
 **Evidence labels:** **Verified fact** (repository-supported, cited), **Interpretation** (reasoned
 conclusion), **Proposal** (suggested methodology requiring approval), **Owner decision** (cannot be
@@ -446,11 +448,79 @@ under a pre-registered protocol.
 
 **Proposal:** the blocks are chronological and non-overlapping. An embargo or purge period separates
 them so that overlapping holding periods do not leak information across the boundary. The exact
-dates and hashes are frozen at Gate 2.
+dates are declared by the owner at Gate 2. The hashes are computed by the custodian under §8.2.1 and
+recorded, with those dates, in the Gate 2 manifest. No other party computes them.
 
 **Interpretation:** reusing validation data for a second look, or changing a rule after seeing
 validation, converts the validation block into development data. The framework must record this
 explicitly and treat the result as exploratory.
+
+### 8.2.1 Reserved contact, the custodian, and the freeze
+
+#### A-1 — Reserved contact, defined
+
+**§8.2.1 Definitions.** A *reserved interval* is the set of records in a data file whose timestamps fall inside
+a validation or an out-of-sample block. *Reserved contact* is any access to any byte of a reserved interval,
+whether or not the byte is interpreted, whether the access is whole-file or partial, and whether or not the
+content is displayed, printed, or retained. Reserved contact includes opening a reserved interval as a stream,
+reading it into memory, copying or exporting it, hashing it, parsing it, and querying it.
+
+**Any reserved contact by the analyst is a prohibited read.** "Read" in D-12 and in addendum §10.4 includes
+reserved contact. There is no threshold below which contact becomes contact-free, and no exception for contact
+that produces no comprehensible content.
+
+#### A-2 — The single custodian, and digest-only contact
+
+**The custodian.** The owner appoints in writing exactly one *custodian*, who may be the owner. The custodian
+is the only party permitted reserved contact. That contact is permitted for one purpose only: to compute a
+cryptographic digest of a declared reserved interval.
+
+Permitted processing is limited to streaming the interval's bytes, in file order and without transformation,
+through the declared digest function. Prohibited within a digest run: parsing, deserialising, decoding any
+payload, filtering, slicing, sampling, aggregating, counting by value, interpolating, summarising, plotting,
+retaining the streamed bytes, and writing any output other than the digest and the byte count.
+
+The declared digest function is SHA-256 over the raw bytes of the interval, from its first byte to its last.
+Locating the first record at or after a declared boundary timestamp by its timestamp field alone is part of the
+digest procedure and is limited to one such inspection per file per boundary.
+
+#### A-3 — What satisfies the freeze, and what the custodian may deliver
+
+**Delivery.** The custodian delivers to the record, and to no one else, exactly six items: the digest, the
+name of the digest function, the byte count streamed, the declared interval's start and end timestamps, and the
+UTC date of the run. Nothing else crosses the boundary — no row, no field, no count by value, no sequence, no
+statistic, no indicator, no summary, no sample, and no derived quantity of any kind.
+
+**What the freeze consists of.** §8.2's frozen split is satisfied by the owner's declared dates plus the
+custodian's digests, recorded together in the Gate 2 manifest. No further hash of a reserved interval is
+required of, or permitted to, the analyst.
+
+**What this does not create.** The digest does not certify the contents to the analyst, and it is not a
+substitute for reading. Its function is identity: it fixes which bytes the split refers to, so that a later
+inconsistency is detectable. Detecting that inconsistency is the custodian's task, under `A-4`.
+
+#### A-4 — The append-only, pre-delivery log
+
+**Logging.** Every digest run is logged, and the log entry is committed **before** any digest is delivered.
+Each entry records: the UTC date and time of the run, the file path, the declared interval's endpoints, the
+digest function, the byte count, the digest, and the operator's identity.
+
+The log is append-only. No entry may be edited, reordered, deleted, or reconstructed after the fact; a
+correction is a new entry that names the entry it corrects. The log is committed with the Gate 2 manifest and
+is part of the Gate 4 audit scope.
+
+Because the entry precedes delivery, the record cannot be back-filled after a look. The analyst's
+reserved-contact count remains zero throughout, and the log is the evidence of it — not a claim about it.
+
+#### A-5 — Non-derogation
+
+**No other effect.** This amendment changes who may contact reserved bytes, and what satisfies §8.2's hash
+requirement. It changes nothing else. It does not alter D-01…D-15, A-1…A-4, the one-look rule, the embargo,
+the three-block structure, any threshold, any MME, any population, any verdict, or any gate.
+
+It creates no permission for the analyst, no research authorization, no Gate 2 opening, and no custodian
+appointment — the appointment is a separate instrument. Where this section and an earlier restriction differ,
+the earlier restriction continues to apply; nothing here is to be read as a repeal by implication.
 
 ### 8.3 Leakage prevention
 
