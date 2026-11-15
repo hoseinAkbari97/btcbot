@@ -402,4 +402,24 @@ editing the 2ZN record):
 
 **Owner authorization required?** **[D]** Yes — it interprets a committed record and is an owner act.
 
+### 6.2 `D2` — protocol header: smallest corrective amendment
+
+**Exact source text.**
+
+- **[F]** Protocol header: "**Status:** proposed protocol requiring owner approval. It authorizes no experiment,
+  candidate, or data access." — alongside "**Version:** 2.0.0 — first versioned form, assigned on adoption 2026-11-15
+  (UTC) under finding `V-1`".
+
+**Proposed remediation — one-line header correction.** **[D]** Replace **only the `Status:` line** with:
+
+> **Status:** adopted 2026-11-15 (UTC) as version 2.0.0. It authorizes no experiment, candidate, or data access until
+> the applicable gate is registered and owner-approved.
+
+**[D]** No normative rule, threshold, or decision changes; the prior text remains recoverable in git history. **[D]** If
+the owner prefers to preserve the exact adopted bytes, the alternative is to record the stale header as an
+`OBSERVATION` and correct it in the next version bump instead.
+
+**Owner authorization required?** **[D]** Yes — editing the adopted protocol is a protocol change and must be recorded
+as a versioned header correction, not a silent edit.
+
 ---
