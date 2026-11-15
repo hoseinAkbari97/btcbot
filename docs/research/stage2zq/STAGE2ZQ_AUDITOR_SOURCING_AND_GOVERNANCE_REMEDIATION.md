@@ -294,4 +294,33 @@ package and obtain a signed disclosure. **[D]** Until then, `AN-1` remains **out
 > Kind regards,
 > `______________________` (owner)
 
+### 5.2 Project and auditor-role description (one page, draft)
+
+**What the programme is.** A systematic BTC trading research programme run under a written governance protocol. It
+defines seven gates, separates development / validation / out-of-sample data, and requires an independent review before
+a historical result is accepted. Two earlier candidates were closed as `FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES`;
+they are not being reopened.
+
+**What the reviewer would do.**
+
+- Review the **frozen specification and code** against a specification-to-code trace.
+- Run or inspect **synthetic tests** for boundaries, labels, arithmetic, time handling, and error paths.
+- Check **temporal correctness** (no look-ahead, previous-closed-bar reads) and **data alignment**.
+- Check the **statistics**: dependence handling, effective sample size, multiple-testing control, sample-sufficiency
+  arithmetic, and the pre-registered verdict logic.
+- Check **cost and capital arithmetic** and **non-overlap/deduplication**.
+- Produce a **written report** with findings graded `CRITICAL` / `MAJOR` / `MINOR` / `OBSERVATION`, each with location,
+  requirement, impact, evidence, and a recommended resolution.
+
+**Independence requirements.** The reviewer must have had no part in designing, coding, reviewing, or reporting the
+artifacts; no part in choosing the candidate, thresholds, population, or verdict rule; and no financial, employment, or
+personal interest in the outcome. The reviewer signs an independence statement and lists the evidence reviewed.
+
+**Access boundaries.** Default access is to frozen artifacts, code, tests, logs, and aggregate outputs. **Reserved
+validation and out-of-sample data are not provided** unless the scope explicitly requires it and the owner authorizes it
+in writing.
+
+**Deliverables and evidence standard.** A written audit report, versioned hashes of the artifacts reviewed, and a clear
+statement of what could not be verified.
+
 ---
