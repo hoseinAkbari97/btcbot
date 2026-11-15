@@ -259,3 +259,18 @@ date, signature, or consent is supplied here.
 >
 > Conditions or qualifications: `________________`. Effective date (UTC): `________________`. Recorded verbatim by:
 > `________________`. I understand this ratifies selections only; it appoints no custodian and opens no Gate 2.
+
+### Instrument 3 — Custodian appointment statement
+
+> I have read `docs/research/stage2zi/STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md`, SHA-256
+> `4db9d1b0a9498624bdedf545a963f7469237677691195822ca66a5d194b5aa22`. I appoint as custodian (name or role):
+> `________________`. The custodian is `[the owner / a third party]`. I confirm the custodian is not the analyst.
+> I disclose any role overlap (§11.1): `________________`.
+>
+> The protocol amendment this appointment depends on is `docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md`,
+> SHA-256 `973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c`, and I have adopted it `[before this
+> appointment / at the same time]`. Access granted, in my words: `________________`. Conditions or qualifications:
+> `________________`. Effective date (UTC): `________________`. Recorded verbatim by: `________________`.
+>
+> I understand this instrument authorizes no access to any dataset, no research, and no Gate 2 activity, and that the
+> custodian's reserved contact is limited to digest runs under `A-2`–`A-4`.
