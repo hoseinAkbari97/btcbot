@@ -82,3 +82,39 @@ changed by this instrument: adoption has to authorize that text change as a sepa
 nowhere in `stage2zd/` — so selecting it is a confirmation of the `26 bp` label, not a packet decision. And `2ZD-4`
 is a **superset**: the packet asks for five fields; the proposal supplies seven, adding the resample count and seed
 (finding `X-5`).
+
+## 3. The custodian appointment — statement and restrictions
+
+**Instrument:** `docs/research/stage2zi/STAGE2ZI_CUSTODIAN_APPOINTMENT_INSTRUMENT.md`
+**SHA-256:** `4db9d1b0a9498624bdedf545a963f7469237677691195822ca66a5d194b5aa22` (13254 bytes)
+**Status:** unsigned. **No custodian is appointed.** The role does not exist under the current protocol.
+
+**The appointment statement, if made, would say:** the owner appoints **exactly one** custodian under proposed
+protocol §8.2.1 (`A-2`–`A-4`); the appointment is **void unless the amendment is adopted first or at the same time**;
+the recommended appointee is the **owner** (a recommendation, not the act); and the custodian **is not the analyst**.
+
+**What the custodian may access:** the reserved dataset files **as byte streams, for the sole purpose of a declared
+digest run**; one record per file per boundary, **by its timestamp field alone**, to locate the interval's first byte;
+and the development block under the ordinary permissions any analyst has. Nothing more.
+
+**Restrictions that bind the role (appointment instrument §§3–6):**
+
+- **Digest-only.** A digest run streams the interval in file order through SHA-256 and writes nothing but the digest
+  and the byte count. The interval endpoints are **declared in writing before the run** (by calendar decision, not
+  observation); the script is committed and hashed **before** it runs.
+- **Prohibited acts:** parse, decode, inspect, analyse, disclose, retain — no reading of structure, no values, no
+  "it looked fine" reassurance, no copy outside the custodian's directory, no opinion about what the bytes contain.
+- **Log before delivery.** Every run is logged and the entry is committed **before** any digest is delivered. The log
+  is append-only and falls inside the Gate 4 audit scope. Delivery is limited to six items: digest, function, byte
+  count, endpoints, date — and nothing else.
+- **Separation of duties.** The custodian must not perform the analysis; the analyst must not perform custody. The
+  analyst may never be the custodian. A role overlap is permitted only if disclosed (§11.1) and audited by someone else.
+- **Revocation.** By the owner at any time, effective on the UTC date in the revoking statement; ends automatically if
+  the amendment is not adopted, if it is repealed, if the custodian becomes the analyst, or at Gate 6.
+- **Incident handling.** Any contact outside the procedure is an incident: stop, record from evidence, disclose to the
+  owner and the Gate 4 auditor (not to the analyst as content), assess admissibility as the owner's question, and
+  **do not repair the record**.
+
+**One structural trust limit, stated honestly:** under `R-b` the custodian's digest is checkable by the custodian and
+**not** by the analyst, whose only check is the internal consistency of the log and manifest. The Gate 4 audit must
+record this, not assume it away.
