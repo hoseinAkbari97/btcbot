@@ -91,3 +91,84 @@ recommendation, not the separate named appointment the instrument requires. Seco
 statement would be void today, because the §8.2.1 clause it depends on is unadopted. The second reason alone is
 sufficient, and the first is not curable by the second.
 
+---
+
+## 4. The missing owner statement, prepared (pending affirmation)
+
+This is **not** written in the owner's voice as if already affirmed. It is the separate appointment statement the
+instrument requires, labelled pending. It becomes effective only if the owner issues it **and** the amendment is
+adopted first or at the same time.
+
+```
+Custodian appointment.
+I appoint as custodian (name or role): ______________________
+The custodian is [ the owner / a third party ].
+The protocol amendment this appointment depends on: docs/research/stage2zi/STAGE2ZI_FINAL_PROTOCOL_AMENDMENT.md
+   (SHA-256 973da9cabdbe2bd7cc6dc19368ad0984fdbbc26bb5123e8904a1bf2bcb78d92c), adopted [ before / at the same time as ] this appointment.
+I confirm the custodian is not the analyst.
+I disclose any role overlap (section 11.1): ______________________
+Access granted, in my words: ______________________
+Conditions or qualifications: ______________________
+Effective date (UTC): ______________________
+Recorded by: ______________________
+```
+
+**Other valid answers.** Appointing a third party instead of the owner is valid under the instrument and will be
+recorded as written. A decision **not** to appoint a custodian is also valid; it leaves the role vacant, and it does
+not delegate custody to the analyst or reopen the reserved blocks.
+
+**On receipt**, and only if the amendment is adopted first or at the same time, the agent will record the statement
+verbatim and bind it to the amendment hash. Until then, the answer to *"who is the custodian?"* remains **nobody**.
+
+---
+
+## 5. Restrictions preserved
+
+If the appointment is later made, the instrument's restrictions bind it unchanged. They are restated here so they are
+not lost:
+
+- **Digest-only access.** The custodian may contact reserved bytes only to compute a declared digest — streaming the
+  interval in file order through SHA-256, writing nothing but the digest and the byte count. Endpoints are declared in
+  writing before the run; the script is committed and hashed before it runs.
+- **No parsing, decoding, inspection, or analysis.** No structure, values, distributions, returns, or opinions about
+  the reserved bytes. No "it looked fine" reassurance.
+- **Append-only logging before delivery.** Every run is logged and the entry is committed **before** any digest is
+  delivered. The log is append-only and is inside the Gate 4 audit scope.
+- **Separation of custody and research.** The custodian must not perform the analysis; the analyst must not perform
+  custody. The analyst may never be the custodian.
+- **Revocation and incident handling.** Revocable by the owner at any time; any contact outside the procedure is an
+  incident to be stopped, recorded from evidence, disclosed to the owner and the Gate 4 auditor, and never repaired
+  by editing the record.
+- **No opening of reserved material before the authorized protocol stage.** The one look at validation is at Gate 5
+  only, after the Gate 2 freeze and the Gate 4 audit; OOS is used only if validation passes the pre-registered
+  criteria.
+
+Under `C-N` none of that can begin, because there is no registered hypothesis for a look to test.
+
+---
+
+## 6. Governance status after this record
+
+| item | status | changed by this record? |
+|---|---|---|
+| custodian | **NOT APPOINTED — pending the statement in §4** | no |
+| `2ZD-4` custody field | recorded as the owner's accepted **recommendation** | no |
+| Stage 2ZI protocol amendment | **PENDING — NOT ADOPTED** | no |
+| reserved blocks | closed; analyst contact count stays at zero | no |
+| Gate 2 | **NOT AUTHORIZED** and unregistrable under `C-N` | no |
+| Gate 0 / Gate 1 | **NOT PASSED** / **PASSED — research leg only** | no |
+
+---
+
+## 7. Integrity of this record
+
+1. This record appoints nobody and authorizes no access to any dataset, no research, and no Gate 2 activity.
+2. It edits no adopted, frozen, or historical document. The Stage 2ZI instruments and manifests are byte-identical
+   to their committed versions.
+3. It writes no owner name, role, date, or acknowledgement on the owner's behalf. The statement in §4 is labelled
+   pending and is written in the third person, not in the owner's voice as if affirmed.
+4. It makes no claim that a custodian exists, that the amendment was adopted, or that reserved material may be opened.
+5. If the owner issues the §4 statement, it is recorded verbatim in a new record and bound to the amendment hash.
+   This record is then superseded prospectively; it is not edited.
+
+
