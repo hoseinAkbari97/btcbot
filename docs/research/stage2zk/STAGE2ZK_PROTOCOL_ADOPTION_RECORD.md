@@ -137,4 +137,71 @@ also valid and will be recorded verbatim; it leaves §8.2 unamended and `R-b` wi
 amendment's exact §4 replacement and §5 insertion to the protocol text; produce a manifest for the amended protocol
 text under §10.2; and verify the amended protocol's hashes and byte counts. Nothing of that is done now.
 
+---
+
+## 6. What was not done, and why
+
+- **The protocol text is not edited.** `docs/research/stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md` is byte-identical to
+  its committed version — `be5a61bf4a26bbe1a508bc419f707050479900cb7987a019a2def0e74934c058`, 39850 bytes. §8.2 still
+  reads "The exact dates and hashes are frozen at Gate 2", and no §8.2.1 exists.
+- **No versioned protocol artifact is created.** The amendment's finding `V-2` records that §10.3 forbids editing a
+  frozen artifact before adoption, and the amendment is unadopted. Producing a `2.0.0` protocol text now would be
+  exactly the pre-adoption edit §10.3 prohibits.
+- **No manifest for an amended protocol is produced**, because there is no amended protocol.
+- **`Y-1` and `Y-2` are neither erased nor grandfathered.** They remain recorded as pre-amendment deviations, exactly
+  as the Stage 2ZI amendment records them. Their computational/governance distinction is preserved: the Stage 2ZC
+  digests remain valid as file identity, while their governance status is a deviation. No analyst may recompute those
+  digests.
+- **The uncertainty is preserved.** Whether the four Stage 2ZC boundary timestamps fell strictly inside a reserved
+  interval or exactly on its boundary is unresolved and is not resolved here.
+
+---
+
+## 7. Effects, if the amendment is later adopted
+
+Recorded so the owner can see the consequence of the pending statement; none of it has occurred.
+
+- §8.2 becomes satisfiable without analyst contact: the owner declares the dates, and the custodian computes and logs
+  the digests. `R-b` gains operative text.
+- A single custodian role, defined in new §8.2.1 (`A-2`–`A-4`), comes into existence. It is not filled by adoption;
+  the appointment is a separate instrument.
+- `A-5` non-derogation: nothing else changes — not D-01…D-15, not the one-look rule, not the embargo, not the
+  three-block structure, not a threshold, not a verdict, not a gate.
+- Adoption would **not** open Gate 2, register a hypothesis, authorize analyst contact with reserved bytes, or ratify
+  the seven selections.
+
+---
+
+## 8. Governance status after this record
+
+| item | status | changed by this record? |
+|---|---|---|
+| Stage 2ZI protocol amendment | **PENDING — NOT ADOPTED** (form insufficient; statement prepared in §5) | no |
+| protocol text and §8.2 | unmodified | no |
+| versioned protocol artifact `2.0.0` | **not created** | no |
+| `Y-1` / `Y-2` | recorded pre-amendment deviations, neither grandfathered nor erased | no |
+| custodian | not appointed | no |
+| Gate 2 | **NOT AUTHORIZED** and unregistrable under `C-N` | no |
+| Gate 0 / Gate 1 | **NOT PASSED** / **PASSED — research leg only** | no |
+| `T-4` / `T-5` | deferred / open | no |
+| `R-08` / `R-15` | `P` / `B` | no |
+| `C-4` / `C-6` | unresolved | no |
+
+---
+
+## 9. Integrity of this record
+
+1. This record adopts nothing and authorizes no activity. It preserves the owner's acceptance, records why it is not
+   yet a completed adoption, and prepares the exact missing statement.
+2. It edits no adopted, frozen, or historical document. The protocol, the addendum, the Stage 2ZI instruments, and
+   their manifests are byte-identical to their committed versions.
+3. It writes no owner signature, date, or acknowledgement on the owner's behalf. The statement in §5 is labelled
+   pending and is written in the third person, not in the owner's voice as if affirmed.
+4. It makes no claim that the amendment was adopted, that the protocol changed, that `Y-1`/`Y-2` were legalised, or
+   that Gate 2 advanced.
+5. If the owner issues the §5 statement, it is recorded verbatim in a new record, the amendment is applied, and the
+   versioned protocol artifact and its manifest are produced. This record is then superseded prospectively; it is not
+   edited.
+
+
 
