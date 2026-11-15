@@ -433,3 +433,33 @@ specification (§2) and an unexecuted draft instrument (§3).
 
 ---
 
+## 7. What remains unauthorized (exact list)
+
+**[F]** Stage 2ZP authorizes none of the following; each remains **unauthorized**:
+
+1. Contacting, nominating, or appointing any auditor (§3 is **DRAFT — NOT APPOINTED**).
+2. Access to reserved, validation, or OOS data by anyone, including a future auditor, without separate owner
+   authorization under §11.2/§8.2.1.
+3. Any census, backtest, simulation, or statistical analysis.
+4. Designing, registering, or naming any trading hypothesis, including H1.
+5. Reopening, modifying, or substituting candidate B or candidate D.
+6. Changing any threshold, cost assumption, owner decision, or verdict — including the `26 bp` proxy and the `N<150` /
+   `M_all>0.20` rule.
+7. Any venue research or execution measurement.
+8. Gate 2 authorization, Gate 2 registration, or any later gate.
+9. Editing the adopted protocol, the historical records, or any frozen artifact — including the `D1`/`D2`/`D3`
+   remediations, which are proposals requiring owner authorization.
+10. Beginning the H1 design stage (§5 is a boundary proposal only).
+
+---
+
+## 8. Record of this stage
+
+**[F]** Deliverable: this single report,
+`docs/research/stage2zp/STAGE2ZP_AUDITOR_QUALIFICATION_AND_GOVERNANCE_REMEDIATION.md`.
+**[F]** No manifest is produced: §10.2 attaches manifests to versions of frozen artifacts, and Stage 2ZP freezes
+nothing. **[F]** No file outside this report is modified. **[F]** No person, qualification, consent, or appointment is
+invented; every auditor field is blank. **[D]** The stage stops here; H1 is not begun.
+
+---
+
