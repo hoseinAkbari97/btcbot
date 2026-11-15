@@ -90,3 +90,29 @@ and no confidential project data were disclosed in the search.**
 verifiable this session. **[D]** Availability and pricing for all candidates are **[OPEN]**.
 
 ---
+
+## 3. Candidate shortlist
+
+**[D]** Five candidates are listed. The owner-custodian, **Hossein Akbari**, is excluded by rule. **[F]** No candidate
+has been contacted. **[D]** "Independence from this project" is satisfied *prima facie* for every candidate because none
+has had any involvement in this private project; the mandatory step is the candidate's own signed disclosure, which is
+**[OPEN]** for all.
+
+### 3.1 Candidate A — Dr. Marcos López de Prado
+
+| field | value |
+|---|---|
+| public profile | computational scientist / investment executive; Global Head of Quantitative R&D, ADIA; Professor of Practice, Cornell Engineering; Research Fellow, Lawrence Berkeley National Laboratory **[V]** |
+| qualifications | PhD; International Member, Royal Academy of Engineering (Spain); ORCID `0000-0002-4107-3797` **[V]** |
+| relevant work | co-author of "Pseudo-mathematics and financial charlatanism: the effects of backtest overfitting on out-of-sample performance" (Notices of the AMS, 2014); author of *Advances in Financial Machine Learning*; architect of the Deflated Sharpe Ratio, PBO, and combinatorial purged cross-validation **[V]** |
+| quantitative expertise | directly on the project's hard problems: backtest overfitting, multiple-testing control, dependence, and out-of-sample inference **[V]** |
+| independence from this project | none — no prior involvement in this private project **[D]** |
+| potential conflicts | employed by ADIA and previously founded True Positive Technologies and led machine learning at AQR; a large institutional role may create capacity and conflict constraints **[V]** |
+| availability | **[OPEN]** — no public indication of independent-review availability |
+| mandatory-criteria fit | expertise M-statistical: strong; independence M1–M3: satisfied pending disclosure; COI M4: requires disclosure; availability: unknown |
+
+**Sources:** `https://www.quantresearch.org/Vita.htm` · `https://www.duffield.cornell.edu/people/marcos-lopez-de-prado/`
+· `https://www.adialab.ae/bios/professor-marcos-lopez-de-prado` · `https://orcid.org/0000-0002-4107-3797` ·
+`https://www.risk.net/author/marcos-lopez-de-prado`
+
+---
