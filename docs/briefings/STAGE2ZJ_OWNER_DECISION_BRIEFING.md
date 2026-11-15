@@ -243,3 +243,19 @@ date, signature, or consent is supplied here.
 > accompanied by a manifest carrying SHA-256 hashes, byte counts, and a canonical self-hash.
 >
 > Revisions (if any): `________________`. Recorded verbatim by: `________________`.
+
+### Instrument 2 — Owner decision ratification statement
+
+> I have read `docs/research/stage2zi/STAGE2ZI_OWNER_DECISION_INSTRUMENT.md`, SHA-256
+> `c7f6eebf5fb6e58d04606ee3ceb1ef8b5619e2b22319483f30006e805a996232`. My selections are:
+>
+> - `2ZD-0` (path): `________________`
+> - `2ZD-1` (reserved-data reading): `________________`
+> - `2ZD-2` (primary candidate): `________________`
+> - `2ZD-3` (sizing rule): `________________`
+> - `2ZD-4` (episode, block length, resample count, seed, embargo, custodian, opening): `________________`
+> - `2ZD-5` (`σ`, `DE`, `p_exec` route): `________________`
+> - `Q-1` (cost basis): `________________`
+>
+> Conditions or qualifications: `________________`. Effective date (UTC): `________________`. Recorded verbatim by:
+> `________________`. I understand this ratifies selections only; it appoints no custodian and opens no Gate 2.
