@@ -146,3 +146,20 @@ an existing full-file digest becomes a custodian task.
 **The common point.** Both deviations change the *status of an access*, not the *quality of a computation*. Whether
 they affect the admissibility of any Stage 2ZC-derived result is a question this briefing **cannot answer**, because
 the only arguments either way would need exactly the access `R-b` forbids. It is left to the owner and to Gate 4.
+
+## 5. What retaining `C-N` means
+
+`C-N` selects **neither** candidate. Candidate B and candidate D remain frozen at `v2.0.0` with their
+`FEASIBILITY FAIL — INSUFFICIENT OPPORTUNITIES` verdicts untouched. Neither is promoted, revived, or replaced, and no
+third candidate is created to fill the gap.
+
+| consequence | stated plainly |
+|---|---|
+| Gate 2 cannot be **registered** | protocol §5.2 input #1 is a hypothesis; `C-N` supplies none, and §5.3 requires the registration to be complete |
+| the hypothesis input is unresolved **by choice** | this is a decision, not an omission and not a missing reply |
+| Gate 2 is unauthorized **and** unregistrable | the first is a standing prohibition; the second is a new fact created by this selection |
+| no strategy-design work is authorized | not by `2ZD-0 = C`, not by `C-N`, and not by anything in this package |
+
+**What `C-N` is not.** It is not a vote against either candidate's evidence, and it does not reopen either verdict. It
+is a refusal to register a hypothesis now, which is a legitimate option in the packet (§6.2) and does not breach D-11,
+because a rule capping primaries at one is satisfied by zero.
