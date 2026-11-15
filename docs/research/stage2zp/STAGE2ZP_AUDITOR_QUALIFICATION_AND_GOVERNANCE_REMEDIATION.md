@@ -209,5 +209,53 @@ The auditor declares, by signature below, that they satisfy every mandatory crit
 - **[F]** State in the report who performed the audit, their prior involvement, what was reviewed, what could and could
   not be verified, and what independence limitations remain (§11.7).
 
+### 3.5 Access boundaries
+
+- **[F]** Permitted by default: frozen specification and config, source code and version hashes, test suite and
+  synthetic fixtures, data manifest and alignment report, recorded outputs and logs, the trace, and governance records
+  (§7.2, §11.2).
+- **[F]** Prohibited by default: validation and OOS data, and any reserved bytes. Reserved access requires an explicit
+  audit-scope statement **and** owner authorization (§11.2, §8.2.1).
+- **[D]** The auditor is not a custodian and gains no reserved contact by this instrument.
+
+### 3.6 Confidentiality
+
+- **[D]** The auditor keeps confidential all non-public artifacts reviewed and does not disclose reserved content
+  beyond the authorized scope.
+- **[D]** On completion, the auditor returns or destroys copies as the owner directs, retaining only the audit record
+  and its hashes, which are versioned and never deleted (§11.6).
+
+### 3.7 Conflict-of-interest declaration (auditor-signed, blank)
+
+- **[F]** Disclosure of prior involvement in design, implementation, or reporting; any financial or employment interest
+  in the outcome; any relationship with the implementer or owner that could affect judgment; and the scope and limits
+  of expertise (§11.3).
+- **[D]** The declaration is made before the audit and updated if any fact changes.
+
+**Signature:** `______________________`  **Date:** `______________`
+
+### 3.8 Audit deliverables
+
+- **[F]** A written Gate 4 audit report with the §7.4 scope, the §7.5/§11.5 findings, and the §11.7 disclosure.
+- **[F]** Versioned hashes of the artifacts reviewed and the report itself; the report enters the stage freeze manifest
+  (§11.6).
+- **[D]** A clear statement of what the audit could not verify.
+
+### 3.9 Revocation and replacement
+
+- **[D]** The owner may revoke this appointment in writing at any time; revocation is recorded, not deleted.
+- **[D]** If the auditor becomes non-independent, or breaches §3.5 or §3.6, the appointment is revoked and the affected
+  work is re-audited by a new party under §11.6.
+- **[D]** A replacement must satisfy §2 afresh; a revoked auditor's prior report remains in the record with its status
+  noted.
+
+### 3.10 Acceptance fields (blank)
+
+- **Owner-custodian acceptance:** `______________________`  **Date:** `______________`
+- **Auditor acceptance:** `______________________`  **Date:** `______________`
+
+**[F]** With all fields blank, this instrument is **DRAFT — NOT APPOINTED**. No appointment exists until the owner
+signs it and the named auditor accepts.
+
 ---
 
