@@ -478,3 +478,36 @@ change from Stage 2ZP is that `AN-1` now has a documented shortlist and a ready-
 candidates, none yet confirmed."
 
 ---
+
+## 8. Explicit authorization boundaries
+
+**[F]** Stage 2ZQ authorizes none of the following; each remains **unauthorized**:
+
+1. Contacting, inviting, nominating, or appointing any candidate (§5 is **DRAFT — NOT SENT**).
+2. Sending the outreach package or disclosing any private repository content or confidential project data.
+3. Access to reserved, validation, or OOS data by anyone, including a future auditor, without separate owner
+   authorization under §11.2/§8.2.1.
+4. Any census, backtest, simulation, or statistical analysis.
+5. Designing, registering, or naming any trading hypothesis, including H1.
+6. Reopening, modifying, or substituting candidate B or candidate D.
+7. Changing any threshold, cost assumption, owner decision, or verdict — including the `26 bp` proxy and the `N<150` /
+   `M_all>0.20` rule.
+8. Any venue research, quote sampling, or execution testing.
+9. Gate 2 authorization, Gate 2 registration, or any later gate.
+10. Editing the adopted protocol or any historical record — including the `D1`/`D2`/`D3` remediations, which are owner
+    acts proposed here.
+11. Declaring any candidate qualified, independent, available, or appointed.
+
+---
+
+## 9. Record of this stage
+
+**[F]** Deliverable: this single report,
+`docs/research/stage2zq/STAGE2ZQ_AUDITOR_SOURCING_AND_GOVERNANCE_REMEDIATION.md`.
+**[F]** No manifest is produced: §10.2 attaches manifests to versions of frozen artifacts, and Stage 2ZQ freezes
+nothing. **[F]** No file outside this report is modified. **[F]** No candidate was contacted, no message was sent, and
+no private data was disclosed. **[F]** No person's identity, qualifications, consent, or appointment was invented; every
+candidate claim is labelled by evidence quality and every unknown is marked **[OPEN]**/**[U]**. **[D]** The stage stops
+here; the owner decides whether to send §5, and H1 is not begun.
+
+---
