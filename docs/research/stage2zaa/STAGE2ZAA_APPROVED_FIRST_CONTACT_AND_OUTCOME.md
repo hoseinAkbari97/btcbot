@@ -31,3 +31,30 @@ Attribution: Hossein Akbari (owner). Approval date: **2026-11-16**. This is a tr
 - **Subject (exact):** `Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
 - **Body (exact):** the complete 23-line text at approved package §3.2, to be used verbatim. It was **not sent**, so it is referenced here rather than transcribed again.
 - **Attachments:** none.
+
+## 4. Actual outcome
+
+**NOT SENT.** No authorized email-sending mechanism is available on the system, so no send was attempted and no alternate channel was substituted.
+
+Mechanism checks performed (2026-11-16 UTC):
+
+- No mail transport/client found: `sendmail`, `msmtp`, `mutt`, `mail`, `mailx`, `swaks`, `mpop`, `s-nail` absent.
+- No SMTP/provider credentials or mail-related environment variables (e.g. SendGrid/Postmark/Resend/SES); no `~/.msmtprc` or `~/.mailrc`.
+- No MCP servers/resources exposed by the environment.
+- No local MTA listening on `127.0.0.1:25`; no local mail spool.
+
+Recorded status fields:
+
+| field | value |
+|---|---|
+| Prepared | **Yes** (exact package §3.1/§3.2) |
+| Sent | **No** |
+| Accepted by provider | **No** (no provider used) |
+| Delivered | **Not claimed** |
+| Read | **Not claimed** |
+| Replied | **No response; not claimed** |
+| Send timestamp (UTC) | **None — not sent** |
+| Provider/message identifier | **None** |
+| Delivery failure / bounce / uncertainty | **N/A — not attempted** |
+| Attachments included | **No** |
+| Other recipients contacted | **No** |
