@@ -34,3 +34,33 @@
 ## 4. Exact subject
 
 `Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
+
+## 5. Exact email body
+
+Send the text below exactly, without edits or additions.
+
+```text
+Subject: Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)
+
+Dear Dr. López de Prado,
+
+I am contacting you to ask whether you would be interested and available for an exploratory, limited scoping discussion regarding a possible statistical-methodology review under a written research governance protocol (Protocol 2.0.0, §7.7).
+
+External-safe project overview (non-confidential)
+- I am the owner of a quantitative research programme developing a framework for evaluating trading hypotheses under a written governance protocol that emphasizes economic objectives, pre-registration/freeze discipline, data separation, dependence-aware evidence, cost realism, and independent verification.
+- The programme is in a governance and preparation stage. No hypothesis is currently registered for Gate 2, no performance evaluation is underway, and no trading or deployment is authorized. I am not claiming that any strategy is profitable, validated, or ready for deployment.
+
+Proposed limited scope (scoping discussion only)
+- Purpose: explore a limited statistical-methodology review and scoping discussion focused on backtest-overfitting controls, selection bias/multiple testing, dependence and effective sample-size considerations, sample-sufficiency logic, and verdict/statistical methodology, as applicable to frozen, non-confidential methodology context.
+- Nature: exploratory discussion only to assess interest, availability, and potential fit for a narrowly scoped review. This is not an appointment, not an offer of a continuing engagement, and not a request to serve as the full independent auditor required for Gate 2 (input #15) or as the Gate 4 auditor.
+- Boundaries (if any later step is considered, subject to separate explicit decisions): only external-safe, non-confidential materials would be discussed/shared as separately approved; no repository credentials or private links, no confidential documents, no unpublished strategy material, and no research datasets (including no reserved, validation, or out-of-sample data) would be shared.
+
+Compensation (non-binding)
+- If helpful for assessing feasibility, I would welcome a non-binding indication of your availability and any fee range for a limited scoping discussion/review. I am not proposing a budget and not promising payment or any commitment.
+
+If you are open to it, I would appreciate a brief reply indicating your interest and availability for an initial scoping conversation.
+
+Kind regards,
+Hossein Akbari
+Programme owner
+```
