@@ -42,3 +42,11 @@ Every other 64-hex digest embedded in the Stage 2ZV package was recomputed and m
 | `stage2zu/STAGE2ZU_OWNER_AUTHORIZATION.md` | `15762395…470e` | OK |
 
 The only incorrect embedded digest in the 2ZV package is the self-hash. (The separate embedded-hash mismatch inside the 2ZU authorization file is already covered by the Stage 2ZY erratum and was not altered here.)
+
+## 4. Corrected package
+
+- **Path:** `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md`
+- **SHA-256 (computed from committed file bytes, after finalization):** `2b0cb72c78f9511bb7cb23e879daa18ab8b13567d01b5d909c5a0296c06ea8c0`
+- **Message body SHA-256 (subject + body block):** `f407df12d7f2bd2bbb34769b744a893670e00eda8ae18101c6004decac1d297f`
+- The package embeds **no self-hash**. Its authoritative digest is this externally recorded value; the owner should recompute it before approving.
+- This digest corresponds to the package as committed; any later edit to the package produces a new digest and requires a new record.
