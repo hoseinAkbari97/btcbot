@@ -19,3 +19,16 @@
 - No sent-message copy, screenshot, export, provider receipt, message identifier, or timestamp was provided in the conversation or found in the repository.
 - Searched before recording: `docs/research/stage2zad/` (none), and the working tree for recent evidence-like files (`*.eml`, screenshots, PDFs, names containing "sent"/"evidence") — none found.
 - Consequently this record makes **no claim** that the email was sent, accepted, delivered, read, or replied to.
+
+## 3. Intended send parameters (unverified)
+
+These are the parameters that owner evidence must be checked against; they are **not** confirmed as having been sent.
+
+- **Recipient (only):** Dr. Marcos López de Prado
+- **To:** `ml863@cornell.edu`
+- **CC:** none
+- **BCC:** none
+- **Subject:** `Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
+- **Body:** the exact text in the approved package §5 (and handoff §5)
+- **Attachments:** none
+- **Sent timestamp (UTC):** **not established** — no evidence supplied
