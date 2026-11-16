@@ -72,3 +72,17 @@ Programme owner
 3. Add **no attachments**.
 4. Paste the subject and body from §4 and §5 **exactly**. Do not edit, shorten, embellish, personalize, or add anything.
 5. Send **once only**. Do not send follow-ups or reminders.
+
+## 7. Post-send evidence checklist
+
+Record, in a separate evidence record:
+
+- [ ] Actual send date/time in UTC
+- [ ] Sending account address (no password/token/credentials)
+- [ ] Whether the provider accepted the message for sending
+- [ ] Provider/message identifier, if displayed
+- [ ] Screenshot or export of the sent message (To, CC/BCC empty, no attachments)
+- [ ] Any bounce or delivery failure
+- [ ] Any reply, with its date and provenance
+
+Keep distinct: **sent** ≠ **accepted by provider** ≠ **delivered** ≠ **read** ≠ **replied**. Do not claim delivery, reading, or a reply without evidence.
