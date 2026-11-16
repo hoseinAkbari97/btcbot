@@ -47,3 +47,15 @@ These are the parameters that owner evidence must be checked against; they are *
 | No attachments | **Not verifiable** |
 
 No detail not established by evidence has been recorded.
+
+## 5. Delivery-state distinction
+
+| state | recorded status |
+|---|---|
+| Sent | **Not evidenced** |
+| Accepted by provider | **Not evidenced** |
+| Delivered | **Not evidenced** |
+| Read | **Not evidenced** |
+| Replied | **No reply supplied** |
+
+These states are not equivalent and none is claimed beyond the evidence above.
