@@ -30,6 +30,14 @@ Protocol provisions re-read: §5.2#15, §7.3–§7.8, §7.7, §8.2.1, §11.1–�
 
 **Not sent / remaining requirement:** outreach remains **pending** because explicit owner authorization is absent. No supported send performed; no recipient/channel/timestamp/delivery to record. Stop condition met until explicit authorization is recorded.
 
+## 4. Role separation and boundaries
+
+- **Statistical specialist reviewer:** limited §7.7 review/scoping only.
+- **Full independent auditor:** Gate 2 input #15, subject to applicable Protocol 2.0.0 requirements.
+- **Gate 4 auditor:** later independent audit role, subject to applicable independence/access requirements.
+- A positive first-contact response **does not** appoint the candidate to any role. No broader access or research authorization is inferred.
+
+
 
 
 
