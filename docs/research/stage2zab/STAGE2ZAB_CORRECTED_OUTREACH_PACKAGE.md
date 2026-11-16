@@ -61,3 +61,12 @@ Programme owner
 ## 6. Attachments
 
 - **None.** No attachments are proposed or permitted.
+
+## 7. Information intentionally excluded (unchanged)
+
+- No repository links, credentials, private links, commit history, or internal file references.
+- No confidential documents, unpublished strategy material, proprietary rules/signals/parameters, or research datasets.
+- No reserved, validation, or out-of-sample data or descriptions of their contents/splits.
+- No performance results, profitability claims, validation claims, deployment/readiness claims, or presentation of failed candidate experiments as successful evidence.
+- No budget, payment promise, contract terms, or appointment/engagement offer.
+- No implication of Gate 2/Gate 4 auditor appointment, continuing engagement, or any access/authorization beyond the stated limited inquiry.
