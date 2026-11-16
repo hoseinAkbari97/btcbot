@@ -14,3 +14,13 @@ Attribution: Hossein Akbari (owner). Approval date: **2026-11-16**. This is a tr
 - **Channel source:** Cornell David A. Duffield College of Engineering faculty profile
 - **Permitted action:** Send the exact message and only the external-safe material listed in the approved package, without attachments.
 - **Modification rule (owner-stated):** any package modification requires fresh approval.
+
+## 2. Pre-send verification
+
+- Branch `main`, worktree clean, HEAD == `origin/main` at verification start (`0aaa330b2345404d4731af499015a66ba5464c82`). **PASS**
+- Approved package read in full. **PASS**
+- Recomputed package SHA-256 from file bytes: `6797ef102b3da50bdc31212874f1202f4f50554be941cb79852e95156ad93847`. **Exact match with approved digest. PASS**
+- Stage 2ZU authorization and Stage 2ZY erratum/contact-channel report read. **PASS**
+- Recipient in package is Dr. Marcos López de Prado only; approved channel `ml863@cornell.edu` was verified on the official Cornell Duffield profile (Stage 2ZY §4, 2026-11-16). **Consistent. PASS**
+- Prepared body contains no links (`http(s)`, `www.`), no email addresses, no attachment references; package lists no attachments. **PASS**
+- **Flagged discrepancy:** the package's internal §6/§7 text quotes a stale pre-finalization self-hash (`5a9a7da79892f721e9d92112349ed04175450f5b74624d643207e7541e7fe42b`) that does not equal the actual/approved digest (`6797ef10…`). The authoritative digest is the recomputed file-bytes hash, as with the Stage 2ZY Stage 2ZU erratum. Under the task's "any hash discrepancy → STOP" rule this is recorded as a stop condition; the package was **not** modified or repaired.
