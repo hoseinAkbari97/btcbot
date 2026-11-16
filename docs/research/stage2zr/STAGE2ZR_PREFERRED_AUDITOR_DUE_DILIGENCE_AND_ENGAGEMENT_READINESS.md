@@ -90,5 +90,45 @@
 | Conflicts/prior involvement with this project | No known prior involvement (**prima facie**). Firm states vendor-neutral/no downstream conflicts; also builds models — implementation/audit separation must be contractually scoped (auditor must not have built artifacts under audit, §7.3/§11.1). | **[PARTIALLY VERIFIED]** |
 | Availability/willingness/independence | Not confirmed. | **[UNKNOWN]** |
 
+## 3. Comparative suitability matrix (Protocol 2.0.0 mandatory requirements)
+
+**Mandatory lenses (from §5.2#15, §7.3, §7.4, §7.7, §11.1–§11.3):** independence (no owner-custodian/implementer, no prior implementation/design/decision involvement, no COI), ability to work from frozen artifacts, inspect spec/code/tests/logs/outputs and run synthetic tests, produce written findings (CRITICAL/MAJOR/MINOR/OBSERVATION) with evidence/recommendations, sign independence attestation and COI disclosure, and statistical competence for dependence/multiple testing/error control/sample sufficiency/verdict logic.
+
+| requirement / role fit | A. López de Prado | B. Harvey | C. Bailey | D. QuantDesigned |
+|---|---|---|---|---|
+| Statistical expertise (backtest overfitting, multiple testing, selection bias) | **Strong [VERIFIED]** | **Strong [VERIFIED]** | **Strong but narrower public profile [PARTIALLY VERIFIED]** | **Plausible, not publicly evidenced [PARTIALLY VERIFIED]** |
+| Full implementation/spec-trace & synthetic-test audit capability | **[UNKNOWN]/not publicly offered** | **[UNKNOWN]/not publicly offered** | **[UNKNOWN]/not publicly offered** | **Plausible as service [PARTIALLY VERIFIED]**, individual identity/skill unverified |
+| Independence from project (prima facie) | **[PARTIALLY VERIFIED]** (disclosure needed) | **[PARTIALLY VERIFIED]** | **[PARTIALLY VERIFIED]** | **[PARTIALLY VERIFIED]** |
+| COI / institutional constraints | **[UNKNOWN]** (ADIA/industry roles require disclosure) | **[UNKNOWN]** | **[PARTIALLY VERIFIED]** (appears low, disclosure needed) | **[PARTIALLY VERIFIED]** (firm states neutral; separation needed) |
+| Public engagement channel for this work | **[PARTIALLY VERIFIED]** | **[PARTIALLY VERIFIED]** | **[UNVERIFIED]** | **[VERIFIED]** |
+| Deliverable fit (written audit, attestations, hashes) | **[UNKNOWN]** | **[UNKNOWN]** | **[UNKNOWN]** | **[PARTIALLY VERIFIED]** (claims defensible reports) |
+| **Limited independent statistical review** | **Best fit** (expertise) | **Strong fit** | **Good fit** | **Conditional fit** |
+| **Full Gate 2 audit plan / registration input (#15)** | **Conditional** (needs scope/attestation/availability) | **Conditional** | **Conditional** | **Conditional** (needs named qualified individual & scope) |
+| **Later Gate 4 audit** | **Conditional** (if all §7.3/§7.4/§11 satisfied) | **Conditional** | **Conditional** | **Conditional** |
+
+## 4. Practical engagement feasibility
+
+| alternative | Limited statistical review | Full Gate 2 audit (registration readiness/input #15) | Later Gate 4 audit | Complexity / notes |
+|---|---|---|---|---|
+| A. López de Prado | Feasible in principle as §7.7-style scoped specialist review if willing; highest substance fit for overfitting/multiple-testing/sample-sufficiency critique. | Possible only if he can commit to defined scope, frozen-artifact review, and signed independence/COI attestations; engagement mechanism not public. | Possible only if all §7.3/§7.4/§11 independence and access conditions met for the audited artifacts. | High profile/senior institutional role may limit availability and raise coordination/COI-review needs. **[UNKNOWN]** availability/terms. |
+| B. Harvey | Feasible in principle for multiple-testing/backtest-statistics review. | Conditional as above. | Conditional as above. | Academic commitments; no public audit service. **[UNKNOWN]** availability/terms. |
+| C. Bailey | Feasible in principle for overfitting/statistics review. | Conditional. | Conditional. | Retired (potential flexibility) but contact/engagement channel uncertain. **[UNKNOWN]** availability/terms. |
+| D. QuantDesigned | Feasible if staffed with appropriately qualified individual. | More naturally aligned to packaged validation/audit planning, but depends on naming a qualified, independent individual and mapping scope to §7.4 (incl. temporal correctness, spec-to-code trace, synthetic tests, dependence/multiple testing). | Conditional on same plus no prior involvement in audited artifacts and proper separation from any model-building work. | Lower engagement-friction via firm channel, but identity/credentials of actual auditor and statistical depth for this protocol must be confirmed. **[UNKNOWN]** availability/terms. |
+
+**Information requiring direct confirmation (all):** availability; willingness to accept scope; identity/credentials of person doing work (esp. D); independence/COI disclosure and §7.3.6 attestation; ability to work from frozen artifacts and produce required deliverables; access boundaries (no reserved/validation/OOS data by default, §11.2/§8.2.1); confidentiality terms; effort/turnaround. **No prices or compensation expectations are stated.**
+
+## 5. Recommendation
+
+**Ranking (mandatory requirements considered):** 1) **Dr. Marcos López de Prado** — strongest verified expertise match for the project's core statistical risks (backtest overfitting, multiple testing/selection bias, sample sufficiency/validation). 2) **Prof. Campbell R. Harvey** — strong multiple-testing/backtesting expertise. 3) **Dr. David H. Bailey** — strong overfitting expertise, engagement channel less clear. 4) **QuantDesigned** — strongest service/deliverable posture and intake channel, but individual auditor identity and protocol-specific statistical depth **[UNVERIFIED]**.
+
+**Recommended preferred candidate (evidence-supported, conditional):** **Dr. Marcos López de Prado** as the **preferred potential independent statistical specialist reviewer** for an initial limited review/scoping engagement, subject to direct confirmation of availability, willingness, independence (no prior involvement in this project; no disqualifying COI), scope fit, and ability to satisfy applicable Protocol 2.0.0 requirements.
+
+**Role distinctions (explicit):**
+- **Statistical specialist reviewer (recommended initial role for A):** scoped review of frozen artifacts/methodology focused on overfitting, dependence, multiple testing, sample sufficiency, and verdict/statistical logic (consistent with §7.7). **Not by itself a full Gate 4 audit** unless all §7.3–§7.5/§11 requirements are met.
+- **Full independent auditor (Gate 2 input #15 / audit plan and Gate 4-capable):** must satisfy all independence, access, scope, synthetic-test/spec-trace, reporting, and attestation requirements of §5.2, §7.2–§7.8, §11.1–§11.6. Candidate A, B, C, or a named QuantDesigned individual **may** qualify only after direct confirmation; none is confirmed now.
+- **Gate 4 auditor:** same full-independence/scope bar at audit time; cannot be the owner-custodian or anyone with prior design/implementation/decision involvement in audited artifacts. **No candidate is appointed or assumed able to fill this role now.**
+
+**Finding:** Evidence supports selecting **Dr. Marcos López de Prado as the preferred candidate to approach first (owner action, not taken here)** for a limited statistical-review scoping discussion. It does **not** establish that any candidate is qualified, independent, available, or acceptable as full Gate 2/Gate 4 auditor without direct confirmation. `AN-1` remains outstanding.
+
 
 
