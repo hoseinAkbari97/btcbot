@@ -16,4 +16,11 @@
 
 Protocol provisions re-read: §5.2#15, §7.3–§7.8, §7.7, §8.2.1, §11.1–§11.3.
 
+## 2. Authorization evidence (exact) / explicit absence
+
+- **Found:** `docs/research/stage2zs/STAGE2ZS_AUDITOR_OUTREACH_OWNER_DECISION.md` (SHA-256 above) is explicitly marked **"PROPOSAL — PREPARATION ONLY — NOT AUTHORIZATION — NO CONTACT — NO APPOINTMENT"** and recommends (does not authorize) limited first contact.
+- **Checked:** `docs/research/stage2m/OWNER_DECISION_REGISTER.md` and repository decision/authorization records (`docs/research/stage2*`, `docs/briefings`). No record explicitly authorizes: (1) first contact with Dr. Marcos López de Prado specifically, (2) limited statistical-methodology review/scoping under §7.7, (3) sharing only external-safe non-confidential overview/scope, and (4) non-binding compensation discussion without budget/contract commitment.
+- **Conclusion:** **No explicit outreach authorization exists.** A recommendation/draft is not authorization. Outreach **not sent**; no external information shared.
+
+
 
