@@ -25,3 +25,7 @@ This file does **not** embed its own SHA-256. A digest cannot be written into th
 - **Email channel:** `ml863@cornell.edu`.
 - **Channel source:** official Cornell David A. Duffield College of Engineering faculty profile (verified 2026-11-16; see Stage 2ZY contact-channel report).
 - **No CC, no BCC, no alternate channel.**
+
+## 4. Exact email subject
+
+`Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
