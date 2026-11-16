@@ -24,3 +24,10 @@ Attribution: Hossein Akbari (owner). Approval date: **2026-11-16**. This is a tr
 - Recipient in package is Dr. Marcos López de Prado only; approved channel `ml863@cornell.edu` was verified on the official Cornell Duffield profile (Stage 2ZY §4, 2026-11-16). **Consistent. PASS**
 - Prepared body contains no links (`http(s)`, `www.`), no email addresses, no attachment references; package lists no attachments. **PASS**
 - **Flagged discrepancy:** the package's internal §6/§7 text quotes a stale pre-finalization self-hash (`5a9a7da79892f721e9d92112349ed04175450f5b74624d643207e7541e7fe42b`) that does not equal the actual/approved digest (`6797ef10…`). The authoritative digest is the recomputed file-bytes hash, as with the Stage 2ZY Stage 2ZU erratum. Under the task's "any hash discrepancy → STOP" rule this is recorded as a stop condition; the package was **not** modified or repaired.
+
+## 3. Prepared message (not sent)
+
+- **To:** `ml863@cornell.edu` (single recipient; no CC, no BCC)
+- **Subject (exact):** `Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
+- **Body (exact):** the complete 23-line text at approved package §3.2, to be used verbatim. It was **not sent**, so it is referenced here rather than transcribed again.
+- **Attachments:** none.
