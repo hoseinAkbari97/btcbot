@@ -59,3 +59,15 @@ No detail not established by evidence has been recorded.
 | Replied | **No reply supplied** |
 
 These states are not equivalent and none is claimed beyond the evidence above.
+
+## 6. Evidence the owner should provide
+
+To record a verified send, provide any of:
+
+- Full sent-message export or screenshot showing **To**, **Subject**, **CC/BCC**, and **attachments**.
+- Actual send date/time and timezone (UTC preferred).
+- Sending account address only — **no passwords, tokens, or authentication codes**.
+- Provider acceptance indicator or message identifier, if shown.
+- Any bounce, failure notice, or reply.
+
+On receipt, this record will be updated to state exactly what the evidence establishes, without inventing missing details.
