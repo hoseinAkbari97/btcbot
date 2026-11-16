@@ -37,6 +37,15 @@ Protocol provisions re-read: §5.2#15, §7.3–§7.8, §7.7, §8.2.1, §11.1–�
 - **Gate 4 auditor:** later independent audit role, subject to applicable independence/access requirements.
 - A positive first-contact response **does not** appoint the candidate to any role. No broader access or research authorization is inferred.
 
+## 5. Updated status and prohibitions
+
+- **AN-1:** **OUTSTANDING** (no valid appointment completed). **No candidate contacted or appointed.**
+- **Outreach outcome:** not authorized, not sent, not attempted.
+- **Prohibited/not done:** no appointment, no repository/data access granted, no confidential/unpublished material shared, no reserved/validation/OOS data access, no H1/hypothesis design, no census/backtest/simulation/statistical experiment, no reopening of failed candidates B/D, no changes to frozen thresholds/decisions/protocol, no Gate 2 or later gate authorization, no real-capital/paper-trading/live-trading decisions.
+
+**Preserved facts:** Gate 0 **NOT PASSED**; Gate 1 **PASSED for the research leg only**; Gate 2 **NOT AUTHORIZED and currently unregistrable**; AN-1 **OUTSTANDING**; H1 **not begun**; no reserved/validation/OOS access; no trading or execution authorization.
+
+
 
 
 
