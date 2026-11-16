@@ -64,3 +64,11 @@ Kind regards,
 Hossein Akbari
 Programme owner
 ```
+
+## 6. Manual sending instruction
+
+1. Send **manually** from the owner's own email account. Do not delegate to the agent.
+2. Put only `ml863@cornell.edu` in **To**. Leave **CC** and **BCC** empty.
+3. Add **no attachments**.
+4. Paste the subject and body from §4 and §5 **exactly**. Do not edit, shorten, embellish, personalize, or add anything.
+5. Send **once only**. Do not send follow-ups or reminders.
