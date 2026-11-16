@@ -22,3 +22,11 @@
 - Recipient, subject, body, no-attachment rule, and all exclusions read and confirmed.
 - No CC, no BCC, no alternative channel required.
 - The package's own header still reads "NOT APPROVED — NOT SENT" because that text predates this approval and the package must remain byte-identical. Approval is recorded here; the package was **not** edited.
+
+## 3. Recipient and channel
+
+- **To:** `ml863@cornell.edu`
+- **Recipient:** Dr. Marcos López de Prado only
+- **CC:** none
+- **BCC:** none
+- **Channel source:** official Cornell David A. Duffield College of Engineering faculty profile (verified 2026-11-16; Stage 2ZY report)
