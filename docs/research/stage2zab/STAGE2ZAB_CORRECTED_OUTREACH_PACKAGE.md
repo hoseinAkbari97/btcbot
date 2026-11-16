@@ -91,3 +91,9 @@ Programme owner
 **Not yet given.** The text below is a template for the owner to state approval; it is not an authorization created or signed on the owner's behalf, and nothing here is approved.
 
 > I, Hossein Akbari, approve sending the exact corrected outreach package at `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md`, whose SHA-256 I have independently verified against the digest recorded in `docs/research/stage2zab/STAGE2ZAB_PACKAGE_INTEGRITY_AND_OWNER_APPROVAL_REPORT.md`, to **Dr. Marcos López de Prado only**, via `ml863@cornell.edu`, with **no attachments**. This approval applies only to this corrected version and does not carry over from the earlier Stage 2ZV package. It does not appoint any auditor, grant any access, authorize research, or authorize any other action.
+
+## 10. Preserved status and stop
+
+Gate 0 **NOT PASSED**; Gate 1 **PASSED for the research leg only**; Gate 2 **NOT AUTHORIZED and currently unregistrable**; AN-1 **OUTSTANDING**; no candidate contacted or appointed; H1 not begun; no trading or execution authorization.
+
+**Stop:** Prepared for fresh owner approval only. Do **not** send or contact anyone until the owner explicitly approves this exact file and digest.
