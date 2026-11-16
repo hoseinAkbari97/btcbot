@@ -18,3 +18,10 @@ This file does **not** embed its own SHA-256. A digest cannot be written into th
 - The authoritative digest of this package is computed from the committed file bytes and recorded in `docs/research/stage2zab/STAGE2ZAB_PACKAGE_INTEGRITY_AND_OWNER_APPROVAL_REPORT.md`.
 - The owner must independently verify that digest before approving (for example with `sha256sum`).
 - No digest is invented or guessed here.
+
+## 3. Recipient and verified channel
+
+- **Recipient (only):** Dr. Marcos López de Prado.
+- **Email channel:** `ml863@cornell.edu`.
+- **Channel source:** official Cornell David A. Duffield College of Engineering faculty profile (verified 2026-11-16; see Stage 2ZY contact-channel report).
+- **No CC, no BCC, no alternate channel.**
