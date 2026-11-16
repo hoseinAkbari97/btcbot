@@ -57,3 +57,7 @@ Kind regards,
 Hossein Akbari
 Programme owner
 ```
+
+## 6. Attachments
+
+- **None.** No attachments are proposed or permitted.
