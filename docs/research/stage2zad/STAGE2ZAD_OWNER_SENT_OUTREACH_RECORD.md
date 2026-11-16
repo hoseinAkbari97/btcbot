@@ -32,3 +32,18 @@ These are the parameters that owner evidence must be checked against; they are *
 - **Body:** the exact text in the approved package §5 (and handoff §5)
 - **Attachments:** none
 - **Sent timestamp (UTC):** **not established** — no evidence supplied
+
+## 4. Verification performed
+
+| item | result |
+|---|---|
+| Approved package digest recomputed | **Match** (`2b0cb72c…`) |
+| Sent-message evidence available | **No** |
+| Recipient address verified from sent message | **Not verifiable** |
+| Subject verified from sent message | **Not verifiable** |
+| Body matches approved package | **Not verifiable** |
+| Sent timestamp (UTC) verified | **Not established** |
+| No additional recipients | **Not verifiable** |
+| No attachments | **Not verifiable** |
+
+No detail not established by evidence has been recorded.
