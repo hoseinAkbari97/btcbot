@@ -50,3 +50,18 @@ The only incorrect embedded digest in the 2ZV package is the self-hash. (The sep
 - **Message body SHA-256 (subject + body block):** `f407df12d7f2bd2bbb34769b744a893670e00eda8ae18101c6004decac1d297f`
 - The package embeds **no self-hash**. Its authoritative digest is this externally recorded value; the owner should recompute it before approving.
 - This digest corresponds to the package as committed; any later edit to the package produces a new digest and requires a new record.
+
+## 5. Exact differences from the Stage 2ZV package
+
+1. **New standalone file.** The original Stage 2ZV file is untouched; this is a separate Version 2 document.
+2. **Added §1 (version identity).** Names the previous path and digest, and states that any prior approval does not transfer.
+3. **Added §2 (integrity convention).** Removes the self-referential hash approach and points to this report for the authoritative digest.
+4. **Channel resolved.** Old §2 said the channel was `UNRESOLVED`; new §3 records the already-verified address `ml863@cornell.edu` and its official Cornell source.
+5. **Subject unchanged.** Identical string.
+6. **Body unchanged.** Verified byte-identical to the 2ZV body (23 lines; hash `f407df12…`).
+7. **Attachments unchanged.** None; restated explicitly.
+8. **Exclusions unchanged in effect.** The six exclusion topics are retained; the phrase "No candidate email address/contact details invented" was dropped only because the channel is now a verified public address. Budget/payment/appointment exclusions remain.
+9. **Compliance table updated minimally.** "Verified contact channel" moves from `NEEDS OWNER DECISION` to `PASS`; all other statuses remain `PASS`.
+10. **Approval statement fixed.** The old statement embedded the stale digest and `[VERIFIED CHANNEL — owner to specify]`; the new template references the externally recorded digest, names `ml863@cornell.edu`, and is explicitly marked **not yet given**.
+11. **Removed stale self-hash block.** Old §7 ("Final package SHA-256 … to be computed") is gone; the digest now lives only in this report.
+12. **No new claims.** Nothing about the recipient, project, research, or scope was added or expanded.
