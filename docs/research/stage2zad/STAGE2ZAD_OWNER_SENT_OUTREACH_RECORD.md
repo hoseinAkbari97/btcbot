@@ -12,3 +12,10 @@
 - **Owner approval provenance:** explicit owner statement in the conversation, attributed to Hossein Akbari, dated 2026-11-16. Conversation-sourced transcription; **not** a digital, cryptographic, or handwritten signature, and none is claimed.
 - **Approved action:** send the exact initial email only, once, to Dr. Marcos López de Prado only, with no attachments.
 - **Manual handoff:** `docs/research/stage2zac/STAGE2ZAC_MANUAL_OUTREACH_HANDOFF.md`
+
+## 2. Evidence status
+
+- **Evidence supplied as of this record:** **none.**
+- No sent-message copy, screenshot, export, provider receipt, message identifier, or timestamp was provided in the conversation or found in the repository.
+- Searched before recording: `docs/research/stage2zad/` (none), and the working tree for recent evidence-like files (`*.eml`, screenshots, PDFs, names containing "sent"/"evidence") — none found.
+- Consequently this record makes **no claim** that the email was sent, accepted, delivered, read, or replied to.
