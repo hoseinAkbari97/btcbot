@@ -70,3 +70,18 @@ Programme owner
 - No performance results, profitability claims, validation claims, deployment/readiness claims, or presentation of failed candidate experiments as successful evidence.
 - No budget, payment promise, contract terms, or appointment/engagement offer.
 - No implication of Gate 2/Gate 4 auditor appointment, continuing engagement, or any access/authorization beyond the stated limited inquiry.
+
+## 8. Scope compliance (unchanged)
+
+| requirement | status |
+|---|---|
+| Recipient: Dr. López de Prado only | PASS |
+| Limited §7.7 statistical-methodology review/scoping | PASS |
+| No full independent auditor (Gate 2 input #15) or Gate 4 appointment | PASS |
+| No confidential information | PASS |
+| No repository, system, or dataset access | PASS |
+| No unpublished strategy disclosure | PASS |
+| No budget or contractual commitment | PASS |
+| No unsupported performance/validation claims | PASS |
+| No attachments or links | PASS |
+| Verified contact channel | PASS (`ml863@cornell.edu`, official Cornell profile) |
