@@ -71,3 +71,14 @@ To record a verified send, provide any of:
 - Any bounce, failure notice, or reply.
 
 On receipt, this record will be updated to state exactly what the evidence establishes, without inventing missing details.
+
+## 7. Scope confirmations and stop
+
+- No email or follow-up was sent by the agent; no contact was made through any channel.
+- No compensation was negotiated; no appointment was made or implied.
+- No additional material, data, or repository access was shared.
+- No research, experiment, or strategy work was begun.
+- No research gate or governance decision was changed.
+- The approved package remains byte-identical (`2b0cb72c…`).
+
+**Stop — AWAITING OWNER EVIDENCE.** This stage stops here and does not initiate another stage.
