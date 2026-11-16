@@ -86,3 +86,9 @@ To authorize sending, the owner must explicitly approve **this exact file and di
 Required statement (to be given by the owner; not yet given):
 
 > I, Hossein Akbari, approve sending the exact corrected outreach package at `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md` (SHA-256: `2b0cb72c78f9511bb7cb23e879daa18ab8b13567d01b5d909c5a0296c06ea8c0`) to **Dr. Marcos López de Prado only**, via `ml863@cornell.edu`, with **no attachments**. This approval applies only to this corrected version and does not carry over from the earlier Stage 2ZV package. It does not appoint any auditor, grant any access, authorize research, or authorize any other action.
+
+## 8. Preserved state and stop
+
+- All previous source files are unchanged: Stage 2ZV package, Stage 2ZU authorization, Stage 2ZY erratum/report, Stage 2ZAA record, and the governance protocol.
+- Gate 0 **NOT PASSED**; Gate 1 **PASSED for the research leg only**; Gate 2 **NOT AUTHORIZED and currently unregistrable**; AN-1 **OUTSTANDING**; no candidate contacted or appointed; H1 not begun; no trading or execution authorization.
+- **Stop.** This stage prepares and diagnoses only. No send or contact may occur until the owner explicitly approves the corrected package and its verified digest.
