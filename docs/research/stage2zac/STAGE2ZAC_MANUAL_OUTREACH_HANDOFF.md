@@ -86,3 +86,11 @@ Record, in a separate evidence record:
 - [ ] Any reply, with its date and provenance
 
 Keep distinct: **sent** ≠ **accepted by provider** ≠ **delivered** ≠ **read** ≠ **replied**. Do not claim delivery, reading, or a reply without evidence.
+
+## 8. Confirmations and stop
+
+- **No email was sent by the agent; no contact occurred** through any channel.
+- The approved package remains **byte-identical** (digest `2b0cb72c…`) and was not modified.
+- No attachments, credentials, confidential material, or research data are included here.
+- No research, experiment, strategy design, appointment, or gate/governance change was made.
+- **Stop.** Wait for the owner to send the email personally and provide actual sending evidence.
