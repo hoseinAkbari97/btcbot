@@ -199,5 +199,20 @@ Shareable only after owner-approved confidentiality/access terms are in place, a
 
 **Not shareable (without separate explicit authorization, and in any case never for this initial limited review):** private repository credentials; confidential/internal communications; reserved, validation, or OOS data or splits; unpublished strategy material or proprietary signals beyond agreed disclosure; any data/access that would violate §8.2.1/§11.2.
 
+## 7. Updated auditor blocker status
+
+| item | status | basis | change from 2ZQ |
+|---|---|---|---|
+| `AN-1` independent auditor (Gate 2 input #15 / Gate 4) | **OUTSTANDING — not appointed** | No candidate contacted/confirmed; no availability, independence/COI attestation, or qualification acceptance obtained. | Deeper due diligence completed for four alternatives; **preferred candidate to approach first (owner action): Dr. Marcos López de Prado** for limited statistical-review scoping, conditional and unconfirmed. |
+| Gate 2 registration | **Unregistrable** | §5.2 requires input #15 (independent auditor and Gate 4 scope) among other unmet inputs (e.g. hypothesis/exit policy per prior records). | No change. |
+| Gate 4 | **Not reached / blocked** | Independent auditor not appointed; prior gates not satisfied. | No change. |
+
+## 8. Explicit authorization boundaries
+
+- **Not done / not authorized:** contacting, emailing, messaging, or approaching any candidate; appointing/designating any auditor; claiming availability/acceptance/qualification/independence; sharing private project documents externally; accessing reserved, validation, or OOS data.
+- **Not done / not authorized:** research, census, backtesting, simulations, or statistical experiments; designing a new hypothesis (including H1); reopening either failed candidate (B or D); changing frozen thresholds, decisions, verdicts, or protocol text.
+- **Not done / not authorized:** authorizing Gate 2 or any subsequent gate, or real capital.
+- **This report:** preparation/due-diligence only. All engagement materials are **DRAFT — NOT SENT**. Owner decision and separate explicit authorizations required for any next step.
+
 
 
