@@ -29,7 +29,7 @@ Attribution: Hossein Akbari (owner). Approval date: **2026-11-16**. This is a tr
 
 - **To:** `ml863@cornell.edu` (single recipient; no CC, no BCC)
 - **Subject (exact):** `Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
-- **Body (exact):** the complete 23-line text at approved package §3.2, to be used verbatim. It was **not sent**, so it is referenced here rather than transcribed again.
+- **Body (exact):** the complete text at approved package §3.2, to be used verbatim. It was **not sent**, so it is referenced here rather than transcribed again.
 - **Attachments:** none.
 
 ## 4. Actual outcome
