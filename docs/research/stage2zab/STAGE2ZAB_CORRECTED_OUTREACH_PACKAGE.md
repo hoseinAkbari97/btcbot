@@ -85,3 +85,9 @@ Programme owner
 | No unsupported performance/validation claims | PASS |
 | No attachments or links | PASS |
 | Verified contact channel | PASS (`ml863@cornell.edu`, official Cornell profile) |
+
+## 9. Owner approval statement required for this version
+
+**Not yet given.** The text below is a template for the owner to state approval; it is not an authorization created or signed on the owner's behalf, and nothing here is approved.
+
+> I, Hossein Akbari, approve sending the exact corrected outreach package at `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md`, whose SHA-256 I have independently verified against the digest recorded in `docs/research/stage2zab/STAGE2ZAB_PACKAGE_INTEGRITY_AND_OWNER_APPROVAL_REPORT.md`, to **Dr. Marcos López de Prado only**, via `ml863@cornell.edu`, with **no attachments**. This approval applies only to this corrected version and does not carry over from the earlier Stage 2ZV package. It does not appoint any auditor, grant any access, authorize research, or authorize any other action.
