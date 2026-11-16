@@ -65,3 +65,10 @@ The only incorrect embedded digest in the 2ZV package is the self-hash. (The sep
 10. **Approval statement fixed.** The old statement embedded the stale digest and `[VERIFIED CHANNEL — owner to specify]`; the new template references the externally recorded digest, names `ml863@cornell.edu`, and is explicitly marked **not yet given**.
 11. **Removed stale self-hash block.** Old §7 ("Final package SHA-256 … to be computed") is gone; the digest now lives only in this report.
 12. **No new claims.** Nothing about the recipient, project, research, or scope was added or expanded.
+
+## 6. Confirmations
+
+- **Substantive scope not expanded.** Subject and body are byte-identical; recipient, channel, no-attachment rule, exclusions, and limitations are preserved. Only document-integrity metadata and the resolved channel reference changed.
+- **The old approval does not authorize the new package.** Any earlier approval recorded in Stage 2ZAA applies only to the Stage 2ZV file with digest `6797ef10…`. The corrected file has a different path and digest and is unapproved.
+- **No email sent, no contact made.** No sending mechanism was used or attempted; the recipient was not contacted through any channel.
+- **No new authorization created.** The approval text in §7 and in the package §9 is a required statement for the owner to give, not an authorization made on the owner's behalf.
