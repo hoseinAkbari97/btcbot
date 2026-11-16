@@ -30,3 +30,7 @@
 - **CC:** none
 - **BCC:** none
 - **Channel source:** official Cornell David A. Duffield College of Engineering faculty profile (verified 2026-11-16; Stage 2ZY report)
+
+## 4. Exact subject
+
+`Inquiry: limited statistical-methodology review / scoping discussion (Protocol 2.0.0, §7.7)`
