@@ -130,5 +130,74 @@
 
 **Finding:** Evidence supports selecting **Dr. Marcos López de Prado as the preferred candidate to approach first (owner action, not taken here)** for a limited statistical-review scoping discussion. It does **not** establish that any candidate is qualified, independent, available, or acceptable as full Gate 2/Gate 4 auditor without direct confirmation. `AN-1` remains outstanding.
 
+## 6. Preferred engagement package (Dr. Marcos López de Prado) — DRAFT — NOT SENT
+
+> **DRAFT — NOT SENT.** Not transmitted to anyone. Any sending, disclosure, or sharing is an owner act and must respect confidentiality/access boundaries. No private repository credentials, confidential data, reserved/validation/OOS data, or unpublished strategy material are included.
+
+### 6.1 Candidate-specific invitation email (draft)
+
+**Subject:** Inquiry regarding a limited independent statistical review (backtest validation) — BTC quantitative research programme
+
+Dear Dr. López de Prado,
+
+I am the owner of a BTC systematic-trading research programme conducted under a written governance protocol (Protocol 2.0.0). Before any historical result can be advanced, the protocol requires independent review of frozen research artifacts, with particular emphasis on backtest overfitting, dependence/multiple-testing control, sample sufficiency, and verdict logic.
+
+Given your published work on backtest overfitting and multiple-testing/validation methods (including the Deflated Sharpe Ratio, PBO/CSCV, and related frameworks), I would like to ask whether you would be open to discussing a **limited, scoped initial statistical review** to assess fit and feasibility against the project's independent-review requirements.
+
+Key points:
+- **Independence:** the reviewer must be independent of the programme owner/custodian and of research design/implementation and must have had no role in selecting candidates, thresholds, populations, or verdict rules (to be confirmed by signed disclosure/attestation).
+- **Scope (initial):** a limited review of frozen methodology/artifacts (no reserved validation or out-of-sample data access) focused on statistical validity and overfitting controls.
+- **Boundaries:** materials, if shared later, would be subject to confidentiality and explicit access conditions; no reserved/validation/OOS data would be provided for this initial review.
+- **Status:** this is a scoping inquiry only; no appointment is implied.
+
+If you are potentially interested, I can share a short non-confidential project overview, a proposed limited review scope, and a brief qualification/independence questionnaire.
+
+Kind regards,  
+`[Owner name]` (programme owner)  
+`[Contact details]`
+
+### 6.2 Short project overview suitable for external disclosure (draft)
+
+- **Programme:** systematic BTC quantitative research project governed by a written, versioned research protocol emphasizing economic objectives, pre-registration/freeze, data separation, dependence-aware evidence, cost realism, and independent verification.
+- **Current state:** governance/remediation and auditor-sourcing preparation stage; no hypothesis is registered for Gate 2, no performance evaluation is underway, and real capital is not authorized.
+- **Independent review need:** an independent reviewer to assess (as applicable) frozen specifications/methodology, statistical validity (dependence, multiple testing, selection bias/backtest overfitting, sample sufficiency), reproducibility logic, and protocol-aligned reporting — under strict independence and access boundaries.
+- **Access posture:** default review from frozen, non-reserved artifacts; **no** reserved validation/OOS data access in an initial limited review.
+
+### 6.3 Proposed limited initial review scope (draft)
+
+Purpose: assess whether the candidate can satisfy relevant Protocol 2.0.0 independent-review requirements for a statistical/methodology-focused engagement (not a full Gate 4 audit by default).
+
+1. **Eligibility & independence check (precondition):** complete COI/qualification questionnaire and, if proceeding, sign independence/COI declarations consistent with §7.3/§11.3.
+2. **Artifact/methodology review (frozen, non-reserved):** review provided frozen protocol/governance excerpts and statistical/methodology descriptions for treatment of backtest overfitting, selection bias, multiple testing, dependence/effective sample size, sample-sufficiency logic, and verdict/decision rules.
+3. **Gap assessment:** identify material statistical/governance gaps, ambiguities, or risks relative to Protocol 2.0.0 expectations (§5.2#15, §7.4 statistical elements, §7.7).
+4. **Feasibility memo (deliverable):** short written assessment stating (a) areas reviewed, (b) findings/concerns with severity-like categorization if useful, (c) what cannot be concluded from limited scope, and (d) whether/how the reviewer could plausibly support a fuller Gate 2 audit-plan input or later Gate 4 audit, subject to separate scoping and independence confirmation.
+5. **Out of scope (initial):** reserved/validation/OOS data; execution/live trading; reopening closed failed candidates; changing thresholds/verdicts/protocol; any implementation work; and appointment/authorization decisions.
+
+### 6.4 Qualification and independence questionnaire (draft)
+
+1. Current role, affiliation(s), and relevant credentials.
+2. Relevant experience with backtest overfitting, multiple testing/selection bias, dependence-aware inference, and strategy validation.
+3. Prior independent audit/model-validation engagements (types, deliverables) — describe at a level permissible.
+4. Any prior involvement with this programme, its owner/custodian, or its artifacts? (must be **none** for eligibility)
+5. Any role in selecting candidates, thresholds, populations, or verdict rules for this programme? (must be **none**)
+6. Financial, employment, ownership, advisory, or personal interests that could create a conflict? (disclose fully per §11.3)
+7. Can you work from frozen artifacts and provide written, evidence-referenced findings/recommendations?
+8. Can you sign an independence attestation listing evidence reviewed (§7.3.6) and a COI disclosure (§11.3) if engaged?
+9. Can you comply with access boundaries (no reserved/validation/OOS data unless separately, explicitly authorized by owner) and confidentiality terms?
+10. Practical constraints: availability window, engagement format, and any conditions on scope. (No pricing requested/committed here.)
+
+### 6.5 Checklist of documents shareable after confidentiality and access conditions are established (draft)
+
+Shareable only after owner-approved confidentiality/access terms are in place, and limited to what is necessary for the agreed scope:
+
+- [ ] Non-confidential project overview (6.2) and agreed scope (6.3).
+- [ ] Protocol 2.0.0 (`RESEARCH_GOVERNANCE_PROTOCOL.md`) — public/governance text as applicable.
+- [ ] Relevant governance records (e.g. adoption/custodian/roadmap/auditor-sourcing records) needed for context, redacted as required.
+- [ ] Frozen methodology/specification documents and pre-registration templates/materials **that contain no reserved/validation/OOS data and no unpublished strategy secrets beyond agreed disclosure**.
+- [ ] Data-manifest/metadata descriptions **excluding reserved split contents and any confidential credentials**.
+- [ ] Aggregate, non-reserved summaries or synthetic examples only if pre-approved for scope.
+
+**Not shareable (without separate explicit authorization, and in any case never for this initial limited review):** private repository credentials; confidential/internal communications; reserved, validation, or OOS data or splits; unpublished strategy material or proprietary signals beyond agreed disclosure; any data/access that would violate §8.2.1/§11.2.
+
 
 
