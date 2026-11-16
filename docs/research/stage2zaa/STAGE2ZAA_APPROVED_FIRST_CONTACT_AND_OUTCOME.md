@@ -58,3 +58,16 @@ Recorded status fields:
 | Delivery failure / bounce / uncertainty | **N/A — not attempted** |
 | Attachments included | **No** |
 | Other recipients contacted | **No** |
+
+## 5. Scope confirmations
+
+- No attachments were included.
+- No other person or organization was contacted.
+- No confidential material, repository/system access, dataset access, or unpublished strategy material was provided.
+- No follow-up, reminder, negotiation, commitment, appointment, or research action was taken.
+- No response was received, because nothing was sent.
+- The approved Stage 2ZV package, Stage 2ZU authorization, Stage 2ZY erratum/report, and governance protocol were **not modified**.
+
+## 6. Preserved status
+
+Gate 0 **NOT PASSED**; Gate 1 **PASSED for the research leg only**; Gate 2 **NOT AUTHORIZED and currently unregistrable**; AN-1 **OUTSTANDING**; no candidate contacted or appointed; H1 not begun; no trading or execution authorization. This stage stops here.
