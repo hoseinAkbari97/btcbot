@@ -28,3 +28,17 @@ Sequence that produced the defect:
 4. The text "(to be computed and recorded after document is finalized)" was left in place, but no recomputation was recorded.
 
 This is a self-referential hash problem: a file cannot contain the SHA-256 of its own final bytes. Git history confirms the file first appeared in `634fc22` already containing the stale value, and no committed version ever hashed to `5a9a…`.
+
+## 3. Other embedded hashes — checked and correct
+
+Every other 64-hex digest embedded in the Stage 2ZV package was recomputed and matched its referenced file:
+
+| referenced file | embedded SHA-256 | result |
+|---|---|---|
+| `stage2zt/STAGE2ZT_OUTREACH_AUTHORIZATION_AND_OUTCOME.md` | `d5dac9f0…daa1` | OK |
+| `stage2zs/STAGE2ZS_AUDITOR_OUTREACH_OWNER_DECISION.md` | `3a7da6db…3d9` | OK |
+| `stage2zr/STAGE2ZR_PREFERRED_AUDITOR_DUE_DILIGENCE_AND_ENGAGEMENT_READINESS.md` | `466af564…63a` | OK |
+| `stage2m/RESEARCH_GOVERNANCE_PROTOCOL.md` | `34995d17…57a` | OK |
+| `stage2zu/STAGE2ZU_OWNER_AUTHORIZATION.md` | `15762395…470e` | OK |
+
+The only incorrect embedded digest in the 2ZV package is the self-hash. (The separate embedded-hash mismatch inside the 2ZU authorization file is already covered by the Stage 2ZY erratum and was not altered here.)
