@@ -72,3 +72,17 @@ The only incorrect embedded digest in the 2ZV package is the self-hash. (The sep
 - **The old approval does not authorize the new package.** Any earlier approval recorded in Stage 2ZAA applies only to the Stage 2ZV file with digest `6797ef10…`. The corrected file has a different path and digest and is unapproved.
 - **No email sent, no contact made.** No sending mechanism was used or attempted; the recipient was not contacted through any channel.
 - **No new authorization created.** The approval text in §7 and in the package §9 is a required statement for the owner to give, not an authorization made on the owner's behalf.
+
+## 7. Owner approval instruction (required)
+
+To authorize sending, the owner must explicitly approve **this exact file and digest**:
+
+- **Path:** `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md`
+- **SHA-256:** `2b0cb72c78f9511bb7cb23e879daa18ab8b13567d01b5d909c5a0296c06ea8c0` (owner should recompute with `sha256sum`)
+- **Recipient:** Dr. Marcos López de Prado only
+- **Channel:** `ml863@cornell.edu`
+- **Attachments:** none
+
+Required statement (to be given by the owner; not yet given):
+
+> I, Hossein Akbari, approve sending the exact corrected outreach package at `docs/research/stage2zab/STAGE2ZAB_CORRECTED_OUTREACH_PACKAGE.md` (SHA-256: `2b0cb72c78f9511bb7cb23e879daa18ab8b13567d01b5d909c5a0296c06ea8c0`) to **Dr. Marcos López de Prado only**, via `ml863@cornell.edu`, with **no attachments**. This approval applies only to this corrected version and does not carry over from the earlier Stage 2ZV package. It does not appoint any auditor, grant any access, authorize research, or authorize any other action.
