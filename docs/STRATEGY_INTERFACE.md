@@ -127,6 +127,110 @@ fill price, because none of those belong to the strategy layer.
 Grouped decisions (`group_id`) are merged per instrument and group, so a coordinated two-leg
 intent becomes one target per leg rather than a duplicated position.
 
+## The decision context
+
+`DecisionContext` is what a strategy is authorized to read, and nothing more:
+
+| field | content |
+| --- | --- |
+| `instrument`, `timeframe`, `index`, `timestamp` | where in the series this decision is made |
+| `bar` | the current candle |
+| `history` | the engine's own truncated slice, bars `0..index` |
+| `equity` | current account equity |
+| `position` | read-only `PositionView`, or `None` when flat |
+| `portfolio` | read-only `PortfolioView` (equity, instruments, open position count) |
+| `config` | immutable mapping of the merged configuration |
+| `features` | immutable mapping of pre-computed features supplied by the run |
+| `events` | event stream, empty for bar-driven environments |
+| `instruments` | the instruments this run authorizes |
+
+`history` is the engine's slice, not a copy, so a strategy cannot force a large additional
+allocation by asking for it; treat it as read-only. The context deliberately has no session,
+account, broker, order-entry or engine handle, so there is no object through which a strategy
+could submit an order or mutate a balance.
+
+## Lifecycle and state
+
+Lifecycle hooks are optional interfaces, not methods every strategy must implement:
+
+| hook | protocol | when it runs |
+| --- | --- | --- |
+| `initialize(context)` | `Initializable` | once, before the first `decide()` |
+| `decide(context)` | `DecisionStrategy` | once per signal bar, chronologically |
+| `finalize(context)` | `Finalizable` | once, after the engine finishes |
+| `state()` / `restore_state(state)` | `Stateful` | on demand, for inspection and resumption |
+
+The runner constructs a fresh instance for every run, so a stateful strategy cannot leak state
+into a later run; `initialize` is the place to reset anything a reused instance might carry.
+`state()` is exposed on the prepared strategy for inspection, and `restore_state` is the hook a
+future paper-trading session would use. Nothing today persists or restores state across
+processes, and no distributed execution exists.
+
+A `decide()` strategy that raises, or that returns a malformed value, fails the run. Errors are
+never swallowed, because a silently skipped decision would corrupt the experiment record.
+
+## Capabilities and pre-run validation
+
+A strategy declares what it needs; the run environment declares what it can provide. The check
+happens **before** strategy code runs, so a strategy requiring order-book or event data can
+never silently receive only OHLCV bars.
+
+```python
+from app.services.strategy.capabilities import StrategyCapabilities
+
+capabilities = StrategyCapabilities(
+    name="my_strategy",
+    version="1",
+    input_data=frozenset({"ohlcv"}),
+    timeframes=frozenset(),          # empty means any timeframe
+    instruments="single",            # "single" or "multi"
+    stateful=False,
+    warmup_bars=20,
+    outputs=frozenset({DecisionKind.HOLD, DecisionKind.ENTER_LONG}),
+    event_types=frozenset(),
+    config_schema={},
+)
+```
+
+`StrategyEnvironment` describes the run: `symbol`, `timeframe`, `instruments`, `input_data`,
+`event_types`, `available_bars`. `validate_capabilities` raises `CapabilityError` when a
+declaration cannot be met:
+
+- required `input_data` is unavailable (for example `{"order_book"}` in an OHLCV run);
+- required `event_types` are unavailable;
+- the timeframe is not in a non-empty `timeframes` set;
+- `instruments="multi"` but fewer than two instruments are available, or `"single"` with more;
+- `warmup_bars` leaves no signal bar (`warmup_bars >= available_bars`).
+
+Declarations are read from the registration when given there, otherwise from a `capabilities`
+class attribute. A Stage 3B callable that declares nothing keeps the unconstrained path; one that
+declares non-OHLCV inputs is rejected, because a compatibility callable cannot consume them.
+
+Output validation runs on every bar: a strategy that emits a kind it did not declare, or a
+decision for an instrument the run does not include, is rejected rather than ignored.
+
+## Configuration
+
+Configuration is explicit and validated against a declared schema:
+
+```python
+from app.services.strategy.capabilities import ConfigField
+
+config_schema={
+    "name": ConfigField(str),
+    "buy_threshold": ConfigField(float, minimum=0.0, maximum=1.0),
+}
+```
+
+`ConfigField(expected, required=True, minimum=None, maximum=None)`. Validation rejects unknown
+keys, a missing required key, a value of the wrong type, and a value outside the declared bounds.
+A boolean is never accepted where a number is expected, so a config typo cannot pass as a valid
+numeric setting. A strategy with an empty schema is unvalidated by design — declare a schema when
+the parameters have real bounds.
+
+Configuration is merged from the instance defaults and the request overrides, and the merged
+values are recorded with the run.
+
 ## Registering a strategy
 
 ```python
