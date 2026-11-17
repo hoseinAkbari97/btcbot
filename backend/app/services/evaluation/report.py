@@ -50,6 +50,7 @@ class EvaluationReport:
     tail_risk: dict[str, object]
     sensitivity: dict[str, object]
     simulation: dict[str, object] | None
+    segments: dict[str, object] | None
     evidence: dict[str, object]
     ledger: dict[str, object]
     warnings: tuple[str, ...]
@@ -83,6 +84,7 @@ class EvaluationReport:
             "tail_risk": dict(self.tail_risk),
             "sensitivity": dict(self.sensitivity),
             "simulation": dict(self.simulation) if self.simulation is not None else None,
+            "segments": dict(self.segments) if self.segments is not None else None,
             "evidence": dict(self.evidence),
             "ledger": dict(self.ledger),
             "warnings": list(self.warnings),
@@ -103,6 +105,7 @@ class EvaluationReport:
         if absent:
             raise ReportFormatError(f"report is missing sections: {', '.join(absent)}")
         simulation = payload.get("simulation")
+        segments = payload.get("segments")
         warnings = payload.get("warnings", [])
         return cls(
             report_version=str(payload.get("report_version", "")),
@@ -119,6 +122,7 @@ class EvaluationReport:
             tail_risk=dict(payload["tail_risk"]),
             sensitivity=dict(payload["sensitivity"]),
             simulation=dict(simulation) if isinstance(simulation, dict) else None,
+            segments=dict(segments) if isinstance(segments, dict) else None,
             evidence=dict(payload["evidence"]),
             ledger=dict(payload.get("ledger", {})),
             warnings=tuple(str(item) for item in warnings),

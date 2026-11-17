@@ -32,6 +32,7 @@ async def persist_run(
     dataset_version: str | None = "candles-v1",
     costs: float = 1.0,
     risk_fraction: str | None = "0.01",
+    parameters: dict[str, object] | None = None,
 ) -> str:
     total = sum(pnls)
     metrics: dict[str, object] = {
@@ -50,6 +51,7 @@ async def persist_run(
             dataset_version=dataset_version,
             final_equity=str(10_000 + total),
             metrics=metrics,
+            parameters=parameters,
         )
     )
     for index, pnl in enumerate(pnls):
@@ -233,3 +235,21 @@ async def test_two_runs_are_evaluated_one_at_a_time(db_session: AsyncSession) ->
     reports = await EvaluationService(db_session, CONFIG).evaluate_many([first_id, second_id])
 
     assert [report.run_id for report in reports] == [first_id, second_id]
+
+
+async def test_parameter_comparison_reads_existing_runs(db_session: AsyncSession) -> None:
+    base_id = await persist_run(db_session, run_id="run-1", parameters={"fast": 10, "slow": 30})
+    neighbour_id = await persist_run(
+        db_session,
+        run_id="run-2",
+        parameters={"fast": 20, "slow": 30},
+        pnls=[60.0, -30.0, 40.0, -20.0],
+    )
+
+    comparison = await EvaluationService(db_session, CONFIG).compare_parameters(
+        base_id, [neighbour_id]
+    )
+
+    assert comparison.base_run_id == base_id
+    assert len(comparison.variants) == 1
+    assert comparison.variants[0].differing_parameters == {"fast": (10, 20)}

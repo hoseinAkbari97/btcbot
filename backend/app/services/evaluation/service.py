@@ -29,6 +29,11 @@ from .provenance import (
     verify_run,
 )
 from .report import REPORT_VERSION, EvaluationReport
+from .robustness import (
+    ParameterSensitivity,
+    compare_parameter_runs,
+    segment_by_month,
+)
 from .sensitivity import analyse_cost_sensitivity
 from .tail_risk import analyse_tail_risk
 from .trade_stats import analyse_trades
@@ -79,6 +84,7 @@ class EvaluationService:
             initial_capital=float(snapshot.initial_capital),
             include_order_sensitivity=include_order_sensitivity,
         )
+        segments = segment_by_month(ledger)
 
         if peer_run_count is None:
             peer_run_count = await self._repository.count_runs(
@@ -100,6 +106,7 @@ class EvaluationService:
             trades.warnings,
             tail_risk.warnings,
             sensitivity.warnings,
+            segments.warnings,
             simulation.warnings if simulation else (),
             (simulation_note,) if simulation_note else (),
         )
@@ -117,6 +124,7 @@ class EvaluationService:
             tail_risk=tail_risk.as_dict(),
             sensitivity=sensitivity.as_dict(),
             simulation=simulation.as_dict() if simulation else None,
+            segments=segments.as_dict(),
             evidence=evidence.as_dict(),
             ledger=ledger.as_dict(),
             warnings=warnings,
@@ -132,6 +140,28 @@ class EvaluationService:
             )
             for run_id in run_ids
         ]
+
+    async def compare_parameters(
+        self, base_run_id: str, peer_run_ids: Sequence[str]
+    ) -> ParameterSensitivity:
+        """Compare an evaluated run with existing runs of the same strategy.
+
+        Only run rows are read; the peers are not evaluated and no experiment is
+        re-executed. The comparison is therefore about persisted headline
+        metrics, not about a fresh measurement.
+        """
+        base = await self._snapshot(base_run_id)
+        peers: list[RunSnapshot] = []
+        for run_id in peer_run_ids:
+            if run_id != base_run_id:
+                peers.append(await self._snapshot(run_id))
+        return compare_parameter_runs(base, peers)
+
+    async def _snapshot(self, run_id: str) -> RunSnapshot:
+        record = await self._repository.get_run_without_trades(run_id)
+        if record is None:
+            raise EvaluationInputError(f"no backtest run with id {run_id!r}")
+        return RunSnapshot.from_record(record)
 
     async def _load_ledger(self, run_id: str) -> TradeLedger:
         builder = TradeLedgerBuilder()
