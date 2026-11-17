@@ -54,3 +54,29 @@ REST API and include `is_closed`, allowing clients to distinguish current from f
 The client should reconnect after close. The bridge does not promise durable delivery or persist
 updates in this phase.
 
+## Backtests
+
+### `GET /api/v1/backtests/strategies`
+
+Lists the registered strategy names available for research runs.
+
+### `POST /api/v1/backtests/run`
+
+Runs one registered strategy over stored candles, persists the run and returns its metrics,
+cost assumptions and provenance.
+
+### `GET /api/v1/backtests/runs` · `GET /api/v1/backtests/runs/{run_id}`
+
+Lists or fetches stored run summaries.
+
+### `POST /api/v1/backtests/compare`
+
+Compares 2–10 existing runs identified by `run_ids`. It is read-only: no backtest is rerun
+and no run record is changed. Requires every symbol/timeframe/period, dataset fingerprint,
+capital, cost, fill-delay, direction and risk assumption to match; strategies and their
+parameters may differ. Incompatible or conditionally comparable runs return `422` with the
+exact differing fields in `detail.reasons`.
+
+See [EXPERIMENT_COMPARISON.md](EXPERIMENT_COMPARISON.md) for the full compatibility rules,
+metric units, interpretation guidance and limitations.
+
