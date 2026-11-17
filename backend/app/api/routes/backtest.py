@@ -14,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db_session
 from app.repositories.backtest import BacktestRepository
 from app.schemas.backtest import (
+    BacktestComparisonRequest,
+    BacktestComparisonResponse,
     BacktestRequest,
     BacktestRunResponse,
     BacktestRunSummary,
@@ -23,6 +25,7 @@ from app.schemas.backtest import (
 )
 from app.schemas.market_data import Timeframe
 from app.services.backtest.baselines import STRATEGY_NAMES
+from app.services.backtest.comparison import ComparisonError, RunsNotFoundError, compare_runs
 from app.services.backtest.costs import BacktestCosts
 from app.services.backtest.engine import BacktestRun
 from app.services.backtest.risk import RiskEngine
@@ -233,6 +236,30 @@ async def run_backtest_endpoint(
         },
     )
     return _run_response(result, record.id)
+
+
+@router.post("/compare", response_model=BacktestComparisonResponse)
+async def compare_backtest_runs(
+    request: BacktestComparisonRequest,
+    session: AsyncSession = Depends(get_db_session),
+) -> BacktestComparisonResponse:
+    """Compare persisted runs that share every environmental assumption.
+
+    Read-only: the original runs are never modified or rerun. An incompatibility
+    is a 422 whose detail names each differing or unrecorded field, because
+    "comparison failed" does not tell a researcher what to correct.
+    """
+    try:
+        return await compare_runs(session, request.run_ids)
+    except RunsNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except ComparisonError as error:
+        raise HTTPException(
+            status_code=422,
+            detail={"category": error.category, "reasons": [p.message for p in error.problems]},
+        ) from error
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 
 @router.get("/runs", response_model=list[BacktestRunSummary])
