@@ -19,6 +19,8 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Protocol, cast, overload, runtime_checkable
 
+from app.services.strategy.capabilities import StrategyCapabilities
+
 from .engine import Signal, StrategyContext
 
 StrategyFactory = Callable[..., "Strategy"]
@@ -76,6 +78,9 @@ class StrategyDefinition:
     name: str
     factory: StrategyFactory
     description: str = ""
+    #: Optional capability declaration. Absent means a Stage 3B callable that
+    #: makes no environmental demands and is handled by the compatibility path.
+    capabilities: StrategyCapabilities | None = None
 
     def create(self, **parameters: object) -> Strategy:
         """Build a fresh instance and verify it honours the contract."""
@@ -111,6 +116,7 @@ class StrategyRegistry(Mapping[str, StrategyFactory]):
         *,
         description: str = "",
         replace: bool = False,
+        capabilities: StrategyCapabilities | None = None,
     ) -> StrategyDefinition:
         """Register ``factory`` under ``name``.
 
@@ -125,7 +131,12 @@ class StrategyRegistry(Mapping[str, StrategyFactory]):
             raise ValueError(
                 f"strategy {name!r} is already registered; pass replace=True to override"
             )
-        definition = StrategyDefinition(name=name, factory=factory, description=description)
+        definition = StrategyDefinition(
+            name=name,
+            factory=factory,
+            description=description,
+            capabilities=capabilities,
+        )
         self._definitions[name] = definition
         return definition
 
@@ -219,10 +230,15 @@ def register_strategy(
     *,
     description: str = "",
     replace: bool = False,
+    capabilities: StrategyCapabilities | None = None,
 ) -> StrategyDefinition:
     """Register a strategy in the pipeline's default registry."""
     return default_registry.register(
-        name, factory, description=description, replace=replace
+        name,
+        factory,
+        description=description,
+        replace=replace,
+        capabilities=capabilities,
     )
 
 
