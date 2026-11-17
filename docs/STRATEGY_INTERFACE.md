@@ -454,3 +454,7 @@ append-only record. A stored run identifies exactly which strategy instance woul
 - Do not read reserved, validation or out-of-sample datasets without existing authorization.
 - Do not treat a passing test, a backtest result, or a registry entry as evidence of profitability.
 - Do not add new risk limits or relax existing gates; the risk engine remains a separate layer.
+- Do not submit orders, simulate fills, move balances, size positions or mutate the engine from a
+  strategy; those are the portfolio, execution and accounting layers' jobs.
+- Do not let a strategy read data it did not declare, or read past `history`; the engine truncates
+  the series and the capability check happens before the first decision.
