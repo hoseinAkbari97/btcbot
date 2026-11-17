@@ -162,3 +162,90 @@ runs that already exist and differ only in parameters, symbol, timeframe and
 dataset version held equal; nothing is re-optimised and no engine run is
 triggered. A narrow spread is not evidence of robustness, and a wide one may
 only reflect a coarse grid.
+
+## Evidence levels
+
+The evidence layer (`evidence.py`) assigns exactly one of three levels.
+
+| Level | Meaning | Trigger |
+| --- | --- | --- |
+| `insufficient` | No statistical claim is made. | Fewer than `min_trades_for_inference` (default 30) trades. |
+| `descriptive` | The sample can be described, nothing more. | Net PnL not positive, or costs turn the result negative at 1.5× the executed costs, or a 30% drawdown has at least 50% modelled probability, or serial dependence is detected. |
+| `conditional_inference` | Interval estimates are reported for this sample, under the stated assumptions. | At least 30 trades, positive net PnL, and none of the fragility checks above fired. |
+
+Even at the highest level the report **withholds** these claims, verbatim:
+
+- that the strategy is profitable,
+- that the strategy is robust,
+- that the strategy is production-ready,
+- that the result will hold out of sample.
+
+Every report also carries a fixed set of limitations: in-sample-only data, no
+selection-bias correction, non-stationary markets, no drawdown duration, cost
+assumptions rather than real fills, and — when it applies — an unrecorded
+dataset version and unknown multiple-testing exposure.
+
+## Using the service
+
+```python
+from app.services.evaluation import EvaluationConfig, EvaluationService
+
+service = EvaluationService(session, EvaluationConfig(resamples=2000, seed=20240101))
+report = await service.evaluate(run_id)
+
+payload = report.as_dict()   # JSON-safe; the caller decides where to keep it
+report.digest()              # stable across identical evaluations
+```
+
+Comparing two reports:
+
+```python
+from app.services.evaluation import compare_reports
+
+comparison = compare_reports(report_a, report_b)   # raises if the methods or data differ
+```
+
+`compare_reports` refuses to diff reports produced under different method
+versions, configurations, symbols, timeframes or dataset versions. Where the
+comparison is allowed it is descriptive: two runs of the same instrument usually
+overlap in time, so no significance test is applied.
+
+Persisted reports are **not** added to the database. The report is a plain
+dictionary with a stable digest, so storing it is the caller's decision; no
+schema was introduced without a concrete requirement.
+
+## Reproducibility fields
+
+| Field | Purpose |
+| --- | --- |
+| `method_version` | Bumped when a definition changes enough that old and new reports are not comparable. |
+| `config` / `config_fingerprint` | Every setting that can move a number, hashed. `batch_size` is operational and excluded. |
+| `input_fingerprint` | Hash of the run id, parameter fingerprint, dataset version, trade count, cost model and persisted drawdown. Changes if the evaluated inputs change. |
+| `generated_at` | Wall-clock stamp, deliberately excluded from `digest()`. |
+| `simulation.seed`, `block_length`, `resamples` | Exact resampling settings, so a path distribution can be regenerated. |
+
+## Limitations and non-goals
+
+- **Equity curve.** Only the run-time maximum drawdown is persisted, so observed
+  drawdown duration is unavailable; drawdowns reported beyond that figure are
+  simulated path drawdowns and are labelled as such.
+- **Holdout data.** No validation or out-of-sample run is evaluated. Nothing here
+  speaks to out-of-sample behaviour, and the report says so at every level.
+- **Selection and multiple testing.** The number of persisted peers is reported,
+  but no correction (for example Benjamini–Hochberg) is applied, because the
+  evaluation does not produce p-values and a correction over hand-picked runs
+  would be theatre.
+- **Execution modelling.** Latency, fill order and market impact are not
+  simulated. Cost scenarios assume identical decisions, sizes and fills.
+- **Regime dependence.** Calendar segments describe in-sample stability; they are
+  not a regime model.
+- **R units.** `net_r` is trusted only when every trade has one, and it assumes
+  the recorded risk amount was the risk actually taken. Slipped stops and gapped
+  exits break that assumption.
+- **Block selection.** The cube-root rule is a documented default, not an
+  automatic block-length estimator.
+- **Parameter search.** `compare_parameters` reads existing runs; it is not an
+  optimizer, does not generate hypotheses and cannot add runs.
+- **No API surface.** No route was added in this stage. Evaluation is callable
+  from services and tests; exposing it over HTTP would be a separate change with
+  its own authorization questions.
