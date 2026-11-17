@@ -198,10 +198,20 @@ def prepare_strategy(
     active = registry or default_registry
     definition = active.definition(strategy_name)
     config = {**definition.default_parameters(), **parameters}
-    instance = definition.create(**config)
-    capabilities = definition.capabilities or infer_capabilities(instance)
 
-    if capabilities is not None:
+    # A declaration attached at registration time is known before construction,
+    # so the environment and config are checked before any strategy code runs.
+    declared = definition.capabilities
+    if declared is not None:
+        validate_capabilities(declared, environment)
+        validate_config(declared, config)
+
+    instance = definition.create(**config)
+    capabilities = declared or infer_capabilities(instance)
+
+    # Capabilities declared on the instance itself are only visible after it is
+    # built, but are still validated before the strategy is used in a run.
+    if capabilities is not None and declared is None:
         validate_capabilities(capabilities, environment)
         validate_config(capabilities, config)
 
