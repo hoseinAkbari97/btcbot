@@ -16,13 +16,15 @@ from decimal import Decimal
 
 from app.repositories.market_data import MarketDataRepository
 from app.schemas.market_data import CandleData, Timeframe
+from app.services.strategy.adapter import prepare_strategy
+from app.services.strategy.capabilities import StrategyEnvironment
 
-from .baselines import STRATEGY_NAMES, build_strategy, default_parameters
+from .baselines import STRATEGY_NAMES, default_parameters
 from .costs import BacktestCosts
-from .engine import BacktestEngine, BacktestRun, RunMode
-from .risk import RiskEngine
 from .distributions import RDistribution, summarize_r_distribution
+from .engine import BacktestEngine, BacktestRun, RunMode
 from .metrics import PerformanceMetrics, compute_metrics, group_monthly_pnl, summarize_trade_exits
+from .risk import RiskEngine
 
 LIBRARY_VERSION = "0.1.0"
 MAX_CANDLES = 100_000
@@ -134,7 +136,17 @@ def run_backtest(
         raise ValueError("backtest requires at least 2 candles")
 
     merged = {**default_parameters(strategy_name), **(parameters or {})}
-    logic = build_strategy(strategy_name, **merged)
+    # The environment describes what this run can provide. It is built from the
+    # actual candle series, so capability checks happen before any strategy code
+    # runs and a specialized strategy can never silently receive less data.
+    environment = StrategyEnvironment(
+        symbol=symbol,
+        timeframe=timeframe.value,
+        instruments=(symbol,),
+        available_bars=len(candles),
+    )
+    prepared = prepare_strategy(strategy_name, parameters or {}, environment)
+    logic = prepared.logic
 
     # allow_short and the risk limits are execution assumptions, not strategy
     # parameters, but they are recorded alongside them so a stored run can be
@@ -165,6 +177,9 @@ def run_backtest(
         risk=risk,
         mode=mode,
     ).run()
+    # Stateful new-style strategies may close out their own state once the run
+    # is complete. The instance is discarded with this run, so nothing leaks.
+    prepared.finalize()
 
     return BacktestResult(
         experiment_id=experiment_id,
