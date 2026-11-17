@@ -73,3 +73,92 @@ Let `n` be the number of persisted trades, `net_i` the stored net PnL of trade
 
 Gross and net are never mixed: the trade table reports both, and the evidence
 layer treats a gross-positive, net-negative run as not showing an edge.
+
+## Statistical methods
+
+### Circular block bootstrap
+
+Paths are built by drawing **observed trades**, never parameters:
+
+1. Choose a block length `L`. The default is the cube-root rule
+   `L = round(n^(1/3))`, clamped to `[2, 50]` and to at most `n/2`
+   (`derive_block_length`). It is a transparent heuristic: automatic
+   (Politis–White) block selection is not implemented.
+2. Draw `ceil(n/L)` block starts uniformly from `0..n-1`; block contents are
+   taken with wraparound, so a block that starts near the end continues at the
+   beginning. This is a circular block bootstrap.
+3. Concatenate and truncate to `n` trades, keeping each trade's own net PnL, net
+   R and risk fraction together.
+
+Adjacent trades stay adjacent inside a block, so serial dependence within a
+block survives resampling. Dependence that spans block boundaries is broken,
+which is why intervals are still described as optimistic when the dependence
+screen fires.
+
+### Equity models
+
+The model is chosen from the ledger and named in every report:
+
+- `compounding_risk_fraction` — used when every trade has a finite, positive
+  risk fraction and a finite net R. Equity evolves as
+  `E_{t+1} = E_t · (1 + R_t · f_t)` where `f_t` is the trade's recorded risk
+  fraction. A growth factor at or below zero wipes the path out and is counted
+  in `wipeout_paths`.
+- `additive_pnl` — used otherwise. `E_{t+1} = E_t + net_t`, i.e. each drawn
+  trade adds its own recorded net PnL.
+
+Both models use the **observed** trade outcomes. Neither assumes a win rate, an
+average win/loss, a reward-to-risk ratio or a trade frequency.
+
+### Reported distributions
+
+| Quantity | Definition |
+| --- | --- |
+| Terminal return | `E_n / E_0 - 1` over `resamples` paths; reported as median, mean, standard deviation, and a `confidence` percentile interval. |
+| Drawdown on a path | `min_t (E_t / max_{s≤t} E_s - 1)`, with the starting equity included. |
+| Drawdown probability threshold `d` | Share of paths whose maximum drawdown is at least `d`. |
+| Ruin | Share of paths whose equity touched or fell below `(1 - ruin_fraction) · E_0` within the `n`-trade horizon. This is a **horizon-conditional** definition, not a probability of eventual ruin. |
+| Losing streak | Longest run of negative net R in a path; reported as median, p90, p95, p99 and maximum. |
+| Mean R interval | Percentile interval of the per-path mean R, i.e. the sampling uncertainty of the observed mean. |
+| CVaR of terminal return | Mean of the worst `ceil(α · resamples)` terminal returns. |
+| Order sensitivity | `resamples` uniform permutations of the same trade multiset, using the same equity model. |
+
+Terminal equity is order-invariant under both models, because per-trade growth
+factors and PnL increments commute; the permutation pass therefore speaks only
+to **how deep a drawdown the same trades can produce**.
+
+### Dependence screen
+
+For the observed net R series the lag-`k` autocorrelation is
+
+```
+ρ_k = Σ_{t=1}^{n-k} (R_t - R̄)(R_{t+k} - R̄) / Σ_{t=1}^{n} (R_t - R̄)^2
+```
+
+for `k = 1..min(5, n/5)`. A lag is flagged when `|ρ_k| > 2/√n`; any flag marks
+the sample as dependent, downgrades the evidence level, and is stated in the
+report. The screen needs at least eight trades and a complete R series.
+
+### Cost scenarios
+
+A scenario with multiplier `m` re-prices each trade as
+
+```
+net_i(m) = gross_pnl_i - m · (fees_i + spread_i + slippage_i + latency_i + other_i)
+```
+
+This is exact for costs that scale with the fill and for **unchanged decisions,
+sizes and fills**. It cannot model a different latency, fill order or market
+impact, because those change which trades exist; the report says so and marks
+such analysis as requiring a matched re-run. Average R under a scenario divides
+the re-priced PnL by the recorded risk amount, which itself depends on the
+original costs.
+
+### Segments and parameter neighbours
+
+Calendar months are cut from the **authorised research sample** by entry time
+and are labelled as in-sample, never as holdout. Parameter sensitivity compares
+runs that already exist and differ only in parameters, symbol, timeframe and
+dataset version held equal; nothing is re-optimised and no engine run is
+triggered. A narrow spread is not evidence of robustness, and a wide one may
+only reflect a coarse grid.
