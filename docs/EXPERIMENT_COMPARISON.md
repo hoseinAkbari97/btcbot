@@ -189,3 +189,7 @@ other periods, symbols, or market regimes. The `unverified_assumptions` and
   deterministic projection of the run records, not a new research artifact.
 - Per-trade cost totals are summed from stored columns; itemised cost *rates* are the
   run-level assumptions and are shown in each run's `costs` block.
+
+Statistical evaluation of a single run — cost sensitivity, resampled drawdowns
+and the evidence it does or does not support — is documented separately in
+[STRATEGY_EVALUATION.md](STRATEGY_EVALUATION.md).
