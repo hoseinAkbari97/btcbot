@@ -252,11 +252,93 @@ class BacktestRunSummary(BaseModel):
     created_at: datetime
 
 
+class BacktestComparisonRequest(BaseModel):
+    """Identifiers of persisted runs to compare side by side."""
+
+    run_ids: list[str] = Field(min_length=2, max_length=10)
+
+    @field_validator("run_ids")
+    @classmethod
+    def clean_and_check_ids(cls, value: list[str]) -> list[str]:
+        cleaned: list[str] = []
+        for run_id in value:
+            if not isinstance(run_id, str) or not run_id.strip():
+                raise ValueError("run_ids must be non-empty strings")
+            candidate = run_id.strip()
+            if len(candidate) > 64 or any(char.isspace() for char in candidate):
+                raise ValueError("run_ids must be single tokens of at most 64 characters")
+            cleaned.append(candidate)
+        if len(set(cleaned)) != len(cleaned):
+            raise ValueError("run_ids must not contain duplicates")
+        return cleaned
+
+
+class ComparedMetrics(BaseModel):
+    """Persisted metrics for one run, with no new statistics invented.
+
+    A ``None`` value means the field was not persisted for that run. It is never
+    replaced by a zero, because zero would assert something the record does not.
+    """
+
+    #: final_equity - initial_capital, from the persisted accounting columns.
+    net_pnl: float
+    net_return: float | None = None
+    initial_capital: float
+    final_equity: float
+    trade_count: int | None = None
+    win_rate: float | None = None
+    profit_factor: float | None = None
+    #: Mean net PnL per trade, in accounting currency (not a percentage).
+    expectancy: float | None = None
+    average_win: float | None = None
+    average_loss: float | None = None
+    average_r: float | None = None
+    max_drawdown: float | None = None
+    exposure: float | None = None
+    total_fees: float | None = None
+    #: Sums of the itemised per-trade cost columns, not a new cost formula.
+    total_spread_cost: float
+    total_slippage_cost: float
+    total_latency_cost: float
+    total_other_costs: float
+    insufficient_sample: bool = False
+    sample_span_seconds: float | None = None
+
+
+class ComparedRun(BaseModel):
+    """One run's identity, provenance and persisted metrics."""
+
+    run_id: str
+    strategy: str
+    strategy_version: str | None = None
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    dataset_fingerprint: str | None = None
+    symbol: str
+    timeframe: str
+    period_start: datetime
+    period_end: datetime
+    candle_count: int
+    created_at: datetime
+    mode: str | None = None
+    costs: dict[str, str | int] = Field(default_factory=dict)
+    metrics: ComparedMetrics
+
+
 class BacktestComparisonResponse(BaseModel):
-    """Side-by-side comparison of several runs on the same dataset."""
+    """Deterministic side-by-side view of runs sharing every assumption."""
 
     symbol: str
     timeframe: str
     period_start: datetime
     period_end: datetime
-    runs: list[BacktestRunSummary]
+    #: Always ``comparable`` in this version; other outcomes are rejected.
+    comparability: str = "comparable"
+    #: Assumption -> canonical value agreed by every run.
+    shared_assumptions: dict[str, str] = Field(default_factory=dict)
+    #: Assumptions that cannot be independently verified from a run record.
+    unverified_assumptions: list[str] = Field(default_factory=list)
+    #: Requested metrics that the platform does not compute or persist.
+    unavailable_metrics: list[str] = Field(default_factory=list)
+    metric_units: dict[str, str] = Field(default_factory=dict)
+    metric_basis: str = "net_of_costs"
+    runs: list[ComparedRun]

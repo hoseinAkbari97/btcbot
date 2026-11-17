@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import uuid
+from collections.abc import Sequence
 from datetime import datetime
 from decimal import Decimal
-import uuid
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import lazyload
 
 from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
 from app.schemas.market_data import Timeframe
 from app.services.backtest.runner import BacktestResult
+
+_COST_COLUMNS = ("spread_cost", "slippage_cost", "latency_cost", "other_costs")
 
 
 class BacktestRepository:
@@ -153,6 +157,64 @@ class BacktestRepository:
         return await self.session.scalar(
             select(BacktestRunRecord).where(BacktestRunRecord.id == run_id)
         )
+
+    async def get_runs_without_trades(
+        self, run_ids: Sequence[str]
+    ) -> list[BacktestRunRecord]:
+        """Fetch run rows without eager-loading their trade lists.
+
+        Comparison reads run-level columns only. ``trades`` is selectin-loaded by
+        default, which would pull every trade of every run into memory for no
+        reason; this query opts out explicitly.
+        """
+        query = (
+            select(BacktestRunRecord)
+            .where(BacktestRunRecord.id.in_(run_ids))
+            .options(lazyload(BacktestRunRecord.trades))
+        )
+        return list((await self.session.scalars(query)).all())
+
+    async def summarize_execution_costs(
+        self, run_ids: Sequence[str]
+    ) -> dict[str, dict[str, Decimal]]:
+        """Sum persisted itemised trade costs, one aggregate row per run.
+
+        The database does the addition, so a comparison never materialises a
+        run's ledger merely to total four columns.
+        """
+        zero = Decimal(0)
+        query = (
+            select(
+                BacktestTradeRecord.run_id,
+                func.coalesce(func.sum(BacktestTradeRecord.spread_cost), zero).label(
+                    "spread_cost"
+                ),
+                func.coalesce(func.sum(BacktestTradeRecord.slippage_cost), zero).label(
+                    "slippage_cost"
+                ),
+                func.coalesce(func.sum(BacktestTradeRecord.latency_cost), zero).label(
+                    "latency_cost"
+                ),
+                func.coalesce(func.sum(BacktestTradeRecord.other_costs), zero).label(
+                    "other_costs"
+                ),
+            )
+            .where(BacktestTradeRecord.run_id.in_(run_ids))
+            .group_by(BacktestTradeRecord.run_id)
+        )
+        totals = {
+            row.run_id: {
+                "spread_cost": Decimal(row.spread_cost),
+                "slippage_cost": Decimal(row.slippage_cost),
+                "latency_cost": Decimal(row.latency_cost),
+                "other_costs": Decimal(row.other_costs),
+            }
+            for row in await self.session.execute(query)
+        }
+        return {
+            run_id: totals.get(run_id, {name: zero for name in _COST_COLUMNS})
+            for run_id in run_ids
+        }
 
     async def list_trades(
         self, run_id: str, start: datetime | None = None, end: datetime | None = None
