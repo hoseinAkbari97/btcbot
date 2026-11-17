@@ -285,6 +285,161 @@ result = run_backtest(
 request schema, CLI and API route read from the same registry, so no consumer needs editing when a
 strategy is added.
 
+### How a run reaches your strategy
+
+1. The runner builds a `StrategyEnvironment` from the actual candle series.
+2. `prepare_strategy` validates the declared capabilities and configuration.
+3. The registered factory builds a fresh instance.
+4. The adapter builds a `DecisionContext` for each bar and calls `decide()`.
+5. Outputs are normalized and checked against the declaration.
+6. Portfolio construction maps decisions to `PortfolioTarget` values.
+7. Execution planning maps targets to `ExecutionInstruction` plans.
+8. The adapter selects the instruction for the engine's instrument and hands the engine a legacy
+   `Signal`; the engine alone fills, charges costs, applies risk limits and books the result.
+9. The optional `finalize()` hook runs once.
+
+No engine or runner code changes when a strategy is added; the adapter is the only boundary.
+
+## Two complete examples
+
+Both examples are self-contained: register them, then run them with `run_backtest` exactly as in*Running it*. They are architecture demonstrations, not trading hypotheses.
+
+### 1. Simple directional strategy
+
+```python
+from dataclasses import dataclass
+from decimal import Decimal
+
+from app.services.strategy.capabilities import ConfigField, StrategyCapabilities
+from app.services.strategy.contract import DecisionContext, DecisionKind, StrategyDecision
+
+
+@dataclass
+class SmaReversalStrategy:
+    name: str = "sma_reversal_example"
+    period: int = 10
+
+    capabilities = StrategyCapabilities(
+        name="sma_reversal_example",
+        version="1",
+        warmup_bars=10,
+        outputs=frozenset(
+            {DecisionKind.HOLD, DecisionKind.ENTER_LONG, DecisionKind.EXIT_LONG}
+        ),
+        config_schema={"name": ConfigField(str), "period": ConfigField(int, minimum=2)},
+    )
+
+    def decide(self, context: DecisionContext) -> StrategyDecision:
+        if len(context.history) < self.period:
+            return StrategyDecision(DecisionKind.HOLD, reason="warming up")
+        window = context.history[-self.period:]
+        average = sum((candle.close for candle in window), Decimal(0)) / Decimal(self.period)
+        if context.position is None:
+            if context.bar.close < average:
+                return StrategyDecision(DecisionKind.ENTER_LONG, reason="close below average")
+            return StrategyDecision(DecisionKind.HOLD, reason="no setup")
+        if context.bar.close >= average:
+            return StrategyDecision(DecisionKind.EXIT_LONG, reason="close back above average")
+        return StrategyDecision(DecisionKind.HOLD, reason="still below average")
+
+
+register_strategy(
+    "sma_reversal_example",
+    SmaReversalStrategy,
+    capabilities=SmaReversalStrategy.capabilities,
+)
+```
+
+The strategy never chooses a size: `ENTER_LONG` becomes a portfolio target using the constructor's
+configured exposure, and a missing `stop_price`/`target_price` lets the engine apply its default
+brackets.
+
+### 2. Stateful strategy with a lifecycle
+
+```python
+from dataclasses import dataclass
+
+from app.services.strategy.capabilities import ConfigField, StrategyCapabilities
+from app.services.strategy.contract import (
+    DecisionContext,
+    DecisionKind,
+    Finalizable,
+    Initializable,
+    Stateful,
+    StrategyDecision,
+)
+
+
+@dataclass
+class HoldNStrategy(Initializable, Finalizable, Stateful):
+    name: str = "hold_n_example"
+    hold_bars: int = 5
+
+    capabilities = StrategyCapabilities(
+        name="hold_n_example",
+        version="1",
+        stateful=True,
+        outputs=frozenset(
+            {DecisionKind.HOLD, DecisionKind.ENTER_LONG, DecisionKind.EXIT_LONG}
+        ),
+        config_schema={"name": ConfigField(str), "hold_bars": ConfigField(int, minimum=1)},
+    )
+
+    def __post_init__(self) -> None:
+        self._entry_index: int | None = None
+
+    def initialize(self, context: DecisionContext) -> None:
+        self._entry_index = None
+
+    def decide(self, context: DecisionContext) -> StrategyDecision:
+        if context.position is None:
+            if self._entry_index is None:
+                self._entry_index = context.index
+                return StrategyDecision(DecisionKind.ENTER_LONG, reason="enter once")
+            return StrategyDecision(DecisionKind.HOLD, reason="waiting for fill")
+        entry = self._entry_index if self._entry_index is not None else context.index
+        if context.index - entry >= self.hold_bars:
+            return StrategyDecision(DecisionKind.EXIT_LONG, reason="hold period elapsed")
+        return StrategyDecision(DecisionKind.HOLD, reason="still holding")
+
+    def finalize(self, context: DecisionContext) -> None:
+        pass
+
+    def state(self) -> dict[str, object]:
+        return {"entry_index": self._entry_index}
+
+    def restore_state(self, state) -> None:
+        self._entry_index = state["entry_index"]
+
+
+register_strategy(
+    "hold_n_example",
+    HoldNStrategy,
+    capabilities=HoldNStrategy.capabilities,
+)
+```
+
+Private attributes are run state, not configuration, so they stay out of the recorded parameters.
+The runner builds a fresh instance per run, which is what keeps the result repeatable; `initialize`
+resets the state explicitly as a second line of defence.
+
+## Extending the architecture
+
+Specialized behavior is added through optional interfaces and injected collaborators, never by an
+engine branch per strategy:
+
+- **A new decision kind** — add the enum member, a construction case in
+  `ExposurePortfolioConstructor`, and (if it survives execution) a planning case. Unknown kinds
+  fail loudly instead of being skipped.
+- **A different sizing policy** — implement the `PortfolioConstructor` protocol and pass an
+  instance to `prepare_strategy(..., constructor=...)`; the strategy is untouched.
+- **A different execution style** — implement `ExecutionPlanner` and pass `planner=...`.
+- **Extra inputs** — declare them in `input_data`/`event_types` and supply them in the
+  environment and context; an undeclared or unsatisfiable input refuses the run.
+- **Multi-instrument and target-weight strategies** — already expressible as decisions with
+  `instrument`/`group_id`/`target_exposure`. A multi-instrument *environment* is not implemented
+  yet, so such a strategy is validated and then correctly rejected rather than run with one leg.
+
 ## Parameters and reproducibility
 
 `default_parameters(name)` returns the explicit configuration of a fresh instance. The runner
