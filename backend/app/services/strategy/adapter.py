@@ -13,7 +13,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any
+from typing import Any, cast
 
 from app.services.backtest.engine import (
     CLOSE,
@@ -223,7 +223,7 @@ def prepare_strategy(
                 "method; a compatibility strategy cannot consume them"
             )
         return PreparedStrategy(
-            logic=instance,
+            logic=cast(Callable[[LegacyStrategyContext], Signal], instance),
             strategy=instance,
             finalize=lambda: None,
             capabilities=capabilities,
