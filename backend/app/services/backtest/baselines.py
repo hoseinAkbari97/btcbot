@@ -16,13 +16,32 @@ Randomness is injected as an explicit seed so every run is reproducible.
 from __future__ import annotations
 
 import random
-from collections.abc import Callable
 from dataclasses import dataclass
 from decimal import Decimal
 
 from app.schemas.market_data import CandleData
 
 from .engine import CLOSE, HOLD, OPEN_LONG, OPEN_SHORT, Signal, StrategyContext
+from .registry import (
+    STRATEGIES,
+    STRATEGY_NAMES,
+    build_strategy,
+    default_parameters,
+    register_strategy,
+)
+
+# The first four are kept as re-exports for existing callers; the registry is
+# now the single place strategies are defined and discovered.
+__all__ = [
+    "STRATEGIES",
+    "STRATEGY_NAMES",
+    "BuyAndHoldStrategy",
+    "DonchianBreakoutStrategy",
+    "RandomStrategy",
+    "SmaTrendStrategy",
+    "build_strategy",
+    "default_parameters",
+]
 
 TWO = Decimal(2)
 
@@ -229,39 +248,10 @@ class DonchianBreakoutStrategy:
         return Signal(kind=HOLD, reason="inside channel")
 
 
-STRATEGIES: dict[str, Callable[[], object]] = {
-    "buy_and_hold": BuyAndHoldStrategy,
-    "random": RandomStrategy,
-    "sma_trend": SmaTrendStrategy,
-    "donchian_breakout": DonchianBreakoutStrategy,
-}
-
-STRATEGY_NAMES = tuple(STRATEGIES)
-
-
-def build_strategy(name: str, /, **parameters: object) -> Callable[[StrategyContext], Signal]:
-    """Instantiate a registered baseline strategy by name.
-
-    ``name`` is positional-only so that ``default_parameters()`` — which
-    includes each strategy's own ``name`` field — can be splatted straight
-    back in as overrides.
-
-    Unknown names raise rather than falling back silently — a typo in an
-    experiment name would otherwise corrupt reproducibility.
-    """
-    try:
-        factory = STRATEGIES[name]
-    except KeyError:
-        raise ValueError(
-            f"unknown strategy {name!r}; available: {', '.join(sorted(STRATEGIES))}"
-        ) from None
-    return factory(**parameters)  # type: ignore[operator]
-
-
-def default_parameters(name: str) -> dict[str, object]:
-    """The parameters a fresh instance uses, for experiment records."""
-    return {
-        key: value
-        for key, value in vars(build_strategy(name)).items()
-        if not key.startswith("_")
-    }
+# The controls enter the same registry any other strategy uses. Registering them
+# here rather than hard-coding a private lookup makes the registry the single
+# source of truth for the runner, the API, the CLI and the request schema.
+register_strategy("buy_and_hold", BuyAndHoldStrategy, description="unbracketed market baseline")
+register_strategy("random", RandomStrategy, description="seeded null hypothesis")
+register_strategy("sma_trend", SmaTrendStrategy, description="long-only moving-average trend")
+register_strategy("donchian_breakout", DonchianBreakoutStrategy, description="long-only breakout")
