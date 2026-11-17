@@ -41,14 +41,16 @@ def trade_record(
     exit_reason: str = "target",
     bars_held: int = 3,
     holding_seconds: float | None = 900.0,
+    run_id: str = "run-1",
+    trade_id: str | None = None,
 ) -> BacktestTradeRecord:
     costs = _decimal(fees) + _decimal(spread_cost) + _decimal(slippage_cost)
     costs += _decimal(latency_cost) + _decimal(other_costs)
     net = _decimal(net_pnl)
     entry = BASE_TIME + timedelta(minutes=5 * sequence)
     return BacktestTradeRecord(
-        id=f"trade-{sequence}",
-        run_id="run-1",
+        id=trade_id or f"trade-{sequence}",
+        run_id=run_id,
         sequence=sequence,
         side=side,
         entry_time=entry,
