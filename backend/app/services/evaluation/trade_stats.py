@@ -50,6 +50,7 @@ class TradeStatistics:
     payoff_ratio: float | None
     profit_factor: float | None
     gross_profit: float
+    gross_profit_before_costs: float
     gross_loss: float
     net_pnl: float
     gross_pnl: float
@@ -86,6 +87,7 @@ class TradeStatistics:
             "payoff_ratio": self.payoff_ratio,
             "profit_factor": self.profit_factor,
             "gross_profit": self.gross_profit,
+            "gross_profit_before_costs": self.gross_profit_before_costs,
             "gross_loss": self.gross_loss,
             "net_pnl": self.net_pnl,
             "gross_pnl": self.gross_pnl,
@@ -157,11 +159,12 @@ def analyse_trades(ledger: TradeLedger, *, min_trades: int) -> TradeStatistics:
     if total_costs > 0:
         cost_breakdown = {name: value / total_costs for name, value in cost_breakdown.items()}
 
-    cost_to_gross_profit = total_costs / gross_profit if gross_profit > 0 else None
-    if gross_profit > 0 and cost_to_gross_profit is not None and cost_to_gross_profit > 1.0:
+    gross_winnings = float(ledger.gross_pnl[ledger.gross_pnl > 0].sum())
+    cost_to_gross_profit = total_costs / gross_winnings if gross_winnings > 0 else None
+    if cost_to_gross_profit is not None and cost_to_gross_profit > 1.0:
         warnings.append(
-            "transaction costs exceed gross profit, so the net result is negative while "
-            "the gross result is positive"
+            "transaction costs exceed the winnings measured before costs, so the gross "
+            "result is only positive because of the cost add-back"
         )
 
     if ledger.r_complete:
@@ -206,6 +209,7 @@ def analyse_trades(ledger: TradeLedger, *, min_trades: int) -> TradeStatistics:
         payoff_ratio=payoff_ratio,
         profit_factor=profit_factor,
         gross_profit=gross_profit,
+        gross_profit_before_costs=gross_winnings,
         gross_loss=gross_loss,
         net_pnl=net_pnl,
         gross_pnl=float(ledger.gross_pnl.sum()),

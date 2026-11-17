@@ -23,7 +23,7 @@ def _tail_mean(values: FloatArray, alpha: float) -> float | None:
     if not values.size:
         return None
     ordered = np.sort(values)
-    count = max(1, int(math.ceil(alpha * ordered.size)))
+    count = max(1, int(math.ceil(alpha * ordered.size - 1e-9)))
     return float(ordered[:count].mean())
 
 
@@ -32,7 +32,7 @@ def _tail_share(losses: FloatArray, alpha: float) -> float | None:
     if not losses.size:
         return None
     ordered = np.sort(losses)  # most negative first
-    count = max(1, int(math.ceil(alpha * ordered.size)))
+    count = max(1, int(math.ceil(alpha * ordered.size - 1e-9)))
     total = float(-ordered.sum())
     if total <= 0:
         return None
@@ -94,7 +94,7 @@ def analyse_tail_risk(ledger: TradeLedger, *, confidence: float) -> TailRisk:
         top = np.sort(winners)[-5:]
         total = float(winners.sum())
         profit_concentration_top5 = float(top.sum() / total) if total > 0 else None
-        if winners.size >= 20 and profit_concentration_top5 is not None:
+        if ledger.count >= 20 and profit_concentration_top5 is not None:
             if profit_concentration_top5 > 0.5:
                 warnings.append(
                     "more than half of gross profit comes from at most five trades; the "
@@ -123,7 +123,7 @@ def analyse_tail_risk(ledger: TradeLedger, *, confidence: float) -> TailRisk:
         r_percentiles = {
             f"p{level:02d}": float(np.percentile(r_values, level)) for level in TAIL_PERCENTILES
         }
-        tail_trades = max(1, int(math.ceil(alpha * r_values.size)))
+        tail_trades = max(1, int(math.ceil(alpha * r_values.size - 1e-9)))
     else:
         warnings.append(
             "R-based tail measures (VaR, CVaR, downside deviation) are omitted because "
