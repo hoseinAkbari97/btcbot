@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Sequence
+from collections.abc import AsyncIterator, Sequence
 from datetime import datetime
 from decimal import Decimal
 
@@ -157,6 +157,46 @@ class BacktestRepository:
         return await self.session.scalar(
             select(BacktestRunRecord).where(BacktestRunRecord.id == run_id)
         )
+
+    async def get_run_without_trades(self, run_id: str) -> BacktestRunRecord | None:
+        """Fetch one run row without materialising its ledger.
+
+        ``trades`` is selectin-loaded by default. Evaluation streams the ledger
+        separately, so loading it twice would double peak memory for no gain.
+        """
+        query = (
+            select(BacktestRunRecord)
+            .where(BacktestRunRecord.id == run_id)
+            .options(lazyload(BacktestRunRecord.trades))
+        )
+        record = await self.session.scalar(query)
+        return record if isinstance(record, BacktestRunRecord) else None
+
+    async def iter_trade_batches(
+        self, run_id: str, batch_size: int = 5_000
+    ) -> AsyncIterator[list[BacktestTradeRecord]]:
+        """Yield a run's trades in keyset batches ordered by ``sequence``.
+
+        Keyset pagination keeps memory bounded and the order stable without
+        OFFSET, which degrades on large ledgers. Callers must treat the rows as
+        read-only.
+        """
+        last_sequence = -1
+        while True:
+            query = (
+                select(BacktestTradeRecord)
+                .where(
+                    BacktestTradeRecord.run_id == run_id,
+                    BacktestTradeRecord.sequence > last_sequence,
+                )
+                .order_by(BacktestTradeRecord.sequence)
+                .limit(batch_size)
+            )
+            rows = list((await self.session.scalars(query)).all())
+            if not rows:
+                return
+            yield rows
+            last_sequence = rows[-1].sequence
 
     async def get_runs_without_trades(
         self, run_ids: Sequence[str]
