@@ -20,10 +20,11 @@ from dataclasses import dataclass
 from typing import Protocol, cast, overload, runtime_checkable
 
 from app.services.strategy.capabilities import StrategyCapabilities
+from app.services.strategy.contract import DecisionStrategy
 
 from .engine import Signal, StrategyContext
 
-StrategyFactory = Callable[..., "Strategy"]
+StrategyFactory = Callable[..., "Strategy | DecisionStrategy"]
 
 
 @runtime_checkable
@@ -82,13 +83,17 @@ class StrategyDefinition:
     #: makes no environmental demands and is handled by the compatibility path.
     capabilities: StrategyCapabilities | None = None
 
-    def create(self, **parameters: object) -> Strategy:
-        """Build a fresh instance and verify it honours the contract."""
+    def create(self, **parameters: object) -> Strategy | DecisionStrategy:
+        """Build a fresh instance and verify it honours a supported contract.
+
+        Both Stage 3B callables and Stage 3C ``decide()`` strategies register the
+        same way; the adapter at the boundary decides which path a run takes.
+        """
         instance = self.factory(**parameters)
-        if not isinstance(instance, Strategy):
+        if not isinstance(instance, Strategy | DecisionStrategy):
             raise TypeError(
                 f"strategy {self.name!r} factory returned {type(instance).__name__}, "
-                "which is not callable with a StrategyContext"
+                "which is not callable with a StrategyContext and has no decide() method"
             )
         return instance
 
@@ -152,7 +157,7 @@ class StrategyRegistry(Mapping[str, StrategyFactory]):
             available = ", ".join(sorted(self._definitions))
             raise ValueError(f"unknown strategy {name!r}; available: {available}") from None
 
-    def create(self, name: str, /, **parameters: object) -> Strategy:
+    def create(self, name: str, /, **parameters: object) -> Strategy | DecisionStrategy:
         """Build a fresh instance of ``name`` with explicit parameter overrides."""
         return self.definition(name).create(**parameters)
 
@@ -242,7 +247,7 @@ def register_strategy(
     )
 
 
-def build_strategy(name: str, /, **parameters: object) -> Strategy:
+def build_strategy(name: str, /, **parameters: object) -> Strategy | DecisionStrategy:
     """Instantiate a registered strategy by name.
 
     ``name`` is positional-only so a strategy's own ``name`` field can be
