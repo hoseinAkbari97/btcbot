@@ -172,6 +172,28 @@ class BacktestRepository:
         record = await self.session.scalar(query)
         return record if isinstance(record, BacktestRunRecord) else None
 
+    async def count_trades(self, run_id: str) -> int:
+        """Count a run's trades without loading them."""
+        query = (
+            select(func.count())
+            .select_from(BacktestTradeRecord)
+            .where(BacktestTradeRecord.run_id == run_id)
+        )
+        total = await self.session.scalar(query)
+        return int(total or 0)
+
+    async def count_runs(
+        self, strategy_name: str | None = None, modes: Sequence[str] | None = None
+    ) -> int:
+        """Count persisted runs, optionally for one strategy and set of modes."""
+        query = select(func.count()).select_from(BacktestRunRecord)
+        if strategy_name is not None:
+            query = query.where(BacktestRunRecord.strategy_name == strategy_name)
+        if modes is not None:
+            query = query.where(BacktestRunRecord.mode.in_(modes))
+        total = await self.session.scalar(query)
+        return int(total or 0)
+
     async def iter_trade_batches(
         self, run_id: str, batch_size: int = 5_000
     ) -> AsyncIterator[list[BacktestTradeRecord]]:
