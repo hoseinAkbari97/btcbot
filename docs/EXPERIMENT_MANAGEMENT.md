@@ -26,8 +26,11 @@ implementations.
 | `app/repositories/experiment.py` | Save, lookup, filter, status, failure and link updates |
 | `app/repositories/evaluation.py` | Persist and retrieve report snapshots |
 | `app/services/experiment/service.py` | Validate → backtest → persist → evaluate → persist → complete |
-| `app/api/routes/experiment.py` | Submit, list, get, status, result, evaluation, cancel, batch, compare |
-| `frontend/src/pages/Experiments.tsx` | Define, run, inspect and compare experiments |
+| `app/api/routes/experiment.py` | Submit, list, get, status, result, curves, evaluation, cancel, batch, compare |
+| `app/services/experiment/curves.py` | Bounded realized-equity projection from persisted closed trades |
+| `frontend/src/pages/Experiments.tsx` | Define and filter experiments; navigate to detail or comparison |
+| `frontend/src/pages/ExperimentDetail.tsx` | Full stored result, evidence, warnings and realized curve |
+| `frontend/src/pages/ExperimentCompare.tsx` | Backend comparison with compatibility reasons and detail links |
 
 Execution is synchronous. This repository has no Celery/Redis job queue and `core/resources.py`
 enforces `workers=1`; the workflow follows the same inline path as `POST /api/v1/backtests/run`.
@@ -166,16 +169,18 @@ curl -sS -X POST http://localhost:8000/api/v1/experiments \
 
 Open `/experiments` from the sidebar. The page:
 
-1. loads available strategy names and experiment history,
+1. loads available strategy names and bounded experiment history,
 2. lets the user define an experiment or load the stored candle range,
 3. submits it and shows the returned lifecycle state,
-4. selects a history row to inspect the linked run and full evaluation report,
-5. compares two completed experiments with the existing comparison explanations,
-6. cancels non-terminal experiments.
+4. filters and sorts stored experiments using API-supported fields where available,
+5. opens a history row to inspect the linked run, evidence and full evaluation report,
+6. selects completed experiments for a backend comparison with explicit rejection reasons,
+7. cancels non-terminal experiments.
 
 The definition form includes capital, cost assumptions, latency, strategy parameters (JSON),
 evaluation settings, short permission and an explicit replay toggle. Error bodies from the API
-are unwrapped into readable messages, including stage-specific failures.
+are unwrapped into readable messages, including stage-specific failures. The detail and comparison
+pages are documented in [EXPERIMENT_DASHBOARD.md](EXPERIMENT_DASHBOARD.md).
 
 ## Verification
 
@@ -185,8 +190,12 @@ happy-path completion and artefact linkage, persistence, run immutability, retri
 schema and capability rejection, missing data, backtest failure, evaluation failure with a
 preserved run, cancellation, idempotent resubmission, replay linkage, definition immutability,
 bounded batch isolation, compatible and incompatible comparison, and API conventions.
+`backend/tests/test_experiment_curves.py` verifies the bounded realized-curve projection, its
+missing-data explanations and run immutability. Frontend tests use Node's built-in runner to cover
+presentation helpers and the exact API request shapes.
 
 ```bash
-.venv/bin/python -m pytest backend/tests/test_experiment_pipeline.py -q --disable-warnings
-cd frontend && npm run build
+.venv/bin/python -m pytest backend/tests/test_experiment_pipeline.py \
+  backend/tests/test_experiment_curves.py -q --disable-warnings
+cd frontend && npm test && npm run build
 ```

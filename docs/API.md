@@ -83,7 +83,17 @@ metric units, interpretation guidance and limitations.
 ## Experiments
 
 The `/api/v1/experiments` endpoints submit immutable research definitions and link each one
-to a persisted backtest run and evaluation report. See
-[EXPERIMENT_MANAGEMENT.md](EXPERIMENT_MANAGEMENT.md) for the lifecycle, idempotency rules,
-failure isolation, bounded batches and frontend workflow.
+to a persisted backtest run and evaluation report. The list endpoint supports `strategy`,
+`status`, `symbol`, `timeframe`, `created_after`, `created_before` and `limit` (1–500).
+
+### `GET /api/v1/experiments/{experiment_id}/curves?limit=5000`
+
+Returns a bounded projection of persisted closed trades, labelled as realized closed-trade equity
+rather than the engine's transient per-candle curve. Missing runs or trades are explained in
+`unavailable_reason`; `truncated` reports whether more trades exist. No backtest is rerun and no
+run is modified.
+
+See [EXPERIMENT_MANAGEMENT.md](EXPERIMENT_MANAGEMENT.md) for the lifecycle, idempotency rules,
+failure isolation and bounded batches, and
+[EXPERIMENT_DASHBOARD.md](EXPERIMENT_DASHBOARD.md) for the result pages and curve definition.
 

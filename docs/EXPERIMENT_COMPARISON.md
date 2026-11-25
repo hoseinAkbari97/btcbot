@@ -114,8 +114,11 @@ zero. `metric_units` in the response is the authoritative unit key.
 | `sample_span_seconds` | persisted | Seconds between period start and end. |
 
 Not available, and listed in `unavailable_metrics` rather than invented: an average
-drawdown, an average per-trade return percentage, the equity curve itself. Drawdown
-and exposure statistics derived from the curve are available; the curve is not stored.
+drawdown, an average per-trade return percentage, and the engine's per-candle equity curve.
+Drawdown and exposure statistics derived from that curve are available; the curve itself is not
+stored. The dashboard's `/experiments/{id}/curves` endpoint is a separately labelled bounded
+projection of persisted closed trades, not a substitute for the engine curve
+(see [EXPERIMENT_DASHBOARD.md](EXPERIMENT_DASHBOARD.md)).
 
 ## Realistic example (synthetic fixture data)
 
