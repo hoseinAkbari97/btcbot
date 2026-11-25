@@ -24,8 +24,8 @@ from app.schemas.experiment import (
     ExperimentBatchRequest,
     ExperimentComparisonRequest,
     ExperimentEvaluationResponse,
-    ExperimentRetrieval,
     ExperimentResultResponse,
+    ExperimentRetrieval,
     ExperimentStatusResponse,
     ExperimentSubmission,
 )
@@ -44,7 +44,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/experiments", tags=["experiments"])
 
 
-def _orchestration(session: AsyncSession = Depends(get_db_session)) -> ExperimentOrchestrationService:
+def _orchestration(
+    session: AsyncSession = Depends(get_db_session),
+) -> ExperimentOrchestrationService:
     return ExperimentOrchestrationService(session)
 
 

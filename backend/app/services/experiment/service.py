@@ -15,8 +15,7 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from decimal import Decimal
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,6 +33,7 @@ from app.schemas.market_data import Timeframe
 from app.services.backtest.costs import BacktestCosts
 from app.services.backtest.engine import RunMode
 from app.services.backtest.registry import default_registry
+from app.services.backtest.risk import RiskEngine
 from app.services.backtest.runner import (
     LIBRARY_VERSION,
     current_git_commit,
@@ -41,7 +41,6 @@ from app.services.backtest.runner import (
     load_candles,
     run_backtest,
 )
-from app.services.backtest.risk import RiskEngine
 from app.services.evaluation.config import EvaluationConfig
 from app.services.evaluation.service import EvaluationService
 from app.services.strategy.adapter import prepare_strategy
@@ -279,7 +278,8 @@ class ExperimentOrchestrationService:
                 request,
                 configuration,
                 "data",
-                f"not enough candles for the requested window: found {len(candles)}, need at least 2",
+                "not enough candles for the requested window: "
+                f"found {len(candles)}, need at least 2",
             )
 
         dataset_version = dataset_fingerprint(candles)
