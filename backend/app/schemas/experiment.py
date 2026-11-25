@@ -151,6 +151,11 @@ class ExperimentRetrieval(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @field_validator("initial_capital", mode="before")
+    @classmethod
+    def decimal_as_string(cls, value: Any) -> Any:
+        return str(value) if isinstance(value, Decimal) else value
+
     id: str
     strategy_name: str
     strategy_version: str | None = None
@@ -181,6 +186,11 @@ class ExperimentStatusResponse(BaseModel):
     """Lightweight status for polling and failure inspection."""
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_validator("initial_capital", mode="before")
+    @classmethod
+    def decimal_as_string(cls, value: Any) -> Any:
+        return str(value) if isinstance(value, Decimal) else value
 
     id: str
     status: str
