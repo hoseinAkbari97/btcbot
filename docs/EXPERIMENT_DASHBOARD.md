@@ -61,9 +61,10 @@ persisted closed trades:
 | `limit`, `point_count`, `truncated` | Request bound, returned point count and whether more trades exist |
 | `unavailable_reason` | Explanation when no run, no linked run or no trades are available |
 
-Trades are ordered by stored sequence (the engine trade ID), with exit time deciding chart order.
-The default and hard maximum is 5000 points. The repository fetches at most `limit + 1` ledger
-rows, so the dashboard never materialises the full trade table. The chart collapses duplicate
+Candidate rows are selected in stored sequence order (the engine trade ID) and bounded before
+they are projected; points are then ordered by exit time, with sequence breaking ties. The
+default and hard maximum is 5000 points. The repository fetches at most `limit + 1` ledger rows,
+so the dashboard never materialises the full trade table. The chart collapses duplicate
 timestamps by keeping the last realized value instead of inventing intermediate times.
 
 This projection is **not** the engine's per-candle equity curve. The engine curve is transient and
