@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.backtest import router as backtest_router
+from app.api.routes.experiment import router as experiment_router
 from app.api.routes.health import router as health_router
 from app.api.routes.market_data import router as market_data_router
 from app.api.routes.market_structure import router as market_structure_router
@@ -52,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(market_data_router)
     application.include_router(market_structure_router)
     application.include_router(backtest_router)
+    application.include_router(experiment_router)
     return application
 
 
