@@ -119,7 +119,8 @@ export function Experiments() {
     setError("");
     setNotice("");
     try {
-      const page = await getCandles(form.symbol, form.timeframe);
+      const timeframe = form.timeframe as Timeframe;
+      const page = await getCandles(form.symbol, timeframe);
       if (page.candles.length < 2) {
         throw new Error(`no stored candles for ${form.symbol} ${form.timeframe}`);
       }
@@ -128,7 +129,7 @@ export function Experiments() {
       setForm((previous) => ({
         ...previous,
         start: toInputDate(first),
-        end: toInputDate(last + TIMEFRAME_MS[previous.timeframe]),
+        end: toInputDate(last + TIMEFRAME_MS[timeframe]),
       }));
       setNotice(`Loaded ${page.candles.length} stored candles as the experiment window.`);
     } catch (cause) {
