@@ -16,12 +16,17 @@ resulting database. What the test cannot check is the correctness of a column's
 from __future__ import annotations
 
 import ast
+import sqlite3
 from pathlib import Path
+from typing import Any
 
 import sqlalchemy as sa
 
 # Importing the package registers every table on ``Base.metadata``.
 import app.models  # noqa: F401
+from alembic import command
+from alembic.config import Config
+from app.core.config import get_settings
 from app.models.base import Base
 
 VERSIONS_DIR = Path(__file__).resolve().parents[1] / "alembic" / "versions"
@@ -232,3 +237,102 @@ def test_no_migration_adds_a_column_an_earlier_one_already_created() -> None:
                             created[table][name] = path.name
 
     assert not duplicates, "duplicate column migrations:\n  " + "\n  ".join(duplicates)
+
+
+def _migrate(monkeypatch: Any, database: Path, revision: str) -> None:
+    """Run Alembic against an isolated SQLite file, not the configured DB."""
+    monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{database}")
+    get_settings.cache_clear()
+    config = Config(str(VERSIONS_DIR.parents[1] / "alembic.ini"))
+    config.set_main_option("script_location", str(VERSIONS_DIR.parent))
+    try:
+        command.upgrade(config, revision)
+    finally:
+        get_settings.cache_clear()
+
+
+def _tables(database: Path) -> set[str]:
+    with sqlite3.connect(database) as connection:
+        return {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+
+
+def test_stage3e_upgrade_builds_a_fresh_sqlite_database(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """The new constraint must be created inline: SQLite cannot ALTER it in."""
+    database = tmp_path / "fresh.sqlite"
+    _migrate(monkeypatch, database, "head")
+
+    tables = _tables(database)
+    assert {"experiments", "evaluation_reports", "backtest_runs"} <= tables
+
+    with sqlite3.connect(database) as connection:
+        experiment_ddl = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'experiments'"
+        ).fetchone()[0]
+        experiment_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(experiments)")
+        }
+        report_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(evaluation_reports)")
+        }
+
+    assert "uq_experiments_idempotency_key UNIQUE (idempotency_key)" in experiment_ddl
+    assert "FOREIGN KEY(backtest_run_id)" in experiment_ddl
+    assert "FOREIGN KEY(evaluation_report_id)" in experiment_ddl
+    assert {
+        "configuration",
+        "configuration_fingerprint",
+        "idempotency_key",
+        "status",
+        "failure_stage",
+        "failure_reason",
+        "backtest_run_id",
+        "evaluation_report_id",
+    } <= experiment_columns
+    assert {"report", "report_digest", "input_fingerprint", "run_id"} <= report_columns
+
+
+def test_stage3e_upgrade_and_downgrade_preserve_existing_data(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """Upgrading an existing database must not reset unrelated research data."""
+    database = tmp_path / "existing.sqlite"
+    _migrate(monkeypatch, database, "20261003_0005")
+    assert "experiments" not in _tables(database)
+
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "INSERT INTO markets (id, name, venue, market_type, timezone) "
+            "VALUES (?, ?, ?, ?, ?)",
+            ("market-1", "Spot", "fixture", "spot", "UTC"),
+        )
+        connection.commit()
+
+    _migrate(monkeypatch, database, "head")
+    assert {"experiments", "evaluation_reports"} <= _tables(database)
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT name FROM markets WHERE id = ?", ("market-1",)
+        ).fetchone()[0] == "Spot"
+
+    monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{database}")
+    get_settings.cache_clear()
+    config = Config(str(VERSIONS_DIR.parents[1] / "alembic.ini"))
+    config.set_main_option("script_location", str(VERSIONS_DIR.parent))
+    try:
+        command.downgrade(config, "20261003_0005")
+    finally:
+        get_settings.cache_clear()
+
+    assert "experiments" not in _tables(database)
+    assert "evaluation_reports" not in _tables(database)
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT name FROM markets WHERE id = ?", ("market-1",)
+        ).fetchone()[0] == "Spot"
