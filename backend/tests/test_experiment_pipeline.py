@@ -14,7 +14,6 @@ from typing import Any
 
 import httpx
 import pytest
-from conftest import make_candle
 from sqlalchemy.ext.asyncio import AsyncSession
 from test_backtest_api import app_for, candles_from, price_path, seed_candles
 
