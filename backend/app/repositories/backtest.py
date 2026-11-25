@@ -172,6 +172,30 @@ class BacktestRepository:
         record = await self.session.scalar(query)
         return record if isinstance(record, BacktestRunRecord) else None
 
+    async def list_curve_trade_rows(
+        self, run_id: str, limit: int
+    ) -> list[tuple[int, datetime, Decimal]]:
+        """Read only the fields needed for a bounded realized-equity curve.
+
+        ``limit`` is enforced here, before rows become ORM objects, so the
+        dashboard cannot accidentally materialise an unbounded ledger. One extra
+        row is fetched to tell the caller whether the result was truncated.
+        """
+        query = (
+            select(
+                BacktestTradeRecord.sequence,
+                BacktestTradeRecord.exit_time,
+                BacktestTradeRecord.net_pnl,
+            )
+            .where(BacktestTradeRecord.run_id == run_id)
+            .order_by(BacktestTradeRecord.sequence)
+            .limit(limit + 1)
+        )
+        return [
+            (int(row.sequence), row.exit_time, Decimal(row.net_pnl))
+            for row in await self.session.execute(query)
+        ]
+
     async def count_trades(self, run_id: str) -> int:
         """Count a run's trades without loading them."""
         query = (

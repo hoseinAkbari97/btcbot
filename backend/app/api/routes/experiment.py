@@ -23,6 +23,7 @@ from app.schemas.experiment import (
     ExperimentBatchItem,
     ExperimentBatchRequest,
     ExperimentComparisonRequest,
+    ExperimentCurveResponse,
     ExperimentEvaluationResponse,
     ExperimentResultResponse,
     ExperimentRetrieval,
@@ -34,6 +35,7 @@ from app.services.backtest.comparison import (
     RunsNotFoundError,
     compare_runs,
 )
+from app.services.experiment.curves import build_realized_curve
 from app.services.experiment.service import (
     EXPERIMENT_STATES,
     ExperimentOrchestrationService,
@@ -257,6 +259,76 @@ async def get_experiment_result(
         experiment=_retrieval(record),
         backtest_run=backtest_run,
         evaluation_report=evaluation_report,
+    )
+
+
+@router.get("/{experiment_id}/curves", response_model=ExperimentCurveResponse)
+async def get_experiment_curves(
+    experiment_id: str,
+    limit: int = Query(5000, ge=1, le=5000),
+    session: AsyncSession = Depends(get_db_session),
+) -> ExperimentCurveResponse:
+    """Return a bounded realized-equity projection of persisted closed trades.
+
+    This is deliberately not the engine's transient per-candle equity curve:
+    it starts at recorded capital, adds each stored net trade PnL at its exit
+    time, and derives drawdown from that running realized peak.
+    """
+    record = await ExperimentRepository(session).get(experiment_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail=f"experiment {experiment_id} not found")
+
+    def unavailable(reason: str, run_id: str | None = None) -> ExperimentCurveResponse:
+        return ExperimentCurveResponse(
+            experiment_id=record.id,
+            run_id=run_id,
+            basis="closed_trade_net_pnl_additive; drawdown_fraction_from_running_peak; "
+            "not_engine_mark_to_market",
+            initial_capital=str(record.initial_capital),
+            accounting_currency=record.accounting_currency,
+            limit=limit,
+            point_count=0,
+            truncated=False,
+            unavailable_reason=reason,
+            points=[],
+        )
+
+    if record.backtest_run_id is None:
+        return unavailable("no persisted backtest run for this experiment")
+    run = await BacktestRepository(session).get_run_without_trades(record.backtest_run_id)
+    if run is None:
+        return unavailable(
+            "linked backtest run is not persisted", record.backtest_run_id
+        )
+
+    rows = await BacktestRepository(session).list_curve_trade_rows(run.id, limit)
+    curve = build_realized_curve(
+        initial_capital=run.initial_capital,
+        period_start=run.period_start,
+        trades=rows,
+        limit=limit,
+    )
+    return ExperimentCurveResponse(
+        experiment_id=record.id,
+        run_id=run.id,
+        basis="closed_trade_net_pnl_additive; drawdown_fraction_from_running_peak; "
+        "not_engine_mark_to_market",
+        initial_capital=str(run.initial_capital),
+        accounting_currency=record.accounting_currency,
+        limit=limit,
+        point_count=len(curve.points),
+        truncated=curve.truncated,
+        unavailable_reason=(
+            "no persisted trades for this run" if not curve.points else None
+        ),
+        points=[
+            {
+                "time": point.time,
+                "equity": str(point.equity),
+                "drawdown": str(point.drawdown),
+            }
+            for point in curve.points
+        ],
     )
 
 

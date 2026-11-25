@@ -229,6 +229,32 @@ class ExperimentEvaluationResponse(BaseModel):
     report: dict[str, Any]
 
 
+class ExperimentCurvePointResponse(BaseModel):
+    """One realized-equity step from a persisted closed trade."""
+
+    time: datetime
+    equity: str
+    drawdown: str
+
+
+class ExperimentCurveResponse(BaseModel):
+    """Bounded projection of persisted trades, never the transient engine curve."""
+
+    experiment_id: str
+    run_id: str | None
+    basis: Literal[
+        "closed_trade_net_pnl_additive; drawdown_fraction_from_running_peak; "
+        "not_engine_mark_to_market"
+    ]
+    initial_capital: str | None
+    accounting_currency: str | None
+    limit: int
+    point_count: int
+    truncated: bool
+    unavailable_reason: str | None = None
+    points: list[ExperimentCurvePointResponse]
+
+
 class ExperimentComparisonRequest(BaseModel):
     """Experiment IDs to compare through the existing run comparison service."""
 
