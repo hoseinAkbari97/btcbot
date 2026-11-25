@@ -199,6 +199,7 @@ class ExperimentStatusResponse(BaseModel):
     timeframe: str
     period_start: datetime
     period_end: datetime
+    initial_capital: str
     backtest_run_id: str | None = None
     evaluation_report_id: str | None = None
     failure_stage: str | None = None

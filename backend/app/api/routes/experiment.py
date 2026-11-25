@@ -81,6 +81,9 @@ async def submit_experiment(
     """Validate, execute and evaluate one immutable experiment definition."""
     result = await orchestration.submit(request)
     await _reject_if_failed(session, result)
+    # TimestampMixin's SQL-side onupdate expires this column after the flush;
+    # load it before Pydantic reads the record in a sync serializer.
+    await session.refresh(result.experiment, ["updated_at"])
     logger.info(
         "experiment submitted",
         extra={
@@ -295,4 +298,5 @@ async def cancel_experiment(
     except ValueError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
     await session.commit()
+    await session.refresh(record, ["updated_at"])
     return _retrieval(record)
