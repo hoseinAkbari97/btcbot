@@ -156,6 +156,11 @@ class ExperimentRetrieval(BaseModel):
     def decimal_as_string(cls, value: Any) -> Any:
         return str(value) if isinstance(value, Decimal) else value
 
+    @field_validator("notes", mode="before")
+    @classmethod
+    def notes_as_text(cls, value: Any) -> Any:
+        return "" if value is None else value
+
     id: str
     strategy_name: str
     strategy_version: str | None = None

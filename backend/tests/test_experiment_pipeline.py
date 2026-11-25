@@ -251,3 +251,210 @@ async def test_naive_timestamps_are_rejected_by_schema(
     async with client_for(experiment_db) as client:
         response = await submit(client, start="2024-01-01T00:00:00")
     assert response.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# Failures, cancellation and idempotency
+# ---------------------------------------------------------------------------
+
+
+async def test_backtest_failure_preserves_a_failed_experiment(
+    experiment_db: AsyncSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def explode(*args: Any, **kwargs: Any) -> None:
+        raise RuntimeError("engine exploded")
+
+    monkeypatch.setattr("app.services.experiment.service.run_backtest", explode)
+    async with client_for(experiment_db) as client:
+        response = await submit(client)
+        listed = await client.get("/api/v1/experiments")
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["stage"] == "backtest"
+    assert "engine exploded" in detail["reason"]
+    record = (await ExperimentRepository(experiment_db).get(detail["experiment_id"]))
+    assert record is not None
+    assert record.status == "FAILED"
+    assert record.backtest_run_id is None
+    assert record.failure_stage == "backtest"
+    assert listed.json()[0]["status"] == "FAILED"
+
+
+async def test_evaluation_failure_preserves_the_completed_backtest(
+    experiment_db: AsyncSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.services.evaluation.service import EvaluationService
+
+    async def explode(self: Any, run_id: str, **kwargs: Any) -> None:
+        raise RuntimeError("evaluator exploded")
+
+    monkeypatch.setattr(EvaluationService, "evaluate", explode)
+    async with client_for(experiment_db) as client:
+        response = await submit(client)
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert detail["stage"] == "evaluation"
+
+    record = await ExperimentRepository(experiment_db).get(detail["experiment_id"])
+    assert record is not None
+    assert record.status == "FAILED"
+    assert record.backtest_run_id is not None
+    assert record.evaluation_report_id is None
+    assert record.failure_reason and "evaluator exploded" in record.failure_reason
+    # The run remains persisted and untouched by the failed evaluation.
+    run = await BacktestRepository(experiment_db).get_run_without_trades(
+        record.backtest_run_id
+    )
+    assert run is not None
+    assert run.strategy_name == "buy_and_hold"
+
+
+async def test_cancellation_leaves_results_unchanged(
+    experiment_db: AsyncSession,
+) -> None:
+    from uuid import uuid4
+
+    from app.models.experiment import ExperimentRecord
+
+    record = ExperimentRecord(
+        strategy_name="buy_and_hold",
+        symbol="BTCUSDT",
+        timeframe="5m",
+        period_start=START,
+        period_end=END,
+        initial_capital=Decimal("10000"),
+        configuration={"strategy": "buy_and_hold"},
+        configuration_fingerprint="0" * 64,
+        idempotency_key=uuid4().hex,
+        status="DRAFT",
+    )
+    await ExperimentRepository(experiment_db).save(record)
+    await experiment_db.commit()
+
+    async with client_for(experiment_db) as client:
+        cancelled = await client.post(f"/api/v1/experiments/{record.id}/cancel")
+        again = await client.post(f"/api/v1/experiments/{record.id}/cancel")
+    assert cancelled.status_code == 200
+    assert cancelled.json()["status"] == "CANCELLED"
+    assert cancelled.json()["backtest_run_id"] is None
+    assert again.status_code == 409
+
+
+async def test_duplicate_submission_is_reused_and_replay_is_linked(
+    experiment_db: AsyncSession,
+) -> None:
+    async with client_for(experiment_db) as client:
+        first = await submit(client)
+        second = await submit(client)
+        replay = await submit(client, replay=True)
+        listed = await client.get("/api/v1/experiments")
+
+    assert first.status_code == second.status_code == replay.status_code == 201
+    original, repeat, second_run = first.json(), second.json(), replay.json()
+    assert repeat["id"] == original["id"]
+    assert repeat["backtest_run_id"] == original["backtest_run_id"]
+    assert second_run["id"] != original["id"]
+    assert second_run["parent_experiment_id"] == original["id"]
+    assert second_run["backtest_run_id"] != original["backtest_run_id"]
+    assert len(listed.json()) == 2
+
+
+async def test_configuration_is_immutable_after_submission(
+    experiment_db: AsyncSession,
+) -> None:
+    async with client_for(experiment_db) as client:
+        original = await submit(client)
+        await submit(client, replay=True)
+        fetched = await client.get(f"/api/v1/experiments/{original.json()['id']}")
+
+    assert fetched.json()["configuration"] == original.json()["configuration"]
+    assert fetched.json()["idempotency_key"] == original.json()["idempotency_key"]
+
+
+# ---------------------------------------------------------------------------
+# Batch and comparison
+# ---------------------------------------------------------------------------
+
+
+async def test_bounded_batch_isolates_per_experiment_failures(
+    experiment_db: AsyncSession,
+) -> None:
+    batch = {
+        "experiments": [
+            payload(notes="batch one"),
+            payload(notes="batch two"),
+            payload(strategy="random", parameters={"not_a_param": 1}),
+        ]
+    }
+    async with client_for(experiment_db) as client:
+        response = await client.post("/api/v1/experiments/batch", json=batch)
+        oversized = await client.post(
+            "/api/v1/experiments/batch",
+            json={"experiments": [payload()] * 6},
+        )
+        listed = await client.get("/api/v1/experiments")
+
+    assert response.status_code == 200, response.text
+    items = response.json()
+    assert [item["status"] for item in items] == [
+        "COMPLETED",
+        "COMPLETED",
+        "REJECTED",
+    ]
+    assert items[2]["failure_stage"] == "capability"
+    assert oversized.status_code == 422
+    assert len(listed.json()) == 3
+
+
+async def test_compatible_completed_experiments_are_compared(
+    experiment_db: AsyncSession,
+) -> None:
+    async with client_for(experiment_db) as client:
+        first = await submit(client, notes="compare a")
+        second = await submit(client, notes="compare b")
+        comparison = await client.post(
+            "/api/v1/experiments/compare",
+            json={"experiment_ids": [first.json()["id"], second.json()["id"]]},
+        )
+    assert comparison.status_code == 200, comparison.text
+    body = comparison.json()
+    assert body["comparability"] == "comparable"
+    assert len(body["runs"]) == 2
+    assert body["experiment_ids"] == [first.json()["id"], second.json()["id"]]
+    assert body["runs"][0]["run_id"] == first.json()["backtest_run_id"]
+
+
+async def test_incompatible_experiments_keep_existing_explanations(
+    experiment_db: AsyncSession,
+) -> None:
+    async with client_for(experiment_db) as client:
+        first = await submit(client, fee_rate="0.001")
+        second = await submit(client, fee_rate="0.002")
+        comparison = await client.post(
+            "/api/v1/experiments/compare",
+            json={"experiment_ids": [first.json()["id"], second.json()["id"]]},
+        )
+    assert comparison.status_code == 422
+    detail = comparison.json()["detail"]
+    assert detail["category"] == "incompatible"
+    assert any("fee_rate differs" in reason for reason in detail["reasons"])
+
+
+async def test_api_validation_and_authorization_conventions(
+    experiment_db: AsyncSession,
+) -> None:
+    """No auth layer exists; validation follows the existing backtest API."""
+    async with client_for(experiment_db) as client:  # no Authorization header
+        created = await submit(client)
+        experiment_id = created.json()["id"]
+        bad_timeframe = await submit(client, timeframe="7m")
+        bad_mode = await submit(client, mode="live")
+        bad_batch = await client.post("/api/v1/experiments/batch", json={"experiments": []})
+        cancel_completed = await client.post(f"/api/v1/experiments/{experiment_id}/cancel")
+        missing_report = await client.get("/api/v1/experiments/no-such-id/evaluation")
+    assert created.status_code == 201
+    assert bad_timeframe.status_code == 422
+    assert bad_mode.status_code == 422
+    assert bad_batch.status_code == 422
+    assert cancel_completed.status_code == 409
+    assert missing_report.status_code == 404
