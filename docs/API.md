@@ -80,3 +80,10 @@ exact differing fields in `detail.reasons`.
 See [EXPERIMENT_COMPARISON.md](EXPERIMENT_COMPARISON.md) for the full compatibility rules,
 metric units, interpretation guidance and limitations.
 
+## Experiments
+
+The `/api/v1/experiments` endpoints submit immutable research definitions and link each one
+to a persisted backtest run and evaluation report. See
+[EXPERIMENT_MANAGEMENT.md](EXPERIMENT_MANAGEMENT.md) for the lifecycle, idempotency rules,
+failure isolation, bounded batches and frontend workflow.
+
