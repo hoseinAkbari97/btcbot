@@ -142,8 +142,34 @@ export function submitExperiment(
   return postJson<ExperimentRecord>("/api/v1/experiments", definition);
 }
 
-export function listExperiments(limit = 50): Promise<ExperimentRecord[]> {
+export interface ExperimentListQuery {
+  strategy?: string;
+  status?: string;
+  symbol?: string;
+  timeframe?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+}
+
+/** Uses only the filters the API actually supports; sorting stays client-side. */
+export function listExperiments(
+  limit = 50,
+  query: ExperimentListQuery = {},
+): Promise<ExperimentRecord[]> {
   const params = new URLSearchParams({ limit: String(limit) });
+  const apiKeys: Record<keyof ExperimentListQuery, string> = {
+    strategy: "strategy",
+    status: "status",
+    symbol: "symbol",
+    timeframe: "timeframe",
+    createdAfter: "created_after",
+    createdBefore: "created_before",
+  };
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === "string" && value !== "") {
+      params.set(apiKeys[key as keyof ExperimentListQuery], value);
+    }
+  }
   return getJson<ExperimentRecord[]>(`/api/v1/experiments?${params.toString()}`);
 }
 

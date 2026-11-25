@@ -1,20 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   cancelExperiment,
-  compareExperiments,
   getBacktestStrategies,
   getCandles,
-  getExperimentResult,
   listExperiments,
   submitExperiment,
 } from "../services/api";
 import type {
   ExperimentRecord,
-  ExperimentResult,
   ExperimentSubmissionInput,
 } from "../types/experiment";
 import type { Timeframe } from "../types/market";
+import {
+  experimentConfigurationSummary,
+  filterExperiments,
+  type ExperimentFilters,
+} from "../lib/experiment-view";
 
 const TIMEFRAMES: Timeframe[] = ["5m", "15m", "1h", "4h", "1d"];
 const TIMEFRAME_MS: Record<Timeframe, number> = {
@@ -24,7 +27,6 @@ const TIMEFRAME_MS: Record<Timeframe, number> = {
   "4h": 14_400_000,
   "1d": 86_400_000,
 };
-const FALLBACK_STRATEGIES = ["buy_and_hold", "random", "sma_trend", "donchian_breakout"];
 const CANCELLABLE = new Set(["DRAFT", "VALIDATING", "QUEUED"]);
 
 function toInputDate(value: string | number): string {
@@ -34,12 +36,6 @@ function toInputDate(value: string | number): string {
 /** datetime-local inputs carry no zone; these experiment windows are UTC. */
 function toIso(value: string): string {
   return new Date(`${value}:00Z`).toISOString();
-}
-
-function display(value: unknown, digits = 4): string {
-  if (value === null || value === undefined) return "—";
-  if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(digits);
-  return String(value);
 }
 
 function initialForm(): ExperimentSubmissionInput {
@@ -65,25 +61,50 @@ function initialForm(): ExperimentSubmissionInput {
 }
 
 export function Experiments() {
+  const navigate = useNavigate();
   const [form, setForm] = useState<ExperimentSubmissionInput>(initialForm);
   const [parametersText, setParametersText] = useState("{}");
-  const [strategies, setStrategies] = useState<string[]>(FALLBACK_STRATEGIES);
+  const [strategies, setStrategies] = useState<string[]>([]);
   const [experiments, setExperiments] = useState<ExperimentRecord[]>([]);
-  const [result, setResult] = useState<ExperimentResult | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedForCompare, setSelectedForCompare] = useState<string[]>([]);
-  const [comparison, setComparison] = useState("");
+  const [filters, setFilters] = useState<ExperimentFilters>({
+    status: "ALL",
+    strategy: "ALL",
+    symbol: "ALL",
+    query: "",
+    sort: "newest",
+  });
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
-  const [loadingResult, setLoadingResult] = useState(false);
 
   const refresh = useCallback(async () => {
+    setLoading(true);
     try {
-      setExperiments(await listExperiments(100));
+      setExperiments(
+        await listExperiments(100, {
+          strategy: filters.strategy === "ALL" ? "" : filters.strategy,
+          status: filters.status === "ALL" ? "" : filters.status,
+          symbol: filters.symbol === "ALL" ? "" : filters.symbol,
+          timeframe: !filters.timeframe || filters.timeframe === "ALL" ? "" : filters.timeframe,
+          createdAfter: filters.createdAfter ?? "",
+          createdBefore: filters.createdBefore ?? "",
+        }),
+      );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [
+    filters.status,
+    filters.strategy,
+    filters.symbol,
+    filters.timeframe,
+    filters.createdAfter,
+    filters.createdBefore,
+  ]);
 
   useEffect(() => {
     void refresh();
@@ -91,8 +112,8 @@ export function Experiments() {
       .then((names) => {
         if (names.length > 0) setStrategies(names);
       })
-      .catch(() => {
-        // Keep the baseline fallback when the strategy endpoint is unavailable.
+      .catch((cause: unknown) => {
+        setError(`Strategy registry unavailable: ${cause instanceof Error ? cause.message : String(cause)}`);
       });
   }, [refresh]);
 
@@ -102,18 +123,6 @@ export function Experiments() {
   ) => {
     setForm((previous) => ({ ...previous, [key]: value }));
   };
-
-  const loadResult = useCallback(async (id: string) => {
-    setLoadingResult(true);
-    setError("");
-    try {
-      setResult(await getExperimentResult(id));
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : String(cause));
-    } finally {
-      setLoadingResult(false);
-    }
-  }, []);
 
   const useStoredRange = async () => {
     setError("");
@@ -158,7 +167,6 @@ export function Experiments() {
       const created = await submitExperiment(definition);
       setNotice(`${created.status}: ${created.id}`);
       await refresh();
-      await loadResult(created.id);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -173,7 +181,6 @@ export function Experiments() {
       await cancelExperiment(record.id);
       setNotice(`Cancelled ${record.id}`);
       await refresh();
-      await loadResult(record.id);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -191,22 +198,15 @@ export function Experiments() {
     );
   };
 
-  const handleCompare = async () => {
-    setBusy(true);
-    setError("");
-    setComparison("");
-    try {
-      const payload = await compareExperiments(selectedForCompare);
-      setComparison(JSON.stringify(payload, null, 2));
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : String(cause));
-    } finally {
-      setBusy(false);
-    }
+  const openCompare = () => {
+    navigate(
+      `/experiments/compare?ids=${encodeURIComponent(selectedForCompare.join(","))}`,
+    );
   };
 
-  const metrics = result?.backtest_run?.metrics ?? {};
-  const report = result?.evaluation_report;
+  const visibleExperiments = filterExperiments(experiments, filters);
+  const strategyOptions = [...new Set(experiments.map((item) => item.strategy_name))].sort();
+  const symbolOptions = [...new Set(experiments.map((item) => item.symbol))].sort();
 
   return (
     <main className="workspace">
@@ -233,6 +233,7 @@ export function Experiments() {
               Strategy
               <select
                 value={form.strategy}
+                disabled={strategies.length === 0}
                 onChange={(event) => update("strategy", event.target.value)}
               >
                 {strategies.map((name) => (
@@ -389,7 +390,7 @@ export function Experiments() {
             />
           </label>
           <div className="experiment-buttons">
-            <button type="button" onClick={() => void handleSubmit()} disabled={busy}>
+            <button type="button" onClick={() => void handleSubmit()} disabled={busy || strategies.length === 0}>
               {busy ? "Running…" : "Run experiment"}
             </button>
             <button type="button" className="secondary" onClick={() => void useStoredRange()}>
@@ -405,55 +406,158 @@ export function Experiments() {
               Refresh
             </button>
           </div>
+          <div className="experiment-filters">
+            <label>
+              Status
+              <select
+                value={filters.status}
+                onChange={(event) => setFilters({ ...filters, status: event.target.value })}
+              >
+                <option value="ALL">All statuses</option>
+                {["COMPLETED", "FAILED", "BACKTEST_COMPLETED", "REJECTED", "CANCELLED", "RUNNING"].map((status) => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Strategy
+              <select
+                value={filters.strategy}
+                onChange={(event) => setFilters({ ...filters, strategy: event.target.value })}
+              >
+                <option value="ALL">All strategies</option>
+                {strategyOptions.map((name) => <option key={name} value={name}>{name}</option>)}
+              </select>
+            </label>
+            <label>
+              Symbol
+              <select
+                value={filters.symbol}
+                onChange={(event) => setFilters({ ...filters, symbol: event.target.value })}
+              >
+                <option value="ALL">All symbols</option>
+                {symbolOptions.map((symbol) => <option key={symbol} value={symbol}>{symbol}</option>)}
+              </select>
+            </label>
+            <label>
+              Timeframe
+              <select
+                value={filters.timeframe ?? "ALL"}
+                onChange={(event) => setFilters({ ...filters, timeframe: event.target.value })}
+              >
+                <option value="ALL">All timeframes</option>
+                {TIMEFRAMES.map((timeframe) => (
+                  <option key={timeframe} value={timeframe}>{timeframe}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Created after (UTC)
+              <input
+                type="datetime-local"
+                value={filters.createdAfter ? toInputDate(filters.createdAfter) : ""}
+                onChange={(event) =>
+                  setFilters({
+                    ...filters,
+                    createdAfter: event.target.value ? toIso(event.target.value) : "",
+                  })
+                }
+              />
+            </label>
+            <label>
+              Created before (UTC)
+              <input
+                type="datetime-local"
+                value={filters.createdBefore ? toInputDate(filters.createdBefore) : ""}
+                onChange={(event) =>
+                  setFilters({
+                    ...filters,
+                    createdBefore: event.target.value ? toIso(event.target.value) : "",
+                  })
+                }
+              />
+            </label>
+            <label>
+              Search
+              <input
+                value={filters.query}
+                placeholder="ID, notes, dataset"
+                onChange={(event) => setFilters({ ...filters, query: event.target.value })}
+              />
+            </label>
+            <label>
+              Sort
+              <select
+                value={filters.sort}
+                onChange={(event) => setFilters({ ...filters, sort: event.target.value as ExperimentFilters["sort"] })}
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="strategy">Strategy</option>
+              </select>
+            </label>
+          </div>
           <div className="experiment-table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Compare</th>
                   <th>Experiment</th>
-                  <th>Strategy</th>
-                  <th>Status</th>
-                  <th>Run / report</th>
+                  <th>Strategy / configuration</th>
+                  <th>Market / range</th>
+                  <th>Lifecycle</th>
+                  <th>Results</th>
                 </tr>
               </thead>
               <tbody>
-                {experiments.map((record) => (
+                {visibleExperiments.map((record) => (
                   <tr
                     key={record.id}
-                    className={result?.experiment.id === record.id ? "selected" : ""}
-                    onClick={() => void loadResult(record.id)}
+                    onClick={() => navigate(`/experiments/${record.id}`)}
                   >
                     <td>
                       <input
                         type="checkbox"
                         aria-label={`Compare ${record.id}`}
                         checked={selectedForCompare.includes(record.id)}
-                        disabled={record.backtest_run_id === null}
+                        disabled={
+                          record.status !== "COMPLETED" || record.backtest_run_id === null
+                        }
                         onClick={(event) => event.stopPropagation()}
                         onChange={() => toggleCompare(record.id)}
                       />
                     </td>
                     <td>
-                      <code>{record.id.slice(0, 10)}</code>
-                      <small>
-                        {record.symbol} {record.timeframe} · {record.initial_capital}{" "}
-                        {record.accounting_currency}
-                      </small>
+                      <Link
+                        to={`/experiments/${record.id}`}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <code>{record.id.slice(0, 12)}</code>
+                      </Link>
+                      <small>Created {record.created_at}</small>
+                      {record.notes && <small>Notes: {record.notes}</small>}
                     </td>
-                    <td>{record.strategy_name}</td>
+                    <td>
+                      <strong>{record.strategy_name}</strong>
+                      <small>{record.strategy_version ?? "version not recorded"}</small>
+                      <small>{experimentConfigurationSummary(record)}</small>
+                    </td>
+                    <td>
+                      <strong>{record.symbol} · {record.timeframe}</strong>
+                      <small>
+                        {record.period_start} → {record.period_end}
+                      </small>
+                      <small>Dataset: {record.dataset_version ?? "not recorded"}</small>
+                    </td>
                     <td>
                       <span className={`status-pill ${record.status.toLowerCase()}`}>
                         {record.status}
                       </span>
                       {record.failure_stage && (
                         <small>
-                          {record.failure_stage}: {record.failure_reason}
+                          {record.failure_stage}: {record.failure_reason ?? "no reason recorded"}
                         </small>
                       )}
-                    </td>
-                    <td>
-                      <small>run {record.backtest_run_id?.slice(0, 8) ?? "—"}</small>
-                      <small>report {record.evaluation_report_id?.slice(0, 8) ?? "—"}</small>
                       {CANCELLABLE.has(record.status) && (
                         <button
                           type="button"
@@ -468,12 +572,28 @@ export function Experiments() {
                         </button>
                       )}
                     </td>
+                    <td>
+                      <small>
+                        Backtest: {record.backtest_run_id ? "available" : "not available"}
+                      </small>
+                      <small>
+                        Evaluation: {record.evaluation_report_id ? "available" : "not available"}
+                      </small>
+                      <small>
+                        run {record.backtest_run_id?.slice(0, 8) ?? "—"} · report{" "}
+                        {record.evaluation_report_id?.slice(0, 8) ?? "—"}
+                      </small>
+                    </td>
                   </tr>
                 ))}
-                {experiments.length === 0 && (
+                {visibleExperiments.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="empty-row">
-                      No experiments yet.
+                    <td colSpan={6} className="empty-row">
+                      {loading
+                        ? "Loading experiments…"
+                        : experiments.length === 0
+                          ? "No experiments yet."
+                          : "No experiments match these filters."}
                     </td>
                   </tr>
                 )}
@@ -484,71 +604,14 @@ export function Experiments() {
             <button
               type="button"
               className="secondary"
-              disabled={selectedForCompare.length !== 2 || busy}
-              onClick={() => void handleCompare()}
+              disabled={selectedForCompare.length < 2 || busy}
+              onClick={openCompare}
             >
-              Compare {selectedForCompare.length}/2
+              Compare {selectedForCompare.length} selected
             </button>
           </div>
-          {comparison && <pre className="experiment-json-output">{comparison}</pre>}
         </section>
       </div>
-
-      {loadingResult && <p className="experiment-hint">Loading result…</p>}
-      {result && (
-        <section className="panel experiment-result">
-          <h2>Result · {result.experiment.id}</h2>
-          {result.backtest_run ? (
-            <>
-              <div className="result-grid">
-                <div>
-                  <span>Net return</span>
-                  <strong>{display(metrics.total_return)}</strong>
-                </div>
-                <div>
-                  <span>Trades</span>
-                  <strong>{display(metrics.trade_count, 0)}</strong>
-                </div>
-                <div>
-                  <span>Win rate</span>
-                  <strong>{display(metrics.win_rate)}</strong>
-                </div>
-                <div>
-                  <span>Max drawdown</span>
-                  <strong>{display(metrics.max_drawdown)}</strong>
-                </div>
-                <div>
-                  <span>Sharpe</span>
-                  <strong>{display(metrics.sharpe)}</strong>
-                </div>
-                <div>
-                  <span>Final equity</span>
-                  <strong>{display(metrics.final_equity, 2)}</strong>
-                </div>
-              </div>
-              {metrics.insufficient_sample === true && (
-                <p className="experiment-hint warning">
-                  Short sample: annualised figures are withheld as meaningful estimates.
-                </p>
-              )}
-              <details>
-                <summary>Backtest assumptions</summary>
-                <pre className="experiment-json-output">
-                  {JSON.stringify(result.backtest_run, null, 2)}
-                </pre>
-              </details>
-            </>
-          ) : (
-            <p className="experiment-hint">No persisted backtest run for this experiment.</p>
-          )}
-          <details open>
-            <summary>Evaluation report</summary>
-            <pre className="experiment-json-output">
-              {JSON.stringify(report ?? result.experiment.failure_reason, null, 2)}
-            </pre>
-          </details>
-        </section>
-      )}
     </main>
   );
 }

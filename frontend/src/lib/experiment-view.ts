@@ -197,6 +197,9 @@ export interface ExperimentFilters {
   status: string;
   strategy: string;
   symbol: string;
+  timeframe?: string;
+  createdAfter?: string;
+  createdBefore?: string;
   query: string;
   sort: "newest" | "oldest" | "strategy";
 }
@@ -210,6 +213,14 @@ export function filterExperiments(
     if (filters.status !== "ALL" && record.status !== filters.status) return false;
     if (filters.strategy !== "ALL" && record.strategy_name !== filters.strategy) return false;
     if (filters.symbol !== "ALL" && record.symbol !== filters.symbol) return false;
+    if (filters.timeframe && filters.timeframe !== "ALL" && record.timeframe !== filters.timeframe) {
+      return false;
+    }
+    const created = Date.parse(record.created_at);
+    const after = filters.createdAfter ? Date.parse(filters.createdAfter) : NaN;
+    const before = filters.createdBefore ? Date.parse(filters.createdBefore) : NaN;
+    if (Number.isFinite(after) && created < after) return false;
+    if (Number.isFinite(before) && created > before) return false;
     if (!query) return true;
     return [record.id, record.strategy_name, record.notes, record.dataset_version ?? ""]
       .join(" ")
