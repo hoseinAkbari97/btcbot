@@ -32,7 +32,7 @@ export interface ExperimentSubmissionInput {
   cost_scale: string;
   allow_short: boolean;
   mode: "research";
-  parameters: Record<string, string | number | boolean>;
+  parameters: Record<string, unknown>;
   evaluation: EvaluationSettingsInput;
   notes: string;
   replay?: boolean;
