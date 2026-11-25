@@ -414,7 +414,18 @@ export function Experiments() {
                 onChange={(event) => setFilters({ ...filters, status: event.target.value })}
               >
                 <option value="ALL">All statuses</option>
-                {["COMPLETED", "FAILED", "BACKTEST_COMPLETED", "REJECTED", "CANCELLED", "RUNNING"].map((status) => (
+                {[
+                  "DRAFT",
+                  "VALIDATING",
+                  "REJECTED",
+                  "QUEUED",
+                  "RUNNING",
+                  "BACKTEST_COMPLETED",
+                  "EVALUATING",
+                  "COMPLETED",
+                  "FAILED",
+                  "CANCELLED",
+                ].map((status) => (
                   <option key={status} value={status}>{status}</option>
                 ))}
               </select>
