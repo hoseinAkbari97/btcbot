@@ -1,6 +1,8 @@
 import { NavLink, Route, Routes } from "react-router-dom";
 
 import { Dashboard } from "./pages/Dashboard";
+import { ExperimentCompare } from "./pages/ExperimentCompare";
+import { ExperimentDetail } from "./pages/ExperimentDetail";
 import { Experiments } from "./pages/Experiments";
 
 export default function App() {
@@ -42,6 +44,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/experiments" element={<Experiments />} />
+          <Route path="/experiments/compare" element={<ExperimentCompare />} />
+          <Route path="/experiments/:id" element={<ExperimentDetail />} />
         </Routes>
       </div>
     </div>

@@ -115,6 +115,7 @@ export interface ComparisonRun {
 }
 
 export interface ExperimentComparison {
+  experiment_ids?: string[];
   comparability: string;
   shared_assumptions: Record<string, unknown>;
   metric_basis: string;
