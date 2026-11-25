@@ -86,3 +86,40 @@ export interface ExperimentEvaluation {
   report_id: string;
   report: Record<string, unknown>;
 }
+
+/** Read-only projection of persisted closed trades; never a mark-to-market curve. */
+export interface ExperimentCurvePoint {
+  time: string;
+  equity: string | number;
+  drawdown: string | number;
+}
+
+export interface ExperimentCurve {
+  experiment_id: string;
+  run_id: string | null;
+  basis: string;
+  initial_capital: string | null;
+  accounting_currency: string | null;
+  limit: number;
+  point_count: number;
+  truncated: boolean;
+  unavailable_reason: string | null;
+  points: ExperimentCurvePoint[];
+}
+
+export interface ComparisonRun {
+  run_id: string;
+  strategy: string;
+  dataset_fingerprint: string | null;
+  metrics: Record<string, unknown>;
+}
+
+export interface ExperimentComparison {
+  comparability: string;
+  shared_assumptions: Record<string, unknown>;
+  metric_basis: string;
+  metric_units: Record<string, string>;
+  runs: ComparisonRun[];
+  unverified_assumptions: string[];
+  unavailable_metrics: string[];
+}

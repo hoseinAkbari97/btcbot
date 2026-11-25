@@ -10,11 +10,26 @@ import type {
   Timeframe,
 } from "../types/market";
 import type {
+  ExperimentComparison,
+  ExperimentCurve,
   ExperimentEvaluation,
   ExperimentRecord,
   ExperimentResult,
   ExperimentSubmissionInput,
 } from "../types/experiment";
+
+/** Keeps structured backend error details available to the comparison view. */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly detail: unknown;
+
+  constructor(status: number, detail: unknown, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
+  }
+}
 
 function formatDetail(detail: unknown): string {
   if (typeof detail === "string") return detail;
@@ -43,13 +58,15 @@ async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, init);
   if (!response.ok) {
     let message = `${response.status} ${response.statusText}`;
+    let detail: unknown = null;
     try {
       const body = (await response.json()) as { detail?: unknown };
-      message = formatDetail(body.detail);
+      detail = body.detail;
+      message = formatDetail(detail);
     } catch {
       // Keep the HTTP status message when the body is not JSON.
     }
-    throw new Error(message);
+    throw new ApiError(response.status, detail, message);
   }
   return (await response.json()) as T;
 }
@@ -140,10 +157,20 @@ export function getExperimentEvaluation(
   return getJson<ExperimentEvaluation>(`/api/v1/experiments/${experimentId}/evaluation`);
 }
 
+export function getExperimentCurves(
+  experimentId: string,
+  limit = 5000,
+): Promise<ExperimentCurve> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  return getJson<ExperimentCurve>(
+    `/api/v1/experiments/${experimentId}/curves?${params.toString()}`,
+  );
+}
+
 export function compareExperiments(
   experimentIds: string[],
-): Promise<Record<string, unknown>> {
-  return postJson<Record<string, unknown>>("/api/v1/experiments/compare", {
+): Promise<ExperimentComparison> {
+  return postJson<ExperimentComparison>("/api/v1/experiments/compare", {
     experiment_ids: experimentIds,
   });
 }
