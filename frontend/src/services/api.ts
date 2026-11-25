@@ -9,13 +9,53 @@ import type {
   SystemStatus,
   Timeframe,
 } from "../types/market";
+import type {
+  ExperimentEvaluation,
+  ExperimentRecord,
+  ExperimentResult,
+  ExperimentSubmissionInput,
+} from "../types/experiment";
 
-async function getJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+function formatDetail(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        const record = item as { msg?: unknown };
+        return typeof record?.msg === "string" ? record.msg : JSON.stringify(item);
+      })
+      .join("; ");
+  }
+  if (detail && typeof detail === "object") {
+    const record = detail as Record<string, unknown>;
+    if (typeof record.reason === "string") {
+      return `${String(record.stage ?? "error")}: ${record.reason}`;
+    }
+    if (Array.isArray(record.reasons)) {
+      return record.reasons.map((reason) => String(reason)).join("; ");
+    }
+    return JSON.stringify(record);
+  }
+  return "request failed";
+}
+
+async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, init);
   if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`);
+    let message = `${response.status} ${response.statusText}`;
+    try {
+      const body = (await response.json()) as { detail?: unknown };
+      message = formatDetail(body.detail);
+    } catch {
+      // Keep the HTTP status message when the body is not JSON.
+    }
+    throw new Error(message);
   }
   return (await response.json()) as T;
+}
+
+async function getJson<T>(url: string): Promise<T> {
+  return requestJson<T>(url);
 }
 
 export function getSystemStatus(): Promise<SystemStatus> {
@@ -63,5 +103,52 @@ export function toVolumePoint(candle: Candle) {
     value: Number(candle.volume),
     color: Number(candle.close) >= Number(candle.open) ? "#12b88670" : "#fa525270",
   };
+}
+
+// ── Stage 3E experiment workflow ────────────────────────────────────────────
+
+async function postJson<T>(url: string, body?: unknown): Promise<T> {
+  return requestJson<T>(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
+export function getBacktestStrategies(): Promise<string[]> {
+  return getJson<string[]>("/api/v1/backtests/strategies");
+}
+
+export function submitExperiment(
+  definition: ExperimentSubmissionInput,
+): Promise<ExperimentRecord> {
+  return postJson<ExperimentRecord>("/api/v1/experiments", definition);
+}
+
+export function listExperiments(limit = 50): Promise<ExperimentRecord[]> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  return getJson<ExperimentRecord[]>(`/api/v1/experiments?${params.toString()}`);
+}
+
+export function getExperimentResult(experimentId: string): Promise<ExperimentResult> {
+  return getJson<ExperimentResult>(`/api/v1/experiments/${experimentId}/result`);
+}
+
+export function getExperimentEvaluation(
+  experimentId: string,
+): Promise<ExperimentEvaluation> {
+  return getJson<ExperimentEvaluation>(`/api/v1/experiments/${experimentId}/evaluation`);
+}
+
+export function compareExperiments(
+  experimentIds: string[],
+): Promise<Record<string, unknown>> {
+  return postJson<Record<string, unknown>>("/api/v1/experiments/compare", {
+    experiment_ids: experimentIds,
+  });
+}
+
+export function cancelExperiment(experimentId: string): Promise<ExperimentRecord> {
+  return postJson<ExperimentRecord>(`/api/v1/experiments/${experimentId}/cancel`);
 }
 
