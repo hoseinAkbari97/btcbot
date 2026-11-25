@@ -83,6 +83,7 @@ def upgrade() -> None:
             sa.String(36),
             sa.ForeignKey("evaluation_reports.id"),
         ),
+        sa.UniqueConstraint("idempotency_key", name="uq_experiments_idempotency_key"),
         *timestamps,
     )
     op.create_index(
@@ -94,13 +95,9 @@ def upgrade() -> None:
         ["symbol", "timeframe", "created_at"],
     )
     op.create_index("ix_experiments_status_created", "experiments", ["status", "created_at"])
-    op.create_unique_constraint(
-        "uq_experiments_idempotency_key", "experiments", ["idempotency_key"]
-    )
 
 
 def downgrade() -> None:
-    op.drop_constraint("uq_experiments_idempotency_key", "experiments", type_="unique")
     op.drop_index("ix_experiments_status_created", table_name="experiments")
     op.drop_index("ix_experiments_symbol_timeframe_created", table_name="experiments")
     op.drop_index("ix_experiments_strategy_created", table_name="experiments")
