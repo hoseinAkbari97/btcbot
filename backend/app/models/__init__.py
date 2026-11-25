@@ -4,9 +4,11 @@ Currently exported models:
 - Backtest persistence: BacktestRunRecord, BacktestTradeRecord
 - Market data: Candle, DataQualityReport, DataSource, Instrument, Market, OrderBookSnapshot, Trade
 - Experiment: ExperimentRecord (Stage 3E)
+- Evaluation: EvaluationReportRecord (Stage 3E)
 """
 
 from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
+from app.models.evaluation import EvaluationReportRecord
 from app.models.experiment import ExperimentRecord
 from app.models.market_data import (
     Candle,
@@ -22,6 +24,7 @@ __all__ = [
     "BacktestRunRecord",
     "BacktestTradeRecord",
     "ExperimentRecord",
+    "EvaluationReportRecord",
     "Candle",
     "DataQualityReport",
     "DataSource",
