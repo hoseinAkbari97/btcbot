@@ -130,8 +130,78 @@ h1 { font-size: 24px; margin: 5px 0 0; letter-spacing: -.03em; }
 .experiment-result summary { color: #8b98ab; font: 500 10px "IBM Plex Mono"; cursor: pointer; }
 .experiment-json-output { max-height: 360px; overflow: auto; background: #080d14; border: 1px solid #182230; border-radius: 4px; color: #91a0b4; padding: 10px; font: 500 10px/1.5 "IBM Plex Mono"; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-@media (max-width: 1100px) { .experiment-layout { grid-template-columns: 1fr; } }
+/* Stage 3F research dashboard */
+.experiment-alert.warning { color: #d99a36; border-color: #5b4421; background: #1a150d; }
+.experiment-alert ul, .evidence-list ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.6; }
+.experiment-alert strong, .evidence-list strong { display: block; margin-bottom: 5px; }
+.experiment-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 12px 0; }
+.experiment-filters label { display: flex; flex-direction: column; gap: 4px; color: #667489; font: 500 9px "IBM Plex Mono"; letter-spacing: .05em; }
+.experiment-filters input, .experiment-filters select { min-width: 0; background: #101824; border: 1px solid #26313f; border-radius: 3px; color: #d9e1eb; padding: 7px 8px; font: 500 10px "IBM Plex Mono"; }
+.experiment-list td a { color: #dfe6ef; text-decoration: none; }
+.experiment-list td a:hover { color: #f5a623; }
+.missing-value { color: #68768a; font-style: italic; }
+.back-link { display: inline-block; color: #8b98ab; text-decoration: none; font: 500 10px "IBM Plex Mono"; margin-bottom: 8px; }
+.back-link:hover { color: #f5a623; }
+.detail-actions { display: flex; align-items: center; gap: 10px; }
+.secondary-link { border: 1px solid #2b3848; border-radius: 3px; padding: 7px 10px; color: #9fadc0; text-decoration: none; font: 600 9px "IBM Plex Mono"; }
+.secondary-link:hover { color: #f5a623; border-color: #f5a623; }
+.experiment-detail .topbar, .experiment-compare .topbar { align-items: flex-end; }
+.detail-section { padding: 18px; margin-bottom: 14px; }
+.detail-section h2 { font-size: 14px; margin: 0 0 6px; }
+.detail-section h3 { color: #9fadc0; font-size: 11px; margin: 18px 0 8px; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 18px; margin: 14px 0; }
+.detail-grid.compact { gap: 8px 16px; }
+.detail-field { min-width: 0; }
+.detail-field dt { color: #667489; font: 500 9px "IBM Plex Mono"; letter-spacing: .06em; text-transform: uppercase; }
+.detail-field dd { margin: 4px 0 0; color: #d9e1eb; font: 500 11px "IBM Plex Mono"; overflow-wrap: anywhere; }
+.detail-section details { border-top: 1px solid #182230; padding-top: 10px; margin-top: 12px; }
+.detail-section summary { color: #8b98ab; font: 500 10px "IBM Plex Mono"; cursor: pointer; }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.metric-card { background: #101824; border: 1px solid #1c2634; border-radius: 4px; padding: 10px 12px; }
+.metric-card span { display: block; color: #667489; font: 500 9px "IBM Plex Mono"; letter-spacing: .05em; }
+.metric-card strong { display: block; margin-top: 5px; color: #dfe6ef; font: 600 13px "IBM Plex Mono"; }
+.metric-card small { display: block; margin-top: 5px; color: #5d6a7e; font: 500 9px "IBM Plex Mono"; }
+.experiment-chart { border: 1px solid #1c2634; border-radius: 4px; background: #0c111a; padding: 10px; }
+.experiment-chart-legend { display: flex; flex-wrap: wrap; gap: 14px; color: #8290a3; font: 500 9px "IBM Plex Mono"; margin-bottom: 6px; }
+.legend-equity { color: #4dabf7; }
+.legend-drawdown { color: #fa5252; }
+.experiment-chart-canvas { height: 300px; width: 100%; }
+.evidence-card { border: 1px solid #26313f; border-left: 3px solid #8290a3; border-radius: 4px; padding: 12px; margin-bottom: 12px; }
+.evidence-card.insufficient { border-left-color: #fa5252; }
+.evidence-card.descriptive { border-left-color: #d99a36; }
+.evidence-card.conditional_inference { border-left-color: #12b886; }
+.evidence-card strong { color: #dfe6ef; font: 600 12px "IBM Plex Mono"; }
+.evidence-card p { color: #8b98ab; font-size: 11px; line-height: 1.6; margin: 8px 0; }
+.evidence-card .evidence-headline { color: #d9e1eb; font-family: "IBM Plex Mono"; }
+.evidence-list { background: #101824; border: 1px solid #1c2634; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px; color: #8b98ab; font-size: 11px; }
+.evidence-list.withheld { border-color: #5b4421; }
+.report-section { margin-top: 10px; }
+.report-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 16px; margin: 8px 0; }
+.report-details dt { color: #667489; font: 500 9px "IBM Plex Mono"; text-transform: uppercase; }
+.report-details dd { margin: 3px 0; color: #aeb9c8; font: 500 10px "IBM Plex Mono"; overflow-wrap: anywhere; }
+.compare-layout { display: grid; grid-template-columns: minmax(260px, 380px) minmax(0, 1fr); gap: 14px; align-items: start; }
+.compare-selector, .compare-results { padding: 18px; }
+.compare-selector h2, .compare-results h2 { font-size: 14px; margin: 0 0 10px; }
+.compare-list { display: flex; flex-direction: column; gap: 6px; max-height: 560px; overflow-y: auto; }
+.compare-option { display: flex; gap: 8px; align-items: flex-start; background: #101824; border: 1px solid #1c2634; border-radius: 4px; padding: 8px; cursor: pointer; }
+.compare-option input { accent-color: #f5a623; margin-top: 2px; }
+.compare-option span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.compare-option code { color: #f0b45f; font-size: 9px; }
+.compare-option strong { color: #d9e1eb; font: 500 11px "IBM Plex Mono"; }
+.compare-option small { color: #5d6a7e; font: 500 9px "IBM Plex Mono"; overflow-wrap: anywhere; }
+.comparison-summary { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; color: #8b98ab; font: 500 10px "IBM Plex Mono"; margin-bottom: 10px; }
+.comparison-table { width: 100%; border-collapse: collapse; font: 500 10px "IBM Plex Mono"; }
+.comparison-table th, .comparison-table td { border-bottom: 1px solid #182230; padding: 8px 6px; text-align: left; vertical-align: top; }
+.comparison-table thead th { color: #667489; }
+.comparison-table thead a { color: #dfe6ef; }
+.comparison-table tbody th { color: #8b98ab; }
+.comparison-table td { color: #d9e1eb; }
+.comparison-table small { display: block; color: #5d6a7e; margin-top: 3px; }
+.comparison-table a { color: #4dabf7; }
+.compare-results details { margin-top: 14px; border-top: 1px solid #182230; padding-top: 10px; }
+
+@media (max-width: 1100px) { .experiment-layout, .compare-layout { grid-template-columns: 1fr; } }
 @media (max-width: 900px) { .app-shell { grid-template-columns: 72px minmax(0,1fr); } .sidebar { padding: 20px 8px; } .brand > div:last-child, nav button:not(.selected) span, nav button { font-size: 0; } .brand { padding-left: 9px; } nav button { justify-content: center; } nav button i { font-size: 16px; } .nav-label, .sidebar-footer { display: none; } .workspace { padding: 22px 16px; } .status-grid { grid-template-columns: repeat(2,1fr); } }
-@media (max-width: 620px) { .status-grid { grid-template-columns: 1fr 1fr; } .research-badge { display: none; } .market-controls { overflow-x: auto; } .clock { display: none; } .chart-toolbar { flex-wrap: wrap; } .chart-controls { justify-content: flex-start; } .chart-panel { min-height: 520px; } .chart-canvas { height: 420px; } .experiment-fields { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .status-grid { grid-template-columns: 1fr 1fr; } .research-badge { display: none; } .market-controls { overflow-x: auto; } .clock { display: none; } .chart-toolbar { flex-wrap: wrap; } .chart-controls { justify-content: flex-start; } .chart-panel { min-height: 520px; } .chart-canvas { height: 420px; } .experiment-fields { grid-template-columns: 1fr; } .experiment-chart-canvas { height: 240px; } }
 @media (max-width: 620px) { .status-grid { grid-template-columns: 1fr 1fr; } .research-badge { display: none; } .market-controls { overflow-x: auto; } .clock { display: none; } .chart-toolbar { flex-wrap: wrap; } .chart-controls { justify-content: flex-start; } .chart-panel { min-height: 520px; } .chart-canvas { height: 420px; } }
 
