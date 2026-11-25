@@ -2,6 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  ApiError,
+  compareExperiments,
+  getExperimentCurves,
+  listExperiments,
+} from "../.test-dist/services/api.js";
+import {
   comparisonFailure,
   comparisonRows,
   evidenceSummary,
@@ -95,6 +101,17 @@ test("filterExperiments honours filters and sorts without fabricating fields", (
     filterExperiments(records, { ...all, query: "DATASET-V1" }).length,
     3,
   );
+  assert.deepEqual(
+    filterExperiments(records, { ...all, timeframe: "5m" }).map((item) => item.id),
+    [],
+  );
+  assert.deepEqual(
+    filterExperiments(records, {
+      ...all,
+      createdAfter: "2024-01-04T00:00:00Z",
+    }).map((item) => item.id),
+    ["newer"],
+  );
   assert.equal(
     experimentConfigurationSummary(records[0]),
     "BTCUSDT · 15m · capital 10,000.00 USDT · max 500 candles · long only",
@@ -178,4 +195,74 @@ test("comparisonRows and comparisonFailure use backend fields only", () => {
   });
   assert.equal(failure.category, "incompatible");
   assert.deepEqual(failure.reasons, ["fee_rate differs (run_a=0.002, run_b=0.001)"]);
+});
+
+test("frontend API helpers send bounded, explicit request shapes", async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: new URL(url, "http://test.invalid"), init });
+    return {
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({ points: [], comparability: "comparable" }),
+    };
+  };
+  try {
+    await getExperimentCurves("exp-1", 25);
+    await compareExperiments(["exp-1", "exp-2"]);
+    await listExperiments(10, {
+      status: "COMPLETED",
+      timeframe: "5m",
+      createdAfter: "2024-01-04T00:00:00Z",
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(calls[0].url.pathname, "/api/v1/experiments/exp-1/curves");
+  assert.equal(calls[0].url.searchParams.get("limit"), "25");
+  assert.equal(calls[1].url.pathname, "/api/v1/experiments/compare");
+  assert.equal(calls[1].init.method, "POST");
+  assert.deepEqual(JSON.parse(calls[1].init.body), {
+    experiment_ids: ["exp-1", "exp-2"],
+  });
+  assert.equal(calls[2].url.searchParams.get("limit"), "10");
+  assert.equal(calls[2].url.searchParams.get("status"), "COMPLETED");
+  assert.equal(calls[2].url.searchParams.get("timeframe"), "5m");
+  assert.equal(
+    calls[2].url.searchParams.get("created_after"),
+    "2024-01-04T00:00:00Z",
+  );
+});
+
+test("API errors retain structured comparison rejection details", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: false,
+    status: 422,
+    statusText: "Unprocessable Entity",
+    json: async () => ({
+      detail: {
+        category: "incompatible",
+        reasons: ["fee_rate differs"],
+      },
+    }),
+  });
+  try {
+    await assert.rejects(
+      compareExperiments(["exp-1", "exp-2"]),
+      (error) => {
+        assert.ok(error instanceof ApiError);
+        assert.equal(error.status, 422);
+        const failure = comparisonFailure(error);
+        assert.equal(failure.category, "incompatible");
+        assert.deepEqual(failure.reasons, ["fee_rate differs"]);
+        return true;
+      },
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

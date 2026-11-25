@@ -9,5 +9,5 @@
     "outDir": ".test-dist",
     "types": []
   },
-  "include": ["src/lib/experiment-view.ts"]
+  "include": ["src/lib/experiment-view.ts", "src/services/api.ts"]
 }
