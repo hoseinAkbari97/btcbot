@@ -77,6 +77,12 @@ async def test_save_persists_the_exact_engine_curve_and_per_leg_costs(db_session
     assert rows == expected
     assert await repository.count_equity_points(run_id) == len(expected)
 
+    batches = [
+        batch async for batch in repository.iter_equity_point_batches(run_id, batch_size=5)
+    ]
+    assert [len(batch) for batch in batches] == [5, 5, 2]
+    assert [row for batch in batches for row in batch] == expected
+
     # After end-of-data liquidation the terminal point is fully realized.
     assert rows[-1][2] == stored_run.final_equity
     assert rows[-1][4] == Decimal(0)

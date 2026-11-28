@@ -273,6 +273,46 @@ class BacktestRepository:
         total = await self.session.scalar(query)
         return int(total or 0)
 
+    async def iter_equity_point_batches(
+        self, run_id: str, batch_size: int = 5_000
+    ) -> AsyncIterator[list[EquityPointRow]]:
+        """Yield curve rows in keyset batches for bounded fingerprinting."""
+        last_bar_index = -1
+        while True:
+            query = (
+                select(
+                    BacktestEquityPointRecord.bar_index,
+                    BacktestEquityPointRecord.timestamp,
+                    BacktestEquityPointRecord.equity,
+                    BacktestEquityPointRecord.cash,
+                    BacktestEquityPointRecord.unrealized,
+                    BacktestEquityPointRecord.position_side,
+                    BacktestEquityPointRecord.drawdown,
+                )
+                .where(
+                    BacktestEquityPointRecord.run_id == run_id,
+                    BacktestEquityPointRecord.bar_index > last_bar_index,
+                )
+                .order_by(BacktestEquityPointRecord.bar_index)
+                .limit(batch_size)
+            )
+            rows: list[EquityPointRow] = [
+                (
+                    int(row.bar_index),
+                    row.timestamp,
+                    Decimal(row.equity),
+                    Decimal(row.cash),
+                    Decimal(row.unrealized),
+                    row.position_side,
+                    Decimal(row.drawdown),
+                )
+                for row in await self.session.execute(query)
+            ]
+            if not rows:
+                return
+            yield rows
+            last_bar_index = rows[-1][0]
+
     async def count_trades(self, run_id: str) -> int:
         """Count a run's trades without loading them."""
         query = (
