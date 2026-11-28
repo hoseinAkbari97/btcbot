@@ -15,6 +15,7 @@ from app.services.backtest.engine import (
     Signal,
     StrategyContext,
 )
+from app.services.backtest.risk import RiskDecision, RiskEngine
 
 ZERO_COSTS = BacktestCosts(
     fee_rate=Decimal(0), spread_rate=Decimal(0), slippage_rate=Decimal(0), latency_bars=1
@@ -408,6 +409,72 @@ def test_short_signal_is_rejected_when_shorts_are_disabled() -> None:
     ).run()
     assert run.trades == []
     assert any("long-only" in message for message in run.rejected_signals)
+
+
+def test_rejected_short_still_marks_every_bar() -> None:
+    candles = flat_candles([100] * 8)
+    run = engine_for(
+        candles,
+        lambda context: Signal(kind="open_short") if context.index == 0 else Signal(kind=HOLD),
+        allow_short=False,
+    ).run()
+
+    assert len(run.equity_curve) == len(candles)
+    assert [point.time for point in run.equity_curve] == [candle.close_time for candle in candles]
+    assert any("long-only" in message for message in run.rejected_signals)
+
+
+def test_risk_refused_entry_still_marks_every_bar() -> None:
+    class RefusingRisk(RiskEngine):
+        def check_entry(self, index: int, equity: Decimal, requested: Decimal) -> RiskDecision:
+            return RiskDecision.reject("test_halt")
+
+    candles = flat_candles([100] * 8)
+    risk = RefusingRisk(initial_capital=Decimal("10000"))
+    run = engine_for(
+        candles,
+        lambda context: Signal(kind=OPEN_LONG) if context.index == 0 else Signal(kind=HOLD),
+        risk=risk,
+    ).run()
+
+    assert len(run.equity_curve) == len(candles)
+    assert any("entry refused by risk" in message for message in run.rejected_signals)
+    assert "test_halt" in run.risk_violations
+
+
+def test_stale_close_order_does_not_block_later_signals() -> None:
+    seen: list[int] = []
+
+    def logic(context: StrategyContext) -> Signal:
+        seen.append(context.index)
+        if context.index == 0:
+            return Signal(kind=OPEN_LONG, stop_price=Decimal("95"), target_price=Decimal("110"))
+        if context.index == 1:
+            return Signal(kind=CLOSE, reason="pending close")
+        if context.index == 3 and context.position is None:
+            return Signal(
+                kind=OPEN_LONG,
+                stop_price=Decimal("80"),
+                target_price=Decimal("120"),
+                use_default_brackets=False,
+            )
+        return Signal(kind=HOLD)
+
+    candles = [
+        make_candle(0, open_price="100", high="101", low="99", close="100"),
+        make_candle(5, open_price="100", high="101", low="99", close="100"),
+        # Opens through the first stop before the pending close can fill.
+        make_candle(10, open_price="90", high="91", low="89", close="90"),
+        make_candle(15, open_price="90", high="91", low="89", close="90"),
+        make_candle(20, open_price="90", high="91", low="89", close="90"),
+        make_candle(25, open_price="90", high="91", low="89", close="90"),
+        make_candle(30, open_price="90", high="91", low="89", close="90"),
+    ]
+    run = engine_for(candles, logic).run()
+
+    assert any(trade.exit_reason == "stop_loss" for trade in run.trades)
+    assert 3 in seen
+    assert any(trade.exit_reason == "end_of_data" for trade in run.trades)
 
 
 # -- accounting ------------------------------------------------------------

@@ -551,6 +551,7 @@ class BacktestEngine:
         last_bar = len(self.candles) - 1
 
         for index, candle in enumerate(self.candles):
+            skip_strategy = False
             # 0. Record this bar's excursion for any position held into it, before
             #    any exit decision. Doing it first means the exit bar's own range
             #    counts, so MFE/MAE cover every bar the position was exposed to.
@@ -572,6 +573,7 @@ class BacktestEngine:
                         self.risk.record_violation(forced.reason)
                         closed = (
                             f"risk_{forced.reason}",
+                            candle.open,
                             apply_slippage(
                                 candle.open, "sell" if position.side == "long" else "buy",
                                 self.costs,
@@ -592,6 +594,11 @@ class BacktestEngine:
                     trades.append(trade)
                     trade_id += 1
                     position = None
+                    # A close signal that was still waiting for its fill is now
+                    # stale: the position it referred to no longer exists. Clear
+                    # it so it cannot suppress every later strategy decision.
+                    if pending is not None and pending.kind == CLOSE:
+                        pending = None
 
             # 2. A pending close signal fills at this bar's open, but only once
             #    the configured latency has elapsed since the signal bar.
@@ -614,7 +621,10 @@ class BacktestEngine:
                     position = None
                     pending = None
 
-            # 3. Fill a pending entry scheduled by an earlier bar.
+            # 3. Fill a pending entry scheduled by an earlier bar. A refused
+            #    fill still marks this bar: skipping the mark would omit an
+            #    equity point, freeze the risk anchor and change every later
+            #    return and drawdown denominator.
             if (
                 position is None
                 and pending is not None
@@ -624,99 +634,108 @@ class BacktestEngine:
                 order = pending
                 pending = None
                 side_word = "buy" if order.kind == OPEN_LONG else "sell"
+
                 if order.kind == OPEN_SHORT and not self.allow_short:
                     rejected.append(f"bar {index}: short signal ignored (long-only configuration)")
-                    continue
-
-                reference = apply_slippage(candle.open, side_word, self.costs)
-                stop, target = order.stop_price, order.target_price
-                if order.use_default_brackets and (stop is None or target is None):
-                    default_stop, default_target = self._default_brackets(side_word, reference)
-                    stop = stop if stop is not None else default_stop
-                    target = target if target is not None else default_target
-                self._validate_brackets(side_word, reference, stop, target)
-
-                # `None` means "strategy made no request": the stop-defined path
-                # falls back to the engine default, the stopless path takes the
-                # whole budget. See _size_for.
-                requested_fraction = order.risk_fraction
-                exposure_cap = None
-                if self.risk is not None:
-                    decision = self.risk.check_entry(
-                        index,
-                        cash,
-                        requested_fraction
-                        if requested_fraction is not None
-                        else self.default_risk_fraction,
-                    )
-                    if not decision.approved:
-                        rejected.append(f"bar {index}: entry refused by risk ({decision.reason})")
-                        self.risk.record_violation(decision.reason)
-                        continue
-                    # The engine's clamp applies to the requested fraction only
-                    # when one exists; a stopless position keeps its allocation.
-                    if requested_fraction is not None:
-                        requested_fraction = (
-                            decision.sized_fraction or requested_fraction
-                        )
-                    headroom = self.risk.max_exposure_notional(cash) - self.risk.state.open_exposure
-                    exposure_cap = max(ZERO, headroom)
-
-                size, sizing_model, risk_amount = self._size_for(
-                    cash, reference, stop, requested_fraction, exposure_cap
-                )
-                notional = reference * size
-                if size <= ZERO:
-                    rejected.append(f"bar {index}: position size resolved to zero")
-                elif notional > cash:
-                    rejected.append(f"bar {index}: insufficient cash ({cash} < required {notional})")
+                    skip_strategy = True
                 else:
-                    fee = self.costs.fee(notional)
-                    cash -= fee
+                    reference = apply_slippage(candle.open, side_word, self.costs)
+                    stop, target = order.stop_price, order.target_price
+                    if order.use_default_brackets and (stop is None or target is None):
+                        default_stop, default_target = self._default_brackets(side_word, reference)
+                        stop = stop if stop is not None else default_stop
+                        target = target if target is not None else default_target
+                    self._validate_brackets(side_word, reference, stop, target)
+
+                    # `None` means "strategy made no request": the stop-defined
+                    # path falls back to the engine default, the stopless path
+                    # takes the whole budget. See _size_for.
+                    requested_fraction = order.risk_fraction
+                    exposure_cap = None
+                    entry_refused = False
                     if self.risk is not None:
-                        self.risk.record_entry(notional)
-                    position = OpenPosition(
-                        side="long" if order.kind == OPEN_LONG else "short",
-                        size=size,
-                        entry_price=reference,
-                        entry_time=candle.open_time,
-                        entry_index=index,
-                        entry_fee=fee,
-                        max_hold_bars=self.default_max_hold_bars,
-                        stop_price=stop,
-                        target_price=target,
-                        signal_time=self.candles[order.signal_index].close_time,
-                        signal_index=order.signal_index,
-                        sizing_model=sizing_model,
-                        risk_amount=risk_amount,
-                        strategy_context={"reason": order.reason},
-                    )
-                    # 3b. The position exists from this candle's open, so this
-                    #     candle's own remaining range can stop it out or reach
-                    #     its target. Steps 0 and 1 ran before the position
-                    #     existed and could not see it; without this a barrier
-                    #     printed in the entry candle would be deferred to the
-                    #     next bar's exit pass, disagreeing with the labeller.
-                    #     The entry price itself can never register as a hit:
-                    #     brackets are validated strictly beyond it, so the
-                    #     resolver's open-through rules cannot fire here.
-                    position.observe(candle)
-                    closed = self._intrabar_exit(candle, position)
-                    if closed is not None:
-                        reason, raw_price, price = closed
-                        cash, trade = self._settle(
-                            cash,
-                            position,
-                            price,
-                            candle.close_time,
+                        decision = self.risk.check_entry(
                             index,
-                            reason,
-                            trade_id,
-                            raw_exit_price=raw_price,
+                            cash,
+                            requested_fraction
+                            if requested_fraction is not None
+                            else self.default_risk_fraction,
                         )
-                        trades.append(trade)
-                        trade_id += 1
-                        position = None
+                        if not decision.approved:
+                            rejected.append(f"bar {index}: entry refused by risk ({decision.reason})")
+                            self.risk.record_violation(decision.reason)
+                            entry_refused = True
+                            skip_strategy = True
+                        else:
+                            # The clamp applies to the requested fraction only
+                            # when one exists; a stopless position keeps its
+                            # allocation.
+                            if requested_fraction is not None:
+                                requested_fraction = (
+                                    decision.sized_fraction or requested_fraction
+                                )
+                            headroom = (
+                                self.risk.max_exposure_notional(cash)
+                                - self.risk.state.open_exposure
+                            )
+                            exposure_cap = max(ZERO, headroom)
+
+                    if not entry_refused:
+                        size, sizing_model, risk_amount = self._size_for(
+                            cash, reference, stop, requested_fraction, exposure_cap
+                        )
+                        notional = reference * size
+                        if size <= ZERO:
+                            rejected.append(f"bar {index}: position size resolved to zero")
+                        elif notional > cash:
+                            rejected.append(
+                                f"bar {index}: insufficient cash ({cash} < required {notional})"
+                            )
+                        else:
+                            fee = self.costs.fee(notional)
+                            cash -= fee
+                            if self.risk is not None:
+                                self.risk.record_entry(notional)
+                            position = OpenPosition(
+                                side="long" if order.kind == OPEN_LONG else "short",
+                                size=size,
+                                entry_price=reference,
+                                entry_time=candle.open_time,
+                                entry_index=index,
+                                entry_fee=fee,
+                                max_hold_bars=self.default_max_hold_bars,
+                                stop_price=stop,
+                                target_price=target,
+                                signal_time=self.candles[order.signal_index].close_time,
+                                signal_index=order.signal_index,
+                                sizing_model=sizing_model,
+                                risk_amount=risk_amount,
+                                strategy_context={"reason": order.reason},
+                            )
+                            # 3b. The position exists from this candle's open,
+                            #     so this candle's remaining range can stop it
+                            #     out or reach its target. Steps 0 and 1 ran
+                            #     before the position existed and could not see
+                            #     it; deferring would disagree with the labeller.
+                            #     The entry price itself can never register as
+                            #     a hit: brackets are strictly beyond it.
+                            position.observe(candle)
+                            closed = self._intrabar_exit(candle, position)
+                            if closed is not None:
+                                reason, raw_price, price = closed
+                                cash, trade = self._settle(
+                                    cash,
+                                    position,
+                                    price,
+                                    candle.close_time,
+                                    index,
+                                    reason,
+                                    trade_id,
+                                    raw_exit_price=raw_price,
+                                )
+                                trades.append(trade)
+                                trade_id += 1
+                                position = None
 
             # 4. Mark to market on this bar's close.
             unrealized = position.unrealized(candle.close) if position else ZERO
@@ -741,7 +760,7 @@ class BacktestEngine:
             #    The strategy is consulted even while a position is open —
             #    that is how an exit signal is produced — but the baselines
             #    never stack a second entry on top of an existing position.
-            if pending is not None:
+            if skip_strategy or pending is not None:
                 continue
             if index + self.costs.latency_bars > last_bar:
                 continue
