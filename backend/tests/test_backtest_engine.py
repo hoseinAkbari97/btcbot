@@ -235,6 +235,7 @@ def test_gap_stop_keeps_the_gap_in_gross_and_costs_stay_non_negative() -> None:
     trade = run.trades[0]
     assert trade.exit_reason == "stop_loss"
     assert trade.gross_pnl / trade.size == Decimal("90") - Decimal("100")
+    assert trade.raw_exit_price == Decimal("90")
     assert trade.spread_cost >= 0
     assert trade.slippage_cost >= 0
 
@@ -266,6 +267,7 @@ def test_gap_target_keeps_the_gap_in_gross_and_costs_stay_non_negative() -> None
     trade = run.trades[0]
     assert trade.exit_reason == "take_profit"
     assert trade.gross_pnl / trade.size == Decimal("120") - Decimal("100")
+    assert trade.raw_exit_price == Decimal("120")
     assert trade.spread_cost >= 0
     assert trade.slippage_cost >= 0
 
@@ -562,6 +564,23 @@ def test_costs_reconcile_to_the_gross_to_net_gap(costs: BacktestCosts) -> None:
     # Tolerance is the default 28-digit Decimal context: the identity is exact
     # to the last representable bit, not merely close.
     assert abs((trade.gross_pnl - trade.net_pnl) - booked) < Decimal("1e-20")
+
+
+def test_ledger_keeps_per_leg_costs_and_the_raw_exit_reference() -> None:
+    """Costs are auditable per leg without changing the aggregate identity."""
+    trade = _ledger_run(RECONCILING_COSTS[0])
+    assert trade.entry_fee + trade.exit_fee == trade.fees
+    assert trade.entry_concession + trade.exit_concession == (
+        trade.spread_cost + trade.slippage_cost
+    )
+    assert trade.raw_exit_price == Decimal("99")
+
+
+def test_run_records_the_accounting_model_version() -> None:
+    run = engine_for(
+        flat_candles([100] * 4), lambda _: Signal(kind=HOLD)
+    ).run()
+    assert run.accounting_model_version == "3g.0"
 
 
 def test_gross_pnl_excludes_friction_and_net_pnl_includes_it() -> None:

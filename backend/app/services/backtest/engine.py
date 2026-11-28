@@ -32,6 +32,7 @@ from decimal import Decimal
 from enum import Enum
 
 from app.schemas.market_data import CandleData, Timeframe
+from app.services.accounting.model import ACCOUNTING_MODEL_VERSION
 from app.services.outcome_contract import resolve_barriers
 
 from .costs import BacktestCosts, apply_slippage
@@ -260,6 +261,14 @@ class Trade:
     other_costs: Decimal = ZERO
     net_pnl: Decimal = ZERO
 
+    # Per-leg audit fields added in 3g.0. They are nullable in persistence so
+    # historical rows remain explicitly unavailable rather than backfilled.
+    entry_fee: Decimal = ZERO
+    exit_fee: Decimal = ZERO
+    raw_exit_price: Decimal | None = None
+    entry_concession: Decimal = ZERO
+    exit_concession: Decimal = ZERO
+
     # Risk multiples. ``r_multiple`` is a compatibility alias for ``gross_r``.
     gross_r: Decimal | None = None
     net_r: Decimal | None = None
@@ -382,6 +391,7 @@ class BacktestRun:
     rejected_signals: list[str] = field(default_factory=list)
     risk_violations: list[str] = field(default_factory=list)
     mode: str = RunMode.RESEARCH.value
+    accounting_model_version: str = ACCOUNTING_MODEL_VERSION
 
 
 class BacktestEngine:
@@ -1053,6 +1063,11 @@ class BacktestEngine:
             latency_cost=latency_cost,
             other_costs=other_costs,
             net_pnl=net,
+            entry_fee=position.entry_fee,
+            exit_fee=exit_fee,
+            raw_exit_price=raw_exit,
+            entry_concession=entry_concession,
+            exit_concession=exit_concession,
             gross_r=gross_r,
             net_r=net_r,
             # Compatibility alias: older callers expect gross R here.
