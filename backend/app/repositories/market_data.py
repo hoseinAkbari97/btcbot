@@ -1,7 +1,7 @@
-from collections.abc import Sequence
+from collections.abc import AsyncIterator, Sequence
 from datetime import datetime
 
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, func, select, tuple_
 from sqlalchemy.dialects.postgresql import insert as postgres_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -172,6 +172,76 @@ class MarketDataRepository:
         candles = list((await self.session.scalars(query)).all())
         candles.reverse()
         return candles
+
+    async def iter_candle_provenance_batches(
+        self,
+        symbol: str,
+        timeframe: Timeframe,
+        start: datetime | None,
+        end: datetime | None,
+        source_ids: Sequence[str],
+        *,
+        batch_size: int,
+        max_rows: int,
+    ) -> AsyncIterator[list[tuple[CandleData, str]]]:
+        """Stream bounded, deterministic rows for dataset fingerprinting.
+
+        A tuple keyset covers ``(open_time, source_id, id)`` because duplicate
+        timestamps are legal across sources. ``max_rows`` is mandatory: a
+        verifier can bound total work by the candle count recorded in the
+        manifest instead of loading an unbounded history.
+        """
+        if batch_size < 1 or max_rows < 0:
+            raise ValueError("batch_size must be positive and max_rows non-negative")
+        identifiers = tuple(source_ids)
+        if not identifiers or max_rows == 0:
+            return
+        cursor: tuple[datetime, str, str] | None = None
+        emitted = 0
+        while emitted < max_rows:
+            query: Select[tuple[Candle]] = select(Candle).where(
+                Candle.symbol == symbol,
+                Candle.timeframe == timeframe.value,
+                Candle.source_id.in_(identifiers),
+            )
+            if start:
+                query = query.where(Candle.open_time >= start)
+            if end:
+                query = query.where(Candle.open_time < end)
+            if cursor is not None:
+                query = query.where(
+                    tuple_(Candle.open_time, Candle.source_id, Candle.id) > cursor
+                )
+            query = query.order_by(
+                Candle.open_time.asc(), Candle.source_id.asc(), Candle.id.asc()
+            ).limit(min(batch_size, max_rows - emitted))
+            rows = list((await self.session.scalars(query)).all())
+            if not rows:
+                return
+            batch = [(self._candle_data(row), row.source_id) for row in rows]
+            yield batch
+            emitted += len(batch)
+            last = rows[-1]
+            cursor = (last.open_time, last.source_id, last.id)
+
+    @staticmethod
+    def _candle_data(row: Candle) -> CandleData:
+        return CandleData(
+            symbol=row.symbol,
+            timeframe=Timeframe(row.timeframe),
+            open_time=row.open_time,
+            close_time=row.close_time,
+            open=row.open,
+            high=row.high,
+            low=row.low,
+            close=row.close,
+            volume=row.volume,
+            quote_volume=row.quote_volume,
+            trade_count=row.trade_count,
+            taker_buy_base_volume=row.taker_buy_base_volume,
+            taker_buy_quote_volume=row.taker_buy_quote_volume,
+            is_closed=row.is_closed,
+        )
 
     @staticmethod
     def _split_symbol(symbol: str) -> tuple[str, str]:
