@@ -127,6 +127,8 @@ def run_record(
     final_equity: str = "10500",
     metrics: dict[str, object] | None = None,
     parameters: dict[str, object] | None = None,
+    accounting_model_version: str | None = None,
+    candle_count: int = 8640,
     fee_rate: str = "0.001",
     spread_rate: str = "0.0002",
     slippage_rate: str = "0.0001",
@@ -139,7 +141,7 @@ def run_record(
         timeframe=timeframe,
         period_start=BASE_TIME,
         period_end=BASE_TIME + timedelta(days=30),
-        candle_count=8640,
+        candle_count=candle_count,
         initial_capital=Decimal(initial_capital),
         final_equity=Decimal(final_equity),
         fee_rate=Decimal(fee_rate),
@@ -152,6 +154,7 @@ def run_record(
         dataset_version=dataset_version,
         random_seed=random_seed,
         mode=mode,
+        accounting_model_version=accounting_model_version,
     )
 
 
