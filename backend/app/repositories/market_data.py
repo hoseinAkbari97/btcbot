@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime
 
 from sqlalchemy import Select, func, select
@@ -7,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.market_data import Candle, DataSource, Instrument, Market
 from app.schemas.market_data import CandleData, Timeframe
-
 
 #: PostgreSQL caps a single statement at 32767 bind parameters (protocol limit,
 #: not a configuration choice). A multi-week backfill is a few thousand rows and
@@ -129,12 +129,13 @@ class MarketDataRepository:
         once more than one instrument exists, since ``symbol`` alone cannot
         distinguish the same ticker across venues.
         """
-        return await self.session.scalar(
+        result = await self.session.scalar(
             select(func.max(Candle.open_time)).where(
                 Candle.instrument_id == instrument_id,
                 Candle.timeframe == timeframe.value,
             )
         )
+        return result if isinstance(result, datetime) else None
 
     async def list_candles(
         self,
@@ -143,15 +144,31 @@ class MarketDataRepository:
         start: datetime | None,
         end: datetime | None,
         limit: int,
+        *,
+        source_ids: Sequence[str] | None = None,
     ) -> list[Candle]:
+        """Return a bounded chronological candle selection.
+
+        Equal timestamps are possible across sources. Ordering therefore includes
+        source and row id so the same stored rows always produce the same engine
+        input. ``source_ids`` narrows a run to the sources that actually supplied
+        it instead of silently mixing providers.
+        """
         query: Select[tuple[Candle]] = select(Candle).where(
             Candle.symbol == symbol, Candle.timeframe == timeframe.value
         )
+        if source_ids is not None:
+            identifiers = tuple(source_ids)
+            if not identifiers:
+                return []
+            query = query.where(Candle.source_id.in_(identifiers))
         if start:
             query = query.where(Candle.open_time >= start)
         if end:
             query = query.where(Candle.open_time < end)
-        query = query.order_by(Candle.open_time.desc()).limit(limit)
+        query = query.order_by(
+            Candle.open_time.desc(), Candle.source_id.desc(), Candle.id.desc()
+        ).limit(limit)
         candles = list((await self.session.scalars(query)).all())
         candles.reverse()
         return candles
