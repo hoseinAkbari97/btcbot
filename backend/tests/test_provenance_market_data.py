@@ -4,6 +4,7 @@ from conftest import make_candle
 
 from app.repositories.market_data import MarketDataRepository
 from app.schemas.market_data import Timeframe
+from app.services.backtest.runner import load_candle_selection, load_candles
 
 
 async def test_list_candles_can_select_a_source_and_orders_ties_deterministically(
@@ -39,6 +40,31 @@ async def test_list_candles_can_select_a_source_and_orders_ties_deterministicall
     assert len(both) == 2
     assert [row.id for row in both] == [row.id for row in repeated]
     assert [row.source_id for row in both] == sorted(row.source_id for row in both)
+
+
+async def test_load_candle_selection_identifies_the_exact_engine_input(db_session) -> None:
+    repository = MarketDataRepository(db_session)
+    source, instrument = await repository.ensure_catalog(
+        "selection-source", "https://source.invalid", "BTCUSDT"
+    )
+    await repository.upsert_candles(
+        [make_candle(0, close="100"), make_candle(5, close="101")],
+        source.id,
+        instrument.id,
+    )
+    await db_session.commit()
+    base = datetime(2024, 1, 1, tzinfo=UTC)
+
+    selection = await load_candle_selection(
+        db_session, "BTCUSDT", Timeframe.M5, base, base + timedelta(minutes=10), 10
+    )
+    legacy = await load_candles(
+        db_session, "BTCUSDT", Timeframe.M5, base, base + timedelta(minutes=10), 10
+    )
+
+    assert selection.source_ids == (source.id, source.id)
+    assert selection.identity.candle_count == 2
+    assert selection.as_list() == legacy
 
 
 async def test_candle_provenance_batches_are_ordered_and_bounded(db_session) -> None:

@@ -14,8 +14,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.market_data import MarketDataRepository
 from app.schemas.market_data import CandleData, Timeframe
+from app.services.provenance.dataset import DatasetIdentity, dataset_identity
 from app.services.strategy.adapter import prepare_strategy
 from app.services.strategy.capabilities import StrategyEnvironment
 
@@ -51,8 +54,20 @@ class BacktestResult:
     r_distribution: RDistribution | None = None
 
 
+@dataclass(frozen=True)
+class CandleSelection:
+    """The exact ordered candle rows supplied to one engine execution."""
+
+    candles: tuple[CandleData, ...]
+    source_ids: tuple[str, ...]
+    identity: DatasetIdentity
+
+    def as_list(self) -> list[CandleData]:
+        return list(self.candles)
+
+
 def dataset_fingerprint(candles: list[CandleData]) -> str:
-    """Content hash of a candle series.
+    """Legacy content hash of a candle series.
 
     Hashes every timestamp and price, not just the range: two pulls can share a
     start and end and still differ. Storing this makes a run reproducible from the
@@ -83,35 +98,37 @@ def current_git_commit() -> str | None:
     return commit or None
 
 
+async def load_candle_selection(
+    session: AsyncSession,
+    symbol: str,
+    timeframe: Timeframe,
+    start: datetime | None,
+    end: datetime | None,
+    limit: int,
+) -> CandleSelection:
+    """Load bounded candles and identify the exact rows the engine will see."""
+    rows = await MarketDataRepository(session).list_candles(
+        symbol, timeframe, start, end, limit
+    )
+    candles = tuple(MarketDataRepository._candle_data(row) for row in rows)
+    source_ids = tuple(row.source_id for row in rows)
+    identity = dataset_identity(
+        candles, source_ids, symbol=symbol, timeframe=timeframe
+    )
+    return CandleSelection(candles=candles, source_ids=source_ids, identity=identity)
+
+
 async def load_candles(
-    session,
+    session: AsyncSession,
     symbol: str,
     timeframe: Timeframe,
     start: datetime | None,
     end: datetime | None,
     limit: int,
 ) -> list[CandleData]:
-    """Load a chronological candle series for research use."""
-    rows = await MarketDataRepository(session).list_candles(symbol, timeframe, start, end, limit)
-    return [
-        CandleData(
-            symbol=row.symbol,
-            timeframe=Timeframe(row.timeframe),
-            open_time=row.open_time,
-            close_time=row.close_time,
-            open=row.open,
-            high=row.high,
-            low=row.low,
-            close=row.close,
-            volume=row.volume,
-            quote_volume=row.quote_volume,
-            trade_count=row.trade_count,
-            taker_buy_base_volume=row.taker_buy_base_volume,
-            taker_buy_quote_volume=row.taker_buy_quote_volume,
-            is_closed=row.is_closed,
-        )
-        for row in rows
-    ]
+    """Load a chronological candle series for existing research callers."""
+    selection = await load_candle_selection(session, symbol, timeframe, start, end, limit)
+    return selection.as_list()
 
 
 def run_backtest(
