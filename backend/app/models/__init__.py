@@ -5,6 +5,7 @@ Currently exported models:
 - Market data: Candle, DataQualityReport, DataSource, Instrument, Market, OrderBookSnapshot, Trade
 - Experiment: ExperimentRecord (Stage 3E)
 - Evaluation: EvaluationReportRecord (Stage 3E)
+- Provenance: RunManifestRecord (Stage 3H)
 """
 
 from app.models.backtest import (
@@ -23,18 +24,20 @@ from app.models.market_data import (
     OrderBookSnapshot,
     Trade,
 )
+from app.models.provenance import RunManifestRecord
 
 __all__ = [
     "BacktestEquityPointRecord",
     "BacktestRunRecord",
     "BacktestTradeRecord",
-    "ExperimentRecord",
-    "EvaluationReportRecord",
     "Candle",
     "DataQualityReport",
     "DataSource",
+    "EvaluationReportRecord",
+    "ExperimentRecord",
     "Instrument",
     "Market",
     "OrderBookSnapshot",
+    "RunManifestRecord",
     "Trade",
 ]

@@ -20,8 +20,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-import sqlalchemy as sa
-
 # Importing the package registers every table on ``Base.metadata``.
 import app.models  # noqa: F401
 from alembic import command
@@ -55,7 +53,7 @@ def _resolve(node: ast.AST, assignments: dict[str, ast.AST]) -> list[ast.AST]:
             else:
                 expanded.extend(_resolve(arg, assignments))
         return [node, *expanded]
-    if isinstance(node, (ast.Tuple, ast.List, ast.Set)):
+    if isinstance(node, ast.Tuple | ast.List | ast.Set):
         expanded = []
         for element in node.elts:
             expanded.extend(_resolve(element, assignments))
@@ -141,7 +139,9 @@ def test_migration_chain_is_linear_and_terminates_at_one_head() -> None:
         revisions[found["revision"]] = found["down_revision"]
 
     parents = [parent for parent in revisions.values() if parent is not None]
-    assert len(set(parents)) == len(parents), "two revisions declare the same parent: the chain forks"
+    assert len(set(parents)) == len(parents), (
+        "two revisions declare the same parent: the chain forks"
+    )
     for revision, parent in revisions.items():
         assert parent is None or parent in revisions, f"{revision} revises unknown {parent!r}"
     roots = [revision for revision, parent in revisions.items() if parent is None]
@@ -472,3 +472,87 @@ def test_stage3g_upgrade_preserves_history_and_downgrade_removes_only_new_data(
         assert connection.execute(
             "SELECT id FROM backtest_trades WHERE id = ?", ("trade-1",)
         ).fetchone()[0] == "trade-1"
+
+
+def test_stage3h_upgrade_builds_the_run_manifest_table(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """Exactly one immutable manifest per run is enforced by the schema."""
+    database = tmp_path / "fresh.sqlite"
+    _migrate(monkeypatch, database, "head")
+
+    assert "run_manifests" in _tables(database)
+    with sqlite3.connect(database) as connection:
+        ddl = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'run_manifests'"
+        ).fetchone()[0]
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(run_manifests)")}
+
+    assert "uq_run_manifests_run_id UNIQUE (run_id)" in ddl
+    assert "FOREIGN KEY(run_id)" in ddl and "ON DELETE CASCADE" in ddl
+    assert "FOREIGN KEY(experiment_id)" in ddl
+    assert {
+        "id",
+        "run_id",
+        "experiment_id",
+        "schema_version",
+        "manifest_fingerprint",
+        "manifest",
+        "created_at",
+    } <= columns
+
+
+def test_stage3h_upgrade_preserves_history_and_downgrade_removes_only_new_table(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """Old runs get no manifest and no invented provenance."""
+    database = tmp_path / "existing.sqlite"
+    _migrate(monkeypatch, database, "20261128_0007")
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "INSERT INTO backtest_runs (id, strategy_name, symbol, timeframe, "
+            "period_start, period_end, candle_count, initial_capital, final_equity, "
+            "fee_rate, spread_rate, slippage_rate, latency_bars, cost_scale, "
+            "parameters, metrics) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "run-legacy",
+                "buy_and_hold",
+                "BTCUSDT",
+                "5m",
+                "2024-01-01T00:00:00+00:00",
+                "2024-01-01T00:10:00+00:00",
+                3,
+                10000,
+                10000,
+                0,
+                0,
+                0,
+                1,
+                1,
+                "{}",
+                "{}",
+            ),
+        )
+        connection.commit()
+
+    _migrate(monkeypatch, database, "head")
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT id FROM backtest_runs WHERE id = ?", ("run-legacy",)
+        ).fetchone()[0] == "run-legacy"
+        assert connection.execute("SELECT COUNT(*) FROM run_manifests").fetchone()[0] == 0
+
+    monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{database}")
+    get_settings.cache_clear()
+    config = Config(str(VERSIONS_DIR.parents[1] / "alembic.ini"))
+    config.set_main_option("script_location", str(VERSIONS_DIR.parent))
+    try:
+        command.downgrade(config, "20261128_0007")
+    finally:
+        get_settings.cache_clear()
+
+    assert "run_manifests" not in _tables(database)
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT id FROM backtest_runs WHERE id = ?", ("run-legacy",)
+        ).fetchone()[0] == "run-legacy"
