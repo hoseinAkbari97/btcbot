@@ -12,6 +12,7 @@ import type {
 import type {
   ExperimentComparison,
   ExperimentCurve,
+  ExperimentEngineCurve,
   ExperimentEvaluation,
   ExperimentRecord,
   ExperimentResult,
@@ -190,6 +191,16 @@ export function getExperimentCurves(
   const params = new URLSearchParams({ limit: String(limit) });
   return getJson<ExperimentCurve>(
     `/api/v1/experiments/${experimentId}/curves?${params.toString()}`,
+  );
+}
+
+export function getExperimentEngineCurves(
+  experimentId: string,
+  limit = 5000,
+): Promise<ExperimentEngineCurve> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  return getJson<ExperimentEngineCurve>(
+    `/api/v1/experiments/${experimentId}/engine-curves?${params.toString()}`,
   );
 }
 

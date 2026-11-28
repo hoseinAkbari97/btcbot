@@ -11,10 +11,19 @@ import type { CurvePoint } from "../lib/experiment-view";
 interface Props {
   points: CurvePoint[];
   currency: string;
+  equityLabel?: string;
+  drawdownLabel?: string;
+  drawdownUnit?: "fraction" | "currency";
 }
 
 /** Two line series over the same real timestamps; no interpolated data. */
-export function ExperimentCurveChart({ points, currency }: Props) {
+export function ExperimentCurveChart({
+  points,
+  currency,
+  equityLabel = "Realized equity",
+  drawdownLabel = "Drawdown of realized peak",
+  drawdownUnit = "fraction",
+}: Props) {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,7 +74,7 @@ export function ExperimentCurveChart({ points, currency }: Props) {
     const equity = chart.addLineSeries({
       color: "#4dabf7",
       lineWidth: 2,
-      title: `${currency} equity`,
+      title: `${equityLabel} · ${currency}`,
       crosshairMarkerVisible: true,
     });
     const drawdown = chart.addLineSeries({
@@ -74,10 +83,13 @@ export function ExperimentCurveChart({ points, currency }: Props) {
       priceScaleId: "drawdown",
       priceFormat: {
         type: "custom",
-        formatter: (value: number) => `${(value * 100).toFixed(2)}%`,
+        formatter: (value: number) =>
+          drawdownUnit === "currency"
+            ? `${value.toFixed(2)} ${currency}`
+            : `${(value * 100).toFixed(2)}%`,
         minMove: 0.0001,
       },
-      title: "Drawdown",
+      title: drawdownLabel,
     });
     drawdown.priceScale().applyOptions({
       scaleMargins: { top: 0.78, bottom: 0.02 },
@@ -98,13 +110,15 @@ export function ExperimentCurveChart({ points, currency }: Props) {
     chart.timeScale().fitContent();
 
     return () => chart.remove();
-  }, [points, currency]);
+  }, [points, currency, drawdownUnit, drawdownLabel, equityLabel]);
 
   return (
     <div className="experiment-chart">
       <div className="experiment-chart-legend">
-        <span className="legend-equity">Realized equity · {currency}</span>
-        <span className="legend-drawdown">Drawdown of realized peak · %</span>
+        <span className="legend-equity">{equityLabel} · {currency}</span>
+        <span className="legend-drawdown">
+          {drawdownLabel} · {drawdownUnit === "currency" ? currency : "%"}
+        </span>
       </div>
       <div className="experiment-chart-canvas" ref={container} />
     </div>

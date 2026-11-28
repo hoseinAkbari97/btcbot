@@ -10,11 +10,20 @@ import {
   isRecord,
   metricRows,
   normalizeCurvePoints,
+  normalizeEngineCurvePoints,
   reportSections,
   type JsonRecord,
 } from "../lib/experiment-view";
-import { getExperimentCurves, getExperimentResult } from "../services/api";
-import type { ExperimentCurve, ExperimentResult } from "../types/experiment";
+import {
+  getExperimentCurves,
+  getExperimentEngineCurves,
+  getExperimentResult,
+} from "../services/api";
+import type {
+  ExperimentCurve,
+  ExperimentEngineCurve,
+  ExperimentResult,
+} from "../types/experiment";
 
 function unavailable(): ReactNode {
   return <span className="missing-value">Not recorded</span>;
@@ -75,8 +84,10 @@ export function ExperimentDetail() {
   const { id = "" } = useParams();
   const [result, setResult] = useState<ExperimentResult | null>(null);
   const [curves, setCurves] = useState<ExperimentCurve | null>(null);
+  const [engineCurves, setEngineCurves] = useState<ExperimentEngineCurve | null>(null);
   const [error, setError] = useState("");
   const [curveError, setCurveError] = useState("");
+  const [engineCurveError, setEngineCurveError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,12 +95,15 @@ export function ExperimentDetail() {
     setLoading(true);
     setError("");
     setCurveError("");
+    setEngineCurveError("");
     setResult(null);
     setCurves(null);
+    setEngineCurves(null);
     void Promise.allSettled([
       getExperimentResult(id),
       getExperimentCurves(id),
-    ]).then(([resultOutcome, curveOutcome]) => {
+      getExperimentEngineCurves(id),
+    ]).then(([resultOutcome, curveOutcome, engineCurveOutcome]) => {
       if (!active) return;
       setLoading(false);
       if (resultOutcome.status === "fulfilled") {
@@ -108,6 +122,15 @@ export function ExperimentDetail() {
           curveOutcome.reason instanceof Error
             ? curveOutcome.reason.message
             : String(curveOutcome.reason),
+        );
+      }
+      if (engineCurveOutcome.status === "fulfilled") {
+        setEngineCurves(engineCurveOutcome.value);
+      } else {
+        setEngineCurveError(
+          engineCurveOutcome.reason instanceof Error
+            ? engineCurveOutcome.reason.message
+            : String(engineCurveOutcome.reason),
         );
       }
     });
@@ -133,7 +156,8 @@ export function ExperimentDetail() {
   const evaluationConfig: JsonRecord = isRecord(configuration.evaluation) ? configuration.evaluation : {};
   const costs: JsonRecord = isRecord(run?.costs) ? run.costs : {};
   const evidence = evidenceSummary(report);
-  const points = normalizeCurvePoints(curves?.points ?? []);
+  const realizedPoints = normalizeCurvePoints(curves?.points ?? []);
+  const engineCurve = normalizeEngineCurvePoints(engineCurves?.points ?? []);
   const metrics = metricRows(run?.metrics);
   const failed = experiment.status === "FAILED" || experiment.status === "REJECTED";
 
@@ -161,6 +185,11 @@ export function ExperimentDetail() {
       {error && <div className="experiment-alert error">{error}</div>}
       {curveError && (
         <div className="experiment-alert notice">Curve data unavailable: {curveError}</div>
+      )}
+      {engineCurveError && (
+        <div className="experiment-alert notice">
+          Engine curve data unavailable: {engineCurveError}
+        </div>
       )}
 
       <section className="panel detail-section">
@@ -248,15 +277,59 @@ export function ExperimentDetail() {
       </section>
 
       <section className="panel detail-section">
+        <h2>Engine mark-to-market equity (persisted)</h2>
+        <p className="experiment-hint">
+          These are the exact engine-generated points, one per processed candle and keyed by
+          bar_index. Equity is cash plus unrealized PnL. Drawdown is the engine&apos;s negative
+          absolute {experiment.accounting_currency} amount from its running peak, not a fraction.
+          The run&apos;s accounting model is {engineCurves?.accounting_model_version ?? "unknown"};
+          legacy runs are not reconstructed.
+        </p>
+        {engineCurve.points.length >= 2 ? (
+          <>
+            <ExperimentCurveChart
+              points={engineCurve.points}
+              currency={experiment.accounting_currency}
+              equityLabel="Engine mark-to-market equity"
+              drawdownLabel="Drawdown from engine peak"
+              drawdownUnit="currency"
+            />
+            {engineCurves?.truncated && (
+              <p className="experiment-hint warning">
+                Only the first {engineCurves.limit} of {engineCurves.total_points} persisted engine
+                points are shown; the rest were not loaded.
+              </p>
+            )}
+            {engineCurve.duplicate_timestamps > 0 && (
+              <p className="experiment-hint warning">
+                {engineCurve.duplicate_timestamps} engine points share a timestamp with another
+                point. The chart keeps the last point at each instant; the endpoint retains every
+                row under its bar_index.
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="experiment-hint">
+            {engineCurves?.unavailable_reason ??
+              "Fewer than two persisted engine points are available; no curve is drawn."}
+          </p>
+        )}
+      </section>
+
+      <section className="panel detail-section">
         <h2>Realized equity and drawdown</h2>
         <p className="experiment-hint">
-          The engine's per-candle equity curve is not persisted. This view adds each persisted net
-          trade PnL at its exit time; it excludes unrealized PnL, cash, position side and intrabar
-          excursions, and is not the run's recorded maximum drawdown.
+          This legacy fallback adds each persisted net trade PnL at its exit time. It excludes
+          unrealized PnL, cash, position side and intrabar excursions, and its drawdown is a
+          fraction of the running realized peak, not the engine currency amount or the run's
+          recorded maximum drawdown. It is retained for runs without a persisted engine curve.
         </p>
-        {points.length >= 2 ? (
+        {realizedPoints.length >= 2 ? (
           <>
-            <ExperimentCurveChart points={points} currency={experiment.accounting_currency} />
+            <ExperimentCurveChart
+              points={realizedPoints}
+              currency={experiment.accounting_currency}
+            />
             {curves?.truncated && (
               <p className="experiment-hint warning">
                 Only the first {curves.limit} persisted trades are shown; the remaining trades were

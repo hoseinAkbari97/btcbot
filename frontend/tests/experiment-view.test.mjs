@@ -5,6 +5,7 @@ import {
   ApiError,
   compareExperiments,
   getExperimentCurves,
+  getExperimentEngineCurves,
   listExperiments,
 } from "../.test-dist/services/api.js";
 import {
@@ -16,6 +17,7 @@ import {
   formatValue,
   metricRows,
   normalizeCurvePoints,
+  normalizeEngineCurvePoints,
   reportSections,
 } from "../.test-dist/lib/experiment-view.js";
 
@@ -140,6 +142,64 @@ test("normalizeCurvePoints handles irregular times, duplicates and invalid rows"
   assert.deepEqual(normalizeCurvePoints({}), []);
 });
 
+test("normalizeEngineCurvePoints keeps raw counts and flags duplicate timestamps", () => {
+  const raw = [
+    {
+      bar_index: 2,
+      time: "2024-01-01T00:00:00Z",
+      equity: 103,
+      cash: 103,
+      unrealized: 0,
+      position_side: null,
+      drawdown: -5,
+    },
+    {
+      bar_index: 0,
+      time: "2024-01-01T00:00:00Z",
+      equity: 100,
+      cash: 100,
+      unrealized: 0,
+      position_side: null,
+      drawdown: 0,
+    },
+    {
+      bar_index: 1,
+      time: "2024-01-01T00:00:00Z",
+      equity: 101,
+      cash: 100,
+      unrealized: 1,
+      position_side: "long",
+      drawdown: -2,
+    },
+    {
+      bar_index: 3,
+      time: "2024-01-01T01:00:00Z",
+      equity: 104,
+      cash: 104,
+      unrealized: 0,
+      position_side: null,
+      drawdown: 0,
+    },
+    { bar_index: "invalid", time: "2024-01-01T02:00:00Z", equity: 999, drawdown: 0 },
+  ];
+  const normalized = normalizeEngineCurvePoints(raw);
+  assert.equal(normalized.raw_count, 4);
+  assert.equal(normalized.duplicate_timestamps, 2);
+  assert.deepEqual(
+    normalized.points.map((point) => [point.time, point.equity, point.drawdown]),
+    [
+      [1704067200, 101, -2],
+      [1704070800, 104, 0],
+    ],
+  );
+  assert.equal(normalizeEngineCurvePoints(raw, 1).points.length, 1);
+  assert.deepEqual(normalizeEngineCurvePoints({}), {
+    points: [],
+    raw_count: 0,
+    duplicate_timestamps: 0,
+  });
+});
+
 test("evidenceSummary exposes warnings and withheld claims verbatim", () => {
   const summary = evidenceSummary({
     warnings: ["dependence detected"],
@@ -211,6 +271,7 @@ test("frontend API helpers send bounded, explicit request shapes", async () => {
   };
   try {
     await getExperimentCurves("exp-1", 25);
+    await getExperimentEngineCurves("exp-1", 25);
     await compareExperiments(["exp-1", "exp-2"]);
     await listExperiments(10, {
       status: "COMPLETED",
@@ -223,16 +284,18 @@ test("frontend API helpers send bounded, explicit request shapes", async () => {
 
   assert.equal(calls[0].url.pathname, "/api/v1/experiments/exp-1/curves");
   assert.equal(calls[0].url.searchParams.get("limit"), "25");
-  assert.equal(calls[1].url.pathname, "/api/v1/experiments/compare");
-  assert.equal(calls[1].init.method, "POST");
-  assert.deepEqual(JSON.parse(calls[1].init.body), {
+  assert.equal(calls[1].url.pathname, "/api/v1/experiments/exp-1/engine-curves");
+  assert.equal(calls[1].url.searchParams.get("limit"), "25");
+  assert.equal(calls[2].url.pathname, "/api/v1/experiments/compare");
+  assert.equal(calls[2].init.method, "POST");
+  assert.deepEqual(JSON.parse(calls[2].init.body), {
     experiment_ids: ["exp-1", "exp-2"],
   });
-  assert.equal(calls[2].url.searchParams.get("limit"), "10");
-  assert.equal(calls[2].url.searchParams.get("status"), "COMPLETED");
-  assert.equal(calls[2].url.searchParams.get("timeframe"), "5m");
+  assert.equal(calls[3].url.searchParams.get("limit"), "10");
+  assert.equal(calls[3].url.searchParams.get("status"), "COMPLETED");
+  assert.equal(calls[3].url.searchParams.get("timeframe"), "5m");
   assert.equal(
-    calls[2].url.searchParams.get("created_after"),
+    calls[3].url.searchParams.get("created_after"),
     "2024-01-04T00:00:00Z",
   );
 });

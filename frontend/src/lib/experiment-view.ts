@@ -280,6 +280,60 @@ export function normalizeCurvePoints(value: unknown, limit = 5000): CurvePoint[]
   return [...byTime.values()].sort((a, b) => a.time - b.time).slice(0, Math.max(0, limit));
 }
 
+export interface NormalizedEngineCurve {
+  /** Chart-safe points; duplicate timestamps keep only the last bar_index. */
+  points: CurvePoint[];
+  /** Valid raw points received from the bounded endpoint, before time de-duplication. */
+  raw_count: number;
+  /** Number of raw points that could not share one timestamp on the chart. */
+  duplicate_timestamps: number;
+}
+
+/**
+ * Normalize exact engine points without inventing positions in time.
+ *
+ * The endpoint keys rows by bar_index because timestamps may repeat, while the
+ * chart needs one value per instant. Raw rows stay available for inspection,
+ * and the number of collisions is reported rather than silently discarded.
+ */
+export function normalizeEngineCurvePoints(
+  value: unknown,
+  limit = 5000,
+): NormalizedEngineCurve {
+  if (!Array.isArray(value)) {
+    return { points: [], raw_count: 0, duplicate_timestamps: 0 };
+  }
+  const byBar = new Map<number, CurvePoint>();
+  for (const item of value) {
+    if (!isRecord(item)) continue;
+    const barIndex = asFiniteNumber(item.bar_index);
+    const iso = typeof item.time === "string" ? item.time : "";
+    const time = Date.parse(iso) / 1000;
+    const equity = asFiniteNumber(item.equity);
+    const drawdown = asFiniteNumber(item.drawdown);
+    if (barIndex === null || !Number.isInteger(barIndex) || !iso) continue;
+    if (!Number.isFinite(time) || equity === null || drawdown === null) continue;
+    byBar.set(barIndex, {
+      time: Math.floor(time),
+      iso,
+      equity,
+      drawdown,
+    });
+  }
+  const byTime = new Map<number, CurvePoint>();
+  for (const point of [...byBar.values()].sort((a, b) => a.iso.localeCompare(b.iso))) {
+    byTime.set(point.time, point);
+  }
+  const bounded = [...byTime.values()]
+    .sort((a, b) => a.time - b.time)
+    .slice(0, Math.max(0, limit));
+  return {
+    points: bounded,
+    raw_count: byBar.size,
+    duplicate_timestamps: byBar.size - byTime.size,
+  };
+}
+
 export const EVIDENCE_DESCRIPTIONS: Record<string, string> = {
   insufficient:
     "Too few trades or a fragile result: no statistical claim is made beyond describing this sample.",

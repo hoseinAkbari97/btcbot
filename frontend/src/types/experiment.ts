@@ -107,6 +107,31 @@ export interface ExperimentCurve {
   points: ExperimentCurvePoint[];
 }
 
+/** Exact persisted engine point: bar_index is the event key, time is not unique. */
+export interface ExperimentEngineCurvePoint {
+  bar_index: number;
+  time: string;
+  equity: string | number;
+  cash: string | number;
+  unrealized: string | number;
+  position_side: string | null;
+  drawdown: string | number;
+}
+
+export interface ExperimentEngineCurve {
+  experiment_id: string;
+  run_id: string | null;
+  basis: string;
+  accounting_model_version: string;
+  accounting_currency: string | null;
+  limit: number;
+  total_points: number;
+  point_count: number;
+  truncated: boolean;
+  unavailable_reason: string | null;
+  points: ExperimentEngineCurvePoint[];
+}
+
 export interface ComparisonRun {
   run_id: string;
   strategy: string;
