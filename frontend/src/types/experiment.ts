@@ -132,6 +132,74 @@ export interface ExperimentEngineCurve {
   points: ExperimentEngineCurvePoint[];
 }
 
+export type VerificationStatus =
+  | "verified"
+  | "partial"
+  | "unavailable"
+  | "changed"
+  | "corrupted";
+
+export type VerificationIdentification =
+  | "fully_identified"
+  | "partially_identified"
+  | "not_reproducible";
+
+export interface ManifestVerification {
+  status: VerificationStatus;
+  available: boolean;
+  manifest_fingerprint: string | null;
+  schema_version: string | null;
+  run_id: string | null;
+  experiment_id: string | null;
+  fingerprint_matches: boolean | null;
+  link_matches: boolean | null;
+  detail: string;
+}
+
+export interface DatasetVerification {
+  status: VerificationStatus;
+  expected_fingerprint: string | null;
+  observed_fingerprint: string | null;
+  expected_candle_count: number | null;
+  observed_candle_count: number | null;
+  fingerprint_version: string | null;
+  source_ids: string[];
+  detail: string;
+}
+
+export interface ReportVerification {
+  status: VerificationStatus;
+  report_version: string | null;
+  expected_report_version: string;
+  run_id: string | null;
+  expected_run_id: string;
+  manifest_fingerprint: string | null;
+  evaluation_method_version: string | null;
+  expected_method_version: string;
+  accounting_model_version: string | null;
+  reconciliation_status: string | null;
+  trade_ledger_fingerprint: string | null;
+  equity_series_fingerprint: string | null;
+  canonical_digest: string | null;
+  stored_digest_matches: boolean | null;
+  config_fingerprint_matches: boolean | null;
+  input_fingerprint_matches: boolean | null;
+  failed_checks: string[];
+  detail: string;
+}
+
+/** Read-only integrity result; never a strategy or profitability verdict. */
+export interface ExperimentVerification {
+  experiment_id: string;
+  status: VerificationStatus;
+  identification: VerificationIdentification;
+  manifest: ManifestVerification;
+  dataset: DatasetVerification;
+  report: ReportVerification | null;
+  findings: string[];
+  limitations: string[];
+}
+
 export interface ComparisonRun {
   run_id: string;
   strategy: string;

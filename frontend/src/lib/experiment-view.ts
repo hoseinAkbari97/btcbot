@@ -397,6 +397,70 @@ export function reportSections(report: unknown): Array<{ key: string; value: Jso
   }));
 }
 
+export const VERIFICATION_STATUS_DESCRIPTIONS: Record<string, string> = {
+  verified: "Recorded inputs and outputs match their stored fingerprints.",
+  partial: "Some evidence is recorded, but identity or integrity is incomplete.",
+  unavailable: "The evidence was not recorded and has not been reconstructed.",
+  changed: "Current stored evidence differs from the recorded fingerprint.",
+  corrupted: "A stored record could not be read as the expected structure.",
+};
+
+export interface VerificationSummary {
+  status: string;
+  statusDescription: string;
+  identification: string;
+  manifestStatus: string;
+  datasetStatus: string;
+  reportStatus: string | null;
+  manifestFingerprint: string | null;
+  datasetFingerprint: string | null;
+  canonicalDigest: string | null;
+  findings: string[];
+  limitations: string[];
+}
+
+function verificationStatus(value: unknown): string | null {
+  return typeof value === "string" && value in VERIFICATION_STATUS_DESCRIPTIONS
+    ? value
+    : null;
+}
+
+/** Pure view of the backend verification response; no status is invented. */
+export function verificationSummary(payload: unknown): VerificationSummary | null {
+  if (!isRecord(payload)) return null;
+  const manifest = isRecord(payload.manifest) ? payload.manifest : {};
+  const dataset = isRecord(payload.dataset) ? payload.dataset : {};
+  const report = isRecord(payload.report) ? payload.report : null;
+  const status =
+    verificationStatus(payload.status) ??
+    (report === null ? "unavailable" : "partial");
+  const identification =
+    payload.identification === "fully_identified" ||
+    payload.identification === "partially_identified" ||
+    payload.identification === "not_reproducible"
+      ? payload.identification
+      : "not_reproducible";
+
+  return {
+    status,
+    statusDescription: VERIFICATION_STATUS_DESCRIPTIONS[status],
+    identification,
+    manifestStatus: verificationStatus(manifest.status) ?? "unavailable",
+    datasetStatus: verificationStatus(dataset.status) ?? "unavailable",
+    reportStatus: report === null ? null : verificationStatus(report.status) ?? "unavailable",
+    manifestFingerprint:
+      typeof manifest.manifest_fingerprint === "string" ? manifest.manifest_fingerprint : null,
+    datasetFingerprint:
+      typeof dataset.observed_fingerprint === "string" ? dataset.observed_fingerprint : null,
+    canonicalDigest:
+      report !== null && typeof report.canonical_digest === "string"
+        ? report.canonical_digest
+        : null,
+    findings: stringList(payload.findings),
+    limitations: stringList(payload.limitations),
+  };
+}
+
 export interface ComparisonRow {
   runId: string;
   strategy: string;

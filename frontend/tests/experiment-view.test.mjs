@@ -6,6 +6,7 @@ import {
   compareExperiments,
   getExperimentCurves,
   getExperimentEngineCurves,
+  getExperimentVerification,
   listExperiments,
 } from "../.test-dist/services/api.js";
 import {
@@ -19,6 +20,8 @@ import {
   normalizeCurvePoints,
   normalizeEngineCurvePoints,
   reportSections,
+  verificationSummary,
+  VERIFICATION_STATUS_DESCRIPTIONS,
 } from "../.test-dist/lib/experiment-view.js";
 
 function experiment(id, overrides = {}) {
@@ -298,6 +301,70 @@ test("frontend API helpers send bounded, explicit request shapes", async () => {
     calls[3].url.searchParams.get("created_after"),
     "2024-01-04T00:00:00Z",
   );
+});
+
+test("verificationSummary preserves every explicit backend status", () => {
+  const response = {
+    experiment_id: "exp-1",
+    status: "verified",
+    identification: "fully_identified",
+    manifest: { status: "verified", manifest_fingerprint: "manifest-1" },
+    dataset: { status: "verified", observed_fingerprint: "dataset-1" },
+    report: { status: "verified", canonical_digest: "report-1" },
+    findings: ["manifest fingerprint and run/experiment links match"],
+    limitations: ["does not rerun the backtest"],
+  };
+  const verified = verificationSummary(response);
+  assert.equal(verified.status, "verified");
+  assert.equal(verified.statusDescription, VERIFICATION_STATUS_DESCRIPTIONS.verified);
+  assert.equal(verified.identification, "fully_identified");
+  assert.equal(verified.manifestFingerprint, "manifest-1");
+  assert.equal(verified.datasetFingerprint, "dataset-1");
+  assert.equal(verified.canonicalDigest, "report-1");
+  assert.deepEqual(verified.limitations, ["does not rerun the backtest"]);
+
+  for (const status of Object.keys(VERIFICATION_STATUS_DESCRIPTIONS)) {
+    const summary = verificationSummary({ ...response, status });
+    assert.equal(summary.status, status);
+    assert.equal(summary.statusDescription, VERIFICATION_STATUS_DESCRIPTIONS[status]);
+  }
+
+  const legacy = verificationSummary({ ...response, status: "partial", report: null });
+  assert.equal(legacy.reportStatus, null);
+  assert.equal(legacy.identification, "fully_identified");
+  assert.equal(verificationSummary(null), null);
+  assert.equal(verificationSummary({ status: "invented", report: {} }).status, "partial");
+});
+
+test("verification API helper targets the narrow read-only endpoint", async () => {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: new URL(url, "http://test.invalid"), init });
+    return {
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({
+        experiment_id: "exp-1",
+        status: "unavailable",
+        identification: "not_reproducible",
+        manifest: { status: "unavailable", available: false, detail: "none" },
+        dataset: { status: "unavailable", detail: "none" },
+        report: null,
+        findings: [],
+        limitations: [],
+      }),
+    };
+  };
+  try {
+    await getExperimentVerification("exp-1");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url.pathname, "/api/v1/experiments/exp-1/verification");
+  assert.equal(calls[0].init, undefined);
 });
 
 test("API errors retain structured comparison rejection details", async () => {

@@ -15,6 +15,7 @@ import type {
   ExperimentEngineCurve,
   ExperimentEvaluation,
   ExperimentRecord,
+  ExperimentVerification,
   ExperimentResult,
   ExperimentSubmissionInput,
 } from "../types/experiment";
@@ -182,6 +183,15 @@ export function getExperimentEvaluation(
   experimentId: string,
 ): Promise<ExperimentEvaluation> {
   return getJson<ExperimentEvaluation>(`/api/v1/experiments/${experimentId}/evaluation`);
+}
+
+/** Read-only: checks recorded identity and digests; reruns nothing. */
+export function getExperimentVerification(
+  experimentId: string,
+): Promise<ExperimentVerification> {
+  return getJson<ExperimentVerification>(
+    `/api/v1/experiments/${experimentId}/verification`,
+  );
 }
 
 export function getExperimentCurves(
