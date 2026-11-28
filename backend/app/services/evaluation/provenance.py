@@ -331,7 +331,12 @@ def verify_run(
     return InputProvenance(snapshot=snapshot, checks=tuple(checks))
 
 
-def input_fingerprint(config: EvaluationConfig, snapshot: RunSnapshot, trade_count: int) -> str:
+def input_fingerprint(
+    config: EvaluationConfig,
+    snapshot: RunSnapshot,
+    trade_count: int,
+    reconciliation: dict[str, object] | None = None,
+) -> str:
     """Identity of (run contents, evaluation method) for report comparison."""
     payload = {
         "config": config.fingerprint(),
@@ -341,6 +346,16 @@ def input_fingerprint(config: EvaluationConfig, snapshot: RunSnapshot, trade_cou
         "trade_count": trade_count,
         "cost_model": snapshot.cost_model.as_dict(),
         "max_drawdown": snapshot.metrics.get("max_drawdown"),
+        "accounting_model_version": snapshot.accounting_model_version or "unknown",
+        "equity_series_fingerprint": (
+            reconciliation.get("equity_series_fingerprint") if reconciliation else None
+        ),
+        "trade_ledger_fingerprint": (
+            reconciliation.get("trade_ledger_fingerprint") if reconciliation else None
+        ),
+        "reconciliation_status": (
+            reconciliation.get("status") if reconciliation else "unavailable"
+        ),
     }
     encoded = json.dumps(payload, sort_keys=True, default=str, separators=(",", ":"))
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()

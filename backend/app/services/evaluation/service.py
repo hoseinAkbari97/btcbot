@@ -28,6 +28,7 @@ from .provenance import (
     input_fingerprint,
     verify_run,
 )
+from .reconciliation import AccountingReconciliationError, ReconciliationBuilder
 from .report import REPORT_VERSION, EvaluationReport
 from .robustness import (
     ParameterSensitivity,
@@ -62,7 +63,17 @@ class EvaluationService:
         trade_count = await self._repository.count_trades(run_id)
         provenance = verify_run(snapshot, self.config, trade_count=trade_count)
 
-        ledger = await self._load_ledger(run_id)
+        accounting = ReconciliationBuilder()
+        ledger = await self._load_ledger(run_id, accounting)
+        async for points in self._repository.iter_equity_point_batches(
+            run_id, batch_size=self.config.batch_size
+        ):
+            accounting.add_equity_points(points)
+        reconciliation = accounting.build(snapshot)
+        if reconciliation.status == "failed":
+            raise AccountingReconciliationError(
+                "accounting reconciliation failed: " + "; ".join(reconciliation.failures)
+            )
         if ledger.count != trade_count:
             provenance = _with_check(
                 provenance,
@@ -109,6 +120,7 @@ class EvaluationService:
             segments.warnings,
             simulation.warnings if simulation else (),
             (simulation_note,) if simulation_note else (),
+            reconciliation.as_dict(),
         )
 
         return EvaluationReport(
@@ -116,7 +128,9 @@ class EvaluationService:
             method_version=self.config.method_version,
             config=self.config.as_dict(),
             config_fingerprint=self.config.fingerprint(),
-            input_fingerprint=input_fingerprint(self.config, snapshot, ledger.count),
+            input_fingerprint=input_fingerprint(
+                self.config, snapshot, ledger.count, reconciliation.as_dict()
+            ),
             generated_at=datetime.now(UTC).isoformat(),
             provenance=provenance.as_dict(),
             performance=performance.as_dict(),
@@ -127,6 +141,7 @@ class EvaluationService:
             segments=segments.as_dict(),
             evidence=evidence.as_dict(),
             ledger=ledger.as_dict(),
+            reconciliation=reconciliation.as_dict(),
             warnings=warnings,
         )
 
@@ -163,12 +178,16 @@ class EvaluationService:
             raise EvaluationInputError(f"no backtest run with id {run_id!r}")
         return RunSnapshot.from_record(record)
 
-    async def _load_ledger(self, run_id: str) -> TradeLedger:
+    async def _load_ledger(
+        self, run_id: str, accounting: ReconciliationBuilder | None = None
+    ) -> TradeLedger:
         builder = TradeLedgerBuilder()
         async for batch in self._repository.iter_trade_batches(
             run_id, batch_size=self.config.batch_size
         ):
             builder.add(batch)
+            if accounting is not None:
+                accounting.add_trades(batch)
         return builder.build()
 
     def _simulate(

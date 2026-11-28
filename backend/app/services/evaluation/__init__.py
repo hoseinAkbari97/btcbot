@@ -17,6 +17,11 @@ from .evidence import EvidenceAssessment, assess_evidence
 from .montecarlo import SimulationResult, SimulationUnsupportedError, simulate
 from .performance import PerformanceSummary, analyse_performance
 from .provenance import EvaluationInputError, InputProvenance, RunSnapshot, verify_run
+from .reconciliation import (
+    AccountingReconciliationError,
+    ReconciliationBuilder,
+    ReconciliationResult,
+)
 from .report import (
     EvaluationComparison,
     EvaluationReport,
@@ -30,6 +35,7 @@ from .trade_stats import TradeStatistics, analyse_trades
 
 __all__ = [
     "EVALUATION_METHOD_VERSION",
+    "AccountingReconciliationError",
     "CostSensitivity",
     "EvaluationComparison",
     "EvaluationConfig",
@@ -40,6 +46,8 @@ __all__ = [
     "EvidenceAssessment",
     "InputProvenance",
     "PerformanceSummary",
+    "ReconciliationBuilder",
+    "ReconciliationResult",
     "ReportFormatError",
     "RunSnapshot",
     "SimulationResult",

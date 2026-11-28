@@ -13,7 +13,9 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-REPORT_VERSION = "3d.1"
+#: Report shape changed by adding accounting reconciliation; the statistical
+#: method version in ``EvaluationConfig`` deliberately stays unchanged.
+REPORT_VERSION = "3g.0"
 
 #: Sections every report must carry when read back.
 REQUIRED_SECTIONS = (
@@ -53,6 +55,7 @@ class EvaluationReport:
     segments: dict[str, object] | None
     evidence: dict[str, object]
     ledger: dict[str, object]
+    reconciliation: dict[str, object]
     warnings: tuple[str, ...]
 
     @property
@@ -87,6 +90,7 @@ class EvaluationReport:
             "segments": dict(self.segments) if self.segments is not None else None,
             "evidence": dict(self.evidence),
             "ledger": dict(self.ledger),
+            "reconciliation": dict(self.reconciliation),
             "warnings": list(self.warnings),
         }
 
@@ -125,6 +129,7 @@ class EvaluationReport:
             segments=dict(segments) if isinstance(segments, dict) else None,
             evidence=dict(payload["evidence"]),
             ledger=dict(payload.get("ledger", {})),
+            reconciliation=dict(payload.get("reconciliation", {})),
             warnings=tuple(str(item) for item in warnings),
         )
 
