@@ -501,6 +501,7 @@ def test_equity_curve_has_one_point_per_bar_and_is_non_decreasing_in_peak() -> N
     candles = flat_candles([100 + i for i in range(20)])
     run = engine_for(candles, lambda _: Signal(kind=HOLD)).run()
     assert len(run.equity_curve) == len(candles)
+    assert [point.bar_index for point in run.equity_curve] == list(range(len(candles)))
     drawdowns = [point.drawdown for point in run.equity_curve]
     assert all(drawdown <= 0 for drawdown in drawdowns)
 

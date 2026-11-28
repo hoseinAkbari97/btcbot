@@ -9,11 +9,18 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import lazyload
 
-from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
+from app.models.backtest import (
+    BacktestEquityPointRecord,
+    BacktestRunRecord,
+    BacktestTradeRecord,
+)
 from app.schemas.market_data import Timeframe
 from app.services.backtest.runner import BacktestResult
 
 _COST_COLUMNS = ("spread_cost", "slippage_cost", "latency_cost", "other_costs")
+
+#: bar_index, timestamp, equity, cash, unrealized, position_side, drawdown.
+EquityPointRow = tuple[int, datetime, Decimal, Decimal, Decimal, str | None, Decimal]
 
 
 class BacktestRepository:
@@ -78,6 +85,7 @@ class BacktestRepository:
             dataset_version=result.dataset_version,
             git_commit=result.git_commit,
             mode=run.mode,
+            accounting_model_version=run.accounting_model_version,
             # Reproducibility inputs are columns, not just parameter JSON. A
             # stored run whose seed is absent cannot be re-derived, and the
             # difference between "seeded at 7" and "not a seeded strategy" is
@@ -115,6 +123,11 @@ class BacktestRepository:
                     latency_cost=trade.latency_cost,
                     other_costs=trade.other_costs,
                     net_pnl=trade.net_pnl,
+                    entry_fee=trade.entry_fee,
+                    exit_fee=trade.exit_fee,
+                    raw_exit_price=trade.raw_exit_price,
+                    entry_concession=trade.entry_concession,
+                    exit_concession=trade.exit_concession,
                     gross_r=trade.gross_r,
                     net_r=trade.net_r,
                     r_multiple=trade.r_multiple,
@@ -131,6 +144,24 @@ class BacktestRepository:
                     strategy_version=trade.strategy_version,
                     market_regime=trade.market_regime,
                     strategy_context=self._json_safe(trade.strategy_context),
+                )
+            )
+
+        # The engine's curve is ephemeral; persist every point it produced, in
+        # order, at the run schema's existing Decimal storage precision. This is
+        # one child row per processed candle, not a candle dump: only the seven
+        # accounting fields the engine actually produced are stored.
+        for point in run.equity_curve:
+            self.session.add(
+                BacktestEquityPointRecord(
+                    run_id=record.id,
+                    bar_index=point.bar_index,
+                    timestamp=point.time,
+                    equity=point.equity,
+                    cash=point.cash,
+                    unrealized=point.unrealized,
+                    position_side=point.position_side,
+                    drawdown=point.drawdown,
                 )
             )
         await self.session.flush()
@@ -195,6 +226,52 @@ class BacktestRepository:
             (int(row.sequence), row.exit_time, Decimal(row.net_pnl))
             for row in await self.session.execute(query)
         ]
+
+    async def list_equity_point_rows(
+        self, run_id: str, limit: int
+    ) -> list[EquityPointRow]:
+        """Read a bounded prefix of a run's exact engine-generated curve.
+
+        As with the realized curve, one extra row is returned so callers can
+        detect truncation without loading the whole series. ``bar_index`` is the
+        stable event key; timestamps are deliberately not unique.
+        """
+        query = (
+            select(
+                BacktestEquityPointRecord.bar_index,
+                BacktestEquityPointRecord.timestamp,
+                BacktestEquityPointRecord.equity,
+                BacktestEquityPointRecord.cash,
+                BacktestEquityPointRecord.unrealized,
+                BacktestEquityPointRecord.position_side,
+                BacktestEquityPointRecord.drawdown,
+            )
+            .where(BacktestEquityPointRecord.run_id == run_id)
+            .order_by(BacktestEquityPointRecord.bar_index)
+            .limit(limit + 1)
+        )
+        return [
+            (
+                int(row.bar_index),
+                row.timestamp,
+                Decimal(row.equity),
+                Decimal(row.cash),
+                Decimal(row.unrealized),
+                row.position_side,
+                Decimal(row.drawdown),
+            )
+            for row in await self.session.execute(query)
+        ]
+
+    async def count_equity_points(self, run_id: str) -> int:
+        """Count persisted engine curve points without loading their values."""
+        query = (
+            select(func.count())
+            .select_from(BacktestEquityPointRecord)
+            .where(BacktestEquityPointRecord.run_id == run_id)
+        )
+        total = await self.session.scalar(query)
+        return int(total or 0)
 
     async def count_trades(self, run_id: str) -> int:
         """Count a run's trades without loading them."""

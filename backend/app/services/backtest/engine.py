@@ -350,6 +350,8 @@ class Trade:
 
 @dataclass
 class EquityPoint:
+    #: Processed-candle index. This is the event key; timestamps may repeat.
+    bar_index: int
     time: datetime
     equity: Decimal
     cash: Decimal
@@ -754,6 +756,7 @@ class BacktestEngine:
             self._equity_index[index] = equity
             equity_curve.append(
                 EquityPoint(
+                    bar_index=index,
                     time=candle.close_time,
                     equity=equity,
                     cash=cash,
@@ -823,6 +826,7 @@ class BacktestEngine:
             trades.append(trade)
             final_point = equity_curve[-1]
             equity_curve[-1] = EquityPoint(
+                bar_index=final_point.bar_index,
                 time=final_point.time,
                 equity=cash,
                 cash=cash,
