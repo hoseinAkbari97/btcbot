@@ -1,6 +1,12 @@
-import pytest
+from decimal import Decimal
 
+import pytest
+from conftest import make_candle
+
+from app.schemas.market_data import Timeframe
+from app.services.backtest.costs import BacktestCosts
 from app.services.backtest.registry import StrategyRegistry
+from app.services.backtest.runner import run_backtest
 from app.services.provenance.strategy import (
     STRATEGY_CONTRACT_VERSION,
     strategy_identity,
@@ -60,6 +66,21 @@ def test_missing_source_is_explicit(monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert identity.source_sha256 is None
     assert identity.source_unavailable_reason == "source unavailable: OSError"
+
+
+def test_runner_records_the_resolved_strategy_version() -> None:
+    candles = [make_candle(index * 5, close=str(50000 + index)) for index in range(3)]
+    result = run_backtest(
+        candles,
+        symbol="BTCUSDT",
+        timeframe=Timeframe.M5,
+        strategy_name="buy_and_hold",
+        costs=BacktestCosts(),
+        initial_capital=Decimal("10000"),
+        strategy_version="7",
+    )
+
+    assert result.run.strategy_version == "7"
 
 
 def test_unknown_strategy_is_rejected() -> None:

@@ -143,6 +143,7 @@ def run_backtest(
     allow_short: bool = False,
     risk: RiskEngine | None = None,
     mode: RunMode = RunMode.RESEARCH,
+    strategy_version: str | None = None,
 ) -> BacktestResult:
     """Execute one baseline strategy over a candle series."""
     if strategy_name not in STRATEGY_NAMES:
@@ -193,6 +194,7 @@ def run_backtest(
         allow_short=allow_short,
         risk=risk,
         mode=mode,
+        strategy_version=strategy_version or "1",
     ).run()
     # Stateful new-style strategies may close out their own state once the run
     # is complete. The instance is discarded with this run, so nothing leaks.
