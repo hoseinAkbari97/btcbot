@@ -20,11 +20,14 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.backtest import BacktestRunRecord
 from app.models.evaluation import EvaluationReportRecord
 from app.models.experiment import ExperimentRecord
+from app.models.provenance import RunManifestRecord
 from app.repositories.backtest import BacktestRepository
 from app.repositories.evaluation import EvaluationReportRepository
 from app.repositories.experiment import ExperimentRepository
+from app.repositories.provenance import RunManifestRepository
 from app.schemas.experiment import (
     ExperimentBatchItem,
     ExperimentSubmission,
@@ -36,13 +39,18 @@ from app.services.backtest.registry import default_registry
 from app.services.backtest.risk import RiskEngine
 from app.services.backtest.runner import (
     LIBRARY_VERSION,
+    BacktestResult,
+    CandleSelection,
     current_git_commit,
     dataset_fingerprint,
-    load_candles,
+    load_candle_selection,
     run_backtest,
 )
 from app.services.evaluation.config import EvaluationConfig
 from app.services.evaluation.service import EvaluationService
+from app.services.provenance.canonical import canonical_digest
+from app.services.provenance.manifest import RunManifest
+from app.services.provenance.strategy import StrategyIdentity, strategy_identity
 from app.services.strategy.adapter import prepare_strategy
 from app.services.strategy.capabilities import (
     CapabilityError,
@@ -116,6 +124,7 @@ class ExperimentOrchestrationService:
         self.experiments = ExperimentRepository(session)
         self.reports = EvaluationReportRepository(session)
         self.runs = BacktestRepository(session)
+        self.manifests = RunManifestRepository(session)
 
     # -- configuration and fingerprints ----------------------------------
 
@@ -166,6 +175,80 @@ class ExperimentOrchestrationService:
     def strategy_version(strategy: str) -> str:
         capabilities = default_registry.definition(strategy).capabilities
         return capabilities.version if capabilities is not None else "1"
+
+    @staticmethod
+    def _manifest_record(
+        *,
+        experiment: ExperimentRecord,
+        run: BacktestRunRecord,
+        result: BacktestResult,
+        request: ExperimentSubmission,
+        selection: CandleSelection,
+        strategy: StrategyIdentity,
+        costs: BacktestCosts,
+    ) -> RunManifestRecord:
+        """Describe a run from the facts captured during its execution."""
+        parameters = BacktestRepository._json_safe(result.run.parameters)
+        risk_limits = (
+            BacktestRepository._json_safe(vars(request.risk_limits.to_limits()))
+            if request.risk_limits is not None
+            else None
+        )
+        unavailable: list[str] = []
+        if result.git_commit is None:
+            unavailable.append("git_commit_unavailable")
+        if strategy.source_sha256 is None:
+            unavailable.append("strategy_source_unavailable")
+
+        manifest = RunManifest(
+            run_id=run.id,
+            experiment_id=experiment.id,
+            configuration_fingerprint=experiment.configuration_fingerprint,
+            strategy=strategy,
+            dataset=selection.identity,
+            market={
+                "symbol": request.symbol,
+                "timeframe": request.timeframe,
+                "period_start": request.start.isoformat(),
+                "period_end": request.end.isoformat(),
+                "max_candles": request.max_candles,
+                "initial_capital": str(request.initial_capital),
+                "accounting_currency": request.accounting_currency,
+                "parameters_fingerprint": canonical_digest(parameters),
+            },
+            execution={
+                "mode": result.run.mode,
+                "accounting_model_version": result.run.accounting_model_version,
+                "git_commit": result.git_commit,
+                "library_version": result.library_version,
+                "evaluation_method_version": request.evaluation.method_version,
+                "allow_short": request.allow_short,
+                "risk_limits": risk_limits,
+                "random_seed": result.random_seed,
+            },
+            cost_model={
+                "fee_rate": str(costs.fee_rate),
+                "spread_rate": str(costs.spread_rate),
+                "slippage_rate": str(costs.slippage_rate),
+                "latency_bars": costs.latency_bars,
+                "cost_scale": str(request.cost_scale),
+            },
+            declared_outputs={
+                "final_equity": str(run.final_equity),
+                "trade_count": len(result.run.trades),
+                "bars_processed": result.run.bars_processed,
+                "legacy_dataset_version": run.dataset_version,
+            },
+            unavailable=tuple(unavailable),
+        )
+        stored = manifest.as_dict()
+        return RunManifestRecord(
+            run_id=run.id,
+            experiment_id=experiment.id,
+            schema_version=stored["schema_version"],
+            manifest_fingerprint=stored["manifest_fingerprint"],
+            manifest=stored["manifest"],
+        )
 
     # -- lifecycle --------------------------------------------------------
 
@@ -261,7 +344,7 @@ class ExperimentOrchestrationService:
         # window size, so load the candle window first (bounded by request).
         try:
             timeframe = Timeframe(request.timeframe)
-            candles = await load_candles(
+            selection = await load_candle_selection(
                 self.session,
                 request.symbol,
                 timeframe,
@@ -269,6 +352,7 @@ class ExperimentOrchestrationService:
                 request.end,
                 request.max_candles,
             )
+            candles = selection.as_list()
         except Exception as error:
             return await self._reject(
                 request, configuration, "data", f"data verification failed: {error}"
@@ -287,7 +371,8 @@ class ExperimentOrchestrationService:
             return await self._reject(
                 request, configuration, "validation", f"unknown strategy {request.strategy!r}"
             )
-        strategy_version = self.strategy_version(request.strategy)
+        strategy_identity_record = strategy_identity(request.strategy)
+        strategy_version = strategy_identity_record.version
         key = self.idempotency_key(
             config_fingerprint,
             dataset_version,
@@ -372,6 +457,7 @@ class ExperimentOrchestrationService:
                 allow_short=request.allow_short,
                 risk=risk,
                 mode=RunMode.RESEARCH,
+                strategy_version=strategy_version,
             )
             run_record = await self.runs.save(result, notes=f"experiment {record.id}")
         except Exception as error:
@@ -385,6 +471,24 @@ class ExperimentOrchestrationService:
             engine_version=run_record.git_commit or LIBRARY_VERSION,
             random_seed=run_record.random_seed,
         )
+
+        # 2b. Freeze the inputs and declared outputs that execution actually
+        # knew. Historical runs have no row; new runs get exactly one.
+        try:
+            manifest_record = self._manifest_record(
+                experiment=record,
+                run=run_record,
+                result=result,
+                request=request,
+                selection=selection,
+                strategy=strategy_identity_record,
+                costs=costs,
+            )
+            await self.manifests.create(manifest_record)
+        except Exception as error:
+            return await self._fail(
+                record, "manifest", str(error), backtest_run=run_record
+            )
 
         # 3. Evaluate the persisted run. A failure here never erases the run.
         await self.transition(record, EVALUATING)

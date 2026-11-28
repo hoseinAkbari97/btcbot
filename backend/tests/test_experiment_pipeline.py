@@ -21,7 +21,9 @@ from app.models.evaluation import EvaluationReportRecord
 from app.repositories.backtest import BacktestRepository
 from app.repositories.evaluation import EvaluationReportRepository
 from app.repositories.experiment import ExperimentRepository
+from app.repositories.provenance import RunManifestRepository
 from app.schemas.market_data import Timeframe
+from app.services.provenance.manifest import manifest_digest
 
 START = datetime(2024, 1, 1, tzinfo=UTC)
 END = START + timedelta(minutes=5 * 400)
@@ -118,6 +120,41 @@ async def test_backtest_run_and_evaluation_report_are_persisted(
     assert len(report_record.report_digest) == 64
     assert report_record.run_id == run_record.id
     assert report_record.experiment_id == body["id"]
+
+
+async def test_completed_experiment_writes_one_verifiable_manifest(
+    experiment_db: AsyncSession,
+) -> None:
+    async with client_for(experiment_db) as client:
+        response = await submit(client)
+    assert response.status_code == 201, response.text
+    body = response.json()
+
+    experiment = await ExperimentRepository(experiment_db).get(body["id"])
+    assert experiment is not None
+    run = await BacktestRepository(experiment_db).get_run_without_trades(
+        body["backtest_run_id"]
+    )
+    assert run is not None
+    manifest = await RunManifestRepository(experiment_db).get_for_run(run.id)
+
+    assert manifest is not None
+    assert manifest.run_id == run.id
+    assert manifest.experiment_id == experiment.id
+    assert manifest.manifest_fingerprint == manifest_digest(manifest.manifest)
+    assert manifest.manifest["run_id"] == run.id
+    assert manifest.manifest["configuration_fingerprint"] == (
+        experiment.configuration_fingerprint
+    )
+    assert manifest.manifest["dataset"]["fingerprint"]
+    assert manifest.manifest["strategy"]["version"] == run.strategy_version
+    assert manifest.manifest["execution"]["mode"] == "research"
+    assert manifest.manifest["execution"]["accounting_model_version"] == (
+        run.accounting_model_version
+    )
+    assert manifest.manifest["declared_outputs"]["legacy_dataset_version"] == (
+        run.dataset_version
+    )
 
 
 async def test_evaluation_does_not_modify_the_original_backtest_record(
