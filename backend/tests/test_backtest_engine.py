@@ -207,6 +207,68 @@ def test_take_profit_is_honoured_intrabar() -> None:
     assert run.trades[0].exit_price == Decimal("110")
 
 
+def test_gap_stop_keeps_the_gap_in_gross_and_costs_stay_non_negative() -> None:
+    """A stop opened through must not hide the extra loss as slippage."""
+    costs = BacktestCosts(
+        fee_rate=Decimal(0),
+        spread_rate=Decimal("0.0002"),
+        slippage_rate=Decimal("0.0001"),
+        latency_bars=1,
+    )
+    candles = [
+        make_candle(0, open_price="100", high="101", low="99", close="100"),
+        make_candle(5, open_price="100", high="101", low="99", close="100"),
+        make_candle(10, open_price="90", high="91", low="89", close="90"),
+        make_candle(15, open_price="90", high="91", low="89", close="90"),
+    ]
+    run = engine_for(
+        candles,
+        lambda context: Signal(
+            kind=OPEN_LONG, stop_price=Decimal("95"), target_price=Decimal("200")
+        )
+        if context.index == 0
+        else Signal(kind=HOLD),
+        costs=costs,
+    ).run()
+
+    trade = run.trades[0]
+    assert trade.exit_reason == "stop_loss"
+    assert trade.gross_pnl / trade.size == Decimal("90") - Decimal("100")
+    assert trade.spread_cost >= 0
+    assert trade.slippage_cost >= 0
+
+
+def test_gap_target_keeps_the_gap_in_gross_and_costs_stay_non_negative() -> None:
+    """A target opened through must not book a favourable gap as negative cost."""
+    costs = BacktestCosts(
+        fee_rate=Decimal(0),
+        spread_rate=Decimal("0.0002"),
+        slippage_rate=Decimal("0.0001"),
+        latency_bars=1,
+    )
+    candles = [
+        make_candle(0, open_price="100", high="101", low="99", close="100"),
+        make_candle(5, open_price="100", high="101", low="99", close="100"),
+        make_candle(10, open_price="120", high="121", low="119", close="120"),
+        make_candle(15, open_price="120", high="121", low="119", close="120"),
+    ]
+    run = engine_for(
+        candles,
+        lambda context: Signal(
+            kind=OPEN_LONG, stop_price=Decimal("95"), target_price=Decimal("110")
+        )
+        if context.index == 0
+        else Signal(kind=HOLD),
+        costs=costs,
+    ).run()
+
+    trade = run.trades[0]
+    assert trade.exit_reason == "take_profit"
+    assert trade.gross_pnl / trade.size == Decimal("120") - Decimal("100")
+    assert trade.spread_cost >= 0
+    assert trade.slippage_cost >= 0
+
+
 def test_stop_wins_when_a_single_bar_touches_both_levels() -> None:
     """We cannot know the intrabar order, so the pessimistic one is assumed."""
     candles = flat_candles([100] * 6, high_pad="0", low_pad="0.0001")

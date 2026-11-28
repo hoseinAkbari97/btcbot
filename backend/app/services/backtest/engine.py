@@ -578,9 +578,16 @@ class BacktestEngine:
                             ),
                         )
                 if closed is not None:
-                    reason, price = closed
+                    reason, raw_price, price = closed
                     cash, trade = self._settle(
-                        cash, position, price, candle.close_time, index, reason, trade_id
+                        cash,
+                        position,
+                        price,
+                        candle.close_time,
+                        index,
+                        reason,
+                        trade_id,
+                        raw_exit_price=raw_price,
                     )
                     trades.append(trade)
                     trade_id += 1
@@ -600,6 +607,7 @@ class BacktestEngine:
                         index,
                         pending.reason or "signal_exit",
                         trade_id,
+                        raw_exit_price=candle.open,
                     )
                     trades.append(trade)
                     trade_id += 1
@@ -695,9 +703,16 @@ class BacktestEngine:
                     position.observe(candle)
                     closed = self._intrabar_exit(candle, position)
                     if closed is not None:
-                        reason, price = closed
+                        reason, raw_price, price = closed
                         cash, trade = self._settle(
-                            cash, position, price, candle.close_time, index, reason, trade_id
+                            cash,
+                            position,
+                            price,
+                            candle.close_time,
+                            index,
+                            reason,
+                            trade_id,
+                            raw_exit_price=raw_price,
                         )
                         trades.append(trade)
                         trade_id += 1
@@ -767,7 +782,14 @@ class BacktestEngine:
             side = "sell" if position.side == "long" else "buy"
             price = apply_slippage(last.close, side, self.costs)
             cash, trade = self._settle(
-                cash, position, price, last.close_time, last_bar, "end_of_data", trade_id
+                cash,
+                position,
+                price,
+                last.close_time,
+                last_bar,
+                "end_of_data",
+                trade_id,
+                raw_exit_price=last.close,
             )
             trades.append(trade)
             final_point = equity_curve[-1]
@@ -804,8 +826,8 @@ class BacktestEngine:
 
     def _intrabar_exit(
         self, candle: CandleData, position: OpenPosition
-    ) -> tuple[str, Decimal] | None:
-        """Return ``(reason, price)`` if the position closes on this bar.
+    ) -> tuple[str, Decimal, Decimal] | None:
+        """Return ``(reason, raw_reference, filled_price)`` if this bar closes it.
 
         The decision — which barrier printed, and the raw fill reference —
         comes from :func:`app.services.outcome_contract.resolve_barriers`,
@@ -821,12 +843,20 @@ class BacktestEngine:
             target_price=position.target_price,
         )
         if fill is not None:
-            return fill.reason, apply_slippage(fill.fill_price, side, self.costs)
+            return (
+                fill.reason,
+                fill.fill_price,
+                apply_slippage(fill.fill_price, side, self.costs),
+            )
 
         if self._has_time_limit(position) and candle.open_time - position.entry_time >= timedelta(
             seconds=position.max_hold_bars * self.timeframe.seconds
         ):
-            return "time_exit", apply_slippage(candle.open, side, self.costs)
+            return (
+                "time_exit",
+                candle.open,
+                apply_slippage(candle.open, side, self.costs),
+            )
         return None
 
     @staticmethod
@@ -849,6 +879,8 @@ class BacktestEngine:
         index: int,
         reason: str,
         trade_id: int,
+        *,
+        raw_exit_price: Decimal | None = None,
     ) -> tuple[Decimal, Trade]:
         """Close a position and write the complete ledger record.
 
@@ -871,6 +903,10 @@ class BacktestEngine:
         position's *actual* initial risk. ``net_r`` is ``None`` for an
         allocation-sized position, which has no defined risk unit — reporting a
         number there would manufacture precision that does not exist.
+
+        ``raw_exit_price`` carries the resolver's un-concessioned reference for
+        bracket exits, including a candle that opened through a level. Without
+        it a gap would be misbooked into spread/slippage instead of gross PnL.
         """
         direction = Decimal(1) if position.side == "long" else Decimal(-1)
         # The cash the trade actually returned: the fill-to-fill price move,
@@ -900,8 +936,11 @@ class BacktestEngine:
         #
         # Both concessions are non-negative for either side, because a long pays
         # up on the way in and is paid down on the way out, and vice versa.
+        raw_exit = raw_exit_price if raw_exit_price is not None else self._raw_exit_price(
+            reason, index, position
+        )
         entry_concession = (position.entry_price - entry_bar.open) * position.size * direction
-        exit_concession = (self._raw_exit_price(reason, index, position) - price) * position.size * direction
+        exit_concession = (raw_exit - price) * position.size * direction
         total_concession = entry_concession + exit_concession
         rates = self.costs.spread_rate + self.costs.slippage_rate
         if rates > ZERO:
@@ -910,7 +949,7 @@ class BacktestEngine:
             spread_cost = ZERO
         slippage_cost = total_concession - spread_cost
 
-        gross = (self._raw_exit_price(reason, index, position) - entry_bar.open) * position.size * direction
+        gross = (raw_exit - entry_bar.open) * position.size * direction
         exit_fee = self.costs.fee(price * position.size)
         fees = position.entry_fee + exit_fee
         net = gross - fees - spread_cost - slippage_cost
