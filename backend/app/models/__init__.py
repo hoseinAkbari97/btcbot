@@ -1,13 +1,17 @@
 """Model packages for the btc-quant-trader research platform.
 
 Currently exported models:
-- Backtest persistence: BacktestRunRecord, BacktestTradeRecord
+- Backtest persistence: BacktestRunRecord, BacktestTradeRecord, BacktestEquityPointRecord
 - Market data: Candle, DataQualityReport, DataSource, Instrument, Market, OrderBookSnapshot, Trade
 - Experiment: ExperimentRecord (Stage 3E)
 - Evaluation: EvaluationReportRecord (Stage 3E)
 """
 
-from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
+from app.models.backtest import (
+    BacktestEquityPointRecord,
+    BacktestRunRecord,
+    BacktestTradeRecord,
+)
 from app.models.evaluation import EvaluationReportRecord
 from app.models.experiment import ExperimentRecord
 from app.models.market_data import (
@@ -21,6 +25,7 @@ from app.models.market_data import (
 )
 
 __all__ = [
+    "BacktestEquityPointRecord",
     "BacktestRunRecord",
     "BacktestTradeRecord",
     "ExperimentRecord",

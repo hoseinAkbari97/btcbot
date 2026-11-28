@@ -22,6 +22,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -75,6 +76,9 @@ class BacktestRunRecord(TimestampMixin, Base):
     #: modes were recorded, and null must be read as "unknown", never as
     #: "research".
     mode: Mapped[str | None] = mapped_column(String(16))
+    #: Null on rows written before the accounting model was versioned. Null must
+    #: be read as "unknown", never inferred from metrics.
+    accounting_model_version: Mapped[str | None] = mapped_column(String(16))
     notes: Mapped[str | None] = mapped_column(Text)
 
     trades: Mapped[list[BacktestTradeRecord]] = relationship(
@@ -140,6 +144,13 @@ class BacktestTradeRecord(TimestampMixin, Base):
     )
     net_pnl: Mapped[Decimal] = mapped_column(Numeric(28, 10), nullable=False)
 
+    # Per-leg audit fields. Null on historical rows; no reconstruction is done.
+    entry_fee: Mapped[Decimal | None] = mapped_column(Numeric(28, 10))
+    exit_fee: Mapped[Decimal | None] = mapped_column(Numeric(28, 10))
+    raw_exit_price: Mapped[Decimal | None] = mapped_column(Numeric(28, 10))
+    entry_concession: Mapped[Decimal | None] = mapped_column(Numeric(28, 10))
+    exit_concession: Mapped[Decimal | None] = mapped_column(Numeric(28, 10))
+
     # Both R multiples are stored: gross overstates the edge, net is what the
     # Monte Carlo project should consume.
     gross_r: Mapped[Decimal | None] = mapped_column(Numeric(18, 6))
@@ -162,3 +173,31 @@ class BacktestTradeRecord(TimestampMixin, Base):
     strategy_context: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
 
     run: Mapped["BacktestRunRecord"] = relationship(back_populates="trades")
+
+
+class BacktestEquityPointRecord(TimestampMixin, Base):
+    """One exact point from a run's engine-generated mark-to-market curve.
+
+    ``bar_index`` is the unique event key rather than ``timestamp``: the engine
+    emits one point per processed candle, so candles sharing a close time are
+    legitimate separate events. No reverse relationship is declared; callers
+    query points by ``run_id`` so a run fetch cannot eager-load a whole curve.
+    """
+
+    __tablename__ = "backtest_equity_points"
+    __table_args__ = (
+        UniqueConstraint("run_id", "bar_index", name="uq_backtest_equity_points_run_bar"),
+        Index("ix_backtest_equity_points_run_timestamp", "run_id", "timestamp"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_id)
+    run_id: Mapped[str] = mapped_column(
+        ForeignKey("backtest_runs.id", ondelete="CASCADE"), nullable=False
+    )
+    bar_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    equity: Mapped[Decimal] = mapped_column(Numeric(28, 10), nullable=False)
+    cash: Mapped[Decimal] = mapped_column(Numeric(28, 10), nullable=False)
+    unrealized: Mapped[Decimal] = mapped_column(Numeric(28, 10), nullable=False)
+    position_side: Mapped[str | None] = mapped_column(String(8))
+    drawdown: Mapped[Decimal] = mapped_column(Numeric(28, 10), nullable=False)

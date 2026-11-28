@@ -336,3 +336,139 @@ def test_stage3e_upgrade_and_downgrade_preserve_existing_data(
         assert connection.execute(
             "SELECT name FROM markets WHERE id = ?", ("market-1",)
         ).fetchone()[0] == "Spot"
+
+
+def test_stage3g_upgrade_builds_the_engine_equity_point_table(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """The exact engine series needs an append-only run child table."""
+    database = tmp_path / "fresh.sqlite"
+    _migrate(monkeypatch, database, "head")
+
+    assert "backtest_equity_points" in _tables(database)
+    with sqlite3.connect(database) as connection:
+        ddl = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' "
+            "AND name = 'backtest_equity_points'"
+        ).fetchone()[0]
+        point_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(backtest_equity_points)")
+        }
+        run_columns = {row[1] for row in connection.execute("PRAGMA table_info(backtest_runs)")}
+        trade_columns = {
+            row[1] for row in connection.execute("PRAGMA table_info(backtest_trades)")
+        }
+
+    # `bar_index`, not timestamp, is the event key: duplicate close times are
+    # legitimate for candles from different sources.
+    assert "uq_backtest_equity_points_run_bar UNIQUE (run_id, bar_index)" in ddl
+    assert "FOREIGN KEY(run_id)" in ddl and "ON DELETE CASCADE" in ddl
+    assert {
+        "run_id",
+        "bar_index",
+        "timestamp",
+        "equity",
+        "cash",
+        "unrealized",
+        "position_side",
+        "drawdown",
+    } <= point_columns
+    assert "accounting_model_version" in run_columns
+    assert {
+        "entry_fee",
+        "exit_fee",
+        "raw_exit_price",
+        "entry_concession",
+        "exit_concession",
+    } <= trade_columns
+
+
+def test_stage3g_upgrade_preserves_history_and_downgrade_removes_only_new_data(
+    monkeypatch: Any, tmp_path: Path
+) -> None:
+    """Historical runs stay readable and are never backfilled or invented."""
+    database = tmp_path / "existing.sqlite"
+    _migrate(monkeypatch, database, "20261125_0006")
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "INSERT INTO backtest_runs (id, strategy_name, symbol, timeframe, "
+            "period_start, period_end, candle_count, initial_capital, final_equity, "
+            "fee_rate, spread_rate, slippage_rate, latency_bars, cost_scale, "
+            "parameters, metrics) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "run-1",
+                "buy_and_hold",
+                "BTCUSDT",
+                "5m",
+                "2024-01-01T00:00:00+00:00",
+                "2024-01-01T00:10:00+00:00",
+                3,
+                10000,
+                10000,
+                0,
+                0,
+                0,
+                1,
+                1,
+                "{}",
+                "{}",
+            ),
+        )
+        connection.execute(
+            "INSERT INTO backtest_trades (id, run_id, sequence, side, entry_time, "
+            "entry_price, exit_time, exit_price, size, gross_pnl, fees, net_pnl, "
+            "bars_held, exit_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "trade-1",
+                "run-1",
+                0,
+                "long",
+                "2024-01-01T00:00:00+00:00",
+                100,
+                "2024-01-01T00:05:00+00:00",
+                100,
+                1,
+                0,
+                0,
+                0,
+                1,
+                "end_of_data",
+            ),
+        )
+        connection.commit()
+
+    _migrate(monkeypatch, database, "head")
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT strategy_name FROM backtest_runs WHERE id = ?", ("run-1",)
+        ).fetchone()[0] == "buy_and_hold"
+        assert connection.execute(
+            "SELECT COUNT(*) FROM backtest_trades WHERE run_id = ?", ("run-1",)
+        ).fetchone()[0] == 1
+        assert connection.execute(
+            "SELECT accounting_model_version FROM backtest_runs WHERE id = ?", ("run-1",)
+        ).fetchone()[0] is None
+        assert connection.execute(
+            "SELECT entry_fee FROM backtest_trades WHERE id = ?", ("trade-1",)
+        ).fetchone()[0] is None
+        assert connection.execute(
+            "SELECT COUNT(*) FROM backtest_equity_points WHERE run_id = ?", ("run-1",)
+        ).fetchone()[0] == 0
+
+    monkeypatch.setenv("DATABASE_URL", f"sqlite+aiosqlite:///{database}")
+    get_settings.cache_clear()
+    config = Config(str(VERSIONS_DIR.parents[1] / "alembic.ini"))
+    config.set_main_option("script_location", str(VERSIONS_DIR.parent))
+    try:
+        command.downgrade(config, "20261125_0006")
+    finally:
+        get_settings.cache_clear()
+
+    assert "backtest_equity_points" not in _tables(database)
+    with sqlite3.connect(database) as connection:
+        assert connection.execute(
+            "SELECT id FROM backtest_runs WHERE id = ?", ("run-1",)
+        ).fetchone()[0] == "run-1"
+        assert connection.execute(
+            "SELECT id FROM backtest_trades WHERE id = ?", ("trade-1",)
+        ).fetchone()[0] == "trade-1"
