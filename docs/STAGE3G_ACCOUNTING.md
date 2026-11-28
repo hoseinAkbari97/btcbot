@@ -111,3 +111,73 @@ columns. They are reported as unavailable, never backfilled or reconstructed.
   Stage 3F realized curve stays unchanged as a fallback.
 - Do not change statistical methods, evidence thresholds, authorization,
   execution modes, historical results or any trading boundary.
+
+## Implemented persistence and read path
+
+- New runs write `accounting_model_version = "3g.0"`. Historical rows keep
+  `NULL` and are read as `unknown`; no value is inferred from metrics.
+- Every engine `EquityPoint` is persisted as a child row in `bar_index` order.
+  Storage keeps the existing `Numeric(28, 10)` monetary precision, so tests
+  compare Decimal values quantized to ten places.
+- The exact engine curve is read by `list_equity_point_rows(run_id, limit)`,
+  bounded to at most 5000 rows plus one truncation sentinel, and by
+  `iter_equity_point_batches()` keyset batches for streaming fingerprints. No
+  query returns a full candle series or an unbounded trade curve.
+- Per-leg trade audit fields are nullable for historical rows and populated for
+  new runs. They are never backfilled or inferred.
+
+## Reconciliation contract
+
+`app/services/evaluation/reconciliation.py` is read-only. It streams ledger and
+curve rows in bounded batches and produces one `ReconciliationResult` per run.
+
+- Hard failures (evaluation raises `AccountingReconciliationError`): a trade that
+  breaks `gross_pnl - costs = net_pnl`, per-leg fields that do not sum to their
+  stored totals, duplicate trade sequences, duplicate engine `bar_index`, an
+  equity point that breaks `equity = cash + unrealized`, an exit before entry, or
+  a non-positive trade size.
+- Warnings (reported with status `warning`, evaluation continues): negative cost
+  components, positive engine drawdown, missing per-leg fields on a versioned
+  run, a versioned run with no engine points or with a point count different
+  from `candle_count`, a terminal engine point that is not flat cash-only, final
+  equity disagreement between the curve and the run record, initial capital plus
+  summed net PnL disagreeing with final equity, and any legacy/unknown run whose
+  per-leg fields and engine curve are unavailable.
+- Cross-section disagreement is a warning rather than a hard error because there
+  is no single authoritative source to repair from; definitional within-row
+  corruption and duplicate event keys are treated as hard errors.
+- `trade_ledger_fingerprint` and `equity_series_fingerprint` are 16-hex sha256
+  prefixes over canonical JSON for each row, in stream order. They are `None`
+  when the corresponding series is absent. They detect changed content without
+  storing or dumping the underlying rows again.
+
+Evaluation reports now have `report_version = "3g.0"`; the statistical method
+version remains `"3d.1"`. `input_fingerprint()` includes the accounting model
+version, both content fingerprints and the reconciliation status. The report
+carries a structured `reconciliation` section. Stored report retrieval still
+returns the stored document verbatim and does not recompute its digest or
+re-run reconciliation on read; that limitation is unchanged from Stage 3D.
+
+## API and dashboard
+
+- `GET /api/v1/experiments/{id}/curves` is unchanged. Its exact basis remains
+  `closed_trade_net_pnl_additive; drawdown_fraction_from_running_peak;
+  not_engine_mark_to_market` and it remains the fallback for legacy runs.
+- `GET /api/v1/experiments/{id}/engine-curves` returns the bounded persisted
+  engine prefix with `bar_index`, timestamp, equity, cash, unrealized, position
+  side and the engine's absolute quote-currency drawdown. Its basis is
+  `engine_mark_to_market; raw_engine_fields;
+  drawdown_currency_from_running_peak`. Legacy runs return an empty series with
+  `accounting_model_version = "unknown"` and an explicit unavailable reason.
+- The dashboard shows both curves under separate headings. The engine chart
+  labels drawdown in the accounting currency; the realized chart keeps the
+  fraction label. If timestamps repeat, the engine chart keeps the last point
+  at each instant for drawing and reports the collision count; the endpoint
+  retains every row under its `bar_index` key.
+
+## Resource boundaries
+
+All new reads are bounded by the existing `limit <= 5000` API contract or by
+configurable repository batch sizes. Reconciliation hashes rows as it streams
+them instead of materializing the series. No new worker, live feed, order path,
+candle dump, chart dependency or statistical threshold was introduced.

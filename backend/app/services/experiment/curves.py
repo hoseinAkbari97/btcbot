@@ -1,11 +1,11 @@
-"""Bounded curve projection from persisted closed trades.
+"""Bounded realized-equity fallback from persisted closed trades.
 
-The backtest engine's full mark-to-market equity curve is transient and is not
-stored with a run. This module derives only what the persisted ledger supports:
-equity after each closed trade, starting from the run's recorded initial
-capital. It never re-runs a backtest, edits a run, or reconstructs intrabar
-equity. The API labels the result accordingly so it cannot be mistaken for the
-engine's original curve.
+Stage 3G persists the engine's exact mark-to-market series separately. This
+module intentionally remains the Stage 3F fallback for runs without that series:
+it derives equity after each closed trade from the recorded initial capital and
+closed-trade net PnL. It never re-runs a backtest, edits a run, or reconstructs
+intrabar equity. The API labels the result with the exact Stage 3F basis so it
+cannot be mistaken for the engine curve.
 """
 
 from __future__ import annotations
