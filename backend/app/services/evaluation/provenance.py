@@ -331,22 +331,34 @@ def verify_run(
     return InputProvenance(snapshot=snapshot, checks=tuple(checks))
 
 
-def input_fingerprint(
-    config: EvaluationConfig,
-    snapshot: RunSnapshot,
+def input_fingerprint_from_identity(
+    *,
+    config_fingerprint: str,
+    run_id: str,
+    parameters_fingerprint: str,
+    dataset_version: str | None,
     trade_count: int,
+    cost_model: dict[str, object],
+    max_drawdown: object,
+    accounting_model_version: str | None,
     reconciliation: dict[str, object] | None = None,
 ) -> str:
-    """Identity of (run contents, evaluation method) for report comparison."""
+    """Compute the report input fingerprint from recorded identity fields.
+
+    Evaluation calls this with a live snapshot. Verification calls it with the
+    identity frozen inside a stored report, so a later storage-round-trip change
+    in ``Decimal`` scale cannot make an old report look altered. The formula is
+    unchanged from :func:`input_fingerprint`; this only makes its inputs explicit.
+    """
     payload = {
-        "config": config.fingerprint(),
-        "run_id": snapshot.run_id,
-        "parameters": snapshot.parameters_fingerprint(),
-        "dataset_version": snapshot.dataset_version,
+        "config": config_fingerprint,
+        "run_id": run_id,
+        "parameters": parameters_fingerprint,
+        "dataset_version": dataset_version,
         "trade_count": trade_count,
-        "cost_model": snapshot.cost_model.as_dict(),
-        "max_drawdown": snapshot.metrics.get("max_drawdown"),
-        "accounting_model_version": snapshot.accounting_model_version or "unknown",
+        "cost_model": dict(cost_model),
+        "max_drawdown": max_drawdown,
+        "accounting_model_version": accounting_model_version or "unknown",
         "equity_series_fingerprint": (
             reconciliation.get("equity_series_fingerprint") if reconciliation else None
         ),
@@ -361,6 +373,26 @@ def input_fingerprint(
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
+def input_fingerprint(
+    config: EvaluationConfig,
+    snapshot: RunSnapshot,
+    trade_count: int,
+    reconciliation: dict[str, object] | None = None,
+) -> str:
+    """Identity of (run contents, evaluation method) for report comparison."""
+    return input_fingerprint_from_identity(
+        config_fingerprint=config.fingerprint(),
+        run_id=snapshot.run_id,
+        parameters_fingerprint=snapshot.parameters_fingerprint(),
+        dataset_version=snapshot.dataset_version,
+        trade_count=trade_count,
+        cost_model=snapshot.cost_model.as_dict(),
+        max_drawdown=snapshot.metrics.get("max_drawdown"),
+        accounting_model_version=snapshot.accounting_model_version,
+        reconciliation=reconciliation,
+    )
+
+
 __all__ = [
     "CheckStatus",
     "CostModelSnapshot",
@@ -369,5 +401,6 @@ __all__ = [
     "ProvenanceCheck",
     "RunSnapshot",
     "input_fingerprint",
+    "input_fingerprint_from_identity",
     "verify_run",
 ]
