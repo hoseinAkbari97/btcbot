@@ -12,17 +12,20 @@ import {
   normalizeCurvePoints,
   normalizeEngineCurvePoints,
   reportSections,
+  verificationSummary,
   type JsonRecord,
 } from "../lib/experiment-view";
 import {
   getExperimentCurves,
   getExperimentEngineCurves,
   getExperimentResult,
+  getExperimentVerification,
 } from "../services/api";
 import type {
   ExperimentCurve,
   ExperimentEngineCurve,
   ExperimentResult,
+  ExperimentVerification,
 } from "../types/experiment";
 
 function unavailable(): ReactNode {
@@ -85,9 +88,11 @@ export function ExperimentDetail() {
   const [result, setResult] = useState<ExperimentResult | null>(null);
   const [curves, setCurves] = useState<ExperimentCurve | null>(null);
   const [engineCurves, setEngineCurves] = useState<ExperimentEngineCurve | null>(null);
+  const [verification, setVerification] = useState<ExperimentVerification | null>(null);
   const [error, setError] = useState("");
   const [curveError, setCurveError] = useState("");
   const [engineCurveError, setEngineCurveError] = useState("");
+  const [verificationError, setVerificationError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,14 +101,17 @@ export function ExperimentDetail() {
     setError("");
     setCurveError("");
     setEngineCurveError("");
+    setVerificationError("");
     setResult(null);
     setCurves(null);
     setEngineCurves(null);
+    setVerification(null);
     void Promise.allSettled([
       getExperimentResult(id),
       getExperimentCurves(id),
       getExperimentEngineCurves(id),
-    ]).then(([resultOutcome, curveOutcome, engineCurveOutcome]) => {
+      getExperimentVerification(id),
+    ]).then(([resultOutcome, curveOutcome, engineCurveOutcome, verificationOutcome]) => {
       if (!active) return;
       setLoading(false);
       if (resultOutcome.status === "fulfilled") {
@@ -133,6 +141,15 @@ export function ExperimentDetail() {
             : String(engineCurveOutcome.reason),
         );
       }
+      if (verificationOutcome.status === "fulfilled") {
+        setVerification(verificationOutcome.value);
+      } else {
+        setVerificationError(
+          verificationOutcome.reason instanceof Error
+            ? verificationOutcome.reason.message
+            : String(verificationOutcome.reason),
+        );
+      }
     });
     return () => {
       active = false;
@@ -156,6 +173,7 @@ export function ExperimentDetail() {
   const evaluationConfig: JsonRecord = isRecord(configuration.evaluation) ? configuration.evaluation : {};
   const costs: JsonRecord = isRecord(run?.costs) ? run.costs : {};
   const evidence = evidenceSummary(report);
+  const verificationView = verificationSummary(verification);
   const realizedPoints = normalizeCurvePoints(curves?.points ?? []);
   const engineCurve = normalizeEngineCurvePoints(engineCurves?.points ?? []);
   const metrics = metricRows(run?.metrics);
@@ -234,6 +252,70 @@ export function ExperimentDetail() {
             )}
           </pre>
         </details>
+      </section>
+
+      <section className="panel detail-section">
+        <h2>Record integrity verification</h2>
+        <p className="experiment-hint">
+          Read-only check of stored inputs, outputs and fingerprints. It does not rerun the
+          backtest, re-evaluate the strategy, or make a validity, robustness or profitability
+          claim.
+        </p>
+        {verificationError && (
+          <div className="experiment-alert notice">
+            Verification unavailable: {verificationError}
+          </div>
+        )}
+        {verificationView ? (
+          <>
+            <div className={`verification-card ${verificationView.status}`}>
+              <div>
+                <span className="eyebrow">VERIFICATION STATUS</span>
+                <strong>{verificationView.status}</strong>
+              </div>
+              <p>{verificationView.statusDescription}</p>
+            </div>
+            <dl className="detail-grid compact">
+              <Field label="Identification" value={humanize(verificationView.identification)} />
+              <Field label="Manifest status" value={verificationView.manifestStatus} />
+              <Field label="Dataset status" value={verificationView.datasetStatus} />
+              <Field
+                label="Report status"
+                value={verificationView.reportStatus ?? unavailable()}
+              />
+              <Field
+                label="Manifest fingerprint"
+                value={verificationView.manifestFingerprint ? <code>{verificationView.manifestFingerprint}</code> : unavailable()}
+              />
+              <Field
+                label="Dataset fingerprint"
+                value={verificationView.datasetFingerprint ? <code>{verificationView.datasetFingerprint}</code> : unavailable()}
+              />
+              <Field
+                label="Report canonical digest"
+                value={verificationView.canonicalDigest ? <code>{verificationView.canonicalDigest}</code> : unavailable()}
+              />
+            </dl>
+            {verificationView.findings.length > 0 && (
+              <div className="experiment-alert notice">
+                <strong>Findings</strong>
+                <ul>
+                  {verificationView.findings.map((item, index) => <li key={index}>{item}</li>)}
+                </ul>
+              </div>
+            )}
+            <details>
+              <summary>What this verification does not prove</summary>
+              <ul>
+                {verificationView.limitations.map((item, index) => <li key={index}>{item}</li>)}
+              </ul>
+            </details>
+          </>
+        ) : (
+          <p className="experiment-hint">
+            No verification response is available for this experiment.
+          </p>
+        )}
       </section>
 
       <section className="panel detail-section">

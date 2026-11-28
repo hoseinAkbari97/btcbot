@@ -173,6 +173,15 @@ h1 { font-size: 24px; margin: 5px 0 0; letter-spacing: -.03em; }
 .evidence-card strong { color: #dfe6ef; font: 600 12px "IBM Plex Mono"; }
 .evidence-card p { color: #8b98ab; font-size: 11px; line-height: 1.6; margin: 8px 0; }
 .evidence-card .evidence-headline { color: #d9e1eb; font-family: "IBM Plex Mono"; }
+.verification-card { border: 1px solid #26313f; border-left: 3px solid #8290a3; border-radius: 4px; padding: 12px; margin-bottom: 12px; }
+.verification-card strong { display: block; margin-top: 5px; color: #dfe6ef; font: 600 13px "IBM Plex Mono"; text-transform: uppercase; }
+.verification-card p { color: #8b98ab; font-size: 11px; line-height: 1.6; margin: 8px 0 0; }
+.verification-card.verified { border-left-color: #12b886; }
+.verification-card.partial { border-left-color: #d99a36; }
+.verification-card.unavailable { border-left-color: #8290a3; }
+.verification-card.changed { border-left-color: #f5a623; }
+.verification-card.corrupted { border-left-color: #fa5252; }
+.detail-grid.compact { gap: 8px 16px; }
 .evidence-list { background: #101824; border: 1px solid #1c2634; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px; color: #8b98ab; font-size: 11px; }
 .evidence-list.withheld { border-color: #5b4421; }
 .report-section { margin-top: 10px; }
