@@ -8,9 +8,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.backtest import BacktestRunRecord, BacktestTradeRecord
-from app.services.evaluation.config import EvaluationConfig
+from app.services.evaluation.config import EVALUATION_METHOD_VERSION, EvaluationConfig
 from app.services.evaluation.provenance import EvaluationInputError
 from app.services.evaluation.report import (
+    REPORT_VERSION,
     EvaluationComparisonError,
     EvaluationReport,
     ReportFormatError,
@@ -199,6 +200,26 @@ async def test_report_round_trips_through_a_dict(db_session: AsyncSession) -> No
     restored = EvaluationReport.from_dict(report.as_dict())
 
     assert restored.digest() == report.digest()
+    assert restored.run_id == run_id
+    assert restored.reconciliation == report.reconciliation
+    assert restored.report_version == "3g.0"
+
+
+def test_report_shape_version_does_not_change_the_statistical_method() -> None:
+    assert REPORT_VERSION == "3g.0"
+    assert EVALUATION_METHOD_VERSION == "3d.1"
+
+
+async def test_report_without_reconciliation_still_reads_as_a_legacy_report(
+    db_session: AsyncSession,
+) -> None:
+    run_id = await persist_run(db_session)
+    payload = (await EvaluationService(db_session, CONFIG).evaluate(run_id)).as_dict()
+    payload.pop("reconciliation")
+
+    restored = EvaluationReport.from_dict(payload)
+
+    assert restored.reconciliation == {}
     assert restored.run_id == run_id
 
 
