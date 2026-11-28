@@ -56,6 +56,7 @@ class RunSnapshot:
     symbol: str
     timeframe: str
     mode: str | None
+    accounting_model_version: str | None
     dataset_version: str | None
     feature_version: str | None
     model_version: str | None
@@ -80,6 +81,7 @@ class RunSnapshot:
             symbol=record.symbol,
             timeframe=record.timeframe,
             mode=record.mode,
+            accounting_model_version=record.accounting_model_version,
             dataset_version=record.dataset_version,
             feature_version=record.feature_version,
             model_version=record.model_version,
@@ -115,6 +117,7 @@ class RunSnapshot:
             "symbol": self.symbol,
             "timeframe": self.timeframe,
             "mode": self.mode,
+            "accounting_model_version": self.accounting_model_version or "unknown",
             "dataset_version": self.dataset_version,
             "feature_version": self.feature_version,
             "model_version": self.model_version,
@@ -198,6 +201,24 @@ def verify_run(
         )
     else:
         checks.append(ProvenanceCheck("mode", "passed", f"mode={snapshot.mode}"))
+
+    if snapshot.accounting_model_version is None:
+        checks.append(
+            ProvenanceCheck(
+                "accounting_model_version",
+                "warning",
+                "accounting model version was not recorded; the run predates the "
+                "versioned ledger and no cost convention may be inferred from metrics",
+            )
+        )
+    else:
+        checks.append(
+            ProvenanceCheck(
+                "accounting_model_version",
+                "passed",
+                f"accounting_model_version={snapshot.accounting_model_version}",
+            )
+        )
 
     if snapshot.initial_capital <= 0:
         failures.append("initial capital must be positive")

@@ -185,6 +185,10 @@ async def test_missing_provenance_is_carried_as_warnings(db_session: AsyncSessio
     provenance = report.provenance
 
     assert any("dataset version was not recorded" in item for item in provenance["warnings"])
+    assert provenance["run"]["accounting_model_version"] == "unknown"
+    assert any(
+        "accounting model version was not recorded" in item for item in provenance["warnings"]
+    )
     assert provenance["read_only"] is True
 
 
