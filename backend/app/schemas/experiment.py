@@ -238,7 +238,7 @@ class ExperimentCurvePointResponse(BaseModel):
 
 
 class ExperimentCurveResponse(BaseModel):
-    """Bounded projection of persisted trades, never the transient engine curve."""
+    """Bounded projection of persisted trades, never the engine mark-to-market curve."""
 
     experiment_id: str
     run_id: str | None
@@ -253,6 +253,36 @@ class ExperimentCurveResponse(BaseModel):
     truncated: bool
     unavailable_reason: str | None = None
     points: list[ExperimentCurvePointResponse]
+
+
+class ExperimentEngineCurvePointResponse(BaseModel):
+    """One exact persisted engine point, keyed by processed candle index."""
+
+    bar_index: int
+    time: datetime
+    equity: str
+    cash: str
+    unrealized: str
+    position_side: str | None
+    drawdown: str
+
+
+class ExperimentEngineCurveResponse(BaseModel):
+    """Bounded prefix of the engine's persisted per-candle mark-to-market curve."""
+
+    experiment_id: str
+    run_id: str | None
+    basis: Literal[
+        "engine_mark_to_market; raw_engine_fields; drawdown_currency_from_running_peak"
+    ]
+    accounting_model_version: str
+    accounting_currency: str | None
+    limit: int
+    total_points: int
+    point_count: int
+    truncated: bool
+    unavailable_reason: str | None = None
+    points: list[ExperimentEngineCurvePointResponse]
 
 
 class ExperimentComparisonRequest(BaseModel):

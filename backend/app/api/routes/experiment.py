@@ -24,12 +24,14 @@ from app.schemas.experiment import (
     ExperimentBatchRequest,
     ExperimentComparisonRequest,
     ExperimentCurveResponse,
+    ExperimentEngineCurveResponse,
     ExperimentEvaluationResponse,
     ExperimentResultResponse,
     ExperimentRetrieval,
     ExperimentStatusResponse,
     ExperimentSubmission,
 )
+from app.services.accounting.model import EQUITY_SERIES_BASIS
 from app.services.backtest.comparison import (
     ComparisonError,
     RunsNotFoundError,
@@ -328,6 +330,79 @@ async def get_experiment_curves(
                 "drawdown": str(point.drawdown),
             }
             for point in curve.points
+        ],
+    )
+
+
+@router.get(
+    "/{experiment_id}/engine-curves", response_model=ExperimentEngineCurveResponse
+)
+async def get_experiment_engine_curves(
+    experiment_id: str,
+    limit: int = Query(5000, ge=1, le=5000),
+    session: AsyncSession = Depends(get_db_session),
+) -> ExperimentEngineCurveResponse:
+    """Return a bounded prefix of the engine's persisted mark-to-market curve.
+
+    These are the exact points the engine produced, ordered by the candle index
+    that generated them. Timestamps are not unique, and ``drawdown`` is the
+    engine's negative absolute quote-currency amount, never an evaluation
+    fraction. Legacy runs without a stored series are reported as unavailable
+    instead of being reconstructed.
+    """
+    record = await ExperimentRepository(session).get(experiment_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail=f"experiment {experiment_id} not found")
+
+    def unavailable(run_id: str | None, version: str = "unknown") -> ExperimentEngineCurveResponse:
+        return ExperimentEngineCurveResponse(
+            experiment_id=record.id,
+            run_id=run_id,
+            basis=EQUITY_SERIES_BASIS,
+            accounting_model_version=version,
+            accounting_currency=record.accounting_currency,
+            limit=limit,
+            total_points=0,
+            point_count=0,
+            truncated=False,
+            unavailable_reason="no persisted engine equity series for this run",
+            points=[],
+        )
+
+    if record.backtest_run_id is None:
+        return unavailable(None)
+    run = await BacktestRepository(session).get_run_without_trades(record.backtest_run_id)
+    if run is None:
+        return unavailable(record.backtest_run_id)
+
+    repository = BacktestRepository(session)
+    total_points = await repository.count_equity_points(run.id)
+    rows = await repository.list_equity_point_rows(run.id, limit)
+    points = rows[:limit]
+    return ExperimentEngineCurveResponse(
+        experiment_id=record.id,
+        run_id=run.id,
+        basis=EQUITY_SERIES_BASIS,
+        accounting_model_version=run.accounting_model_version or "unknown",
+        accounting_currency=record.accounting_currency,
+        limit=limit,
+        total_points=total_points,
+        point_count=len(points),
+        truncated=len(rows) > limit,
+        unavailable_reason=(
+            "no persisted engine equity series for this run" if total_points == 0 else None
+        ),
+        points=[
+            {
+                "bar_index": bar_index,
+                "time": timestamp,
+                "equity": str(equity),
+                "cash": str(cash),
+                "unrealized": str(unrealized),
+                "position_side": side,
+                "drawdown": str(drawdown),
+            }
+            for bar_index, timestamp, equity, cash, unrealized, side, drawdown in points
         ],
     )
 
