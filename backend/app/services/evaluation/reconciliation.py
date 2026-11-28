@@ -217,17 +217,20 @@ class ReconciliationBuilder:
                     f"trade {row.sequence} has a negative cost component",
                 )
 
-            per_leg = (
-                row.entry_fee,
-                row.exit_fee,
-                row.entry_concession,
-                row.exit_concession,
-            )
-            if any(value is None for value in per_leg):
+            entry_fee = row.entry_fee
+            exit_fee = row.exit_fee
+            entry_concession = row.entry_concession
+            exit_concession = row.exit_concession
+            if (
+                entry_fee is None
+                or exit_fee is None
+                or entry_concession is None
+                or exit_concession is None
+            ):
                 self._per_leg_missing = True
             else:
                 if not _close(
-                    Decimal(row.entry_fee) + Decimal(row.exit_fee), Decimal(row.fees)
+                    Decimal(entry_fee) + Decimal(exit_fee), Decimal(row.fees)
                 ):
                     self._flag(
                         "per_leg_identity",
@@ -235,7 +238,7 @@ class ReconciliationBuilder:
                         f"trade {row.sequence} per-leg fees do not sum to fees",
                     )
                 if not _close(
-                    Decimal(row.entry_concession) + Decimal(row.exit_concession),
+                    Decimal(entry_concession) + Decimal(exit_concession),
                     Decimal(row.spread_cost) + Decimal(row.slippage_cost),
                 ):
                     self._flag(
