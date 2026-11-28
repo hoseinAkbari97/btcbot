@@ -31,6 +31,7 @@ from app.schemas.experiment import (
     ExperimentStatusResponse,
     ExperimentSubmission,
 )
+from app.schemas.verification import ExperimentVerificationResponse
 from app.services.accounting.model import EQUITY_SERIES_BASIS
 from app.services.backtest.comparison import (
     ComparisonError,
@@ -41,6 +42,11 @@ from app.services.experiment.curves import build_realized_curve
 from app.services.experiment.service import (
     EXPERIMENT_STATES,
     ExperimentOrchestrationService,
+)
+from app.services.provenance.service import (
+    VerificationConflictError,
+    VerificationNotFoundError,
+    VerificationService,
 )
 
 logger = logging.getLogger(__name__)
@@ -429,6 +435,27 @@ async def get_experiment_evaluation(
         report_id=report.id,
         report=report.report,
     )
+
+
+@router.get(
+    "/{experiment_id}/verification", response_model=ExperimentVerificationResponse
+)
+async def get_experiment_verification(
+    experiment_id: str,
+    session: AsyncSession = Depends(get_db_session),
+) -> ExperimentVerificationResponse:
+    """Read only: verify the recorded identity and integrity of an experiment.
+
+    This never reruns a backtest, re-evaluates a report or changes lifecycle
+    state. Absent historical evidence is returned explicitly, never inferred.
+    """
+    try:
+        result = await VerificationService(session).verify_experiment(experiment_id)
+    except VerificationNotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except VerificationConflictError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    return ExperimentVerificationResponse.model_validate(result.as_dict())
 
 
 @router.post("/{experiment_id}/cancel", response_model=ExperimentRetrieval)
